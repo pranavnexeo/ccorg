@@ -1,0 +1,488 @@
+<apex:page StandardController="Opportunity" extensions="OpportunityExtension" id="thepage" >
+
+<script type="text/javascript"> 
+  function openLookup(baseURL, width, modified, searchParam){
+    var originalbaseURL = baseURL;
+    var originalwidth = width;
+    var originalmodified = modified;
+    var originalsearchParam = searchParam;
+ 
+    var lookupType = baseURL.substr(baseURL.length-3, 3);
+    if (modified == '1') baseURL = baseURL + searchParam;
+ 
+    var isCustomLookup = false;
+ 
+    // Following "a0Y" is the lookup type for Account object so change this as per your standard or custom object
+       if(lookupType == "a0Y"){
+ 
+      var urlArr = baseURL.split("&");
+      var txtId = '';
+      if(urlArr.length > 2) {
+        urlArr = urlArr[1].split('=');
+        txtId = urlArr[1];
+      }
+ 
+      // Following is the url of Custom Lookup page. You need to change that accordingly
+      baseURL = "/apex/CustomBaseLookup?txt=" + txtId;
+      
+      // Following is the id of apex:form control "myForm". You need to change that accordingly
+      baseURL = baseURL + "&frm=" + escapeUTF("{!$Component.myForm}");
+      if (modified == '1') {
+        baseURL = baseURL + "&lksearch=" + searchParam;
+      }
+      
+ 
+      // Following is the ID of inputField that is the lookup to be customized as custom lookup
+      if(txtId.indexOf('Base') > -1 ){
+        isCustomLookup = true;
+      }
+    }
+    if(lookupType == "001"){
+ 
+      var urlArr = baseURL.split("&");
+      var txtId = '';
+      if(urlArr.length > 2) {
+        urlArr = urlArr[1].split('=');
+        txtId = urlArr[1];
+      }
+ 
+      // Following is the url of Custom Lookup page. You need to change that accordingly
+      baseURL = "/apex/CustomAccountLookup?txt=" + txtId;
+      
+      // Following is the id of apex:form control "myForm". You need to change that accordingly
+      baseURL = baseURL + "&frm=" + escapeUTF("{!$Component.myForm}");
+      if (modified == '1') {
+        baseURL = baseURL + "&lksearch=" + searchParam;
+        width = 750;
+      }
+      
+ 
+      // Following is the ID of inputField that is the lookup to be customized as custom lookup
+      if(txtId.indexOf('Account') > -1 ){
+        isCustomLookup = true;
+      }
+      if(txtId.indexOf('HQ') > -1){
+        isCustomLookup = true;
+      }
+    }
+    if(lookupType == "a0e"){
+ 
+      var urlArr = baseURL.split("&");
+      var txtId = '';
+      if(urlArr.length > 2) {
+        urlArr = urlArr[1].split('=');
+        txtId = urlArr[1];
+      }
+ 
+      // Following is the url of Custom Lookup page. You need to change that accordingly
+      baseURL = "/apex/CustomMSD2Lookup?txt=" + txtId;
+ 
+      // Following is the Id of the Account on the Page.
+        
+         baseURL = baseURL + "&aid={!acc.id}";
+      // Following is the id of apex:form control "myForm". You need to change that accordingly
+      baseURL = baseURL + "&frm=" + escapeUTF("{!$Component.myForm}");
+      if (modified == '1') {
+        baseURL = baseURL + "&lksearch=" + searchParam;
+      }
+ 
+      // Following is the ID of inputField that is the lookup to be customized as custom lookup
+      if(txtId.indexOf('Material') > -1 ){
+        isCustomLookup = true;
+      }
+    }
+ 
+ 
+    if(isCustomLookup == true){
+      openPopup(baseURL, "lookup", width, 480, "width="+width+",height=480,toolbar=no,status=no,directories=no,menubar=no,resizable=yes,scrollable=no", true);
+    }
+    else {
+      if (modified == '1') originalbaseURL = originalbaseURL + originalsearchParam;
+      openPopup(originalbaseURL, "lookup", 350, 480, "width="+originalwidth+",height=480,toolbar=no,status=no,directories=no,menubar=no,resizable=yes,scrollable=no", true);
+    } 
+  }
+  
+  function updateRequiredFields(stage){
+    stagechangedjs(document.getElementById(stage).value);
+    fieldrequiredjs(document.getElementById(reasonwonlost).value);
+  }
+</script>
+<script>
+function setreqd(reasonwonlost){
+fieldrequiredjs(document.getElementById(reasonwonlost).value);
+}
+</script>
+<apex:sectionheader title="Opportunity Edit" subtitle="{!OppSubtitle}"/>
+<apex:pagemessages />
+<apex:form >
+<apex:actionfunction name="fieldrequiredjs" action="{!fieldrequired}" immediate="true" rerender="thepanel" status="stageChangeStatus" >
+<apex:param name="reasonwonlost" value=""/>
+</apex:actionfunction>
+<apex:actionfunction name="stagechangedjs" action="{!stagechanged}" immediate="true" rerender="thepanel" status="stageChangeStatus" >
+<apex:param name="stage" value=""/>
+</apex:actionfunction>
+<apex:outputpanel id="thepanel">
+<apex:actionregion >
+<apex:pageblock >
+<apex:actionStatus id="stageChangeStatus">
+<apex:facet name="start">
+<c:EnhancedActionStatus BackColor="#efefef" borderColor="#336699" borderSize="3" height="20px" width="100px" ImageUrl="{!$Resource.spinner}" Message="Loading..." messageStyle="color:darkred;font-size:11pt;font-weight:bold;"/>
+</apex:facet>
+</apex:actionStatus>   
+                       
+<apex:pageblockbuttons >
+
+<apeX:commandbutton value="Save" action="{!Save}" />
+<apex:commandbutton value="Cancel" action="{!Cancel}" />
+
+</apex:pageblockbuttons>
+           
+<apex:pageblocksection title="Opportunity Profile" collapsible="false">
+<apex:inputfield value="{!Opp.Name}" required="true" />
+<apex:inputfield value="{!Opp.StageName}" required="true" id="stage" onchange="updateRequiredFields('{!$Component.stage}')"/>
+<!--<apeX:outputfield id="prob" value="{!opp.probability}" />-->
+<!--<apex:outputfield value="{!Opp.ownerid}" />-->
+<apex:inputfield value="{!Opp.CloseDate}" required="true"/>
+<apex:inputfield value="{!Opp.Probability_picklist__c}" required="true"/>
+<!--<apex:outputfield value="{!Opp.Opportunity_Owners_Business_Role__c}"/>-->
+<!--<apex:inputfield value="{!Opp.NextStep}" required="true"/>-->
+<!--<apex:outputfield value="{!Opp.Opportunity_Owners_Manager__c}"/>-->
+</apex:pageblocksection>
+<apex:pageblocksection columns="1"  collapsible="false">
+<apex:pageblocksectionitem helptext="Enter any additional details regarding this Opportunity">
+<apex:outputlabel value="Opportunity Comments"/>
+<apex:inputtextarea value="{!opp.Description}" cols="100" rows="8"/>
+</apex:pageblocksectionitem>
+</apex:pageblocksection>
+
+<!--<apex:pageblocksection title="TAG" collapsible="false">
+<apex:inputfield value="{!Opp.TAG_Opportunity__c}" rendered="{!NOT(Opp.TAG_Opportunity__c)}"/>
+<apex:outputfield value="{!Opp.TAG_Opportunity__c}" rendered="{!Opp.TAG_Opportunity__c}"/>
+<apex:pageblocksectionitem helptext="Select the date of the TAG Meeting where this Opportunity will be discussed">
+<apex:outputlabel value="Tag Date"/>
+<apex:outputPanel >
+    <apex:outputPanel styleClass="requiredBlock" layout="block"/>
+     <apex:inputfield value="{!Opp.TAG_Date__c}" style="{!if(OR(errorTagDateRequired, errorTagDateBeforeToday, errorTagOpportunity), 'border-size:2px; border-color:#CC0000;border-style:solid;', '')}" />
+     <apex:outputPanel styleClass="errorMsg" layout="block" rendered="{!errorTagDateRequired}">
+            <strong>Error:</strong> You Must Enter a Value.
+     </apex:outputPanel>
+     <apex:outputPanel styleClass="errorMsg" layout="block" rendered="{!errorTagDateBeforeToday}">
+            <strong>Error:</strong> {!TAGErrorMsg}
+     </apex:outputPanel>
+     <apex:outputPanel styleClass="errorMsg" layout="block" rendered="{!errorTagOpportunity}">
+            <strong>Error:</strong> TAG Date must be blank if TAG Opportunity is not checked.
+     </apex:outputPanel>
+</apex:outputPanel>     
+</apex:pageblocksectionitem>
+<apex:outputfield value="{!Opp.Current_Approval_Process__c}"/>
+<apex:outputfield value="{!Opp.TAG_Approval__c}"/>
+</apex:pageblocksection>-->
+
+<apex:actionregion >
+<apex:pageblocksection title="1. Prospect" id="ContactInfo" collapsible="false">
+<apex:pageblocksectionitem >
+<apex:outputlabel value="Account"/>
+<apex:outputpanel >
+<apex:inputfield value="{!Opp.AccountId}"  required="true" id="Account">
+<apex:actionsupport event="onchange" action="{!accountchanged}" rerender="ContactInfo, SystemInfo" />
+</apex:inputfield>    
+</apex:outputpanel>
+</apex:pageblocksectionitem>
+<apex:pageblocksectionitem helptext="Name of Contact that is directly involved in this Opportunity">
+<apex:outputlabel value="Primary Contact"/>
+<apex:outputPanel layout="block" >
+    <apex:outputPanel styleClass="requiredBlock" layout="block"/>
+     <apex:selectlist id="contact" value="{!cid}" size="1" style="{!if(errorContact, 'border-size:2px; border-color:#CC0000;border-style:solid;', '')}" required="true">
+     <apex:selectoptions value="{!contacts}"/>
+     <apex:actionsupport event="onchange" action="{!accountchanged}" rerender="ContactInfo"/>
+     </apex:selectlist>
+     <apex:outputPanel styleClass="errorMsg" layout="block" rendered="{!errorContact}">
+            <strong>Error:</strong> You Must Enter a Value.
+     </apex:outputPanel>
+
+</apex:outputPanel>     
+</apex:pageblocksectionitem>
+<apex:pageblocksectionitem >
+<apex:outputlabel value="Account Type"/>
+<apex:outputfield value="{!Acc.Type}"/>
+</apex:pageblocksectionitem>
+<!--<apex:outputfield value="{!Opp.Contact__r.Title}"/>-->
+<apex:inputfield value="{!Opp.LeadSource}"/>
+<!--<apex:outputfield value="{!Opp.Buying_Role__c}"/>-->
+<apex:inputfield value="{!Opp.CampaignId}"/>
+<!--<apex:outputfield value="{!Opp.Contact__r.phone}"/>-->
+<apex:inputfield value="{!Opp.LeadSource_User__c}"/>
+<apex:inputfield value="{!Opp.Internal_Opportunity_Source__c}"/>
+<!--<apex:outputfield value="{!Opp.Contact__r.mobilePhone}"/>-->
+<apex:pageblocksectionitem />
+<!--<apex:outputfield value="{!Opp.Contact__r.email}"/>-->
+</apex:pageblocksection>
+</apex:actionregion>
+
+<apex:pageblocksection title="2. Validate" columns="2" collapsible="false">
+<apex:pageblocksectionitem helptext="New Business = New Business at New Account or at a Customer that hasn’t done business with us in 1+ years
+    Existing Business = Existing customer business">
+<apex:outputlabel value="Business Type"/>
+<apex:outputPanel styleClass="{!IF(isstage2&& makerequired, 'requiredInput', '')}" layout="block" >
+     <apex:outputPanel styleClass="requiredBlock" layout="block"/>   
+     <div class = "requiredInput">
+     <div class = "requiredBlock"></div>
+     <apex:selectRadio value="{!opp.T_Business_Type__c}" style="{!if(errorBusinessType, 'border-size:2px; border-color:#CC0000;border-style:solid;', '')}">
+     <apex:selectoption itemvalue="New Business" itemlabel="New Business"/>
+     <apex:selectoption itemvalue="Existing Business" itemlabel="Existing Business"/>
+     </apex:selectRadio>
+     </div>
+     <apex:outputPanel styleClass="errorMsg" layout="block" rendered="{!errorBusinessType}">
+            <strong>Error:</strong> You Must Enter a Value.
+         </apex:outputPanel>
+</apex:outputPanel>
+</apex:pageblocksectionitem>
+
+<apex:pageblocksectionitem helptext="Mark this box if the business is a project/one time event and should not be considered ongoing">
+<apex:outputlabel value="One Time Project/Event?"/>
+<apex:inputCheckbox value="{!Opp.One_Time_Project_Event__c}" />
+</apex:pageblocksectionitem>
+</apex:pageblocksection>
+
+
+<apex:pageblocksection columns="1">
+<apex:pageblocksectionitem helptext="Select the type of sales requirement needed for this Opportunity">
+<apex:outputlabel value="Opportunity Type"/>
+<apex:outputPanel styleClass="{!IF(isstage2&& makerequired, 'requiredInput', '')}" layout="block" >
+     <apex:outputPanel styleClass="requiredBlock" layout="block"/>   
+     <apex:selectRadio value="{!opp.Type}" style="{!if(errorOpportunityType, 'border-size:2px; border-color:#CC0000;border-style:solid;', '')}">
+     <apex:selectoption itemvalue="Corporate" itemlabel="Corporate"/>
+     <apex:selectoption itemvalue="Field" itemlabel="Field"/>
+     <apex:selectoption itemvalue="IRM" itemlabel="IRM"/>
+     </apex:selectRadio>
+     <apex:outputPanel styleClass="errorMsg" layout="block" rendered="{!errorOpportunityType}">
+            <strong>Error:</strong> You Must Enter a Value.
+     </apex:outputPanel>
+</apex:outputPanel>
+</apex:pageblocksectionitem>
+
+<apex:inputfield value="{!opp.Related_HQ_Account__c}" id="HQ" />
+<apex:pageblocksectionitem >
+<apex:outputlabel value="Bid"/>
+<apex:selectRadio value="{!opp.Business_Solutions_Supported__c}" style="{!if(errorBusinessSolutions, 'border-size:2px; border-color:#CC0000;border-style:solid;', '')}">
+<apex:selectoption itemvalue="Yes" itemlabel="Yes"/>
+<apex:selectoption itemvalue="No" itemlabel="No"/>
+</apex:selectRadio>
+</apex:pageblocksectionitem>
+</apex:pageblocksection>
+
+<apex:pageblocksection title="3. Solve" collapsible="false" >
+<apex:pageblocksectionitem helptext="Mark a Top Five Opportunity to track high value targets that have a real chance at closing in the foreseeable future. These opportunities will receive a high level of focus from the various resource groups to bring to a close.">
+<apex:outputlabel value="Top Five Opportunity"/>
+<apex:inputCheckbox value="{!Opp.Top_Five_Opportunity__c}"  id="top5opp" disabled="{!Top5opp}"/>
+</apex:pageblocksectionitem> 
+<apex:pageblocksectionitem helptext="Select the action taken for this Opportunity that provides competitive differentiation that allows Nexeo a premium">
+<!--<apex:outputlabel value="Nexeo Value Add"/>
+<apex:inputfield value="{!Opp.Nexeo_Value_Add__c}" />-->
+</apex:pageblocksectionitem> 
+
+</apex:pageblocksection>
+<apex:pageblocksection columns="1"  collapsible="false">
+<apex:pageblocksectionitem helptext="Enter details regarding the Solution / Proposal Development for this Opportunity">
+<!--<apex:outputlabel value="Solution Comments"/>
+<apex:inputtextarea value="{!opp.Solution_Comments__c}" cols="100" rows="8"/>-->
+</apex:pageblocksectionitem>
+</apex:pageblocksection>
+<apex:pageblocksection >
+<apex:pageblocksectionitem helptext="Search for and select the Primary competitor who sells / bids for the same material / service">
+<apex:outputlabel value="Nexeo Primary Competitor"/>
+<apex:outputPanel styleClass="{!IF(isstage3&& makerequired, 'requiredInput', '')}" layout="block" >
+    <apex:outputPanel styleClass="requiredBlock" layout="block"/>
+      <apex:inputfield value="{!opp.Nexeo_Primary_Competitor_PL__c}" style="{!if(errorCompetitor, 'border-size:2px; border-color:#CC0000;border-style:solid;', '')}" />
+       
+     <apex:outputPanel styleClass="errorMsg" layout="block" rendered="{!errorCompetitor}">
+            <strong>Error:</strong> You Must Enter a Value.
+     </apex:outputPanel>
+</apex:outputPanel>     
+</apex:pageblocksectionitem>
+
+<apex:pageblocksectionitem helptext="Select Nexeo's competitive supply position on this specific opportunity">
+<!--<apex:outputlabel value="Nexeo Competitive Position"/>
+<apex:outputPanel styleClass="{!IF(isstage3&& makerequired, 'requiredInput', '')}" layout="block" >
+    <apex:outputPanel styleClass="requiredBlock" layout="block"/>
+       <apex:inputfield value="{!Opp.Nexeo_Competative_Position__c}" style="{!if(errorcompetitiveposition, 'border-size:2px; border-color:#CC0000;border-style:solid;', '')}" />
+     <apex:outputPanel styleClass="errorMsg" layout="block" rendered="{!errorcompetitiveposition}">
+            <strong>Error:</strong> You Must Enter a Value.
+     </apex:outputPanel>
+</apex:outputPanel>-->     
+</apex:pageblocksectionitem>
+
+</apex:pageblocksection>
+<apex:pageblocksection columns="1"  collapsible="false">
+<apex:pageblocksectionitem helptext="Enter additional details regarding the Competitor(s) who sells / bids for the same material / service">
+<!--<apex:outputlabel value="Competitor Comments"/>
+<apex:inputtextarea value="{!opp.Competitor_Comments__c}" cols="100" rows="8"/>-->
+</apex:pageblocksectionitem>
+</apex:pageblocksection>
+<apex:pageblocksection >
+</apex:pageblocksection>
+<apex:pageblocksection title="4. Present" collapsible="false" >
+<!--<apex:outputfield value="{!Opp.Current_Approval_Process__c}"/>
+<apex:outputfield value="{!Opp.Pricing_Approval_Status__c}"/>-->
+<!--<apex:pageblocksectionitem />-->
+<apex:inputfield value="{!opp.CurrencyIsoCode}"/>
+<!--<apex:pageblocksectionitem />
+<apex:pageblocksectionitem helptext="Select the date the first order is to be/was placed for this SAP Material">
+<apex:outputlabel value="Award Start Date"/>
+<apex:inputfield value="{!Opp.Award_Start_Date__c}" />
+</apex:pageblocksectionitem>
+
+<apex:pageblocksectionitem />
+<apex:pageblocksectionitem helptext="Select the estimated date the final order is expected to be placed for this SAP Material">
+<apex:outputlabel value="Award End Date"/>
+<apex:inputfield value="{!Opp.Award_End_Date__c}" />
+</apex:pageblocksectionitem>
+<apex:pageblocksectionitem />
+
+<apex:inputfield value="{!Opp.Amount}"/>
+<apex:pageblocksectionitem />
+<apex:pageblocksectionitem />
+<apex:outputfield value="{!Opp.ExpectedRevenue}"/>
+<apex:pageblocksectionitem />-->
+<apex:pageblocksectionitem >
+<apex:outputlabel value="Opportunity Revenue"/>
+<apex:outputPanel >
+<apex:outputPanel styleClass="requiredBlock" layout="block"/>
+<apex:inputfield value="{!Opp.Amount}" required="{!isStage4&&makerequired}" style="{!if(erroropprevenue, 'border-size:2px; border-color:#CC0000;border-style:solid;', '')}"/>
+<apex:outputPanel styleClass="errorMsg" layout="block" rendered="{!erroropprevenue}">
+    <strong>Error:</strong> You Must Enter a Value.
+</apex:outputPanel>
+</apex:outputPanel>
+</apex:pageblocksectionitem>
+<apex:pageblocksectionitem />
+<apex:pageblocksectionitem />
+</apex:pageblocksection>
+<apex:pageblocksection columns="1" collapsible="false" >
+<apex:pageblocksectionitem helptext="Enter additional details regarding the Pricing of the Nexeo material / service for this Opportunity">
+<!--<apex:outputlabel value="Pricing Comments"/>
+<apex:inputtextarea value="{!opp.Pricing_Comments__c}" cols="100" rows="8"/>-->
+</apex:pageblocksectionitem>
+</apex:pageblocksection>
+
+<apex:pageblocksection title="5. Closed" collapsible="false" >
+
+<apex:pageblocksectionitem >
+<apex:outputlabel value="Won / Lost Reason"/>
+<apex:outputPanel styleClass="{!IF(AND(NOT(isquotevalue),isstage3), 'requiredInput', '')}" layout="block" >
+    <apex:outputPanel styleClass="{!IF(AND(NOT(isquotevalue),isclosed), 'requiredBlock', '')}" layout="block"/>
+      <apex:inputfield value="{!Opp.T_Reason_Won_Lost__c}" id="reasonwonlost" required="true" rendered="{!AND(NOT(isquotevalue),isclosed)}" Onchange="setreqd('{!$Component.reasonwonlost}');"/>
+      <apex:selectlist value="{!Opp.T_Reason_Won_Lost__c}" size="1" rendered="{!NOT(isclosed)}" disabled="true" >
+        <apex:selectoption itemlabel="--None--" itemvalue=""/>
+      </apex:selectlist>  
+     <apex:outputPanel styleClass="errorMsg" layout="block" rendered="{!errorCompetitor}">
+            <strong>Error:</strong> You Must Enter a Value.
+     </apex:outputPanel>
+</apex:outputPanel>     
+</apex:pageblocksectionitem>
+</apex:pageblocksection>
+<apex:pageblocksection >
+<!--<apex:pageblocksectionitem helptext="Enter additional details regarding the reason this Opportunity has become Closed-Won or Closed-Lost">
+<apex:outputlabel value="Won / Lost Comments"/>
+<apex:outputPanel >
+    <apex:outputPanel styleClass="requiredBlock" layout="block"/>
+     <apex:inputtextarea value="{!opp.Won_Lost_Comments__c}" cols="100" rows="8" style="{!if(errorWonLostComments, 'border-size:2px; border-color:#CC0000;border-style:solid;', '')}"/>
+     <apex:outputPanel styleClass="errorMsg" layout="block" rendered="{!errorWonLostComments}">
+            <strong>Error:</strong> Length Must Be less than 255 Characters. 
+     </apex:outputPanel>
+</apex:outputPanel>     
+</apex:pageblocksectionitem>-->
+</apex:pageblocksection>
+<apex:pageblocksection >
+<apex:pageblocksectionitem helptext="Enter additional details regarding the reason this Opportunity has become Closed-Won or Closed-Lost">
+<apex:outputlabel value="Won / Lost Comments"/>
+<apex:outputPanel >
+    <apex:outputPanel styleClass="requiredBlock" layout="block"/>
+     <apex:inputtextarea value="{!opp.Won_Lost_Comments__c}" cols="100" rows="8" style="{!if(errorWonLostComments, 'border-size:2px; border-color:#CC0000;border-style:solid;', '')}"/>
+     <apex:outputPanel styleClass="errorMsg" layout="block" rendered="{!errorWonLostComments}">
+            <strong>Error:</strong> Length Must Be less than 255 Characters. 
+     </apex:outputPanel>
+</apex:outputPanel>     
+</apex:pageblocksectionitem>
+</apex:pageblocksection>
+
+
+<!--<apex:pageblocksection title="Delivery Schedule" columns="1" id="customerinfo1" >
+<style> body { background: #F3F3EC; } </style>
+<apex:datatable var="dd" value="{!dc}" >
+<apex:column >
+<apex:facet name="header">Plant Name</apex:facet>
+<apex:outputtext value="{!dd.Account__r.name}"/>
+</apex:column>
+<apex:column >
+<apex:facet name="header">&nbsp; Plant Number &nbsp; </apex:facet>
+<center>
+<apex:outputfield value="{!dd.Account__r.site}"/>
+</center>
+</apex:column>
+<apex:column >
+<apex:facet name="header">&nbsp; Mon &nbsp; </apex:facet>
+<center>
+<apex:outputfield value="{!dd.Mon__c}"/>
+</center>
+</apex:column>
+<apex:column >
+<apex:facet name="header">&nbsp; Tues &nbsp; </apex:facet>
+<center>
+<apex:outputfield value="{!dd.Tues__c}"/>
+</center>
+</apex:column>
+<apex:column >
+<apex:facet name="header">&nbsp; Wed &nbsp;</apex:facet>
+<center>
+<apex:outputfield value="{!dd.Wed__c}"/>
+</center>
+</apex:column>
+<apex:column >
+<apex:facet name="header">&nbsp; Thurs &nbsp;</apex:facet>
+<center>
+<apex:outputfield value="{!dd.Thur__c}"/>
+</center>
+</apex:column>
+<apex:column >
+<apex:facet name="header">&nbsp; Fri &nbsp;</apex:facet>
+<center>
+<apex:outputfield value="{!dd.Fri__c}"/>
+</center>
+</apex:column>
+<apex:column >
+<apex:facet name="header">&nbsp; Ship &nbsp;</apex:facet>
+<center>
+<apex:outputfield value="{!dd.Ship__c}"/>
+</center>
+</apex:column>
+</apex:datatable>
+</apex:pageblocksection>-->
+
+<!--<apex:pageblocksection title="System Information" id="SystemInfo">
+<apex:outputfield value="{!Acc.Account_Search_Phrase__c}"/>
+<apex:inputfield value="{!Opp.Invalid_Duplicate__c}"/>
+<apex:outputfield value="{!Acc.SAP_Division_Desc__c}"/>
+<apex:outputfield value="{!opp.Nexeo_Quote__c}"/>
+<apex:outputfield value="{!Acc.SAP_Sales_District_Desc__c}"/>
+<apex:pageblocksectionitem >
+<apex:outputlabel value="Created By"/>
+<apex:outputpanel >
+<apex:outputfield value="{!Opp.CreatedById}"/> - <apex:outputfield value="{!Opp.CreatedDate}"/>
+</apex:outputpanel>
+</apex:pageblocksectionitem>
+<apex:outputfield value="{!Acc.SAP_Sales_Office_Desc__c}"/>
+<apex:pageblocksectionitem >
+<apex:outputlabel value="Last Modified By"/>
+<apex:outputpanel >
+<apex:outputfield value="{!Opp.Last_Modified_By__c}"/> - <apex:outputfield value="{!Opp.Last_Modified_Date_time__c}"/>
+</apex:outputpanel>
+</apex:pageblocksectionitem>
+<apex:outputfield value="{!Acc.SAP_Sales_Group_Desc__c}"/>
+<apex:outputfield value="{!Opp.RecordTypeId}"/>
+</apex:pageblocksection>-->
+</apex:pageblock>
+</apex:actionregion>
+</apex:outputpanel>
+</apex:form>
+
+</apex:page>

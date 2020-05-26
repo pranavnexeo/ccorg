@@ -1,0 +1,1648 @@
+<apex:page standardController="Procurement_Contract__c" renderAs="pdf">
+<html>
+    <head>
+        <title>HTML Generator Sample Page</title>
+    </head>
+    <body>
+        <p align="center">
+              <apex:image url="{!$Resource.Nexeo_Logo}" width="144" height="50" /></p>
+        <p align="center">
+            <strong>Nexeo Solutions, LLC&nbsp; </strong>-&nbsp;P. O.&nbsp; BOX 2219&nbsp; -&nbsp; COLUMBUS,&nbsp; OHIO&nbsp; 43216&nbsp; -&nbsp; PHONE&nbsp; (614) 790-3333</p>
+        <p align="center">
+            &nbsp;</p>
+        <p>
+            PURCHASING DEPARTMENT</p>
+        <p>
+            Fax: (614) 790-3784</p>
+        <p>
+            &nbsp;</p>
+               <p>
+                Date : </p>
+               <p>
+            &nbsp;</p>
+     <p>
+            <apex:outputText value=" {!Procurement_Contract__c.Vendor__r.Name}" />
+</p>
+    <p>  <apex:outputText value=" {!Procurement_Contract__c.Vendor_Contacts__r.name}" /></p>
+
+      <p><apex:outputText value="{!Procurement_Contract__c.Vendor_Address__c}" /></p>
+
+ 
+
+                <p>
+            &nbsp;</p>
+        <p>
+            Dear &nbsp;&nbsp;<apex:outputText value=" {!Procurement_Contract__c.Vendor_Contacts__r.name}" />:</p>
+        <p>
+            &nbsp;</p>
+        <p>
+            We wish to establish a Contract for Labor, Supervision and Materials agreement between your company and Nexeo Solutions, LLC.&nbsp; This agreement must be completed and on file before any work can be performed by your company.</p>
+        <p>
+            &nbsp;</p>
+        <p>
+            Please sign and return (2) complete copies <strong>(include all pages)</strong> to the address below:</p>
+        <p>
+            &nbsp;</p>
+        <p>
+            Nexeo Solutions, LLC</p>
+        <p>
+            P.O. Box 2219</p>
+        <p>
+            Columbus, OH 43216</p>
+        <p>
+            &nbsp;</p>
+        <p>
+            Attention:&nbsp; &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</p>
+        <p>
+            e-mail: &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</p>
+        <p>
+            &nbsp;</p>
+        <p>
+            You must provide a copy of your company&#39;s certificate of insurance naming Nexeo Solutions, LLC additional insured.</p>
+        <p>
+            Following signature by an Nexeo Solutions, LLC corporate officer, one (1) copy of each will be returned to you.</p>
+        <p>
+            &nbsp;</p>
+        <p>
+            Nexeo Solutions LLC uses Browz to conduct contractor safety evaluations.&nbsp; Safety is very important to Nexeo and the Browz process helps us to better manage safety in our facilities.&nbsp; Browz can also help your safety program as a contractor by providing an independent review of your safety program. You will be contacted (or may have already been contacted) by a Browz representative to register with Browz and provide the necessary safety information.&nbsp; Your responses to Browz should reflect your entire US operations as applicable.&nbsp; You must be registered with Browz and your safety evaluation approved, along with the completed contracts noted above, prior to performing any work on site.&nbsp;</p>
+        <p>
+            &nbsp;</p>
+        <p>
+            If you have any questions, please do not hesitate to call ________________________________ at ____________________ and Stacy Kavy at 614-790-6682 regarding the Browz Program.</p>
+        <p>
+            &nbsp;</p>
+        <p>
+            Sincerely,</p>
+        <p>
+            &nbsp;</p>
+                <p>
+              {!$User.FirstName}</p>
+        <p>
+            &nbsp;</p>
+                <p>
+            Enc.</p>
+        <p>
+            &nbsp;</p>
+        <p>
+            &nbsp;</p>
+        <p align="center">
+            &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</p>
+        <p align="center">
+            <strong>Nexeo Solutions, LLC</strong></p>
+        <p align="center">
+            P.O. Box 2219 - Columbus, OH 43216 - (614) 790-3333</p>
+        <p align="center">
+            <strong>CONTRACT</strong><strong>FOR LABOR, SUPERVISION AND MATERIALS</strong></p>
+        <p>
+            &nbsp;</p>
+        <p>
+            &nbsp;</p>
+        <p>
+            &nbsp;</p>
+       <p>
+<apex:outputText value=" {!Procurement_Contract__c.Vendor__r.Name}" /></p>
+
+
+      <p>
+<apex:outputText value=" {!Procurement_Contract__c.Vendor_Contacts__r.name}" /></p>
+
+
+     <p>
+ <apex:outputText value="{!Procurement_Contract__c.Vendor_Address__c}" /></p>
+
+
+         
+        <p>
+            &nbsp;</p>
+        <p>
+            &nbsp;</p>
+        <p align="center">
+            &nbsp;</p>
+        <p>
+            <strong>OWNER: </strong></p>
+        <p>
+            Nexeo Solutions, LLC</p>
+        <p>
+            5200 Paul G. Blazer Memorial Parkway</p>
+        <p>
+            Dublin, Ohio&nbsp; 43017</p>
+        <p>
+            (614) 790-3333</p>
+                <p>
+            &nbsp;</p>
+        <p>
+            This Agreement shall be effective for the term beginning: <apex:outputText value=" {!Procurement_Contract__c.Effective_Date__c}" />
+, and shall continue for a period of two (2) years (the &quot;Initial Term&quot;) unless sooner terminated as provided herein.&nbsp; Thereafter, this Agreement shall automatically renew for successive one (1) year periods (the &quot;Renewal Term&quot;) unless (a) the CONTRACTOR gives the OWNER at least ninety (90) days prior written notice of termination prior to the expiration of the Initial Term or any Renewal Term, or (b) OWNER gives the CONTRACTOR written notice of termination within thirty (30) days prior to the expiration of the Initial Term or any Renewal Term or (c) the Contract is terminated in accordance with the terms of this Agreement.&nbsp; This Agreement is intended to eliminate the necessity of preparing individual contracts on future occasions that we might wish to arrange with you to furnish labor, materials, and supervision, or any of them, to OWNER., its subsidiaries and affiliates (&ldquo;OWNER&rdquo;).&nbsp; By entering into this Agreement, the OWNER makes no guarantee of the volume of work or services the CONTRACTOR may provide hereunder and CONTRACTOR shall not commence any work or services or incur any costs under this Agreement until the OWNER has issued a Purchase Order covering the same.&nbsp; Any purchase order of OWNER, specifications, plans or schedules approved in writing by OWNER and CONTRACTOR shall be considered part of the Agreement.&nbsp;</p>
+        <p>
+            &nbsp;</p>
+        <p>
+            <strong>1.&nbsp; &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; SCOPE OF WORK</strong></p>
+        <p>
+            Subject to the terms and conditions of this Agreement, CONTRACTOR undertakes to provide OWNER, or OWNER&#39;s subsidiaries or affiliates, with the work or services described in any purchase orders which may be issued by OWNER and accepted by CONTRACTOR from time to time during the term of this Agreement (the &ldquo;Work&rdquo;).&nbsp; Unless specifically excepted in the purchase order and whether specifically identified in the Scope of Work, CONTRACTOR shall furnish all things necessary to perform the Work, including, but not limited to:&nbsp; all materials, equipment, services, labor and supervision, and shall perform all such Work.</p>
+        <p>
+            &nbsp;</p>
+        <p>
+            <strong>2.&nbsp; &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; TERM</strong></p>
+        <p>
+            Time is of the essence with any Work being issued under this Agreement.&nbsp; Work shall be started and shall be substantially completed on the dates specified in any applicable schedule delivered by OWNER to CONTRACTOR.&nbsp; Notwithstanding anything above to the contrary, unless CONTRACTOR is otherwise advised by OWNER in writing, the term of this Agreement shall be extended until completion of any Work or services in progress.</p>
+        <p>
+            &nbsp;</p>
+        <p>
+            <strong>3.&nbsp; &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; COMPENSATION</strong></p>
+        <p style="margin-left: 1in">
+            (a) &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; It is agreed that any Work to be furnished during the term of this Agreement shall be furnished for the following lump sum amount or at the rates set forth on <strong>Exhibit A</strong> attached hereto (the &ldquo;CONTRACTOR&rsquo;s Rates&rdquo;). Where Work is provide in accordance with the CONTRACTOR&rsquo;s Rates, the CONTRACTOR shall not exceed the estimated value of the Work as noted within the purchase order without prior approval of the OWNER. All such amounts include and cover all taxes affecting the Work including, but not limited to, federal, state and local taxes relating to wages or gross receipts, and taxes based on the use, sale, purchase, processing, transportation or manufacture of equipment, materials, or supplies, and licenses and fees which are required of CONTRACTOR under this Agreement.</p>
+        <p>
+            &nbsp;</p>
+        <p style="margin-left: 1in">
+            (b)&nbsp; &nbsp;&nbsp;&nbsp;&nbsp;&nbsp; No overtime work or premium rates will be paid to the CONTRACTOR or authorized by the OWNER unless OWNER has expressly approved such payment in writing; provided that persons expressly designated in writing by OWNER for such purpose may give oral approval to spot overtime work followed by written confirmation of the same.&nbsp; Unless otherwise specifically agreed to in the Purchase Order or Scope of Work, overtime shall mean any hours worked in excess of 40 hours a week or on holidays, to be paid at a rate not exceeding one and one half times the standard billing rate.&nbsp;</p>
+        <p>
+            &nbsp;</p>
+        <p style="margin-left: 1in">
+            &nbsp;(c)&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; The CONTRACTOR&rsquo;s Rates shall be good for a period of not less than one (1) year from the execution of this Agreement. For time and material Work, CONTRACTOR must give thirty (30) days advance written request for any proposed change in the CONTRACTOR Rates.&nbsp; No rate change or cost change will be effective until accepted by OWNER in writing, with any change being good for a period of not less than one (1) year from the effective date of the change.&nbsp; Such change will not apply to any Work in progress at time of notice without OWNER&rsquo;S written consent.</p>
+        <p>
+            &nbsp;</p>
+        <p>
+            &nbsp;</p>
+        <p>
+            <strong>4.&nbsp;&nbsp; &nbsp;&nbsp;&nbsp;&nbsp;&nbsp; PAYMENT</strong></p>
+        <p style="margin-left: 1in">
+            (a)&nbsp; &nbsp;&nbsp;&nbsp;&nbsp;&nbsp; For lump sum Work, CONTRACTOR shall have the right to request that the OWNER make partial payments in accordance with a Schedule of Payment outlined within the Purchase Order or Work documents;&nbsp; provided, however, that OWNER shall have the right to withhold up to and including _______% of the amount of any invoice submitted to OWNER by CONTRACTOR for labor, supervision and materials furnished by the CONTRACTOR up to the time of completion and, if applicable, _____% of the total contract price set forth above.&nbsp; Payment of said retainage shall be due upon OWNER&rsquo;S acceptance of all Work, receipt of all required documents and items for the Work, receipt of Release of Liens documentation, and an invoice covering the same.</p>
+        <p>
+            &nbsp;</p>
+        <p style="margin-left: 1in">
+            (b)&nbsp; &nbsp;&nbsp;&nbsp;&nbsp;&nbsp; Each invoice must, in addition to total charges, show separately on its face</p>
+        <p style="margin-left: 1in">
+            &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; the Purchase Order number covering the Work, the labor costs or equipment costs, as applicable, material costs, and any applicable freight or other charges.&nbsp; OWNER reserves the right to require the CONTRACTOR to provide within the invoice a breakdown of the cost by task or Work item specified within the Scope of Work documents.&nbsp; For reimbursable work, time sheets, equipment logs, material tickets, or similar supporting documentation must be signed by OWNER&rsquo;S representative.&nbsp; This substantiation or any other evidence the OWNER may require shall be attached to the invoice.&nbsp; In addition, any applicable markups must be itemized.</p>
+        <p style="margin-left: 1in">
+            &nbsp;</p>
+        <p style="margin-left: 1in">
+            OWNER reserves the right to reject CONTRACTOR invoices that fail to provide sufficient information and segregation to allow OWNER to confirm, monitor and track CONTRACTOR&rsquo;s performance of the Work.&nbsp; Any rejected invoices shall be returned to CONTRACTOR for correction and re-submittal.&nbsp; Any delay in payment of any CONTRACTOR invoices due to errors, insufficient information or segregation shall be the responsibility of the CONTRACTOR.</p>
+        <p style="margin-left: 1in">
+            &nbsp;</p>
+        <p style="margin-left: 1in">
+            &nbsp;(c)&nbsp; &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; Subject to Paragraph (b) above, OWNER shall pay CONTRACTOR&rsquo;s invoice as follows: (i) all valid invoices that are paid by OWNER within ten (10) days of receipt shall be paid at a discounted amount equal to the invoice total less two percent (2%), and (ii) if not paid within such ten (10) day period then all valid invoices shall be paid by OWNER within such time period as may be specified within OWNER&#39;s Purchase Order (or if none then within sixty (60) days of OWNER&#39;s receipt of the invoice), in accordance with OWNER&#39;s twice per month payment policy.&nbsp; Payment shall be via Electronic Funds Transfer (EFT).</p>
+        <p style="margin-left: 1in">
+            &nbsp;</p>
+        <p style="margin-left: 63pt">
+            &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; (d)&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; OWNER may withhold payments for cause including but not limited to (a) nonconforming Work or services not remedied, (b) damage caused by the CONTRACTOR, its subcontractors or agents during the performance of the Work or services to the property of OWNER, another contractor or other third party, (c) a breach of any provisions of this Agreement or the Purchase Order documents, or (d) for claims made by CONTRACTOR&rsquo;s subcontractors or agents for amounts due but not paid by CONTRACTOR, or for which a lien has been filed against the work site or OWNER&rsquo;s&nbsp; property.&nbsp; Upon removal of such cause, sums withheld shall be paid to CONTRACTOR.</p>
+        <p>
+            &nbsp;</p>
+        <p>
+            <strong>5.&nbsp; &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; CHANGES IN THE WORK</strong></p>
+        <p>
+            OWNER may require CONTRACTOR to make minor changes in the Work which do not involve extra cost or a change in the schedule.&nbsp; Otherwise, no changes (except emergency work necessary to protect life or property) shall be made without a written change order which shall include OWNER&rsquo;s agreement to any extra charges.</p>
+        <p>
+            &nbsp;</p>
+        <p>
+            If CONTRACTOR claims that any additional instructions involve extra cost or a change in schedule, CONTRACTOR shall give OWNER written notice thereof within a reasonable time after the receipt of OWNER&rsquo;s instructions and in any event before proceeding to perform the change in Work involved.No claim of CONTRACTOR for extras, changes or extra costs shall be valid unless incorporated in a written change order executed prior to the commencement of the Work for which claim is made.</p>
+        <p>
+            &nbsp;</p>
+        <p>
+            CONTRACTOR shall permit and facilitate the inspection of the Work by OWNER or its representatives at any time and it is agreed that OWNER may from time to time furnish additional instructions or drawings necessary for the proper execution of the work.&nbsp; Where Work is at CONTRACTOR&rsquo;s site, CONTRACTOR shall provide reasonable facilities for such inspection at no additional charge to OWNER.&nbsp; If any Work required to be tested or inspected should be covered up before such testing or inspection is complete without approval or consent of OWNER, it must, if required by OWNER, be uncovered for examination at CONTRACTOR&#39;s expense.&nbsp; Other than for Final Completion and approval, OWNER&rsquo;s inspection is for general conformance to the required Work only and shall not relieve the CONTRACTOR of its obligation to meet the requirements of Agreement.</p>
+        <p>
+            &nbsp;</p>
+        <p>
+            <strong>6.&nbsp; &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; SURETY BONDS</strong></p>
+        <p>
+            Unless specifically waived by OWNER in writing, CONTRACTOR at its own expense shall furnish a surety bond in the amount of the contract price in a company acceptable to OWNER covering the faithful performance of all of CONTRACTOR&rsquo;s obligations hereunder, including, but not limited to, payment of all sums which become due hereunder, and CONTRACTOR shall not begin any Work required hereunder until such bond is furnished to OWNER.These bonds shall remain in effect until at least one (1) year after the date when final payment becomes due except as otherwise provided by any applicable Laws or Regulations, or unless otherwise agreed to by the parties in writing.&nbsp; All bonds shall be executed by such sureties authorized to transact business as a surety in the State where the Work is to be performed.&nbsp; A certified copy of the authority to act must accompany all surety bonds signed by an agent.</p>
+        <p>
+            &nbsp;</p>
+        <p>
+            <strong>7.&nbsp; &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; WARRANTY</strong></p>
+        <p style="margin-left: 1in">
+            &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; (a)&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; CONTRACTOR represents that it has had opportunity and has carefully examined all of the Contract Documents, and that it fully understands (1) the location and nature of the Work, (2) all general and local conditions which may affect the Work to the extent such conditions are readily determined by inspection and inquiry, including but not limited to the location, accessibility, general character and environment of the site, and (3) the character, type and quantity of labor, equipment, materials and construction facilities necessary for the prosecution of the Work.</p>
+        <p style="margin-left: 1in">
+            &nbsp;</p>
+        <p style="margin-left: 1in">
+            (b)&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; CONTRACTOR represents and warrants that it is experienced in the Work to be undertaken on behalf of OWNER and possesses the skills to complete the Work.&nbsp; Work will be performed using personnel, equipment and material qualified and/or suitable to do the Work requested. CONTRATCOR also warrants that there are no known conflicts with performing the work contemplated hereunder for the OWNER.&nbsp; All material furnished by CONTRACTOR shall be new and conform to the Work requirements and be purchased free and clear of all liens, security interests and the like.&nbsp; Use of used materials for the Work is not acceptable unless specifically approved by OWNER in writing.</p>
+        <p>
+            &nbsp;</p>
+        <p style="margin-left: 1in">
+            (c)&nbsp; &nbsp;&nbsp;&nbsp;&nbsp;&nbsp; The Work shall be performed in a good and workmanlike manner by qualified, careful and efficient workers in accordance with the Agreement, in strict conformity with the best standard practices and in a manner protective of its employees, the public and the environment.&nbsp; CONTRACTOR further guarantees all Work to be performed against defects resulting from poor workmanship or materials furnished by CONTRACTOR for a period of not less than one (1) year from the date the Work is completed and accepted by OWNER.&nbsp; In the event any Work proves unsatisfactory within the period specified above, without waiving any other rights or remedies OWNER may have at law, CONTRACTOR covenants and agrees to make good such defects and any damage to other work or material caused by the defects or by the repairing of such defects at CONTRACTOR&rsquo;s expense without cost to OWNER.</p>
+        <p>
+            &nbsp;</p>
+        <p>
+            <strong>8.&nbsp; &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; PERMITS, LICENSES AND FEES</strong></p>
+        <p>
+            Unless in its notification of Work OWNER agrees to the contrary, CONTRACTOR shall secure all permits and licenses necessary for the accomplishment of the Work to be done and shall comply with all local laws and regulations and, if anything herein contained is at variance with any law or regulation, then the CONTRACTOR shall notify the OWNER and receive written instructions before proceeding with the work.</p>
+        <p>
+            &nbsp;</p>
+                <p>
+            <strong>9.&nbsp; &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; WORK TO BE PERFORMED BY OWNER</strong></p>
+        <p style="margin-left: 1in">
+            &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; (a)&nbsp; &nbsp;&nbsp;&nbsp;&nbsp; OWNER shall provide a representative who shall be authorized to act for OWNER and whose written instructions, requests and decisions shall be binding upon OWNER in all matters pertaining to the performance of the Work.&nbsp; OWNER shall notify CONTRACTOR, in writing, of the name and address of such representative and, in the event such representative is changed, notify CONTRACTOR of the name and address of the successor representative.</p>
+        <p style="margin-left: 1in">
+            &nbsp;</p>
+        <p style="margin-left: 1in">
+            (b)&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; OWNER shall furnish CONTRACTOR with a description and scope of each project where appropriate, furnishing, as necessary, drawings, specifications, changes and field engineering.&nbsp; OWNER will have the right, at any time and from time to time, to submit revised drawings and specifications.</p>
+        <p>
+            &nbsp;</p>
+        <p style="margin-left: 1in">
+            (c)&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; OWNER&rsquo;s obligations hereunder to CONTRACTOR shall be strictly limited to the payment for labor, materials, and supervision actually furnished by CONTRACTOR under the terms of this Agreement.</p>
+        <p>
+            &nbsp;</p>
+        <p>
+            <strong>10.&nbsp; &nbsp;&nbsp;&nbsp;&nbsp; COOPERATION WITH OTHER CONTRACTORS AND OWNER</strong></p>
+        <p>
+            The OWNER reserves the right to let other contracts in connection with the Work or Work related thereto and CONTRACTOR shall cooperate with all other contractors and shall properly coordinate its Work with theirs.&nbsp; CONTRACTOR shall cooperate fully with OWNER in performing the Work to be done hereunder and shall not interfere with OWNER&rsquo;s operations.</p>
+        <p>
+            &nbsp;</p>
+        <p>
+            <strong>11.&nbsp; &nbsp;&nbsp;&nbsp;&nbsp; LIENS</strong></p>
+        <p style="margin-left: 1in">
+            (a)&nbsp; &nbsp;&nbsp;&nbsp;&nbsp;&nbsp; In consideration of the contract price to be paid CONTRACTOR, CONTRACTOR hereby waives any claim to a lien against the property of OWNER and/or the property upon which the Work is performed which it now has or which may hereafter arise out of, or during the performance of, this Agreement.&nbsp; CONTRACTOR shall obtain a similar waiver of lien from any subcontractor, materialmen or others providing work or service hereunder and shall immediately advise OWNER in writing in the event any such persons refuse to furnish a waiver of lien.</p>
+        <p>
+            &nbsp;</p>
+        <p style="margin-left: 1in">
+            (b)&nbsp; &nbsp;&nbsp;&nbsp;&nbsp;&nbsp; Upon notification by OWNER, or upon CONTRACTOR&rsquo;s independently learning of a lien or threatened lien or right of any kind which has been placed upon or against the Work of the real property upon which the Work is situated, by CONTRACTOR&rsquo;s laborers, materialmen, subcontractors or other creditors, CONTRACTOR shall immediately:</p>
+        <p>
+            &nbsp;</p>
+        <p style="margin-left: 1.5in">
+            (1)&nbsp; &nbsp;&nbsp;&nbsp;&nbsp;&nbsp; Pay and discharge the underlying obligations or alleged obligations of the claimed lien; or</p>
+        <p>
+            &nbsp;</p>
+        <p>
+            (2)&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; (i)&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; provide security sufficient and satisfactory to OWNER, or</p>
+        <p style="margin-left: 2in">
+            (ii)&nbsp; &nbsp;&nbsp;&nbsp;&nbsp;&nbsp; obtain a waiver of lien from such parties as may be satisfactory to OWNER.</p>
+        <p>
+            &nbsp;</p>
+        <p style="margin-left: 1in">
+            CONTRACTOR&rsquo;s failure to comply with the provision of this Paragraph 11(b)within five (5) days of the date CONTRACTOR learns or should have learned of the claimed liens shall constitute a material default hereunder and shall entitle OWNER to pay and discharge all such liens or alleged liens and deduct all such payments from any amounts due CONTRACTOR hereunder whether or not such liens are valid, or receive reimbursement from the CONTRACTOR for the same if no further payments are due, and shall further entitle OWNER to such remedies as are provided herein or by law.</p>
+        <p>
+            &nbsp;</p>
+        <p style="margin-left: 1in">
+            (c)&nbsp; &nbsp;&nbsp;&nbsp;&nbsp;&nbsp; Before making any payment hereunder, OWNER may require that CONTRACTOR furnish a full and complete waiver or release of liens from the CONTRACTOR and/or from each subcontractor, materialman, artisan, or mechanic retained by CONTRACTOR in a form acceptable to the OWNER waiving or releasing any liens or claims whatever against the work to be performed herein.</p>
+        <p>
+            &nbsp;</p>
+        <p>
+            <strong>12.&nbsp; &nbsp;&nbsp;&nbsp;&nbsp; TERMINATION</strong></p>
+        <p>
+            &nbsp;</p>
+        <p style="margin-left: 1in">
+            (a)&nbsp; &nbsp;&nbsp;&nbsp;&nbsp;&nbsp; Notwithstanding anything herein to the contrary and for causes including but not limited to those set forth in Paragraph 19 below or for its convenience, OWNER may without prejudice to any other right or remedy terminate this Agreement or any Purchase Order issued hereunder in whole or in part at any time by written or telegraphic notice to CONTRACTOR which notice shall state the extent and effective date of the termination.&nbsp; Upon the giving of such notice OWNER may take possession of the premises and of all materials, tools and appliances thereon belonging to OWNER and finish the work by whatever method OWNER may deem expedient or elect not to complete the work.&nbsp; On the effective date thereof, CONTRACTOR shall (a) stop all work and place no further orders or subcontracts for the Work, (b) terminate work orders and subcontractors outstanding for the Work, (c) take any necessary action to protect property in CONTRACTOR&rsquo;s possession in which OWNER has or may acquire an interest, and (d) as requested by OWNER, provide reasonable assistance in transferring the Work to the OWNER or an alternate party.&nbsp; In the event of a termination under this paragraph, OWNER shall pay CONTRACTOR for any and all labor, materials and supervision performed in accordance with the Agreement and Purchase Order terms to date of termination.</p>
+        <p>
+            &nbsp;</p>
+        <p style="margin-left: 1in">
+            (b)&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; Notwithstanding anything herein to the contrary, if relief has been ordered under the Bankruptcy Code with respect to CONTRACTOR, or if CONTRACTOR should make a general assignment for the benefit of its creditors, or if a trustee, receiver, custodian or similar officer should be appointed on account of insolvency, or should CONTRACTOR fail, neglect or refuse to perform any or all work, or if a lien has been placed upon or against the work or the Real Property upon which the Work is situated and is not discharged or satisfied as provided in Paragraph 11 above, or CONTRACTOR assigns any monies due or to become due hereunder without the previous written consent of OWNER, or at any time OWNER believes, in its discretion, that the Work is unreasonably delayed for any reason or any of the provisions of this Agreement are being willfully violated or executed carelessly, or that CONTRACTOR is acting in bad faith, or if the work is partially or totally delayed by any labor dispute between CONTRACTOR and its employees or between CONTRACTOR and its employees and any other contractor and its employees or any work stoppage or slowdown by CONTRACTOR&rsquo;s employees for a period of ten (10) calendar days, then OWNER or its representatives may notify CONTRACTOR in writing and request that it immediately remedy the deficiency or delay; and, if the same shall not be remedied within twenty-four (24) hours of notice being delivered or provide adequate assurance of a prompt remedy, then OWNER may without prejudice to any other right or remedy terminate the Agreement and any Purchase Order issued hereunder and take possession of the premises and of all materials, tools and appliances thereon and finish the work by whatever method OWNER may deem expedient.&nbsp; In such case, CONTRACTOR shall not be entitled to receive any further payments until the work is finished and releases or waivers of all liens have been obtained, or the applicable statutory time for filing a lien has passed.&nbsp; If the unpaid balance of the contract price shall exceed the expenses of finishing the work, including compensation for additional managerial and administrative services, such excess shall be paid to CONTRACTOR.&nbsp;&nbsp; If such expenses shall exceed such unpaid balance, CONTRACTOR shall pay the difference to OWNER.&nbsp; If it is determined, however, that CONTRACTOR&rsquo;s failure to perform is not due to the breach, fault or negligence of CONTRACTOR (other than insolvency or an act of bankruptcy) such cancellation shall be deemed to have been made pursuant to Paragraph 12(a) hereof.</p>
+        <p>
+            &nbsp;</p>
+        <p>
+            <strong>13.&nbsp; &nbsp;&nbsp;&nbsp;&nbsp; SUSPENSION</strong></p>
+        <p style="margin-left: 1in">
+            (a)&nbsp; &nbsp;&nbsp;&nbsp;&nbsp;&nbsp; OWNER may suspend the work in whole or in part at any time by written or telegraphic notice to CONTRACTOR stating the extent and effective date of such suspension whereupon CONTRACTOR shall suspend the work to the extent specified.&nbsp; If the suspension is for causes including, but not limited to, the existence of a condition described in Paragraph 19 hereof, such suspension shall continue until such cause or condition ceases to exist or OWNER notifies CONTRACTOR to resume performance under this Agreement or OWNER terminates this Agreement and/or Purchase Order in accordance with Paragraph 12 hereof, whichever is the earliest to occur.</p>
+        <p>
+            &nbsp;</p>
+        <p style="margin-left: 1in">
+            (b)&nbsp; &nbsp;&nbsp;&nbsp;&nbsp;&nbsp; During the period of suspension, CONTRACTOR shall protect and care for the work on hand.&nbsp; If the cost of the work, including the cost of additional labor, supervision and materials made necessary by the suspension, is increased or decreased by the suspension, CONTRACTOR shall give OWNER a written estimate of the increase or decrease in the cost of the work resulting from such change.&nbsp; IF OWNER accepts the estimate, OWNER shall issue a written Change Order per Paragraph 5.&nbsp;&nbsp; If OWNER and CONTRACTOR cannot mutually agree on such amount within ten (10) working days from the date of OWNER&rsquo;s notice of disagreement with CONTRACTOR&rsquo;s original estimate, either party shall have the right to terminate this Agreement per the terms of Paragraph in whole or in part by notice to the other party which notice, as provided in Paragraph 23 hereof, shall state the extent and effective date of the termination.&nbsp; In such event this Agreement shall terminate in accordance with the provisions of Paragraph 12 hereof.</p>
+        <p>
+            &nbsp;</p>
+        <p>
+            <strong>14.&nbsp; &nbsp;&nbsp;&nbsp;&nbsp; CONFLICTING PROVISIONS</strong></p>
+        <p>
+            The terms, provisions, covenants, or conditions herein shall control in the event of any conflict with any provision, term, covenant or condition in any of the documents attached hereto and made a part hereof, or any work orders, purchase orders, requisitions, or any other forms or documents.</p>
+        <p>
+            &nbsp;</p>
+        <p>
+            <strong>15.&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; INDEMNIFICATION</strong></p>
+        <p>
+            CONTRACTOR agrees to protect, indemnify, hold harmless and defend OWNER, its subsidiaries and related companies, and officers, directors, employees, workmen, agents, servants and invitees of OWNER, its subsidiaries and related companies (collectively, &ldquo;Indemnitees&rdquo;), from and against all losses, damages, demands, claims, suits and other liabilities (including attorney fees and other expenses of litigation) relating to or arising out of:</p>
+        <p>
+            &nbsp;</p>
+        <p style="margin-left: 1in">
+            (i)&nbsp; &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; bodily injury, including death (including without limitation injury to or death of an INDEMNITEE or its employees) at any time resulting therefrom,</p>
+        <p style="margin-left: 1in">
+            (ii)&nbsp; &nbsp;&nbsp;&nbsp;&nbsp;&nbsp; damages to all property (including without limitation, the property of INDEMNITEES), including loss of use thereof and downtime,</p>
+        <p style="margin-left: 1in">
+            (iii)&nbsp; &nbsp;&nbsp;&nbsp;&nbsp; contamination of or adverse effects on the environment, including the cost of cleanup,</p>
+        <p style="margin-left: 1in">
+            (iv)&nbsp; &nbsp;&nbsp;&nbsp;&nbsp; violation of or failure to comply with any applicable law, regulation, rule or order which occur, either directly or indirectly, in connection with performance of the Work or by reason of CONTRACTOR and its employees, workers. agents, servants, subcontractors and vendors being present on OWNER&rsquo;s premises, except to the extent the liability, loss or damage is attributable to and caused by the sole and exclusive negligence of OWNER,</p>
+        <p style="margin-left: 1in">
+            (v)&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; infringement of patent, trade secret or proprietary rights of any third party by any device, process or material not specified by OWNER, and</p>
+        <p style="margin-left: 1in">
+            (vi)&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; CONTRACTORS presence on OWNER&rsquo;S premises regardless of whether any liability arises out of or relates to the negligence (active or passive) fault, and/or strict liability of an INDEMNITEE occurring jointly, concurrently and/or comparatively with the negligence, fault, and/or strict liability of CONTRACTOR and/or any other person that is not an INDEMNITEE, other than the sole negligence of such INDEMNITEE.</p>
+        <p>
+            &nbsp;</p>
+        <p>
+            CONTRACTOR&rsquo;S agreement to protect, indemnify, hold harmless and defend as set forth in the immediately preceding sentence shall not be negated or reduced because CONTRACTOR&rsquo;S insurance carrier denies insurance coverage for the claim and/or refusal to defend CONTRACTOR or OWNER.&nbsp; In addition, CONTRACTOR will pay all costs and expenses, including attorney fees and all other expenses of litigation incurred by an INDEMNITEE to enforce the foregoing agreement to protect, indemnify, hold harmless and defend an INDEMNITEE.</p>
+        <p>
+            &nbsp;</p>
+        <p>
+            CONTRACTOR shall, upon INDEMNITEE&rsquo;s request, permit INDEMNITEE to participate in the defense or settlement of any claim or action against the INDEMNITEE which is subject to the provisions of this Paragraph.</p>
+        <p>
+            &nbsp;</p>
+        <p>
+            CONTRACTOR shall either provide indemnity for all subcontractors used for the Work or obtain indemnity protection from all such subcontractors for the benefit of the INDEMNITEE, which protection shall include provisions which are no less stringent than the provisions of this Paragraph.</p>
+        <p>
+            &nbsp;</p>
+        <p>
+            The provisions of this Paragraph 15 shall survive the expiration or termination of this Agreement.</p>
+        <p>
+            &nbsp;</p>
+        <p>
+            <strong>16.&nbsp; &nbsp;&nbsp;&nbsp;&nbsp; INSURANCE</strong></p>
+        <p>
+            Contract agrees to the provision set forth on Exhibit B.</p>
+        <p>
+            &nbsp;</p>
+        <p>
+            <strong>17.&nbsp; &nbsp;&nbsp;&nbsp;&nbsp; RECORDS</strong></p>
+        <p style="margin-left: 1in">
+            (a)&nbsp; &nbsp;&nbsp;&nbsp;&nbsp;&nbsp; CONTRACTOR agrees to retain all records and accounts related to charges or CONTRACTOR invoices for a period of at least three (3) years from the completion date of any Work performed.</p>
+        <p>
+            &nbsp;</p>
+        <p style="margin-left: 1in">
+            (b)&nbsp; &nbsp;&nbsp;&nbsp;&nbsp;&nbsp; CONTRACTOR shall permit OWNER or OWNER&rsquo;s representatives access to, either in the field or at the home office, for review and audit, at all reasonable times, all records and accounts relating to costs and expenses invoiced to OWNER under this Agreement.&nbsp;</p>
+        <p>
+            &nbsp;</p>
+        <p>
+            <strong>18.&nbsp; &nbsp;&nbsp;&nbsp;&nbsp; INDEPENDENT CONTRACTOR</strong></p>
+        <p>
+            CONTRACTOR is an independent contractor.&nbsp; OWNER shall exercise no control over the method and means of accomplishing the Work other than to see that the desired results are achieved at the lowest possible cost to OWNER. CONTRACTOR , its employees and agents shall in no way be regarded nor shall they act as agents or employees of OWNER.</p>
+        <p>
+            &nbsp;</p>
+        <p>
+            <strong>19. &nbsp;&nbsp;&nbsp;&nbsp;&nbsp; FORCE MAJEURE</strong></p>
+        <p>
+            Except for the payment of any sums due, neither party shall be responsible for any failure to fulfill any term of this Agreement, if fulfillment has been delayed, hindered or interfered with or prevented by any circumstances whatsoever, which are not within the control of the party in question and could not have been prevented or overcome by the exercise of due diligence by the party concerned. The party whose performance is prevented by the Force Majeure condition shall immediately notify the other party of the particulars and estimated duration of such condition and shall keep the other party advised of the progress in eliminating such condition.&nbsp; The term of the Purchase Order covering the Work shall be extended for a period equal to the duration of the Force Majeure condition.</p>
+        <p>
+            &nbsp;</p>
+        <p>
+            <strong>20.&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; COMPLIANCE WITH LAWS AND REGULATIONS</strong></p>
+        <p style="margin-left: 1in">
+            (a)&nbsp; &nbsp;&nbsp;&nbsp;&nbsp;&nbsp; CONTRACTOR agrees to comply with the Federal Social Security Act, the state and Federal Unemployment Insurance Acts, the Americans With Disabilities Act, state workers compensation laws, wage and hour laws, any and all applicable sales, use, and gross receipts tax laws and regulations, applicable safety and health laws, standards and regulations, any applicable environmental laws and regulations, and all other applicable laws, regulations, guidelines, permits, licenses and approvals concerning the Work and CONTRACTOR assumes exclusive liability for the reporting and payment of any and all contributions and taxes required thereby.</p>
+        <p>
+            &nbsp;</p>
+        <p style="margin-left: 1in">
+            (b)&nbsp; &nbsp;&nbsp;&nbsp;&nbsp;&nbsp; CONTRACTOR shall execute OWNER&rsquo;s <strong>Exhibit C</strong> covering certain Equal Employment Opportunity Provisions and Certification of Non-segregated Facilities.</p>
+        <p>
+            &nbsp;</p>
+        <p style="margin-left: 1in">
+            (c)&nbsp; &nbsp;&nbsp;&nbsp;&nbsp;&nbsp; CONTRACTOR shall abide by OWNER&rsquo;s safety and health regulations while performing any Work and shall execute <strong>Exhibit D</strong>, OWNER&rsquo;s Safety and Health Practices.</p>
+        <p style="margin-left: 1in">
+            &nbsp;</p>
+        <p style="margin-left: 1in">
+            CONTRACTOR shall advise its employees and the employees of its subcontractors and agents that: (1) it is the policy of OWNER that the use, possession, sale, transfer or purchase of illegal drugs or alcohol on OWNER&#39;s property or the Work site is prohibited; (2) entry onto OWNER&#39;s property or the Work site constitutes consent to an inspection of the employee and his or her personal effects when entering, on, or leaving OWNER&#39;s property; (3) any CONTRACTOR personnel who is found in violation of this policy or who refuses to permit an inspection may be removed and barred from OWNER&#39;s property or the Work site, at the discretion of OWNER.</p>
+        <p>
+            &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</p>
+        <p>
+            <strong>21.&nbsp; &nbsp;&nbsp;&nbsp;&nbsp; ASSIGNMENTS AND SUBCONTRACTS</strong></p>
+        <p>
+            CONTRACTOR shall not assign this Agreement or sublet the Work as a whole or part without the prior written consent of OWNER.</p>
+        <p>
+            &nbsp;</p>
+        <p>
+            <strong>22.&nbsp; &nbsp;&nbsp;&nbsp;&nbsp; GOVERNING LAW</strong></p>
+        <p>
+            This Agreement shall be construed, and the rights of the parties shall be determined, in accordance with the laws of the State of Ohio.</p>
+        <p>
+            &nbsp;</p>
+        <p>
+            <strong>23.&nbsp; &nbsp;&nbsp;&nbsp;&nbsp; NOTICES</strong></p>
+        <p>
+            All notices required under this Agreement shall be in writing and if to OWNER, shall be sufficient in all respects if delivered in person or sent by registered or certified mail, return receipt requested, or by telex, telecopy or other facsimile to the addresses above or such other addresses as may be designated from time to time.</p>
+        <p>
+            &nbsp;</p>
+        <p>
+            <strong>24.&nbsp; &nbsp;&nbsp;&nbsp;&nbsp; CONFIDENTIALITY and RELEASE OF INFORMATION</strong></p>
+        <p>
+            &nbsp;</p>
+        <p>
+            (a) USE OF OWNER CONFIDENTIAL PROPERTY:</p>
+        <p>
+            Any and all technical information, experience or data concerning OWNER and/or its affiliates and/or subsidiaries business, including without limitation its services, plans, programs, plants, processes, products, costs, equipment, operations or customers, which may come within the knowledge of CONTRACTOR, its officers or employees in the performance of this Agreement or any Purchase order issued hereunder shall be treated as confidential property of OWNER and/or its affiliates and/or subsidiaries and shall not be used by CONTRACTOR except for the benefit of OWNER in the furtherance of this Agreement, and shall not be disclosed to others, including governmental agencies or other authorities during or subsequent to the term of this Agreement without in each instance securing the prior written consent of OWNER.&nbsp; Any such information provided by OWNER and/or its affiliates and/or subsidiaries to CONTRACTOR in writing or other tangible media shall be returned to OWNER promptly upon termination of this Agreement or the Purchase Order covering the Work for which the same was provided.</p>
+        <p>
+            &nbsp;</p>
+        <p>
+            CONTRACTOR further agrees to limit access to OWNER confidential property to those responsible personnel of CONTRACTOR having a need to know the same for the purpose contemplated for the Work.&nbsp; Upon request of OWNER the CONTRACTOR shall have such CONTRACTOR personnel execute a Nondisclosure Agreement in a form agreeable to OWNER prior to the time of disclosure to them of any OWNER confidential property.&nbsp; CONTRACTOR shall require each subcontractor, if any, performing Work involving OWNER confidential property to be bound by the provisions of this Paragraph.</p>
+        <p>
+            &nbsp;</p>
+        <p>
+            The foregoing nonuse and nondisclosure obligations shall not apply to any information which (a) CONTRACTOR can demonstrate was in its possession prior to the time of its disclosure by OWNER; (b) is or becomes available to the general public through no fault of CONTRACTOR; (c) is disclosed to CONTRACTOR under no obligation of confidence by a third party who has the lawful right to disclose such information; or (d) after fifteen (15) years following the expiration or termination date of this Agreement.</p>
+        <p>
+            &nbsp;</p>
+        <p>
+            &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; No right or license, either express or implied, under any patent, patent application, technical information or other intellectual property of Nexeo Solutions LLC is granted herein.</p>
+        <p>
+            &nbsp;</p>
+        <p>
+            &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; (b) RELEASE OF INFORMATION:</p>
+        <p>
+            &nbsp;</p>
+        <p>
+            OWNER and/or its affiliates and/or subsidiaries specifically prohibits the photographing of any portion of the Work or other OWNER and/or its affiliates and/or subsidiaries property by CONTRACTOR or its personnel for publicity and advertising or for any other purpose without the written permission of OWNER.&nbsp; Contractor shall not release information on the Work site or subject matter of this Agreement to the public without prior written consent of OWNER.&nbsp; CONTRACTOR shall not use the name or trademarks of OWNER and/or its affiliates and/or subsidiaries, or any company affiliated with OWNER, without express written authorization by OWNER and/or its affiliates and/or subsidiaries.</p>
+        <p>
+            &nbsp;</p>
+        <p>
+            <strong>25.&nbsp; &nbsp;&nbsp;&nbsp;&nbsp; OWNERSHIP OF WORK PRODUCT</strong></p>
+        <p>
+            CONTRACTOR hereby transfers and assigns to OWNER (or OWNER&#39;s designee) the entire right, title and interest to any copyrights in any work produced by CONTRACTOR or under CONTRACTOR&rsquo;s direction under this Agreement.&nbsp; CONTRACTOR further agrees to execute any documents which may be necessary or appropriate to allow OWNER (or its designee) to perfect its interest in the copyright for such works.&nbsp; CONTRACTOR shall not be entitled to any additional payment or compensation for assisting and cooperating with the OWNER(or its designee) in obtaining these copyrights.&nbsp; CONTRACTOR also agrees that CONTRACTOR will provide any and all embodiments of such copyrighted work to OWNER (or its designee).</p>
+        <p>
+            &nbsp;</p>
+        <p>
+            &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; It is understood and agreed that any inventions which are made by CONTRACTOR or under CONTRACTOR&rsquo;s direction in the course of carrying out the services provided for by this Agreement are the property of OWNER (or its designee).&nbsp; The decision to seek patent protection thereon shall be made by OWNER, and the cost and burden of prosecution of such patent applications, domestic or foreign, as may be filed on such inventions shall be for the account of OWNER (or its designee). In this regard, CONTRACTOR agrees to execute such papers as are necessary or desirable in such prosecution and otherwise assist OWNER (or its designee) therein, without cost to CONTRACTOR.</p>
+        <p>
+            &nbsp;</p>
+        <p>
+            &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; The obligations of this Section 25 shall survive the expiration or termination of this Agreement.</p>
+        <p>
+            &nbsp;</p>
+        <p>
+            <strong>26.&nbsp; &nbsp;&nbsp;&nbsp;&nbsp; DRAWINGS AND DOCUMENTS</strong></p>
+        <p>
+            All drawings and documents prepared by CONTRACTOR in connection with its performance of the Work are the confidential property of OWNER,.which are subject to Section 24 of this Agreement, and are not to be used on other projects except by agreement of OWNER in writing.&nbsp; All such drawings and documents shall be transmitted to OWNER at the completion of the Work.</p>
+        <p>
+            &nbsp;</p>
+        <p style="margin-left: 31.5pt">
+            Unless otherwise agreed to by OWNER documents to be provided by CONTRACTOR hereunder shall be provided to OWNER, in addition to any hard copy format, in electronic format agreeable to OWNER.It is CONTRACTOR&rsquo;s responsibility to provide documentation that (1) meet the requirements of the Scope of Work, (2) are presented in the format(s) specified in the Scope of Work or agreed to by the OWNER, and (3) that meet the standards for professionalism in presentation and correctness.&nbsp; Additional time or effort required to correct errors in any such written documents or presentations shall be the responsibility of the CONTRACTOR and shall not be charged to OWNER.</p>
+        <p>
+            &nbsp;</p>
+        <p>
+            <strong>27.&nbsp; &nbsp;&nbsp;&nbsp;&nbsp; ENTIRETY OF AGREEMENT</strong></p>
+        <p>
+            This Agreement is intended by the parties as the final, complete and exclusive statement of the terms, conditions and specifications of their agreement and is intended to supersede all previous agreements and understandings between the parties relating to its subject matter.&nbsp; No prior stipulation, agreement, understanding or course of dealing between the parties or their agents with respect to the subject matter of this Agreement shall be valid or enforceable unless embodied in this Agreement.&nbsp; No amendment, modification, termination notice or waiver of any provision of this Agreement shall be valid or enforceable unless in writing and signed by the party to be charged.&nbsp; This Agreement shall supersede, and shall not be modified or amended in any way by the printed terms of any purchase order, proposal, quotation or other document which may be issued by either party covering work or services rendered.</p>
+        <p>
+            &nbsp;</p>
+        <p>
+            <strong>28.&nbsp; &nbsp;&nbsp;&nbsp;&nbsp; WAIVER</strong></p>
+        <p>
+            The failure of any party to insist upon strictperformance of any of the terms, conditions and provisions of this Agreement shall not be deemed a waiver of future compliance therewith by the party by which the same is required to be performed hereunder and shall in no way prejudice the remaining provisions of this Agreement.</p>
+        <p>
+            &nbsp;</p>
+        <p>
+            <strong>29.&nbsp; &nbsp;&nbsp;&nbsp;&nbsp; BINDING EFFECT</strong></p>
+        <p>
+            All rights conferred by this Agreement shall be binding upon, inure to the benefit of, and be enforceable by or against the respective successors and assignsof the parties hereto.</p>
+        <p>
+            &nbsp;</p>
+        <p>
+            <strong>30.&nbsp; &nbsp;&nbsp;&nbsp;&nbsp; SEVERABILITY</strong></p>
+        <p>
+            If any provision of this Agreement, or the application of any such provision to any person or in any circumstance is held invalid, the application of such provision to any other person or in any other circumstance, and the remainder of this Agreement, shall not be affected thereby and shall remain in full effect.</p>
+        <p>
+            &nbsp;</p>
+        <p>
+            <strong>31.&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; DISPUTE RESOLUTION</strong></p>
+        <p>
+            The parties shall attempt in good faith to resolve any dispute arising out of or relating to this Agreement promptly by negotiation between the management of each party.&nbsp; If the matter has not been resolved within sixty (60) days of a party&rsquo;s request for negotiation, either party may initiate binding arbitration as provided herein.&nbsp;</p>
+        <p>
+            &nbsp;</p>
+        <p>
+            Any controversy or claim arising out of or relating to this Agreement, or breach thereof, shall be settled by arbitration administered by the American Arbitration Association under its Commercial Arbitration Rules, and judgment on the award rendered by the arbitrator may be entered in any court having jurisdiction thereof.</p>
+        <p>
+            &nbsp;</p>
+        <p>
+            Either party may make a demand for binding arbitration by filing with the American Arbitration Association a demand in writing signed by an officer of the complaining party.&nbsp; The parties shall agree upon one arbitrator which will be selected and appointed in accordance with the Commercial Rules of the American Arbitration Association.&nbsp; The arbitration shall take place in Columbus, Ohio.</p>
+        <p>
+            &nbsp;</p>
+        <p>
+            <strong>32.&nbsp; &nbsp;&nbsp;&nbsp;&nbsp; HEADINGS</strong></p>
+        <p>
+            The headings in this Agreement are inserted for convenience only and shall not effect the construction hereof.</p>
+        <p>
+            &nbsp;</p>
+        <p>
+            <strong>33.&nbsp; &nbsp;&nbsp;&nbsp;&nbsp; GENERAL</strong></p>
+        <p>
+            Although this Agreement contemplates notification by OWNER and acceptance thereof by CONTRACTOR, both in writing, before commencement of Work, it is specifically understood and agreed that any Work performed by CONTRACTOR forOWNER hereafter shall be under the terms hereof, unless (and only to the extent that) by specific written agreement other terms inconsistent herewith are agreed upon by the parties hereto with respect to such work.</p>
+                <p>
+            &nbsp;</p>
+        <p>
+            &nbsp;</p>
+        <p>
+            &nbsp;</p>
+        <p>
+            CONTRACTOR: &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;NEXEO SOLUTIONS LLC</p>
+        <p>
+            &nbsp;</p>
+        <p>
+            &nbsp;</p>
+        <p>
+            &nbsp;</p>
+        <p>
+            By: ______________________________&nbsp;&nbsp;&nbsp;&nbsp; By: _______________________________</p>
+        <p>
+            &nbsp;</p>
+        <p>
+            Title: _____________________________&nbsp;&nbsp;&nbsp;&nbsp; Title: ______________________________</p>
+        <p align="center">
+            <strong>EXHIBIT A</strong></p>
+        <p align="center">
+            <strong>Rate Schedule/Statement of Work</strong></p>
+        <p align="center">
+            <strong>(Contractor will supply)</strong></p>
+        <p align="center">
+            &nbsp;</p>
+        <p align="center">
+            &nbsp;</p>
+            <p>
+            &nbsp;</p>
+
+        <p align="center">
+            <strong><u>Exhibit B</u></strong></p>
+        <p align="center">
+            &nbsp;</p>
+        <p align="center">
+            NEXEO SOLUTIONS LLC</p>
+        <p align="center">
+            CONTRACTORS AND VENDOR INSURANCE REQUIREMENTS</p>
+        <p>
+            &nbsp;</p>
+        <p>
+            Unless otherwise agreed to in writing, the Contractor or Vendor shall, at its sole expense, maintain in effect at all times during the performance of work&nbsp; and completed operations, insurance coverage with limits, not less than those set forth below with insurers and policy forms satisfactory to Nexeo Solutions LLC. The insurance companies must have <strong>A.M. Best ratings of at least A-VII or better.</strong> Contractor or Vendor shall cause its subcontractors at the jobsite or premise to obtain and maintain insurance policies to protect Nexeo Solutions LLC in accordance with the same insurance requirements.&nbsp; All insurance provided by the Contractor or Vendor and its subcontractors shall be primary and any similar insurance maintained by Nexeo Solutions LLC shall be excess thereof and not contributory with Contractor&rsquo;s or its subcontractor&rsquo;s insurance. Nexeo Solutions LLC shall be given thirty (30) days written notice in the event of cancellation, non-renewal or material alteration of any policy. All insurance other than for Workers&rsquo; Compensation and Employer liability provided by Contractor shall name Nexeo Solutions LLC and its subsidiaries and affiliates as an &ldquo;additional insured&rdquo;.&nbsp; All Workers&rsquo; Compensation and Employer&rsquo;s Liability Insurance shall expressly provide that all rights of subrogation, where permitted by law, are waived.&nbsp; In addition, to the extent Contractor&rsquo;s or Vendor&rsquo;s services include services for or benefiting Nexeo Solutions LLC&rsquo;s customer&rsquo;s or a third party property owner, said Nexeo Solutions LLC Customer or third party property owner shall be an &ldquo;additional insured&rdquo; to the same extent as provided above upon request of Nexeo Solutions LLC.</p>
+        <p>
+            &nbsp;</p>
+        <p>
+            <strong>MINIMUM COVERAGE</strong></p>
+        <p>
+            &nbsp;</p>
+        <p>
+            All contracts for work on behalf of Nexeo Solutions LLC must contain the following minimum coverage; however, such limits shall not limit Contractor or Vendor&rsquo;s liability hereunder.</p>
+        <p>
+            &nbsp;</p>
+        <p>
+            <strong>A.&nbsp; Workers&rsquo; Compensation and Employers&rsquo; Liability</strong></p>
+        <p>
+            1.&nbsp;&nbsp;&nbsp;&nbsp; Coverage &quot;A&quot; &ndash; Statutory coverage in all states, including all areas involved in operations covered under this contract/work order.</p>
+        <p>
+            2.&nbsp;&nbsp;&nbsp;&nbsp; Coverage &ldquo;B&rdquo;-Employer&rsquo;s Liability</p>
+        <p style="margin-left: 1in">
+            a.&nbsp;&nbsp;&nbsp;&nbsp; Limit $500,000 each accident</p>
+        <p style="margin-left: 1in">
+            b.&nbsp;&nbsp;&nbsp;&nbsp; Limit $500,000&nbsp; bodily injury by disease (policy limit)</p>
+        <p style="margin-left: 1in">
+            c.&nbsp;&nbsp;&nbsp;&nbsp; Limit $500,000 bodily injury by disease (each person)</p>
+        <p>
+            &nbsp;</p>
+        <p>
+            &nbsp;</p>
+        <p>
+            <strong>B.&nbsp;&nbsp; Commercial General Liability</strong></p>
+        <p>
+            1.&nbsp;&nbsp;&nbsp;&nbsp; Limits of liability $1,000,000 Per Occurrence/ $2,000,000 General Aggregate&nbsp;&nbsp;&nbsp;</p>
+        <p>
+            2.&nbsp;&nbsp;&nbsp;&nbsp; Products- Completed Operations Aggregate $2,000,000 limit</p>
+        <p>
+            3.&nbsp;&nbsp;&nbsp;&nbsp; Personal and Advertising Injury $1,000,000 limit</p>
+        <p>
+            4.&nbsp;&nbsp;&nbsp;&nbsp; Commercial General liability Coverage.</p>
+        <p>
+            5.&nbsp;&nbsp;&nbsp;&nbsp; Broad Form Contractor&rsquo;s Protective liability / Independent Contractors Liability</p>
+        <p>
+            6.&nbsp;&nbsp;&nbsp; Additional Insured form CG 20 10</p>
+        <p>
+            7.&nbsp;&nbsp;&nbsp;&nbsp; Waiver of Subrogation in favor of Nexeo Solutions LLC</p>
+        <p>
+            &nbsp;</p>
+        <p>
+            &nbsp;</p>
+        <p>
+            <strong>C.&nbsp; Automobile Liability</strong></p>
+        <p>
+            &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; 1.&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; Limits of Liability $1,000,000 Combined Single Limit Each Accident / Loss</p>
+        <p>
+            &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; 2.&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; Covered Autos:&nbsp; Owned, Non-Owned, Hired or Leased</p>
+        <p>
+            &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; 3.&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; If a Contractor transports hazardous materials they shall have an MCS-90 endorsement and endorsement CA 9948 if the materials are pollutants</p>
+        <p>
+            &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; 3.&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; Waiver of Subrogation in favor of Nexeo Solutions LLC</p>
+        <p>
+            &nbsp;</p>
+        <p>
+            <strong>D.&nbsp; Umbrella Liability</strong></p>
+        <p style="margin-left: 51pt">
+            &middot;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; Limit of Liability $1,000,000 Combined Single Limit per Occurrence / Aggregate*&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</p>
+        <p>
+            &nbsp;</p>
+        <p>
+            <strong>*Any Contractor working in industrial areas of a plant or site, e.g. hot work, lock out/tag out, around tanks, manufacturing equipment, major capital construction projects, Common Carrier&rsquo;s and Environmental Remediation, etc, will be required to carry $5 MM Excess/Umbrella Liability</strong>.</p>
+        <p>
+            &nbsp;</p>
+        <p>
+            A current certificate of insurance must be supplied naming Nexeo Solutions LLC and those parties required hereunder as additional insured indicating the above coverage prior to execution of the Contract, Agreement, Purchase Order and/or commencement of work.</p>
+        <p>
+            &nbsp;</p>
+        <p>
+            &nbsp;</p>
+        <p>
+            <strong>ADDITIONAL COVERAGE</strong></p>
+        <p>
+            &nbsp;</p>
+        <p>
+            The following additional insurance coverage may be required for specific projects, to be determined by Contractor Administrator or Party requesting the services.&nbsp;&nbsp; Examples of projects that may require additional insurance coverage are Cap X projects, environmental remediation and other types of work described below.&nbsp; If Contract Administrator is unsure as to which&nbsp;&nbsp; additional coverage maybe needed for a project, they should contact Risk Management for help.</p>
+        <p>
+            &nbsp;</p>
+        <p style="margin-left: 45pt">
+            1.&nbsp;&nbsp;&nbsp;&nbsp; If any cranes are used, Riggers&rsquo; Liability will be required with a $2,000,000 limit.</p>
+        <p>
+            &nbsp;</p>
+        <p style="margin-left: 45pt">
+            2.&nbsp;&nbsp;&nbsp;&nbsp; Performance bond may be requested for specific projects.</p>
+        <p>
+            &nbsp;</p>
+        <p style="margin-left: 45pt">
+            3.&nbsp;&nbsp;&nbsp;&nbsp; Cargo Policy showing value of materials furnished by contractor.</p>
+        <p>
+            &nbsp;</p>
+        <p style="margin-left: 45pt">
+            4.&nbsp;&nbsp;&nbsp;&nbsp; Certain environmental projects may require Environmental Impairment Liability limits of $5,000,000. Coverage must be maintained without interruption form date of commencement of the work and until five (5) years following the date of final payment.</p>
+        <p>
+            &nbsp;</p>
+        <p style="margin-left: 45pt">
+            5.&nbsp;&nbsp;&nbsp;&nbsp; On certain jobs. Contract Administrator may require general contractors to carry Builders&rsquo; Risks &ldquo;All Risk&rdquo; coverage for the full replacement value of the projects to include fire, theft, and transit coverage.&nbsp; Any polices maintained by the contractor on their own and/or rental equipment and materials shall contain a provision requiring the insurance carriers to waive their rights to subrogation against Nexeo Solutions LLC.</p>
+        <p>
+            &nbsp;</p>
+        <p style="margin-left: 45pt">
+            6.&nbsp;&nbsp;&nbsp;&nbsp; In the event this agreement requires the contractor to provide professional services such as but not limited to, architectural engineering, construction management, surveying, design, IT Services, etc., a certificate of insurance must be provided evidencing Professional Liability coverage with a limit of not less than $5,000,000.&nbsp; Any material change in limits, coverages or loss of aggregate limit due to outstanding claims must be reported to Nexeo Solutions LLC Risk Management within thirty (30) days of any such event.&nbsp; Coverage must be maintained without interruption from date of commencement of the work and until five (5) years following the date of final payment.</p>
+        <p>
+            &nbsp;</p>
+        <p style="margin-left: 45pt">
+            7.&nbsp;&nbsp;&nbsp;&nbsp; IT services providers will be require to carry Cyberisk Insurance providing first and third party coverage for damage to or destruction of the Nexeo Solutions LLC System and/or the Data and for invasion of privacy claims arising out of or related to unauthorized access and/or disclosure of the Nexeo Solutions LLC System and/or the Data in the minimum amount of $5,000,000.</p>
+        <p>
+            &nbsp;</p>
+        <p style="margin-left: 27pt">
+            8.&nbsp; For services involving Asbestos Containing materials or related services, the following additional provisions shall be applicable to the Contractor&rsquo;s Commercial General Liability: policies</p>
+        <p>
+            &nbsp;</p>
+        <p style="margin-left: 27pt">
+            The General Commercial liability policy shall also include coverage for claims arising out of handling and disposal of asbestos and/or materials containing asbestos, as specified:</p>
+        <p>
+            &nbsp;</p>
+        <p>
+            &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; a)&nbsp; Coverage shall include asbestos abatement operations including resultant pollution damage.</p>
+        <p>
+            &nbsp;</p>
+        <p>
+            &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; b)&nbsp; Coverage shall not contain a sunset provision or other limitations.</p>
+        <p>
+            &nbsp;</p>
+        <p>
+            &nbsp;</p>
+        <p>
+            c)&nbsp; Coverage shall include contractual liability coverage in accordance with ISO policy form GG&nbsp;&nbsp; 00 01 85 (without modifications reducing coverage).</p>
+        <p>
+            &nbsp;</p>
+        <p>
+            d)&nbsp; The policy shall not exclude asbestos injury to employees of the owner, General Contractor, lessee, real estate manager, and subcontractor so long as their job duties do not require them to be in the regulated asbestos abatement area.</p>
+        <p>
+            &nbsp;</p>
+        <p>
+            e)&nbsp;&nbsp;&nbsp; If the policy or any endorsement contains a provision which limits or eliminates bodily injury or property damage coverage on final air clearance levels, the policy shall be modified so that it is consistent with applicable regulatory requirements governing asbestos abatement and the appropriate analytical testing protocols contained in the project specifications.</p>
+        <p>
+            &nbsp;</p>
+        <p>
+            f)&nbsp;&nbsp; The policy shall not exclude coverage for claims in which it is alleged that the licensed Asbestos Contractor unintentionally failed to comply with the most stringent regulations governing the work.</p>
+        <p>
+            &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</p>
+        <p style="margin-left: 27pt">
+            &nbsp;</p>
+        <p>
+            Maintenance of said minimum insurance shall be a condition precedent to the payment of Contractor for compensation of the work or services provided to Nexeo Solutions LLC. &nbsp;Failure to maintain said insurance, as required shall constitute a material breach and shall be sufficient grounds for immediate cancellation of Contract.</p>
+        <p>
+            &nbsp;</p>
+        <p>
+            Certificate Holder:</p>
+        <p>
+            Nexeo Solutions LLC</p>
+        <p>
+            Attention: Corporate Purchasing</p>
+        <p>
+            P.O.Box 1063</p>
+        <p>
+            Columbus, OH 43216</p>
+        <p>
+            Fax: 614-790-3784</p>
+        <p>
+            &nbsp;</p>
+        <p>
+            If you have any question with Nexeo Solutions LLC insurance requirements, please contact Felix Brobbey, Risk Mgt. Dept. at (859) 815-3037 or Thomas Martinelli, Global Procurement at (302) 995-3429.</p>
+        <p align="center">
+            &nbsp;</p>
+        <p align="center">
+            &nbsp;</p>
+        <p align="center">
+            &nbsp;</p>
+        <p align="center">
+            <strong>EXHIBIT C</strong></p>
+        <p align="center">
+            <strong>EQUAL OPPORTUNITY</strong></p>
+        <p align="center">
+            <strong>CERTIFICATION AND AGREEMENTS</strong></p>
+        <p>
+            &nbsp;</p>
+        <p align="center">
+            <strong>I.&nbsp; EQUAL OPPORTUNITY CLAUSE</strong></p>
+        <p align="center">
+            (Applicable to all contracts or purchase orders in excess of $10,000).</p>
+        <p>
+            &nbsp;</p>
+        <p>
+            Seller shall be bound by and agrees to the following provisions as contained in Section 202 of Executive Order 11246, to wit:</p>
+        <p>
+            &nbsp;</p>
+        <p>
+            1.&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; The Supplier/Contractor will not discriminate against any employee or applicant for employment because of race, color, religion, sex, or national origin.&nbsp; The Supplier/Contractor will take affirmative action to ensure that applicants are employed, and that employees are treated during employment, without regard to their race, color, religion, sex, or national origin.&nbsp; Such action will include, but not be limited to the following: employment, upgrading, demotion, or transfer, recruitment advertising, layoff or termination; rates of pay or other forms of compensation; and selection for training, including apprenticeship.&nbsp; The Supplier/Contractor agrees to post in conspicuous places, available to employees and applicants for employment, notices to be provided by the contracting officer setting forth the provisions of this nondiscrimination clause.</p>
+        <p>
+            &nbsp;</p>
+        <p>
+            2.&nbsp; &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; The Supplier/Contractor will, in all solicitations or advertisements for employees placed by or on behalf of the Supplier/Contractor, state that all qualified applicants will receive consideration for employment without regard to race, color, religion, sex, or national origin.</p>
+        <p>
+            &nbsp;</p>
+        <p>
+            3. &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; The Supplier/Contractor will send to each labor union or representative of workers with which he has a collective bargaining agreement or other contract or understanding, a notice to be provided by the agency contracting officer, advising the labor union or workers&rsquo; representative of the Supplier/Contractor&rsquo;s commitments under Section 202 of Executive Order 11246 of September 24, 1965, and shall post copies of the notices in conspicuous places available to employees and applicants for employment.</p>
+        <p>
+            &nbsp;</p>
+        <p>
+            4.&nbsp; &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; The Supplier/Contractor will comply with all provisions of Executive Order 11246 of September 24, 1965, and of the rules, regulations, and relevant orders of the Secretary of Labor.</p>
+        <p>
+            &nbsp;</p>
+        <p>
+            5. &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; The Supplier/Contractor will furnish all information and reports required by Executive Order 11246 of September 24, 1965, and by the rules, regulations, and orders of the Secretary of Labor, or pursuant thereto, and will permit access to his books, records, and accounts by the contracting agency and the Secretary of Labor for purposes of investigation to ascertain compliance with such rules, regulations, and orders.</p>
+        <p>
+            &nbsp;</p>
+        <p>
+            6.&nbsp; &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; In the event of the Supplier/Contractor&rsquo;s noncompliance with the nondiscrimination clauses of this contract or with any of such rules, regulations or orders, this Purchase Order/Contract may be canceled, terminated or suspended in whole or in part and the Supplier/Contractor may be declared ineligible for further Government contracts in accordance with procedures authorized in Executive Order 11246 of September 24, 1965, and such other sanctions may be imposed and remedies invoked as provided in Executive Order 11246 of September 24, 1965, or by rule, regulation or order of the Secretary of Labor, or as otherwise provided by law.</p>
+        <p>
+            &nbsp;</p>
+        <p>
+            7.&nbsp; &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; The Supplier/Contractor will include the provisions of paragraphs (1) through (7) in every Subcontract or Purchase Order unless exempted by rules, regulations, or orders of the Secretary of Labor issued pursuant to Section 204 of Executive Order 11246 of September 24, 1965, so that such provisions will be binding upon each Subcontractor or Vendor.&nbsp; The Supplier/Contractor will take such action with respect to any Subcontract or Purchase Order as may be directed by the Secretary of Labor as a means of enforcing such provisions including sanctions for noncompliance: Provided, however, that in the event the Supplier/Contractor becomes involved in, or is threatened with, litigation with a Subcontractor or Vendor as a result of such direction the Supplier/contractor may request the United States to enter into such litigation to protect the interests of the United States.</p>
+        <p>
+            &nbsp;</p>
+        <p align="center">
+            <strong>II. CERTIFICATION OF NON-SEGREGATED FACILITIES</strong></p>
+        <p>
+            &nbsp;</p>
+        <p>
+            Supplier/Contractor certifies that it does not and will not maintain or provide for its employees any segregated facilities at any of its establishments, and that it does not and will not permit its employees to perform their services at any location under its control, where segregated facilities are maintained.&nbsp; The bidder, offeror, applicant, or subcontractor agrees that a breach of this certification is a violation of the Equal Opportunity Clause in this contract.&nbsp; As used in this certification, the term &ldquo;segregated facilities&rdquo; means, but is not limited to, any waiting rooms, work areas, rest rooms, and wash rooms, restaurants and other eating areas, time clocks, locker rooms, and other storage or dressing areas, parking lots, drinking fountains, recreation or entertainment areas, transportation and housing facilities provided for employees which are segregated by explicit direction or are in fact segregated on the basis of race, creed, color or national origin, because of habit, local custom, or otherwise.&nbsp; It further certifies that (except where it has obtained identical certifications from proposed subcontractors for specific time periods) it will obtain identical certifications from proposed subcontractors prior to the award of subcontracts which are not exempt from the provisions of the Equal Opportunity Clause; that it will retain such certification in its files; and that it will forward the following notice to such proposed subcontractors (except where the proposed subcontractors have submitted identical certifications for specific time periods).</p>
+        <p>
+            &nbsp;</p>
+        <p align="center">
+            &ldquo;NOTICE TO PROSPECTIVE SUBCONTRACTORS</p>
+        <p align="center">
+            OF REQUIREMENT FOR CERTIFICATIONS</p>
+        <p align="center">
+            OF NON-SEGREGATED FACILITIES&rdquo;</p>
+        <p>
+            &nbsp;</p>
+        <p>
+            A certification of Non-segregated Facilities must be submitted before the award of a subcontract under which the subcontractor will be subject to the Equal Opportunity Clause.&nbsp; The certification may be submitted either for each subcontract or for all subcontracts during a period (i.e., quarterly, semi-annually or annually).</p>
+        <p>
+            &nbsp;</p>
+        <p>
+            <em>Note:&nbsp; The penalty for making false statements in offers is prescribed in 18 U.S.C 1001.</em></p>
+        <p>
+            &nbsp;</p>
+        <p align="center">
+            <strong>III.&nbsp; EMPLOYER INFORMATION REPORT AND</strong></p>
+        <p align="center">
+            <strong>AFFIRMATIVE ACTION&nbsp; PROGRAM</strong></p>
+        <p>
+            &nbsp;</p>
+        <p>
+            Supplier/Contractor agrees that if the amount of this contract is $50,000 or more and it employs 50 or more persons it shall:</p>
+        <p>
+            &nbsp;</p>
+        <p>
+            (a)&nbsp; &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; File with the Office of Federal Contract Compliance or agency designated by it, a complete and accurate report on Standard Form 100 (EEO-1) within 30 clays after receiving an award of this contract (unless such a report has been filed in the last 12 months), and continue to file such reports annually, on or before March 31st.</p>
+        <p>
+            &nbsp;</p>
+        <p>
+            (b)&nbsp; &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; Develop and maintain a written affirmative action compliance program for each of its establishments in accordance with the regulations of the Secretary of Labor promulgated under Executive Order 11246, as amended.</p>
+        <p>
+            &nbsp;</p>
+        <p align="center">
+            <strong>IV.&nbsp; AFFIRMATIVE ACTION FOR DISABLED VETERANS</strong></p>
+        <p align="center">
+            <strong>AND VETERANS OF THE VIETNAM ERA</strong></p>
+        <p align="center">
+            (applicable to all contracts or purchase orders in excess of $10,000)</p>
+        <p>
+            &nbsp;</p>
+        <p>
+            (a)&nbsp; &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; The contractor will not discriminate against any employee or applicant for employment because he or she is a disabled veteran or Veteran of the Vietnam era in regard to any position for which the employee or applicant for employment is qualified.&nbsp; The contractor agrees to take affirmative action to employ, advance in employment and otherwise treat qualified disabled veterans and veterans of the Vietnam era without discrimination based upon their disability or veterans status in all employment practices such as the following: Employment upgrading, demotion or transfer, recruitment, advertising, layoff or termination, rates of pay or other forms of compensation, and selection for training, including apprenticeship.</p>
+        <p>
+            &nbsp;</p>
+        <p>
+            (b)&nbsp; &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; The contractor agrees that all suitable employment openings of the contractor which exist at the time of the execution of this contract and those which occur during the performance of this contract, including those not generated by this contract and including those occurring at an establishment of the contractor other than the one wherein the contract is being performed but excluding those of independently operated corporate affiliates, shall be listed at an appropriate location office of the State employment service system wherein the opening occurs.&nbsp; The contractor further agrees to provide such reports to such local office regarding employment openings and hires as may be required.</p>
+        <p>
+            &nbsp;</p>
+        <p>
+            State and local government agencies holding Federal contracts of $100,000 or more shall also list all their suitable openings with the appropriate office of the State employment service. but are not required to provide those reports set forth in paragraphs (d) and (e).</p>
+        <p>
+            &nbsp;</p>
+        <p>
+            (c)&nbsp; &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; Listing of employment openings with the employment service system pursuant to this clause shall be made at least concurrently with the use of any other recruitment source or effort and shall involve the normal obligations which attach to the placing of a bona fide job order, including the acceptance of referrals of veterans and non-veterans.&nbsp; The listing of employment openings does not require the hiring of any particular job applicant or from any particular group of job applicants, and nothing herein is intended to relieve the contractor from any requirements in Executive Orders or regulations regarding nondiscrimination in employment.</p>
+        <p>
+            &nbsp;</p>
+        <p>
+            (d)&nbsp; &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; The reports required by paragraph (b) of this clause shall include, but not be limited to, periodic reports which shall be filed at least quarterly with the appropriate local office or, where the contractor has more than one hiring location in a State, with the central office of that State employment service.&nbsp; Such reports shall indicate for each hiring location (1) the number of individuals hired during the reporting period, (2) the number of non-disabled veterans of the Vietnam era hired, (3) the number of disabled veterans of the Vietnam era hired, and (4) the total number of disabled veterans hired.&nbsp; The reports should include covered veterans hired for on-the-job training under 38 U.S.C. 1787.&nbsp; The contractor shall submit a report within 30 days after the end of each reporting period wherein any performance is made on this contract identifying data for each hiring location.&nbsp; The contractor shall maintain at each hiring location copies of the reports submitted until the expiration of one year after final payment under the contract, during which time these reports and related documentation shall be made available, upon request, for examination by any authorized representatives of the contracting officer or of the Secretary of Labor.&nbsp; Documentation would include personnel records respecting job openings, recruitment and placement.</p>
+        <p>
+            &nbsp;</p>
+        <p>
+            (e)&nbsp; &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; Whenever the contractor becomes contractually bound to the listing provisions of this clause, it shall advise the employment service system in each State where it has establishments of the name and location of each hiring location in the State.&nbsp; As long as the contractor is contractually bound to these provisions and has so advised the State system, there is no need to advise the State system of subsequent contracts.&nbsp; The contractor may advise the State system when it is no longer bound by this contract clause.</p>
+        <p>
+            &nbsp;</p>
+        <p>
+            (f)&nbsp; &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; This clause does not apply to the listing of employment openings which occur and are filled outside of the 50 States, the District of Columbia, Puerto Rico, Guam, and the Virgin Islands.</p>
+        <p>
+            &nbsp;</p>
+        <p>
+            (g)&nbsp; &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; The provisions of paragraphs (b), (c), (d), and (e) of this clause do not apply to openings which the contractor proposes to fill from within his own organization or to fill pursuant to a customary and traditional employer-union hiring arrangement.&nbsp; This exclusion does not apply to a particular opening once an employer decides to consider applicants outside of his own organization or employer-union arrangement for that opening.</p>
+        <p>
+            &nbsp;</p>
+        <p>
+            (h)&nbsp; &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; As used in this clause:&nbsp;&nbsp;</p>
+        <p style="margin-left: 1in">
+            (1)&nbsp; &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; &ldquo;All suitable employment openings&rdquo; includes, but is not limited to, openings which occur in the following job categories: Production and non-production; plant and office; laborers and mechanics; supervisory and non-supervisory; technical; and executive, administrative and professional openings as are compensated on a salary basis of less than $25,000 per year.&nbsp;&nbsp; This term includes full-time employment, temporary employment of more than 3 days&rsquo; duration, and part-time employment.&nbsp; It does not include openings which the contractor proposes to fill from within his own organization or to fill pursuant to a customary and traditional employer-union hiring arrangement nor openings in an educational institution which are restricted to students of that institution.&nbsp; Under the most compelling circumstances an employment opening may not be suitable for listing, including such situations where the needs of the Government cannot reasonably be otherwise supplied, where listing would be contrary to national security, or where the requirement of listing would otherwise not be for the best interest of the Government.</p>
+        <p>
+            &nbsp;</p>
+        <p style="margin-left: 1in">
+            (2)&nbsp; &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; &ldquo;Appropriate office of the State employment service system&rdquo; means the local office of the Federal-State national system of public employment offices with assigned responsibility for serving the area where the employment opening is to be filled, including the District of Columbia, Guam, Puerto Rico. and the Virgin Islands.</p>
+        <p>
+            &nbsp;</p>
+        <p style="margin-left: 1in">
+            (3)&nbsp; &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; &ldquo;Openings which the contractor proposes to fill from within his own organization&rdquo; means employment openings for which no consideration will be given to persons outside the contractor&rsquo;s organization (including any affiliates, subsidiaries, and the parent companies) and includes any openings which the contractor proposes to fill from regularly established &ldquo;recall&rdquo; lists.</p>
+        <p>
+            &nbsp;</p>
+        <p style="margin-left: 1in">
+            (4)&nbsp; &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; &ldquo;Openings which the contractor proposes to fill pursuant to a customary and traditional employer-union hiring arrangement&rdquo; means employment openings which the contractor proposes to fill from union halls, which is part of the customary and traditional hiring relationship which exists between the contractor and representatives of his employees.</p>
+        <p>
+            &nbsp;</p>
+        <p>
+            (i)&nbsp; &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; The contractor agrees to comply with the rules, regulations, and relevant orders of the Secretary of Labor issued pursuant to the Act.</p>
+        <p>
+            &nbsp;</p>
+        <p>
+            (j)&nbsp; &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; In the event of the contractors noncompliance with the requirements of this clause, actions for noncompliance may be taken in accordance with the rules, regulations. and relevant orders of the Secretary of Labor issued pursuant to the Act.</p>
+        <p>
+            &nbsp;</p>
+        <p>
+            (k)&nbsp; &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; The contractor agrees to post in conspicuous places, available to employees and applicants for employment, notices in a form to be prescribed by the Director, provided by or through the contracting officer.&nbsp; Such notice shall state the contractor&rsquo;s obligation under the law to take affirmative action to employ and advance in employment qualified disabled veterans and veterans of the Vietnam era for employment, and the rights of applicants and employees.</p>
+        <p>
+            &nbsp;</p>
+        <p>
+            (l)&nbsp; &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; The contractor will notify each labor union or representative of workers with which it has a collective bargaining agreement or other contract understanding, that the contractor is bound by the terms of the Vietnam Era Veterans Readjustment Assistance Act, and is committed to take affirmative action to employ and advance in employment qualified disabled veterans and veterans of the Vietnam era.</p>
+        <p>
+            &nbsp;</p>
+        <p>
+            (m)&nbsp; &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; The contractor will include the provisions of this clause in every subcontract or purchase order of $10,000 or more unless exempted by rules, regulations, or orders of the Secretary issued pursuant to the Act, so that such provisions will be binding upon each subcontractor or vendor.&nbsp; The contractor will take such action with respect to any subcontract or purchase order as the Director of the Office of Federal Contract Compliance Programs may direct to enforce such provisions, including action for noncompliance.</p>
+        <p>
+            &nbsp;</p>
+        <p align="center">
+            <strong>V.&nbsp; UTILIZATION OF SMALL BUSINESS</strong></p>
+        <p align="center">
+            <strong>CONCERNS AND SMALL</strong></p>
+        <p align="center">
+            <strong>DISADVANTAGED BUSINESS CONCERNS</strong></p>
+        <p>
+            &nbsp;</p>
+        <p>
+            (a)&nbsp; &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; It is the policy of the United States that small business concerns and small business concerns owned and controlled by socially and economically disadvantaged individuals shall have the maximum practicable opportunity to participate in performing contracts let by any Federal agency, including contracts and subcontracts for subsystems, assemblies, components, and related services for major systems.&nbsp; It is further the policy of the United States that its prime contractors establish procedures to ensure the timely payment of amounts due pursuant to the terms of their subcontracts with small business concerns and small business concerns owned and controlled by socially and economically disadvantaged individuals.</p>
+        <p>
+            &nbsp;</p>
+        <p>
+            (b)&nbsp; &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; The Contractor hereby agrees to carry out this policy in the awarding of subcontracts to the fullest extent consistent with efficient contract performance.&nbsp; The contractor further agrees to cooperate in any studies or surveys as may be conducted by the United States Small Business Administration or the awarding agency of the United States as may be necessary to determine the extent of the Contractor&rsquo;s compliance with this clause.</p>
+        <p>
+            &nbsp;</p>
+        <p>
+            (c)&nbsp; &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; As used in this contract, the term &ldquo;small business concern&rdquo; shall mean a small business as defined pursuant to section 3 of the Small Business Act and relevant regulations promulgated pursuant thereto. The term &ldquo;small business concern owned and controlled by socially and economically disadvantaged individuals&rdquo; shall mean a small business concern (1) which is at least 51 percent unconditionally owned by one or more socially and economically disadvantaged individuals, or, in the case of any publicly owned business, at least 51 per centum of the stock of which is unconditionally owned by one or more socially and economically disadvantaged individuals; and (2) whose management and daily business operations are controlled by one or more of such individuals.&nbsp; This term also means a small business concern that is at least 51 percent unconditionally owned byan economically disadvantaged Indian tribe or Native Hawaiian organization, or a publicly owned business having at least 51 percent of its stock unconditionally owned by one of these entities which has its management and daily business controlled by members of an economically disadvantaged Indian Tribe or Native Hawaiian Organization, and which meets the requirements of 13 CFR 124.&nbsp; The Contractor shall presume that socially and economically disadvantaged individuals include Black Americans, Hispanic Americans, Native Americans, Asian-Pacific Americans, Subcontinent Asian Americans, and other minorities, or any other individual found to be disadvantaged by the Administration pursuant to section 8(a) of the Small Business Act.&nbsp; The Contractor shall presume that socially and economically disadvantaged entities also include Indian Tribes and Native Hawaiian Organizations.</p>
+        <p>
+            &nbsp;</p>
+        <p>
+            (d)&nbsp; &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; Contractors acting in good faith may rely on written representations by their subcontractors regarding their status as either a small business concern or a small business concern owned and controlled by socially and economically disadvantaged individuals.</p>
+        <p>
+            &nbsp;</p>
+        <p align="center">
+            <strong>VI.&nbsp; UTILIZATION OF WOMEN-OWNED SMALL BUSINESSES</strong></p>
+        <p>
+            &nbsp;</p>
+        <p>
+            (a)&nbsp; &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; It is the policy of the United States that women-owned small businesses shall have the maximum practicable opportunity to participate in performing contracts awarded by any federal agency.</p>
+        <p>
+            &nbsp;</p>
+        <p>
+            (b)&nbsp; &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; The contractor agrees to use its best efforts to give women-owned small businesses the maximum practicable opportunity to participate in the subcontracts it awards to the fullest extent consistent with the efficient performance of its contract.</p>
+        <p>
+            &nbsp;</p>
+        <p align="center">
+            <strong>VII.&nbsp; AFFIRMATIVE ACTION FOR HANDICAPPED WORKERS</strong></p>
+        <p align="center">
+            (applies to all contracts or purchase orders in excess of $2,500)</p>
+        <p>
+            &nbsp;</p>
+        <p>
+            (a)&nbsp; &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; The contractor will not discriminate against any employee or applicant for employment because of physical or mental handicap in regard to any position for which the employee or applicant for employment is qualified.&nbsp; The contractor agrees to take affirmative action to employ, advance in employment and otherwise treat qualified handicapped individuals without discrimination based upon their physical or mental handicap in all employment practices such as the following: Employment, upgrading, demotion or transfer, recruitment, advertising, layoff or termination, rates of pay or other forms of compensation, and selection for training, including apprenticeship.</p>
+        <p>
+            &nbsp;</p>
+        <p>
+            (b)&nbsp; &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; The contractor agrees to comply with the rules, regulations and relevant orders of the Secretary of Labor issued pursuant to the Act.</p>
+        <p>
+            &nbsp;</p>
+        <p>
+            (c)&nbsp; &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; In the event of the contractor&rsquo;s noncompliance with the requirements of this clause, actions for noncompliance may be taken in accordance with the rules, regulations, and relevant orders of the Secretary of Labor. issued pursuant to the Act.</p>
+        <p>
+            &nbsp;</p>
+        <p>
+            (d)&nbsp; &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; The contractor agrees to post in conspicuous places, available to employees and applicants for employment, notices in a form to be prescribed by the Director provided by or through the contracting officer.&nbsp; Such notices shall state the contractor&rsquo;s obligation under the law to take affirmative action to employ and advance in employment qualified handicapped employees and applicants for employment, and the rights of applicants and employees.</p>
+        <p>
+            &nbsp;</p>
+        <p>
+            (e)&nbsp; &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; The contractor will notify each labor union or representative of workers with which it has a collective bargaining agreement or other contract understanding, that the contractor is bound by the terms of section 503 or the Rehabilitation Act of 1973, and is committed to take affirmative action to employ and advance in employment physically and mentally handicapped individuals.</p>
+        <p>
+            &nbsp;</p>
+        <p>
+            (f)&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; The contractor will include the provisions of this clause in every subcontract or purchase order of $2,500 or more unless exempted by rules, regulations, or orders of the Secretary issued pursuant to section 503 of the Act, so that such provisions will be binding upon each subcontractor or vendor.&nbsp; The contractor will take such action with respect to any subcontract or purchase order as the Director of the Office of Federal Contract Compliance Programs may direct to enforce such provisions, including action for non-compliance.</p>
+        <p>
+            &nbsp;</p>
+        <p>
+            &nbsp;</p>
+        <table border="0" cellpadding="0" cellspacing="0">
+            <tbody>
+                <tr>
+                    <td style="width: 296px">
+                        <p>
+                            &nbsp;</p>
+                    </td>
+                    <td style="width: 80px">
+                        <p>
+                            &nbsp;</p>
+                    </td>
+                    <td style="width: 302px">
+                        <p>
+                            <strong>Agreed to and Certified By:</strong></p>
+                    </td>
+                </tr>
+                <tr>
+                    <td style="width: 296px">
+                        <p>
+                            <apex:outputText value=" {!Procurement_Contract__c.Vendor__r.Name}" /></p>
+                    </td>
+                    <td style="width: 80px">
+                        <p>
+                            &nbsp;</p>
+                    </td>
+                    <td style="width: 302px">
+                        <p>
+                            &nbsp;</p>
+                    </td>
+                </tr>
+                <tr>
+                    <td style="width: 296px">
+                        <p>
+                            &nbsp;</p>
+                    </td>
+                    <td style="width: 80px">
+                        <p>
+                            &nbsp;</p>
+                    </td>
+                    <td style="width: 302px">
+                        <p>
+                            &nbsp;</p>
+                    </td>
+                </tr>
+                <tr>
+                    <td style="width: 296px">
+                        <p></p>
+<p>
+    <apex:outputText value="{!Procurement_Contract__c.Vendor_Address__c}" />
+</p>
+
+<p>
+</p>
+                    </td>
+                    <td style="width: 80px">
+                        <p>
+                            &nbsp;</p>
+                    </td>
+                    <td style="width: 302px">
+                        <p>
+                            <strong>Authorized Signature</strong></p>
+                    </td>
+                </tr>
+                <tr>
+                    <td style="width: 296px">
+                        <p>
+                            &nbsp;</p>
+                    </td>
+                    <td style="width: 80px">
+                        <p>
+                            &nbsp;</p>
+                    </td>
+                    <td style="width: 302px">
+                        <p>
+                            &nbsp;</p>
+                    </td>
+                </tr>
+                <tr>
+                    <td style="width: 296px">
+                        <p>
+                            &nbsp;</p>
+                    </td>
+                    <td style="width: 80px">
+                        <p>
+                            &nbsp;</p>
+                    </td>
+                    <td style="width: 302px">
+                        <p>
+                            <strong>Name of Authorized Representative</strong></p>
+                    </td>
+                </tr>
+                <tr>
+                    <td style="width: 296px">
+                        <p>
+                            "{!CASE(MONTH(TODAY()),
+1,"January",
+2,"February",
+3,"March",
+4,"April",
+5,"May",
+6,"June",
+7,"July",
+8,"August",
+9,"September",
+10,"October",
+11,"November",
+"December")} , {!DAY(TODAY())} 
+, {!YEAR(TODAY())} </p>
+                    </td>
+                    <td style="width: 80px">
+                        <p>
+                            &nbsp;</p>
+                    </td>
+                    <td style="width: 302px">
+                        <p>
+                            &nbsp;</p>
+                    </td>
+                </tr>
+                <tr>
+                    <td style="width: 296px">
+                        <p>
+                            &nbsp;</p>
+                    </td>
+                    <td style="width: 80px">
+                        <p>
+                            &nbsp;</p>
+                    </td>
+                    <td style="width: 302px">
+                        <p>
+                            TITLE OF AUTHORIZED REPRESENTATIVE</p>
+                    </td>
+                </tr>
+            </tbody>
+        </table>
+        <p>
+            &nbsp;</p>
+        <p>
+            &nbsp;</p>
+        <p align="center">
+            <strong>EXHIBIT D</strong></p>
+        <p>
+            &nbsp;</p>
+        <p>
+            &nbsp;</p>
+        <p>
+            _________________________________________________________________________________________________</p>
+        <p>
+            &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; Nexeo Solutions, LLC&nbsp;&nbsp;&nbsp;&nbsp;</p>
+        <p>
+            &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; 5200 Paul G. Blazer Memorial Parkway</p>
+        <p>
+            &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; Dublin,&nbsp; OH&nbsp; 43017</p>
+        <p>
+            &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; Phone: (614) 790-3333</p>
+        <p>
+            &nbsp;</p>
+        <p>
+            &nbsp;</p>
+        <p style="margin-left: 49.5pt">
+            SUBJECT:<strong>&nbsp; CONTRACTOR SAFETY AND HEALTH REGULATIONS</strong></p>
+        <p style="margin-left: 49.5pt">
+            &nbsp;</p>
+        <p style="margin-left: 49.5pt">
+            &nbsp;</p>
+        <p style="margin-left: 49.5pt">
+            TO:</p>
+        <p style="margin-left: 49.5pt">
+            &nbsp;</p>
+        <p style="margin-left: 49.5pt">
+            &nbsp;</p>
+        <p style="margin-left: 103.5pt">
+            <strong>Prevention of environmental, safety and health incidents, including injuries, fires, personnel exposures, and material releases is an essential element in the operation of all Nexeo Solutions LLC plants and facilities, including those of Nexeo Solutions LLC subsidiaries and affiliates (herein called &quot;Nexeo Solutions LLC&quot;) plants.&nbsp; All personnel, inde&shy;pendent contractors and visitors, while within the confines of Nexeo Solutions LLC plants, are re&shy;quired to wear certain protective equipment and comply with Nexeo Solutions LLC&rsquo;s established environmental, safety and health requirements.&nbsp; Independent contractors, performing work or services at any company facility under contract from Nexeo Solutions LLC, are expected to perform all work or services in a safe, healthful and efficient manner, so as to prevent injury to their employees or damage to their equipment and to protect Nexeo Solutions LLC&#39;s employees and property.</strong></p>
+        <p style="margin-left: 103.5pt">
+            &nbsp;</p>
+        <p style="margin-left: 103.5pt">
+            <strong>All independent contractors, under their contract with Nexeo Solutions LLC, have agreed to ad&shy;here to and abide by the General Environmental, Safety and Health Requirements established by Nexeo Solutions LLC with respect to contractor work.&nbsp; The purpose of this memorandum and the Requirements attached hereto is to insure that the contractor is familiar with these Requirements and can take action to educate his employees with respect to their on-the-job conduct.</strong></p>
+        <p style="margin-left: 103.5pt">
+            &nbsp;</p>
+        <p style="margin-left: 103.5pt">
+            <strong>Frequent safety meetings are critical for promoting safe work habits and for developing safety and health awareness in the contractor&rsquo;s employees. Nexeo Solutions LLC&rsquo;s expectation is that short &quot;tailgate&quot; meetings will be held each morning to review the tasks for the day and discuss pertinent safety issues.&nbsp; It is also expected that contractor supervisors will have informal, daily contact with their employees as appropriate.</strong></p>
+        <p style="margin-left: 103.5pt">
+            &nbsp;</p>
+        <p style="margin-left: 103.5pt">
+            <strong>After you have had an opportunity to review the attached Requirements, your Nexeo Solutions LLC representa&shy;tive will be happy to discuss with you any questions you may have concerning your particular work or service.</strong></p>
+        <p style="margin-left: 103.5pt">
+            &nbsp;</p>
+        <p>
+            &nbsp;</p>
+        <table border="1" cellpadding="0" cellspacing="0">
+            <tbody>
+                <tr>
+                    <td style="width: 26px">
+                        <p>
+                            &nbsp;</p>
+                    </td>
+                    <td style="width: 204px">
+                        <p>
+                            <strong>CONTRACTOR:&nbsp; SIGN HERE</strong></p>
+                    </td>
+                    <td style="width: 767px">
+                        <p align="right">
+                            (Return copy of form)</p>
+                    </td>
+                    <td style="width: 26px">
+                        <p>
+                            &nbsp;</p>
+                    </td>
+                </tr>
+                <tr>
+                    <td style="width: 26px">
+                        <p>
+                            &nbsp;</p>
+                    </td>
+                    <td colspan="2" style="width: 1175px">
+                        <p>
+                            I have read and understand the Contractor Safety and Health Requirements cited above, and I certify that Nexeo Solutions LLC has advised me concerning: (1) the hazards, if any, associated with the chemicals located in the workplace to which the Contractor&rsquo;s employees may be exposed, in accordance with the OSHA Hazard Communication Standard, and (2) the process hazards and applicability of the OSHA Process Safety Management standard and/or the EPA Risk Management Plan rule to the site.&nbsp;</p>
+                    </td>
+                    <td style="width: 26px">
+                        <p>
+                            &nbsp;</p>
+                    </td>
+                </tr>
+                <tr>
+                    <td style="width: 26px">
+                        <p>
+                            &nbsp;</p>
+                    </td>
+                    <td colspan="2" style="width: 1175px">
+                        <p>
+                            &nbsp;</p>
+                    </td>
+                    <td style="width: 26px">
+                        <p>
+                            &nbsp;</p>
+                    </td>
+                </tr>
+                <tr>
+                    <td style="width: 26px">
+                        <p>
+                            &nbsp;</p>
+                    </td>
+                    <td colspan="2" style="width: 1175px">
+                        <p>
+                            <strong>signed for contractor by</strong></p>
+                    </td>
+                    <td style="width: 26px">
+                        <p>
+                            &nbsp;</p>
+                    </td>
+                </tr>
+                <tr>
+                    <td style="width: 26px">
+                        <p>
+                            &nbsp;</p>
+                    </td>
+                    <td colspan="2" style="width: 1175px">
+                        <p>
+                            &nbsp;</p>
+                    </td>
+                    <td style="width: 26px">
+                        <p>
+                            &nbsp;</p>
+                    </td>
+                </tr>
+                <tr>
+                    <td style="width: 26px">
+                        <p>
+                            &nbsp;</p>
+                    </td>
+                    <td colspan="2" style="width: 1175px">
+                        <p>
+                            <strong>title&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; </strong></p>
+                    </td>
+                    <td style="width: 26px">
+                        <p>
+                            &nbsp;</p>
+                    </td>
+                </tr>
+                <tr>
+                    <td style="width: 26px">
+                        <p>
+                            &nbsp;</p>
+                    </td>
+                    <td colspan="2" style="width: 1175px">
+                        <p>
+                            &nbsp;</p>
+                    </td>
+                    <td style="width: 26px">
+                        <p>
+                            &nbsp;</p>
+                    </td>
+                </tr>
+                <tr>
+                    <td style="width: 26px">
+                        <p>
+                            &nbsp;</p>
+                    </td>
+                    <td colspan="2" style="width: 1175px">
+                        <p>
+                            <strong>Contact Phone Number:</strong></p>
+                    </td>
+                    <td style="width: 26px">
+                        <p>
+                            &nbsp;</p>
+                    </td>
+                </tr>
+                <tr>
+                    <td style="width: 26px">
+                        <p>
+                            &nbsp;</p>
+                    </td>
+                    <td colspan="2" style="width: 1175px">
+                        <p>
+                            &nbsp;</p>
+                    </td>
+                    <td style="width: 26px">
+                        <p>
+                            &nbsp;</p>
+                    </td>
+                </tr>
+                <tr>
+                    <td style="width: 26px">
+                        <p>
+                            &nbsp;</p>
+                    </td>
+                    <td colspan="2" style="width: 1175px">
+                        <p>
+                            <strong>Name of contracting firm</strong></p>
+                    </td>
+                    <td style="width: 26px">
+                        <p>
+                            &nbsp;</p>
+                    </td>
+                </tr>
+                <tr>
+                    <td style="width: 26px">
+                        <p>
+                            &nbsp;</p>
+                    </td>
+                    <td colspan="2" style="width: 1175px">
+                        <p>
+                            <strong>date:</strong></p>
+                    </td>
+                    <td style="width: 26px">
+                        <p>
+                            &nbsp;</p>
+                    </td>
+                </tr>
+            </tbody>
+        </table>
+        <p style="margin-left: 113.4pt">
+            &nbsp;</p>
+        <p align="center">
+            <strong>GENERAL FIRE, SAFETY AND HEALTH</strong></p>
+        <p align="center">
+            <strong>REGULATIONS CONTRACT WORK</strong></p>
+        <p>
+            &nbsp;</p>
+        <p>
+            &nbsp;</p>
+        <table border="1" cellpadding="0" cellspacing="0">
+            <tbody>
+                <tr>
+                    <td style="width: 182px">
+                        <p>
+                            &nbsp;</p>
+                    </td>
+                    <td style="width: 39px">
+                        <p>
+                            &nbsp;</p>
+                    </td>
+                    <td style="width: 936px">
+                        <p align="center">
+                            &nbsp;</p>
+                    </td>
+                </tr>
+                <tr>
+                    <td style="width: 182px">
+                        <p>
+                            &nbsp;</p>
+                    </td>
+                    <td style="width: 39px">
+                        <p>
+                            &nbsp;</p>
+                    </td>
+                    <td style="width: 936px">
+                        <p align="center">
+                            &nbsp;</p>
+                    </td>
+                </tr>
+                <tr>
+                    <td style="width: 182px">
+                        <p>
+                            &nbsp;</p>
+                    </td>
+                    <td style="width: 39px">
+                        <p>
+                            &nbsp;</p>
+                    </td>
+                    <td style="width: 936px">
+                        <p align="center">
+                            <strong><u>EXHIBIT D</u></strong></p>
+                        <p align="center">
+                            <strong>GENERAL ENVIRONMENTAL, SAFETY AND HEALTH REQUIREMENTS FOR CONTRACT WORK</strong></p>
+                        <p>
+                            &nbsp;</p>
+                        <table border="0" cellpadding="0" cellspacing="0">
+                            <tbody>
+                                <tr>
+                                    <td style="width: 200px">
+                                        <p>
+                                            <strong>1. NO SMOKING</strong></p>
+                                    </td>
+                                    <td style="width: 26px">
+                                        <p>
+                                            &nbsp;</p>
+                                    </td>
+                                    <td style="width: 688px">
+                                        <p>
+                                            Smoking is absolutely prohibited at all times at Nexeo Solutions LLC facilities except in designated smoking areas.&nbsp;</p>
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <td style="width: 200px">
+                                        <p>
+                                            <strong>2. FIRE PROTECTION</strong></p>
+                                    </td>
+                                    <td style="width: 26px">
+                                        <p>
+                                            &nbsp;</p>
+                                    </td>
+                                    <td style="width: 688px">
+                                        <p>
+                                            A permit to perform hot work of any kind is required at&nbsp; all locations in the plant other than in Nexeo Solutions LLC shop buildings.&nbsp; Special hot work permits can be obtained for contractor welding at fabrication sites; however, all other hot work will require a hot work permit which can be obtained from a person designated by Nexeo Solutions LLC plant personnel, and in no event will hot work be performed until such permit is granted.</p>
+                                        <p>
+                                            &nbsp;</p>
+                                        <p>
+                                            The contractor shall furnish approved fire extin&shy;guishers for fire protection.&nbsp; If this equipment is to be furnished by Nexeo Solutions LLC pursuant to the contract, it may be obtained from the local safety personnel.</p>
+                                        <p>
+                                            &nbsp;</p>
+                                        <p>
+                                            Company fire response equipment located throughout the plant should be used only in the event of a fire.&nbsp; This fire equipment must be kept in place and free from obstructions at all times.</p>
+                                        <p>
+                                            &nbsp;</p>
+                                        <p>
+                                            The plant fire water systems are reserved for fire fighting purposes.&nbsp;&nbsp; If abnormal circumstances make it necessary that fire water be used for filling tanks, etc., special arrangements must be made with the company in advance.&nbsp; Any impairments of fire protection equipment that may be necessary as a result of the work must be reported and managed according to the Nexeo Solutions LLC procedure.</p>
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <td style="width: 200px">
+                                        <p>
+                                            <strong>3. HOUSEKEEPING</strong></p>
+                                    </td>
+                                    <td style="width: 26px">
+                                        <p>
+                                            &nbsp;</p>
+                                    </td>
+                                    <td style="width: 688px">
+                                        <p>
+                                            The contractor shall be expected to maintain a clean work place at all times for the safety of contractor&rsquo;s employees, Nexeo Solutions LLC employees and others.</p>
+                                        <p>
+                                            &nbsp;</p>
+                                        <p>
+                                            A clean and tidy plant is a safe plant.&nbsp; Do not permit any refuse to accumulate.&nbsp; Pile material neatly and safely, keeping material a safe distance from fire fighting&nbsp; equipment,&nbsp; roads,&nbsp; sewer manholes, side&shy;walks and operating facilities&nbsp; where&nbsp; employees have to travel to perform their work assignments.&nbsp; Do not leave tools and loose materials on steps, walkways, platforms or on elevated equipment.&nbsp; Proper guard rails or barricades must be put in place around openings, trenches and objects that protrude into walkways or road&shy;ways when any of these situations are created by the contractor.&nbsp; Any existing guard rails, barricades or related items that are removed in the course of the contractor&rsquo;s work must be replaced.&nbsp; The contractor is required to furnish labor needed to keep area clean, including workers&#39; lunch refuse.</p>
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <td style="width: 200px">
+                                        <p>
+                                            <strong>4. SECURITY</strong></p>
+                                    </td>
+                                    <td style="width: 26px">
+                                        <p>
+                                            &nbsp;</p>
+                                    </td>
+                                    <td style="width: 688px">
+                                        <p>
+                                            All contractor personnel will sign in upon entering the facility and sign out when leaving.&nbsp; All contractor personnel will follow the security procedures established by the facility.</p>
+                                        <p>
+                                            &nbsp;</p>
+                                        <p>
+                                            Only authorized contractor vehicles will be permitted in the plant.&nbsp; No vehicle shall be driven in excess of 15 miles per hour anywhere on the plant premises.&nbsp; Special permits will be required when vehicles are needed in operating unit areas, tank farms, etc.</p>
+                                        <p>
+                                            &nbsp;</p>
+                                        <p>
+                                            Cellular telephones may only be used in areas designated by&nbsp; facility management.&nbsp;</p>
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <td style="width: 200px">
+                                        <p>
+                                            <strong>5. INCIDENTS AND EMERGENCIES</strong></p>
+                                    </td>
+                                    <td style="width: 26px">
+                                        <p>
+                                            &nbsp;</p>
+                                    </td>
+                                    <td style="width: 688px">
+                                        <p>
+                                            Any injuries, illnesses, or other incidents that involve the contractor&rsquo;s personnel must be promptly reported to the Nexeo Solutions LLC representative.&nbsp; Contractor personnel may be asked to participate in incident investigations.</p>
+                                        <p>
+                                            &nbsp;</p>
+                                        <p>
+                                            Nexeo Solutions LLC emergency response information, including alarms systems and evacuation routes and points of assembly will be shared with contractor employees as part of their orientation.&nbsp; Contractor employees are expected to follow these requirements and the instructions of Nexeo Solutions LLC incident coordinators or other emergency response personnel.</p>
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <td style="width: 200px">
+                                        <p>
+                                            <strong>6. SAFETY</strong></p>
+                                    </td>
+                                    <td style="width: 26px">
+                                        <p>
+                                            &nbsp;</p>
+                                    </td>
+                                    <td style="width: 688px">
+                                        <p>
+                                            The contractor shall be expected to perform safe work at all times.&nbsp; All personnel within the confines of our plants, including visitors and contractors and their employees, agents or representatives, are required to wear personal protective equipment (PPE) as required by the Nexeo Solutions LLC facility&rsquo;s policies.&nbsp; This can include but is not limited to head, eye, and foot protection.&nbsp; Contractors are responsible for insuring that personal protective equipment is provided for and worn by their employees.</p>
+                                        <p>
+                                            &nbsp;</p>
+                                        <p>
+                                            To prevent personal injury, scaffolding and shoring should be provided where work to be performed re&shy;quires it, to protect against falls, falling objects and cave-ins.&nbsp; Regulation handrails, toe boards and ladders must be provided where necessary or required.&nbsp; When working above ground, safety belts shall be worn as required.&nbsp; Do not throw or drop tools or equipment.&nbsp; Install signs and rope off areas in which there is danger from falling objects.</p>
+                                        <p>
+                                            &nbsp;</p>
+                                        <p>
+                                            Guy wires, hoisting cables or tackle lines shall not be anchored to in-service pipe lines or equipment vulnerable to stress.</p>
+                                        <p>
+                                            &nbsp;</p>
+                                        <p>
+                                            Lift plans for any use of cranes or related equipment must follow OSHA requirements and be reviewed with the facility.</p>
+                                        <p>
+                                            &nbsp;</p>
+                                        <p>
+                                            Electrical equipment tie-ins must be coordinated with Nexeo Solutions LLC&#39;s operations.&nbsp; Electrical problems should be worked out to the best safe advantage by the contractor&#39;s and the Nexeo Solutions LLC electrical department.&nbsp; The Nexeo Solutions LLC electric lockout procedure shall be followed when working on any electrical equipment.</p>
+                                        <p>
+                                            &nbsp;</p>
+                                        <p>
+                                            Nexeo Solutions LLC lockout procedures and line-breaking and vessel opening practices must be followed for any work involved the opening of process piping or vessels.&nbsp;</p>
+                                        <p>
+                                            &nbsp;</p>
+                                        <p>
+                                            The Nexeo Solutions LLC confined space entry permit procedure must be followed by the contractor for any work to be performed in tanks, vessels, sewer manholes and any other confined spaces as designated by Nexeo Solutions LLC.&nbsp; Any such work must be reviewed with authorized Nexeo Solutions LLC representatives.</p>
+                                        <p>
+                                            &nbsp;</p>
+                                        <p>
+                                            If the contractor&rsquo;s work involves the use of trailers, portable offices, or other temporary structures to be used and occupied by contractor personnel during the work, the location and nature of such structures must be reviewed and agreed to by Nexeo Solutions LLC in consideration of potential exposures and the facility siting analysis.</p>
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <td style="width: 200px">
+                                        <p>
+                                            <strong>7. ENVIRONMENTAL</strong></p>
+                                    </td>
+                                    <td style="width: 26px">
+                                        <p>
+                                            &nbsp;</p>
+                                    </td>
+                                    <td style="width: 688px">
+                                        <p>
+                                            The contractor is expected to perform the work in a manner that avoids spills, releases or other adverse environmental impacts.&nbsp; In the event a spill or release does occur, it must be promptly reported to Nexeo Solutions LLC personnel so that an appropriate spill response effort can be initiated promptly.&nbsp;</p>
+                                        <p>
+                                            &nbsp;</p>
+                                        <p>
+                                            The contractor will not intentionally or unintentionally cause adverse impacts to the facility&rsquo;s environmental control systems, through by-passing, waste disposal, or other misuse of the systems.</p>
+                                        <p>
+                                            &nbsp;</p>
+                                        <p>
+                                            The contractor will not compromise any secondary containment provisions at the facility.&nbsp; Proper precautions must be taken to prevent erosion or release of sediments associated with any excavation or related activities.</p>
+                                        <p>
+                                            &nbsp;</p>
+                                        <p>
+                                            The contractor will not disturb soils or generate soil debris without the express consent of Nexeo Solutions LLC representatives.&nbsp; Any such work must be defined in the scope of work to be performed.</p>
+                                        <p>
+                                            &nbsp;</p>
+                                        <p>
+                                            The contractor will not leave wastes on site and must notify site personnel as waste is generated for appropriate classification and disposition.</p>
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <td style="width: 200px">
+                                        <p>
+                                            <strong>8. REGULATORY REQUIREMENTS</strong></p>
+                                    </td>
+                                    <td style="width: 26px">
+                                        <p>
+                                            &nbsp;</p>
+                                    </td>
+                                    <td style="width: 688px">
+                                        <p>
+                                            All contractors will conform to and comply with all applicable rules and regulations from the Occupational Safety and Health Administration (OSHA) and the Environmental Protection Agency (EPA), as well as all other applicable Federal, State and local laws and safety and health regulations.</p>
+                                        <p>
+                                            &nbsp;</p>
+                                        <p>
+                                            &nbsp;Pursuant to the OSHA Hazard Communication Standard (29 CFR 1910.1200), Nexeo Solutions LLC will advise contractor as to the hazards, if any, of exposure to chemicals associated with contractor&#39;s work at the site where work is being performed pursuant to this contract&nbsp; .&nbsp; and will provide the&nbsp; necessary information with respect to such hazards to appro&shy;priate Contractor&#39;s representative before Contractor&#39;s employees are permitted on-site to commence work.</p>
+                                        <p>
+                                            &nbsp;</p>
+                                        <p>
+                                            Nexeo Solutions LLC will also provide information to the contractor concerning any process hazards associated with the contractor&rsquo;s work as required under the OSHA Process Safety Management Standard (29 CFR 1910.119) and the EPA Risk Management Plan rule (40 CFR 68).</p>
+                                        <p>
+                                            &nbsp;</p>
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <td style="width: 200px">
+                                        <p>
+                                            <strong>9. GENERAL</strong></p>
+                                    </td>
+                                    <td style="width: 26px">
+                                        <p>
+                                            &nbsp;</p>
+                                    </td>
+                                    <td style="width: 688px">
+                                        <p>
+                                            Contractor understands and agrees that the above general rules and reg&shy;ulations, as well as other specific safety and health prac&shy;tices that may be instituted by Nexeo Solutions LLC from time to time, are included in&nbsp; the&nbsp; conditions agreed&nbsp; to by the contract at the time of signing the contract for the&nbsp; work in&shy;volved.</p>
+                                        <p>
+                                            &nbsp;</p>
+                                        <p>
+                                            Nexeo Solutions LLC is entitled but not required to conduct audits of the contractor&rsquo;s performance with regard to the Environment, Health and Safety requirements and procedures. Violations of these requirements will lead to response from Nexeo Solutions LLC up to and including dismissal from the site for the contractor and/or the individual contractor employees involved in the violations.</p>
+                                    </td>
+                                </tr>
+                            </tbody>
+                        </table>
+                        <p>
+                            &nbsp;</p>
+                    </td>
+                </tr>
+                <tr>
+                    <td style="width: 182px">
+                        <p>
+                            &nbsp;</p>
+                    </td>
+                    <td style="width: 39px">
+                        <p>
+                            &nbsp;</p>
+                    </td>
+                    <td style="width: 936px">
+                        <p align="center">
+                            &nbsp;</p>
+                    </td>
+                </tr>
+                <tr>
+                    <td style="width: 182px">
+                        <p>
+                            &nbsp;</p>
+                    </td>
+                    <td style="width: 39px">
+                        <p>
+                            &nbsp;</p>
+                    </td>
+                    <td style="width: 936px">
+                        <p align="center">
+                            &nbsp;</p>
+                    </td>
+                </tr>
+                <tr>
+                    <td style="width: 182px">
+                        <p>
+                            &nbsp;</p>
+                    </td>
+                    <td style="width: 39px">
+                        <p>
+                            &nbsp;</p>
+                    </td>
+                    <td style="width: 936px">
+                        <p align="center">
+                            &nbsp;</p>
+                    </td>
+                </tr>
+                <tr>
+                    <td style="width: 182px">
+                        <p>
+                            &nbsp;</p>
+                    </td>
+                    <td style="width: 39px">
+                        <p>
+                            &nbsp;</p>
+                    </td>
+                    <td style="width: 936px">
+                        <p align="center">
+                            &nbsp;</p>
+                    </td>
+                </tr>
+            </tbody>
+        </table>
+        <p>
+            &nbsp;</p>
+        <p>
+            &nbsp;</p></body>
+</html>
+</apex:page>

@@ -1,0 +1,93 @@
+<apex:page standardcontroller="ART_Project__c" recordSetVar="project" extensions="ProjectFullCalendar">
+ <link href="{!URLFOR($Resource.FullCalendar, '/fullcalendar-2.0.2/fullcalendar.css')}" rel="stylesheet" />
+ <script src="{!URLFOR($Resource.FullCalendar, '/fullcalendar-2.0.2/lib/moment.min.js')}" type="text/javascript"/>
+ <script src="{!URLFOR($Resource.FullCalendar, '/fullcalendar-2.0.2/lib/jquery.min.js')}" type="text/javascript"/>
+ <script src="{!URLFOR($Resource.FullCalendar, '/fullcalendar-2.0.2/lib/jquery-ui.custom.min.js')}" type="text/javascript"/>
+ <script src="{!URLFOR($Resource.FullCalendar, '/fullcalendar-2.0.2/fullcalendar.min.js')}" type="text/javascript"/>
+
+ <script>
+    var sobjs = new Array();
+    $(document).ready(function() {
+        <apex:repeat value="{!objs}" var="o">
+          sobjs.push('{!o.Id}');
+        </apex:repeat>
+       
+        $('#calendar').fullCalendar({
+            header: {
+                left: 'prev,next today',
+                center: 'title',
+                right: ''
+            },
+            
+            editable: false,
+            events: {!jsonstring},
+            eventMouseover: function( event, jsEvent, view ) { 
+              
+               <!--LookupHoverDetail.getHover(event.id, '/' + event.id + '/m?retURL=%2F' + event.id + '&isAjaxRequest=1').show();-->
+            },
+            eventMouseout: function( event, jsEvent, view ) { 
+              <!--LookupHoverDetail.getHover(event.id).hide();-->
+            }
+        });
+        var h = '<span class="fc-header-space"></span>';
+        h += '<span data-index="All" class="fc-button fc-button-view fc-button-0 fc-state-default fc-corner-left fc-state-active" unselectable="on" style="-moz-user-select: none;">All</span>';
+        h += '<span data-index="Testing" class="fc-button fc-button-view fc-button-1 fc-state-default" unselectable="on" style="-moz-user-select: none;">Testing</span>';
+        h += '<span data-index="Training" class="fc-button fc-button-view fc-button-2 fc-state-default" unselectable="on" style="-moz-user-select: none;">Training</span>';
+        h += '<span data-index="Go-Live" class="fc-button fc-button-view fc-button-3 fc-state-default" unselectable="on" style="-moz-user-select: none;">Go-Live</span>';
+        h += '<span data-index="Other" class="fc-button fc-button-view fc-button-3 fc-state-default fc-corner-right" unselectable="on" style="-moz-user-select: none;">Other</span>';
+          
+          
+        $('.fc-header-right').html(h)
+        $('.fc-button-view').click(function(){ 
+           $('#calendar').fullCalendar( 'removeEvents');
+           $('.fc-button-view').removeClass('fc-state-active');
+           $(this).addClass('fc-state-active');
+           var types = new Array();
+           
+           if($(this).attr('data-index') == "All")
+             types = ["Testing", "Training", "Go-Live"];
+           else
+             types.push($(this).attr('data-index'));
+           
+    
+           ProjectFullCalendar.getEventsByProject(sobjs, types, function(result, event){
+              if(event.type == 'exception') {
+                alert(event.message);
+              }else{
+              
+                 var str = JSON.stringify(result);
+                 str = str.replace(new RegExp("_x", "g"), "");
+             
+              
+              
+                 $('#calendar').fullCalendar( 'addEventSource', jQuery.parseJSON( str));   
+              }
+           
+           });
+           
+        });
+    });
+
+</script>
+<style>
+
+    body {
+        margin: 0;
+        padding: 0;
+        font-family: "Lucida Grande",Helvetica,Arial,Verdana,sans-serif;
+        font-size: 14px;
+    }
+
+    #calendar {
+        width: 900px;
+        margin: 40px auto;
+    }
+
+</style>
+
+<body>
+
+    <div id='calendar'></div>
+
+</body>
+</apex:page>

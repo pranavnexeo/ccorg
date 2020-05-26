@@ -1,0 +1,183 @@
+.TableCaptionClass {
+        background:#236fbd;
+        font-size:200%;
+        border:1px solid #FFFFFF;
+        border-bottom:none;
+        padding:5px;
+        text-align:center;
+        color:white;
+        font-weight:bold;
+    }
+
+.NewEditLineinGrid {background:#FFFACD;text-align:center;}
+
+.TableCaptionClass_LeftJustify {
+        background:#236fbd;
+        font-size:140%;
+        border:1px solid #000;
+        border-bottom:none;
+        padding:5px;
+        text-align:left;
+        color:white;
+        font-weight:bold;
+    }
+
+.TableColumnClasses {}
+
+.TableFooterClass {text-align:right;
+        font-weight:bold;
+        background:#f3f3ec;
+        }
+
+.TableFooterClass_Gold {text-align:left;
+        font-weight:bold;
+        background:#eeecd1;
+        border-top:1px solid #000;
+                    border-bottom:1px solid #000;
+                    border-right:0px solid #000;
+                    border-left:0px solid #000;
+        }
+
+
+.TableHeaderClass {
+        border:1px solid #000;
+        border-collapse:collapse;
+        padding:5px;
+        background:#236fbd;
+        text-align:center;
+        font-size:105%;
+        vertical-align: bottom;
+        color:white;
+    }
+
+.TableRowClasses_odd {background:#f3f3ec;padding:3px;}
+.TableRowClasses_even {background:#eeecd1;padding:3px;}
+
+.MessageBoxStyling {
+            border:1px solid #000;
+            border-collapse:collapse;
+            background:#236fbd;
+            font-family: 'Verdana', 'Geneva', sans-serif;           
+            font-size:120%;
+            text-align:left;
+            padding:3px;    
+}
+
+.TableStyleClass {
+            border:1px solid #000;
+            border-collapse:collapse;
+            /* font-family: 'Arial', 'Helvetica', sans-serif; */
+            font-family: 'Verdana', 'Geneva', sans-serif;           
+            font-size:80%;
+            text-align:left;
+            background:#999;
+            padding:3px;    
+            }
+
+.GeneralInfo_Label_ColumnFormat {font-weight:bold;text-align:right;}
+.GeneralInfo_Label_CenterText_ColumnFormat {font-weight:bold;text-align:center;}
+.GeneralInfo_Label_LeftAlign_ColumnFormat {font-weight:bold;text-align:center;}
+.GeneralInfo_Data_ColumnFormat {text-align:left;}   
+
+.CreateNewGrid_ColumnFormat {text-align:center;padding:3px;border-top:0px solid #000;
+                    border-bottom:0px solid #000;
+                    border-right:1px solid #000;
+                    border-left:1px solid #000;}
+
+
+.ServiceProviderProfileQuestions_QuestionNumberFormat {text-align:center;font-weight:bold;width:60px}
+.ServiceProviderProfileQuestions_ColumnFormat {font-weight:bold}
+.ServiceProviderProfilePrefix_ColumnFormat {text-align:right;font-weight:bold;vertical-align: bottom;}
+.ServiceProviderProfileAnswers_ColumnFormat {text-align:center;width:150px} 
+.ServiceProviderProfileSuffix_ColumnFormat {text-align:left;font-weight:bold;vertical-align: bottom;}
+
+.GQ_Question_ColumnFormat {text-align:left;width:200px}
+.Buying_Valvoline_Value_ColumnFormat {text-align:center;font-style: italic;width:90px} 
+.Average_Daily_Service_Volume_Value_ColumnFormat {text-align:center;width:75px}
+.Retail_Price_Value_ColumnFormat {text-align:center;width:75px;white-space:nowrap;}
+.Current_Installer_Product_Cost_Value_ColumnFormat {text-align:center;width:75px}
+.Include_Labor_Rate_Value_ColumnFormat {text-align:center;font-style: italic;width:75px}
+.Percent_of_Hours_to_Complete_Value_ColumnFormat {text-align:center;width:100px}
+.Total_Labor_Costs_Value_ColumnFormat {text-align:center;width:75px}
+
+.Quart_Cost_Label_Value_ColumnFormat {text-align:left;}
+.Quart_Costs_Value_ColumnFormat {text-align:center;}
+
+.Comments_Format {text-align:left;width:920px}
+
+.OCVV_Col1 {text-align:right;width:65%}
+.OCVV_Col2 {text-align:center;width:35%}
+.VerificationFooterLine {font-weight:bold;border:2px solid #000;background:#e8e8e8;font-size:125%;}
+
+.formatBlankLine {font-size:50%;
+                  }
+                
+.formatHeaderLine {font-size:100%;
+                   font-weight:bold;
+                   text-align:left;
+                   color:black;
+                  }
+
+.formatBlankColumn {border-top:1px solid #000;
+                    border-bottom:1px solid #000;
+                    border-right:0px solid #000;
+                    border-left:0px solid #000;
+                    background:#d9d9d9; 
+                    }
+
+.formatHeaderColumn {border-top:1px solid #000;
+                    border-bottom:1px solid #000;
+                    border-right:0px solid #000;
+                    border-left:0px solid #000;
+                    background:#236fbd; 
+                    }
+
+        .activeTab {background-color: #236FBD; color:white; background-image:none}
+        .inactiveTab { background-color: lightgrey; color:black; background-image:none}
+
+.toolbar_styleClass {
+        background-color:#236fbd;
+        background-image:none;
+    }
+.toolbar_contentClass {
+        background:#236fbd;
+        text-align:center;
+        font-size:100%;
+        color:white;
+}
+.toolbar_separatorClass {
+        background:#236fbd;
+        text-align:center;
+        font-size:100%;
+        color:white;
+}
+
+.toolbar_commandLinks {color:white;font-size:110%;}
+.toolbar_commandLinks_selected {font-weight:bold;color:white;font-size:150%;}
+
+.toolbar_status {color:white;font-style: italic;width:100%}
+
+.toolbar_Selected {font-weight:bold;color:white;font-size:125%;}
+
+.MaterialName_ColumnFormat {text-align:left;}
+.Data_ColumnFormat {text-align:right;}
+
+.LineHeading_ColumnFormat {font-size:125%;text-align:right;width:200px}
+.AccountSummaryFooterLine {font-weight:bold;border-top:2px solid #000000;background:#e8e8e8;}
+
+.userMessage {text-align:center;color:white;font-weight:bold;}
+
+.PageInfoStyleClass {text-align:center;font-size:150%;font-weight:bold;}
+.PageControlsStyleClass {text-align:center;font-size:125%;padding:15px;}
+.PageControlsStyleClass_selected {text-align:center;font-size:150%;font-weight:bold;padding:15px;}
+
+.PanelGridHeaderClass {
+        background:#236fbd;
+        text-align:center;
+        font-size:125%;
+        vertical-align: bottom;
+        color:white;
+        font-weight:bold;}
+    
+}
+        

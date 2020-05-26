@@ -1,0 +1,108 @@
+<apex:page standardcontroller="ART_Project__c" extensions="Project_Resource_Controller1">
+<script src="{!URLFOR($Resource.JQuery_Pricing, '/JQuery_Pricing/js/jquery-1.8.3.min.js')}" type="text/javascript"/> 
+<script src="{!URLFOR($Resource.JQuery_Pricing, '/JQuery_Pricing/js/jquery-ui-1.9.2.custom.js')}" type="text/javascript"/>
+<script src="{!URLFOR($Resource.JQuery_Pricing, '/JQuery_Pricing/js/jquery.dataTables.js')}" type="text/javascript"/>
+<script src="{!URLFOR($Resource.JQuery_Pricing, '/JQuery_Pricing/js/jquery.jeditable.mini.js')}" type="text/javascript"/>
+<script src="{!URLFOR($Resource.JQuery_Pricing, '/JQuery_Pricing/js/jquery.dataTables.columnFilter.js')}" type="text/javascript"></script>
+<script src="{!URLFOR($Resource.JQuery_Pricing, '/JQuery_Pricing/js/jquery.dataTables.extensions.js')}" type="text/javascript"></script>
+<apex:stylesheet value="{!URLFOR($Resource.JQuery_Pricing, '/JQuery_Pricing/css/start/jquery-ui-1.10.1.custom.min.css')}"/>
+<apex:stylesheet value="{!URLFOR($Resource.JQuery_Pricing, '/JQuery_Pricing/css/demo_table.css')}"/> 
+<style>
+.cellinput{ width: 50px; 
+            max-width: 50px; 
+          }
+</style>
+<script type="text/javascript" charset="utf-8">
+
+ $(document).ready(function() { 
+        
+        var oTable = $('#thetable').dataTable({
+                "aLengthMenu": [[100, 250, 500, 750], [100, 250, 500, 750]],
+                "iDisplayLength": 100,
+                "bDestroy": true,
+                "sPaginationType": "four_button",
+                "bJQueryUI": true,
+                "bSort": true,
+                "sErrMode": false,
+                "sDom": 'lfrtip',
+                "bAutoWidth": false,
+                 "fnCreatedRow": function( nRow, aData, iDataIndex ) {
+                    $(this).dataTable().fnUpdate( '<a class="edit" href="">Edit</a>', nRow, 1, false );
+                 }
+                
+           });
+       var nEditing = null;
+     
+    $('#thetable a.edit').live('click', function (e) {
+        e.preventDefault();
+         
+        /* Get the row as a parent of the link that was clicked on */
+        var nRow = $(this).parents('tr')[0];
+         
+        if ( nEditing !== null && nEditing != nRow ) {     
+            restoreRow( oTable, nEditing );
+            editRow( oTable, nRow );
+            nEditing = nRow;
+        }
+        else if ( nEditing == nRow && $(this).is('[data-cancel]')){
+            restoreRow( oTable, nEditing );
+        }
+        else if ( nEditing == nRow && this.innerHTML == "Save" ) {
+            saveRow( oTable, nEditing );
+            nEditing = null;
+        }
+        else {
+            /* No row currently being edited */
+            editRow( oTable, nRow );
+            nEditing = nRow;
+        }
+    } );
+ });
+ 
+ function restoreRow ( oTable, nRow )
+{
+    var aData = oTable.fnGetData(nRow);
+    var jqTds = $('>td', nRow);
+
+    for ( var i=0, iLen=jqTds.length ; i<iLen ; i++ ) {
+        oTable.fnUpdate( aData[i], nRow, i, false );
+    }
+    
+    oTable.fnUpdate( '<a class="edit" href="">Edit</a>', nRow, 1, false );
+    
+    $(nRow).find('a').removeAttr('data-cancel');
+    oTable.fnDraw();
+}
+
+ function editRow ( oTable, nRow )
+{
+    var aData = oTable.fnGetData(nRow);
+    var jqTds = $('>td', nRow);
+    for(var i=2; i<(jqTds.length-1); i++)
+      jqTds[i].innerHTML = '<input type="text" class="cellinput" value="'+aData[i]+'">';
+    jqTds[1].innerHTML = '<a class="edit" href="">Save</a>&nbsp;<a class="edit" data-cancel="cancel" href="">Cancel</a>';
+}
+
+function saveRow ( oTable, nRow )
+{
+    var jqInputs = $('input', nRow);
+    var total = 0.00;
+    var values = new Array();
+    for(var i=0; i<(jqInputs.length); i++){
+      oTable.fnUpdate( jqInputs[i].value, nRow, i+2, false );
+      values.push(parseFloat(jqInputs[i].value,100));
+      total = total+parseFloat(jqInputs[i].value,100);
+    }
+    oTable.fnUpdate( total, nRow, oTable.fnGetData(nRow).length-1, false );
+   Project_Resource_Controller1.upsertResources('{!projectId}',nRow.getAttribute("id"),values,function(result, event){
+        if(event.type == 'exception') {
+            alert(event.message);
+        }
+    });
+    oTable.fnUpdate( '<a class="edit" href="">Edit</a>', nRow, 1, false );
+    oTable.fnDraw();
+}
+ 
+</script>
+<apex:outputtext value="{!resources}" escape="false"/>
+</apex:page>

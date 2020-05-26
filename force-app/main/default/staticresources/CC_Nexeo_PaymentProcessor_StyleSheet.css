@@ -1,0 +1,16 @@
+#document {
+	margin-left: 0px;
+}
+
+body div#header {
+    border-bottom: 20px solid #0da85b;
+}
+
+body {
+	font-family: "Lato",georgia,serif;
+	background: white;
+}
+
+div.powered p {
+	font-family: "Lato",georgia,serif;
+}

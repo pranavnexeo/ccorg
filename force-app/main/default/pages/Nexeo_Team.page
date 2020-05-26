@@ -1,0 +1,54 @@
+<apex:page standardcontroller="Nexeo_Account_Team__c" extensions="Nexeo_Account_Team" >
+
+<apex:pageMessages />
+
+<apeX:form >
+
+<apeX:pageblock title="Nexprice Team">
+
+<apeX:pageblockbuttons >
+<apex:commandbutton action="{!SaveOnly}" value="Save"/>
+<apex:commandbutton action="{!SaveAndMore}" value="Save and More"/>
+<apex:commandbutton action="{!Cancel}" value="Cancel"/>
+</apex:pageblockbuttons>
+<apex:variable value="{!0}" var="row"/>
+<apex:pageblocktable var="m" value="{!teammembers}">
+<apex:column headerValue="Team Member">
+<apex:outputpanel >
+<apex:inputfield value="{!m.User__c}"/>
+<apex:outputPanel styleClass="errorMsg" layout="block" rendered="{!IF(AND(ISBLANK(m.User__c), OR(NOT(ISBLANK(m.Expiration_Date__c)), row=0), haserror), true, false)}">
+            <strong>Error:</strong> You must enter value.
+</apex:outputPanel>
+</apex:outputpanel>            
+</apex:column>
+<apex:column headerValue="Account Access">
+<apex:OutputText value="Read/Write"/>
+</apex:column>
+<apex:column headerValue="Nexprice Access">
+<apex:OutputText value="Read/Write"/>
+</apex:column>
+<apex:column headerValue="Opportunity Access">
+<apex:selectList value="{!m.Opportunity_Access__c}" size="1">
+<apex:selectOption itemLabel="None" itemValue="None"/>
+<apex:selectOption itemLabel="Read Only" itemValue="Read"/>
+<apex:selectOption itemLabel="Read/Write" itemValue="Edit"/>
+</apex:selectList>
+
+</apex:column>
+
+<apex:column headerValue="Expiration Date">
+<apex:outputpanel >
+<apex:inputfield value="{!m.Expiration_Date__c}"/>
+<apex:outputPanel styleClass="errorMsg" layout="block" rendered="{!IF(AND(ISBLANK(m.Expiration_Date__c), OR(NOT(ISBLANK(m.User__c)), row=0), haserror), true, false)}">
+            <strong>Error:</strong> You must enter value.
+</apex:outputPanel>
+</apex:outputpanel> 
+<apex:variable value="{!row+1}" var="row"/>
+</apex:column>
+
+</apeX:pageblocktable>
+</apex:pageblock>
+</apex:form>
+<apex:variable value="{!Nexeo_Account_Team__c.Account__c}" var="accountId" />
+
+</apex:page>

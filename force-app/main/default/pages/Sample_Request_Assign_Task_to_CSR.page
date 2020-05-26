@@ -1,0 +1,146 @@
+<apex:page controller="Sample_Request_Controller" tabStyle="Sample_Request__c" action="{!init_Assign_Task_to_CSR_to_Enter_Order}">
+<apex:stylesheet value="{!$Resource.SampleRequestStyles}"></apex:stylesheet>
+
+        <apex:sectionHeader title="{!$Label.Assign_task_to_CSR} {!Sample_Request_Link}"/>
+        <apex:form >
+                <apex:pageBlock title="{!$Label.Assign_Task}">
+                        <apex:facet name="footer">
+                                <apex:outputPanel >
+                                        <apex:commandButton action="{!AssignTasktoCSRtoEnterOrder}" value="{!$Label.Assign_Task}" styleClass="btn" rendered="{!IF(ErrorMessage!='','False','True')}"/>
+                                        <apex:commandButton action="{!Cancel_Save}" value="{!$Label.Cancel}" styleClass="btn" immediate="true"/> 
+                                </apex:outputPanel>
+                                </apex:facet>
+
+                                <apex:pageBlockSection title="{!$Label.Task_Sent}" collapsible="false" columns="1" rendered="{!IF(CSRAlreadyAssignedtoEnterOrderMessage!='','True','False')}">
+                                    <apex:pageBlock title="{!$Label.warning_caps}!" rendered="{!IF(CSRAlreadyAssignedtoEnterOrderMessage!='','True','False')}">
+                                        <apex:outputText escape="False" styleClass="Warning" value="{!CSRAlreadyAssignedtoEnterOrderMessage}" rendered="{!IF(CSRAlreadyAssignedtoEnterOrderMessage!='','True','False')}"/>
+                                    </apex:pageBlock>
+                                </apex:pageBlockSection>
+
+                                <apex:pageBlockSection title="{!$Label.Insufficient_Access}" columns="1" collapsible="false" rendered="{!IF(ErrorMessage!='','True','False')}">
+                                    <apex:pageBlock title="{!$Label.Error_Messages}" rendered="{!IF(ErrorMessage!='','True','False')}">
+                                        <apex:outputText styleClass="Warning" value="{!ErrorMessage}" rendered="{!IF(ErrorMessage!='','True','False')}"/>
+                                        <apex:outputText styleClass="Warning" value=" {!$Label.Current_Sample_Coordinator}: " rendered="{!IF(ErrorMessage!='','True','False')}"/>
+                                        <apex:outputField styleClass="Warning" value="{!sampleRequest.Sample_Coordinator__c}" rendered="{!IF(ErrorMessage!='','True','False')}"/>
+                                    </apex:pageBlock>
+                                </apex:pageBlockSection>
+
+                                <apex:pageBlockSection title="{!$Label.what_csr}:" columns="1" collapsible="false">
+                                  <apex:pageBlock title="The following CSR was identified from the Account:" rendered="{!IF(ErrorMessage!='','False',IF(sampleRequest.CSR_Responsible_for_Order_Entry__c!='','True','False'))}">
+                                     <apex:pageBlockSectionItem >
+                                        <apex:outputText escape="False" value="{!CSR_Responsible_for_Order_Entry_Label}"/>
+                                        <apex:InputField value="{!sampleRequest.CSR_Responsible_for_Order_Entry__c}" rendered="{!IF(ErrorMessage!='','False',IF(sampleRequest.CSR_Responsible_for_Order_Entry__c!='','True','False'))}"/>
+                                     </apex:pageBlockSectionItem>
+                                     <b>
+                                     <apex:pageblocksectionitem rendered="{!renderemailcsrgroupbox}">
+                                        <apex:outputtext value="CC Account CSR Email"/>
+                                        <apex:inputcheckbox value="{!emailcsrgroupbox}" />
+                                     </apex:pageBlockSectionItem>
+                                     </b>
+                                  </apex:pageBlock>
+
+                                  <apex:pageBlock title="{!$Label.No_CSR}:" rendered="{!IF(ErrorMessage!='','False',IF(sampleRequest.CSR_Responsible_for_Order_Entry__c!='','False','True'))}">
+                                     <apex:pageBlockSectionItem >
+                                        <apex:outputText escape="False" value="{!CSR_Responsible_for_Order_Entry_Label}"/>
+                                        <apex:InputField value="{!sampleRequest.CSR_Responsible_for_Order_Entry__c}" rendered="{!IF(ErrorMessage!='','False',IF(sampleRequest.CSR_Responsible_for_Order_Entry__c!='','False','True'))}" required="true"/>
+                                     </apex:pageBlockSectionItem>
+                                     <b>
+                                     <apex:pageblocksectionitem rendered="{!renderemailcsrgroupbox}">
+                                        <apex:outputtext value="CC Account CSR Email"/>
+                                        <apex:inputcheckbox value="{!emailcsrgroupbox}"/>
+                                     </apex:pageBlockSectionItem>
+                                     </b>
+
+                                  </apex:pageBlock>
+                                </apex:pageBlockSection>
+
+                        <apex:pageBlockSection title="{!$Label.Prospect_Specific_Rules}" collapsible="true" columns="1" showHeader="True" rendered="{!IF(AccountType='Prospect','True','False')}">
+                           <apex:pageBlock title="{!$Label.Prospect_Instructions}:">
+                            <apex:outputText escape="False" styleClass="HeaderData" value="{!ProspectAccountInformation}"/>
+                           </apex:pageBlock>
+                        </apex:pageBlockSection>
+
+                        <apex:pageBlockSection title="{!$Label.Sample_Notes}:" collapsible="true" columns="2" rendered="{!IF(SampleNotesSize=0,'false','true')}">
+                          <apex:dataTable value="{!sampleNotes}" var="lines" styleClass="list" id="NotesGrid" rendered="{!IF(SampleNotesSize=0,'false','true')}">
+                            <apex:column >
+                                <apex:facet name="header">{!$Label.Created_Date}</apex:facet>
+                                <apex:outputField value="{!lines.CreatedDate}"/>
+                            </apex:column>
+                            <apex:column >
+                                <apex:facet name="header">{!$Label.Title}</apex:facet>
+                                <apex:outputField value="{!lines.Title}"/>
+                            </apex:column>
+                            <apex:column >
+                                <apex:facet name="header">{!$Label.Body}</apex:facet>
+                                <apex:outputField value="{!lines.body}"/>
+                            </apex:column>
+                            <apex:column >
+                                <apex:facet name="header">{!$Label.Created_by}</apex:facet>
+                                <apex:outputField value="{!lines.CreatedBy.Name}"/>
+                            </apex:column>
+                          </apex:dataTable>
+                        </apex:pageBlockSection>
+
+                        <apex:pageBlockSection title="{!$Label.Enter_Additional_Comments_CSR}:" columns="1" collapsible="false">
+                          <apex:pageBlock title="{!$Label.Additional_Comments}:">
+                                        <apex:inputTextArea value="{!NoteToCSR}"/>
+                          </apex:pageBlock>
+                        </apex:pageBlockSection>
+
+                        <apex:pageBlockSection title="{!$Label.Materials_in_Sample}:" columns="1" collapsible="false" rendered="{!IF(ErrorMessage!='','False','True')}">
+                                <apex:pageBlock title="{!$Label.Material_Instructions}:">
+                                        <apex:outputText escape="False" styleClass="HeaderData"value="{!MaterialSpecificInstructions}"/>
+                                </apex:pageBlock>
+
+                                <apex:dataTable value="{!sampleMaterials}" var="lines" styleClass="list" id="MaterialGrid" rendered="{!IF(ErrorMessage!='','False','True')}">
+                                   <apex:column >
+                                     <apex:facet name="header">{!$Label.Material_Name}</apex:facet>
+                                     <apex:inputField value="{!lines.name}" required="true"/>
+                                   </apex:column>
+                                   <apex:column >
+                                     <apex:facet name="header">{!$Label.Existing_in_SAP}?</apex:facet>
+                                     <apex:inputField value="{!lines.Existing_Material_in_SAP__c}"/>
+                                   </apex:column>
+                                   <apex:column >
+                                     <apex:facet name="header">{!$Label.SAP_Material}</apex:facet>
+                                     <apex:inputField value="{!lines.SAP_Material_MSD2__c}"/>
+                                   </apex:column>
+                                   <apex:column >
+                                     <apex:facet name="header">
+                                       <apex:commandButton action="{!Populate_SAP_Material_Numbers}" value="{!$Label.SAP_Material} {!$Label.Number}" immediate="false" rerender="MaterialGrid" status="RetrievingSAPMaterialNumbers" styleClass="btn"/>
+                                     </apex:facet>
+                                     <center>
+                                     <!-- <apex:outputField value="{!lines.SAP_Material_Number__c}"/> -->
+                                     <apex:actionStatus id="RetrievingSAPMaterialNumbers" startText="Retrieving, Please Wait..." stopText="{!lines.SAP_Material_Number__c}"/></center>
+                                   </apex:column>
+
+                                   <apex:column >
+                                     <apex:facet name="header">{!$Label.Ship_From_Location}</apex:facet>
+                                     <apex:inputField value="{!lines.Ship_From_Location__c}"/>
+                                   </apex:column>
+                                   <apex:column >
+                                     <apex:facet name="header">{!$Label.Material_Must_Ship_From}</apex:facet>
+                                     <apex:inputField value="{!lines.Material_Must_Ship_From_Location__c}"/>
+                                   </apex:column>
+                                   <apex:column >
+                                     <apex:facet name="header">{!$Label.Quantity}</apex:facet>
+                                     <apex:outputField value="{!lines.Sample_Quantity__c}"/>
+                                   </apex:column>
+                                   <apex:column >
+                                     <apex:facet name="header">{!$Label.UOM}</apex:facet>
+                                     <apex:outputField value="{!lines.Sample_UOM__c}"/>
+                                   </apex:column>
+                                </apex:dataTable>
+                        </apex:pageBlockSection>
+
+                                <apex:pageBlockSection title="{!$Label.Validation_Error}" columns="1" collapsible="false" rendered="{!IF(ValidationErrorMessage!='','True','False')}">
+                                    <apex:pageBlock title="{!$Label.Error_Messages}" rendered="{!IF(ValidationErrorMessage!='','True','False')}">
+                                        <apex:outputText escape="False" styleClass="Warning" value="{!ValidationErrorMessage}" rendered="{!IF(ValidationErrorMessage!='','True','False')}"/>
+                                    </apex:pageBlock>
+                                </apex:pageBlockSection>
+
+                    </apex:pageBlock> 
+
+                </apex:form>
+
+</apex:page>

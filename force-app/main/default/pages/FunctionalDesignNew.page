@@ -1,0 +1,160 @@
+<!-- 
+Description: In order to support functionalities of Functional Design Registration
+Date: 9 / 28 / 2017
+Developer: Ignacio Gonzalez
+-->
+<apex:page standardController="Functional_Design_Registration__c" action="{!validateUserPermissions}" extensions="FDRExtension" lightningStylesheets="{!$User.UIThemeDisplayed == 'Theme4d'}" >
+    <meta http-equiv="X-UA-Compatible" content="chrome=1"/>
+    <script src="{!URLFOR($Resource.JQuery_Pricing, '/JQuery_Pricing/js/jquery-1.8.3.min.js')}" type="text/javascript"/> 
+    
+<style>
+.sfdcBody div.autoCompleteBoxScrolling {
+    width: 28% !important;
+}
+</style>     
+    <apex:form id="newFDR">
+        <script language="javascript">
+            $(function() {        
+                $('select.RemoveNoneValue option[value=]').remove();       
+            });
+        </script>
+    <apex:pageMessages ></apex:pageMessages>
+    <apex:sectionHeader title="{!$Label.Functional_Design_Registration_Header}"/>
+        <apex:pageBlock title="{!$Label.Functional_Design_Registration_Detail}" mode="edit" id="proid">
+    
+            <apex:pageBlockButtons id="buttons" location="top">
+                <apex:commandButton action="{!save}" value="Save"/>
+                <apex:commandButton action="{!cancel}" value="Cancel"/>
+            </apex:pageBlockButtons>
+            
+            <!-- Start information section -->
+            <apex:pageBlockSection showHeader="true" title="{!$Label.Functional_Design_Registration_Information}" columns="2"
+                id="information">
+                           
+                <apex:inputField value="{!Functional_Design_Registration__c.Name}" required="true"/>
+                <!-- <apex:inputField value="{!Functional_Design_Registration__c.OwnerId}" id="OwnerFDR"/>  -->
+                <apex:outputField value="{!Functional_Design_Registration__c.UTN__c}" />
+                <apex:outputField value="{!Functional_Design_Registration__c.RecordTypeId}" />
+                <apex:inputField value="{!Functional_Design_Registration__c.Risk_Assessment__c}" />
+                <apex:inputField styleClass="RemoveNoneValue" value="{!Functional_Design_Registration__c.Status__c}" required="true"/>
+                <apex:inputField value="{!Functional_Design_Registration__c.Functional_Team__c}" required="true"/> 
+                <apex:inputField value="{!Functional_Design_Registration__c.FRM_Representative__c}" required="true"/>
+                
+            </apex:pageBlockSection>
+            <!-- End information section -->
+                            
+                            
+            <!-- Start Production Incident section -->
+             <apex:pageBlockSection showHeader="true" title="{!$Label.Functional_Design_Registration_Prod_Incident}" columns="2"
+                id="productionIn" rendered="{!IF((Functional_Design_Registration__c.RecordTypeId = OECustomSettings['FDR_PS_Type_Id_18__c'] || Functional_Design_Registration__c.RecordTypeId = OECustomSettings['FDR_PS_Type_Id_15__c'] ),'true', 'false')}"> 
+                    <apex:inputField value="{!Functional_Design_Registration__c.Incident_ID__c}" required="true" />
+                    <apex:inputField value="{!Functional_Design_Registration__c.Incident_Owner__c}" required="true" />
+                    <apex:inputField value="{!Functional_Design_Registration__c.Target_Go_Live_Date_Manual__c}" required="true" />       
+              </apex:pageBlockSection>    
+            <!-- End Production Incident section -->
+         
+                            
+            <!-- Start Enhancement section -->
+            <apex:pageBlockSection showHeader="true" title="{!$Label.Functional_Design_Registration_Enhancement}" columns="2"
+                id="enhancement" rendered="{!IF((Functional_Design_Registration__c.RecordTypeId = OECustomSettings['FDR_Enhancement_Record_Type_Id_18__c'] || Functional_Design_Registration__c.RecordTypeId = OECustomSettings['FDR_Enhancement_Record_Type_Id_15__c']),'true', 'false')}">
+                
+                    <apex:inputField id="enhancementFDR" value="{!Functional_Design_Registration__c.OE_Enhancement_Number__c}" required="true" />
+                    <apex:inputField value="{!Functional_Design_Registration__c.Enhancement_Number__c}"  />
+                    <apex:inputField value="{!Functional_Design_Registration__c.Project__c}" />
+                    <apex:inputField value="{!Functional_Design_Registration__c.OE_Priority__c}" /> 
+                    <apex:inputField value="{!Functional_Design_Registration__c.Target_Go_Live_Quarter__c}" />
+                   
+                    <apex:pageblockSectionItem >
+                        <apex:outputLabel >{!$ObjectType.Functional_Design_Registration__c.fields.Target_Go_Live_Date__c.Label}</apex:outputLabel>
+                        <apex:outputPanel >
+                        <apex:outputText value="{0,date,MM/dd/yy}">
+                            <apex:param value="{!Functional_Design_Registration__c.Target_Go_Live_Date__c}" />
+                        </apex:outputText> 
+                        </apex:outputPanel>
+                    </apex:pageblockSectionItem>   
+                
+                    <apex:inputField value="{!Functional_Design_Registration__c.Resource_Hours__c}"  />
+                    <apex:inputField value="{!Functional_Design_Registration__c.Line_Of_Business__c}"  />
+                
+                    <apex:inputField value="{!Functional_Design_Registration__c.Improvment_Owner__c}"  />
+
+            </apex:pageBlockSection>
+            <!-- End Enhancement section -->
+            
+            <!-- Start Maintenance section -->
+            <apex:pageBlockSection showHeader="true" title="{!$Label.Functional_Design_Registration_Maintenance}" columns="2"
+                id="maintenance" rendered="{!IF((Functional_Design_Registration__c.RecordTypeId = OECustomSettings['FDR_Maintenance_Record_Type_Id_18__c']|| Functional_Design_Registration__c.RecordTypeId = OECustomSettings['FDR_Maintenance_Record_Type_Id_15__c']),'true', 'false')}">
+                
+                    <apex:inputField id="enhancementFDR" value="{!Functional_Design_Registration__c.OE_Enhancement_Number__c}" required="true" />
+                    <apex:inputField value="{!Functional_Design_Registration__c.Enhancement_Number__c}"  />
+                    <apex:inputField value="{!Functional_Design_Registration__c.Project__c}" />
+                    <apex:inputField value="{!Functional_Design_Registration__c.OE_Priority__c}" /> 
+                    <apex:inputField value="{!Functional_Design_Registration__c.Target_Go_Live_Quarter__c}" />
+                    
+                    <apex:pageblockSectionItem >
+                        <apex:outputLabel >{!$ObjectType.Functional_Design_Registration__c.fields.Target_Go_Live_Date__c.Label}</apex:outputLabel>
+                        <apex:outputPanel >
+                        <apex:outputText value="{0,date,MM/dd/yy}">
+                            <apex:param value="{!Functional_Design_Registration__c.Target_Go_Live_Date__c}" />
+                        </apex:outputText> 
+                        </apex:outputPanel>
+                    </apex:pageblockSectionItem> 
+                
+                    <apex:inputField value="{!Functional_Design_Registration__c.Resource_Hours__c}"  />
+                    <apex:inputField value="{!Functional_Design_Registration__c.Technical_Owner__c}"  />
+
+            </apex:pageBlockSection>
+            <!-- End Maintenance section -->
+            
+            <!-- Start it information section -->
+            <apex:pageBlockSection showHeader="true" title="{!$Label.Functional_Design_IT_Information}" columns="1"
+                id="itInformation">
+                    <apex:inputField value="{!Functional_Design_Registration__c.Primary_Business_Contact_FIM__c}" required="true"/>
+                    <apex:inputField value="{!Functional_Design_Registration__c.Technology__c}" required="true"/>
+                            
+                    <apex:pageblockSectionItem >
+                        <apex:outputLabel >{!$ObjectType.Functional_Design_Registration__c.fields.FRM_Review_Date__c.Label}</apex:outputLabel>
+                        <apex:outputPanel >
+                        <apex:inputField value="{!Functional_Design_Registration__c.FRM_Review_Date__c}" id="FRMReviewDate" />
+                            <span class="dateFormat1">[&nbsp;<a href="javascript:DatePicker.insertDate('{!MONTH(TODAY() + CASE( MOD(TODAY() - DATE( 1900, 1, 7 ), 7 ), 0, 10, 1, 9, 2, 8, 3, 7, 4, 6, 5, 5, 6, 4, 0))}/{!DAY(TODAY() + CASE( MOD(TODAY() - DATE( 1900, 1, 7 ), 7 ), 0, 10, 1, 9,    2, 8, 3, 7, 4, 6, 5, 5, 6, 4, 0))}/{!YEAR(TODAY() + CASE( MOD(TODAY() - DATE( 1900, 1, 7 ), 7 ), 0, 10, 1, 9,   2, 8, 3, 7, 4, 6, 5, 5, 6, 4, 0))}', 'j_id0:newFDR:proid:itInformation:j_id62:FRMReviewDate', true);">{!MONTH(TODAY() + CASE( MOD(TODAY() - DATE( 1900, 1, 7 ), 7 ), 0, 10, 1, 9,   2, 8, 3, 7, 4, 6, 5, 5, 6, 4, 0))}/{!DAY(TODAY() + CASE( MOD(TODAY() - DATE( 1900, 1, 7 ), 7 ), 0, 10, 1, 9,    2, 8, 3, 7, 4, 6, 5, 5, 6, 4, 0))}/{!YEAR(TODAY() + CASE( MOD(TODAY() - DATE( 1900, 1, 7 ), 7 ), 0, 10, 1, 9,   2, 8, 3, 7, 4, 6, 5, 5, 6, 4, 0))}</a>&nbsp;]</span>
+                        </apex:outputPanel>
+                    </apex:pageblockSectionItem>    
+                
+                
+                
+                    <apex:inputField value="{!Functional_Design_Registration__c.Blanket_Approval__c}" />
+ 
+                    <apex:pageblockSectionItem >
+                        <apex:outputLabel >{!$ObjectType.Functional_Design_Registration__c.fields.Blanket_Approval_Valid_to_Date__c.Label}</apex:outputLabel>
+                        <apex:outputPanel >
+                            <apex:inputField value="{!Functional_Design_Registration__c.Blanket_Approval_Valid_to_Date__c}" id="blanketDateApproval" />
+                            <span class="dateFormat1">[&nbsp;<a href="javascript:DatePicker.insertDate('{!MONTH(TODAY()+365)}/{!DAY(TODAY()+365)}/{!YEAR(TODAY()+365)}', 'j_id0:newFDR:proid:itInformation:j_id68:blanketDateApproval', true);">{!MONTH(TODAY()+365)}/{!DAY(TODAY()+365)}/{!YEAR(TODAY()+365)}</a>&nbsp;]</span>
+                        </apex:outputPanel>
+                    </apex:pageblockSectionItem>
+                    
+                    <apex:inputField value="{!Functional_Design_Registration__c.Investigation_Prototype__c}" />
+                    
+                    <apex:pageblockSectionItem >
+                        <apex:outputLabel >{!$ObjectType.Functional_Design_Registration__c.fields.Investigation_Prototype_Follow_Up_Dat__c.Label}</apex:outputLabel>
+                        <apex:outputPanel >
+                        <apex:inputField value="{!Functional_Design_Registration__c.Investigation_Prototype_Follow_Up_Dat__c}" id="invsPrototypeFoll" />
+                            <span class="dateFormat1">[&nbsp;<a href="javascript:DatePicker.insertDate('{!MONTH(TODAY()+1)}/{!DAY(TODAY()+1)}/{!YEAR(TODAY()+1)}', 'j_id0:newFDR:proid:itInformation:j_id74:invsPrototypeFoll', true);">{!MONTH(TODAY()+1)}/{!DAY(TODAY()+1)}/{!YEAR(TODAY()+1)}</a>&nbsp;]</span>
+                        </apex:outputPanel>
+                    </apex:pageblockSectionItem>
+                    
+                      
+                    <apex:inputField value="{!Functional_Design_Registration__c.Comments__c}" />
+                
+            </apex:pageBlockSection>
+            <!-- End  it information  section -->
+            
+        </apex:pageBlock>
+    </apex:form>
+    
+<style type="text/css">
+ .dateFormat {
+   display: none; 
+ }
+</style>
+
+</apex:page>

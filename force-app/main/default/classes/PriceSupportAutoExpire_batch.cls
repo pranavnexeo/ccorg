@@ -1,0 +1,1 @@
+global class PriceSupportAutoExpire_batch { }

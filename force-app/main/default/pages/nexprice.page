@@ -1,0 +1,2388 @@
+<apex:page id="thepage" controller="Nexprice" sidebar="false" >
+<meta http-equiv="X-UA-Compatible" content="chrome=1"/>
+<script src="{!URLFOR($Resource.JQuery_Pricing, '/JQuery_Pricing/js/jquery-1.8.3.min.js')}" type="text/javascript"/> 
+<script src="{!URLFOR($Resource.JQuery_Pricing, '/JQuery_Pricing/js/jquery-ui-1.9.2.custom.js')}" type="text/javascript"/>
+<script src="{!URLFOR($Resource.JQuery_Pricing, '/JQuery_Pricing/js/jquery.mobile.events.js')}" type="text/javascript"/>
+<script src="{!URLFOR($Resource.JQuery_Pricing, '/JQuery_Pricing/js/jquery.dataTables.js')}" type="text/javascript"/>
+<script src="{!URLFOR($Resource.JQuery_Pricing, '/JQuery_Pricing/js/jquery.dataTables.columnFilter.js')}" type="text/javascript"></script>
+<script src="{!URLFOR($Resource.JQuery_Pricing, '/JQuery_Pricing/js/jquery-ui.toggleSwitch.js')}" type="text/javascript"/>
+<script src="{!URLFOR($Resource.JQuery_Pricing, '/JQuery_Pricing/js/jquery.sortElements.js')}" type="text/javascript"></script>
+<script src="{!URLFOR($Resource.JQuery_Pricing, '/JQuery_Pricing/js/jquery.dataTables.extensions.js')}" type="text/javascript"></script>
+<script src="{!URLFOR($Resource.JQuery_Pricing, '/JQuery_Pricing/js/jquery.tooltip.js')}" type="text/javascript"></script>
+<script src="{!URLFOR($Resource.JQuery_Pricing, '/JQuery_Pricing/js/jquery.multiselect.min.js')}" type="text/javascript"/> 
+<script src="{!URLFOR($Resource.JQuery_Pricing, '/JQuery_Pricing/js/jquery.multiselect.filter.js')}" type="text/javascript"/>
+<script src="{!URLFOR($Resource.JQuery_Pricing, '/JQuery_Pricing/js/jquery.validate.js')}" type="text/javascript"/>
+<script src="{!URLFOR($Resource.JQuery_Pricing, '/JQuery_Pricing/js/jquery.form.js')}" type="text/javascript"/>
+<script src="{!URLFOR($Resource.JQuery_Pricing, '/JQuery_Pricing/js/jquery.bbq.js')}" type="tgetext/javascript"/>
+<script src="{!URLFOR($Resource.JQuery_Pricing, '/JQuery_Pricing/js/jquery.form.wizard.js')}" type="text/javascript"/>
+<script src="{!URLFOR($Resource.JQuery_Pricing, '/JQuery_Pricing/js/jquery.easyui.min.js')}" type="text/javascript"></script>
+
+<apex:stylesheet value="{!URLFOR($Resource.JQuery_Pricing, '/JQuery_Pricing/themes/default/easyui.css')}"/>  
+<apex:stylesheet value="{!URLFOR($Resource.JQuery_Pricing, '/JQuery_Pricing/css/jquery.tooltip.css')}"/>
+<apex:stylesheet value="{!URLFOR($Resource.JQuery_Pricing, '/JQuery_Pricing/css/start/jquery-ui-1.10.1.custom.min.css')}"/>
+<apex:stylesheet value="{!URLFOR($Resource.JQuery_Pricing, '/JQuery_Pricing/css/demo_table.css')}"/> 
+<apex:stylesheet value="{!URLFOR($Resource.JQuery_Pricing, '/JQuery_Pricing/themes/default/easyui.css')}"/>    
+<apex:stylesheet value="{!URLFOR($Resource.JQuery_Pricing, '/JQuery_Pricing/themes/icon.css')}"/> 
+<apex:stylesheet value="{!URLFOR($Resource.JQuery_Pricing, '/JQuery_Pricing/themes/default/menu.css')}"/>
+<apex:stylesheet value="{!URLFOR($Resource.JQuery_Pricing, '/JQuery_Pricing/themes/default/menubutton.css')}"/>
+<apex:stylesheet value="{!URLFOR($Resource.JQuery_Pricing, '/JQuery_Pricing/themes/default/splitbutton.css')}"/>
+<apex:stylesheet value="{!URLFOR($Resource.JQuery_Pricing, '/JQuery_Pricing/themes/icon.css')}"/>
+<apex:stylesheet value="{!URLFOR($Resource.JQuery_Pricing, '/JQuery_Pricing/css/jquery-ui.toggleSwitch.css')}"/> 
+<apex:stylesheet value="{!URLFOR($Resource.JQuery_Pricing, '/JQuery_Pricing/css/jquery.multiselect.css')}"/> 
+<apex:stylesheet value="{!URLFOR($Resource.JQuery_Pricing, '/JQuery_Pricing/css/jquery.multiselect.filter.css')}"/> 
+<script  src="/soap/ajax/25.0/connection.js" type="text/javascript"></script>
+<script  src="/soap/ajax/25.0/apex.js" type="text/javascript"></script>
+
+<script type="text/javascript" charset="utf-8">
+
+var aRecordIds = new Array();
+var aColumnIndex = new Array();
+var aColumnIndex_Draft = new Array();
+var iProcessing = 0;
+var iLimit = {!$Setup.nexPrice_Settings__c.Salesforce_Record_Limit__c};
+var sPrevAccount = '';
+console.log('limit: ' + "{!$Setup.nexPrice_Settings__c.Salesforce_Record_Limit__c}");
+console.log('limit: ' + "{!$Setup.nexPrice_Settings__c.SAP_Record_Limit__c}");
+
+$(document).ready(function() { 
+  
+  $('#loadingbanner').show();
+  fnInitPage();
+  fnInitTable();
+  fnEvaluateTable($('#price_maintenance' ).dataTable());
+  fnInitViewTables();
+  fnPrepFilters('price_maintenance', aColumnIndex);
+  fnPrepFilters('quotetable', aColumnIndex_Draft);
+  fnPrepFilters('historytable', aColumnIndex_Draft);
+  fnPrepFilters('audittable', aColumnIndex_Draft);
+  $('#loadingbanner').show();
+  fnInitAddMaterial();
+  if('{!$CurrentPage.parameters.id}' == '')
+    $('#loadingbanner').hide();
+  console.log('hide: ' + ('{!$CurrentPage.parameters.id}' == ''));
+
+
+
+  
+});
+
+function fnInitViewTables(){
+$('.viewtable').dataTable({
+                "bDestroy": true,
+                "fnDrawCallback": function( oSettings ) {
+                   $('.row_selected').removeClass('row_selected');
+                 },
+                "bSort": true,
+                "sErrMode": false,
+                "sDom": 'lfrtip',
+                "bPaginate":false,
+                "sScrollY": "400px",
+                "aoColumnDefs":[
+                    
+                    { "aTargets":[ "Open"], bSortable:"false", sClass:"Open" ,sWidth:"2px", "bAutoWidth": false},
+                    { "aTargets":[ "Select"], sClass:"Select", sWidth:"2px", "bAutoWidth": false },
+                    { "aTargets":[ "Approval_Status" ], "mData": "Approval_Status__c", sClass:"Approval_Status__c",sWidth:"2px", "bAutoWidth": false },
+                    { "aTargets":[ "Approval_Level" ], "mData": "Approval_Level__c", sClass:"Approval_Level__c",sWidth:"2px", "bAutoWidth": false },
+                    { "aTargets":[ "Approver" ], "mData": "Approver__r.Name", sClass:"Approver__r.Name",sWidth:"2px", "bAutoWidth": false },
+                    { "aTargets":[ "Type" ], "mData": "Type__c", sClass:"Type__c",sWidth:"2px", "bAutoWidth": false },
+                    { "aTargets":[ "Sold_To" ], "mData": "SAP_SoldTo_Account__c", sClass:"SAP_SoldTo_Account__c",sWidth:"2px", "bAutoWidth": false},
+                    { "aTargets":[ "Ship_To" ], "mData": "SAP_ShipTo_Account__c", sClass:"SAP_ShipTo_Account__c",sWidth:"2px", "bAutoWidth": false },
+                    { "aTargets":[ "Material" ], "mData": "SAP_Material__r.Name", sClass:"SAP_Material__r.Name",sWidth:"2px", "bAutoWidth": false },
+                    { "aTargets":[ "Eff_Date" ], sClass:"Requested_Effective_Date__c",sWidth:"2px", "bAutoWidth": false,
+                      "mData": function ( source, type, val ) {
+                          if (type === 'set') {
+                              return;
+                          }
+                          else if (type === 'display') { 
+                              if (source.Requested_Effective_Date__c != '' && source.Requested_Effective_Date__c != null){
+                                 var ReqDate = new Date(source.Requested_Effective_Date__c);
+                                 return ReqDate.getMonth()+1 + "/" + ReqDate.getDate() + "/" + ReqDate.getFullYear();}
+                              else return '';}
+                          else if (type === 'filter') {  return source.Requested_Effective_Date__c; }
+                          else if (type === 'sort') { 
+                           if((typeof source.Requested_Effective_Date__c == 'undefined') || source.Requested_Effective_Date__c == null)
+                              return '';
+                            else 
+                             return new Date(source.Requested_Effective_Date__c);
+                          }
+                          return source.Requested_Effective_Date__c;
+                      }
+                    },
+                    { "aTargets":[ "Exp_Date" ], sClass:"Requested_Expiration_Date__c",sWidth:"2px", "bAutoWidth": false,
+                      "mData": function ( source, type, val ) {
+                          if (type === 'set') {
+                              return;
+                          }
+                          else if (type === 'display') { 
+                          if (source.Requested_Expiration_Date__c != '' && source.Requested_Expiration_Date__c != null){
+                             var ReqexpDate = new Date(source.Requested_Expiration_Date__c);
+                             return ReqexpDate.getMonth()+1 + "/" + ReqexpDate.getDate() + "/" + ReqexpDate.getFullYear();}
+                          else return '';}
+                          else if (type === 'filter') {  return source.Requested_Expiration_Date__c; }
+                          else if (type === 'sort') { 
+                           if((typeof source.Requested_Expiration_Date__c == 'undefined') || source.Requested_Expiration_Date__c == null)
+                              return '';
+                            else 
+                             return new Date(source.Requested_Expiration_Date__c);
+                          }
+                          return source.Requested_Expiration_Date__c;
+                      }
+                    },
+                    { "aTargets":[ "Volume" ], "mData": "Volume__c", sClass:"Volume__c",sWidth:"2px", "bAutoWidth": false },
+                    { "aTargets":[ "Requested_UoM" ], "mData": "Requested_UoM__c", sClass:"Requested_UoM__c",sWidth:"2px", "bAutoWidth": false },
+                    { "aTargets":[ "Price" ], sClass:"Price__c",sWidth:"2px", "bAutoWidth": false,
+                        "mData": function ( source, type, val ) {
+                          if (type === 'set') {
+                              return;
+                          }
+                          else if (type === 'display' || type == 'sort' || type == 'filter') { 
+                             if(source.Price__c == '' || source.Price__c == null || typeof source.Price__c == 'undefined')
+                               return;
+                             else
+                             return source.CurrencyIsoCode + ' ' + source.Price__c.toFixed(4);
+                          }
+                          return source.Price__c;
+                      }
+                    },
+                    { "aTargets":[ "Requested_Price_UoM" ], "mData": "Requested_Price_UoM__c", sClass:"Requested_Price_UoM__c",sWidth:"2px", "bAutoWidth": false },
+                    { "aTargets":[ "TPI" ], sClass:"TPI__c",sWidth:"2px", "bAutoWidth": false,
+                      "mData": function ( source, type, val ) {
+                          if (type === 'set') {
+                              return;
+                          }
+                          else if (type === 'display') { 
+                            if((typeof source.TPI__c == 'undefined') || source.TPI__c == null)
+                              return '';
+                            else 
+                              return (source.TPI__c + '%');
+                          }
+                          else if (type === 'filter') {  return source.TPI__c; }
+                          else if (type === 'sort') { return source.TPI__c; }
+                          return source.TPI__c;
+                      }
+                    },
+                    { "aTargets":[ "Comments" ], "mData": "Comments__c", sClass:"Comments__c",sWidth:"2px", "bAutoWidth": false },
+                    { "aTargets":[ "Approval_Rejection_Comments" ], "mData": "Approval_Rejection_Comments__c", sClass:"Approval_Rejection_Comments__c",sWidth:"2px", "bAutoWidth": false },
+                    { "aTargets":[ "Id" ],"mData": "Id", sClass:"Id",sWidth:"2px", "bAutoWidth": false, "bVisible":false},
+                    { "aTargets":[ "Inner_Table" ],"mData": "Inner_Table__c", sClass:"Inner_Table__c",sWidth:"2px", "bAutoWidth": false, "bVisible":false},
+                                   
+                  ],                  
+                 "fnInitComplete": function(oSettings) {
+                     aColumnIndex_Draft = fnGetColumnIndex(oSettings);
+                  },  
+                "fnCreatedRow": function( nRow, aData, iDataIndex ) {
+                    $('td:eq(0)', nRow).html( '<img class="details_img" src="{!URLFOR($Resource.JQuery_Pricing, '/JQuery_Pricing/images/details_open.png')}">');
+                    if($(this).dataTable().fnSettings().sTableId != 'audittable' &&
+                       $(this).dataTable().fnSettings().sTableId != 'pendingtable')
+                    {
+                        if(aData.Approval_Status__c == 'Rejected' || aData.Approval_Status__c == 'Expired')
+                        $('td:eq(1)', nRow).html( '<input type="checkbox" name="SelectedAudit" class="SelectedAudit" value="'+ aData.Id+'" disabled="disabled">');
+                        else
+                        $('td:eq(1)', nRow).html( '<input type="checkbox" name="SelectedAudit" class="SelectedAudit" value="'+ aData.Id+'">');
+                    }
+                    fnSetImgListener(nRow, $(this).dataTable().fnSettings().sTableId);
+                 }     
+              })
+
+
+}
+function fnAddRow(){
+  
+  var count = $('.bracketcontainer').size();
+  var newRow = '<tr class="bracketcontainer" style="height:10px;"><td style="vertical-align:top;padding-right:1px;">';
+      newRow += '<input class="bracketvolume combo required number" name="bracketvolume_'+ (count)+ '" style="width:100px;height:20px;" />';
+      newRow += '<br/><div class="error_container"/></td><td></td><td style="vertical-align:top;padding-right:1px;"><input class="bracketprice combo required number" name="bracketprice_'+ (count)+ '" style="height:20px;"/>';
+      newRow += '<br/><div class="error_container"/></td><td></td><td><img class="removeRow" src="{!URLFOR($Resource.JQuery_Pricing, '/JQuery_Pricing/images/details_close.png')}"/><b>&nbsp;Remove</b></td></tr>';
+
+  $('#brackettable').append(newRow);
+  $('.removeRow').click(function(){
+      $(this).parent().parent().remove();
+      $('.bracketcontainer').each(function(i, bc){
+         $(this).find('.bracketvolume').attr('name', 'bracketvolume_' + i);
+         $(this).find('.bracketprice').attr('name', 'bracketprice_' + i);
+      });
+
+   }); 
+
+}
+
+function fnInitAddMaterial(){
+$('#add_acct').combogrid({  
+        panelWidth:1200,  
+        value:'',      
+        idField:'Id', 
+        delay: 500, 
+        textField:'ShipTo',
+        onFocus: function(){ },
+        remoteSort:false,  
+        keyHandler: {
+          query: function(q){
+                  var g = $(this).combogrid('grid');                
+                  Nexprice.FetchMyAccounts($('#UserLookup').combogrid('getValue'), '','', q, function(result, event){
+                    if(event.type == 'exception') {
+                      error.apply(this, arguments);         
+                    } else {   
+                      g.datagrid('loadData', result);         
+                    }
+                  });
+           }
+        },
+        columns:[[ 
+               {field:'Corp',title:'Corporate Account',width:240, sortable:true, sorter: function(a, b){
+                 var va = (a === null) ? "" : "" + a,
+                 vb = (b === null) ? "" : "" + b;
+                 return va > vb ? 1 : ( va === vb ? 0 : -1 );
+               }},
+               {field:'SoldTo',title:'Sold To Account',width:240, sortable:true, sortable:true, sorter: function(a, b){
+                 var va = (a === null) ? "" : "" + a,
+                 vb = (b === null) ? "" : "" + b;
+                 return va > vb ? 1 : ( va === vb ? 0 : -1 );
+               }},
+               {field:'ShipTo',title:'Ship To',width:200, sortable:true, sorter: function(a, b){
+                 var va = (a === null) ? "" : "" + a,
+                 vb = (b === null) ? "" : "" + b;
+                 return va > vb ? 1 : ( va === vb ? 0 : -1 );
+               }},
+               {field:'ShipToAcctNum',title:'Account #',width:90, sortable:true, sortable:true, sorter: function(a, b){
+                 var va = (a === null) ? "" : "" + a,
+                 vb = (b === null) ? "" : "" + b;
+                 return va > vb ? 1 : ( va === vb ? 0 : -1 );
+               }},
+               {field:'ShipCity',title:'City',width:90, sortable:true, sortable:true, sorter: function(a, b){
+                 var va = (a === null) ? "" : "" + a,
+                 vb = (b === null) ? "" : "" + b;
+                 return va > vb ? 1 : ( va === vb ? 0 : -1 );
+               }},
+               {field:'ShipState',title:'State',width:40, sortable:true, sortable:true, sorter: function(a, b){
+                 var va = (a === null) ? "" : "" + a,
+                 vb = (b === null) ? "" : "" + b;
+                 return va > vb ? 1 : ( va === vb ? 0 : -1 );
+               }},
+               {field:'OwnerName',title:'Owner',width:100, sortable:true, sortable:true, sorter: function(a, b){
+                 var va = (a === null) ? "" : "" + a,
+                 vb = (b === null) ? "" : "" + b;
+                 return va > vb ? 1 : ( va === vb ? 0 : -1 );
+               }}
+        ]],
+        loader: function(param,success,error){
+            Nexprice.FetchMyAccounts($('#UserLookup').combogrid('getValue'), '', '','', function(result, event){
+   
+             if(event.type == 'exception') {
+                
+                error.apply(this, arguments);         
+             } else {      
+                success(result);         
+             }
+         }); 
+        },
+        onSelect: function(param){ 
+           fixEscapedHTML($('#add_acct').combogrid('getText'), 'add_acct'); }
+    });
+            $('#add_material').combogrid({  
+        panelWidth:450,  
+        value:'',      
+        idField:'Id',  
+        textField:'Name', 
+        required: true,
+        hasDownArrow: false,
+        keyHandler: {
+          query: function(q){
+                 var f = '(NOT NAME LIKE \'%DO NOT USE%\')';
+                  if($('#morgs').combobox('getValue') != 'All Sales Orgs')
+                    f += ' and Sales_Org_Code__c = \'' + $('#morgs').combobox('getValue') + '\'';
+                  if($('#mdivs').combobox('getValue') != 'All Divisions')
+                    f += ' and Division_Code__c = \'' + $('#mdivs').combobox('getValue') + '\'';   
+                    
+                  var g = $(this).combogrid('grid');
+                  Nexprice.getComboGridData(q, 'Material_Sales_Data2__c', 'Name, Material_Number__c,  Sales_Org_Code__c, Division_Code__c', f, 'Name ASC', '1000', function(result, event){
+                    if(event.type == 'exception') {
+                      error.apply(this, arguments);         
+                    } else {      
+                      g.datagrid('loadData', result);         
+                    }
+                  });
+           }
+        },
+        columns:[[  
+               {field:'Name',title:'Name',width:300},  
+               {field:'Sales_Org_Code__c', title:'Sales Org',width:50},
+               {field:'Division_Code__c', title:'Division',width:50}
+        ]],
+        loader: function(param,success,error){
+                 var f = '(NOT NAME LIKE \'%DO NOT USE%\')';
+                  if($('#morgs').combobox('getValue') != 'all')
+                    f += ' and Sales_Org_Code__c = \'' + $('#morgs').combobox('getValue') + '\'';
+                  if($('#mdivs').combobox('getValue') != 'all')
+                    f += ' and Division_Code__c = \'' + $('#mdivs').combobox('getValue') + '\'';   
+            Nexprice.getComboGridData('', 'Material_Sales_Data2__c', 'Name, Sales_Org_Code__c, Division_Code__c', f , 'Name ASC', '1000',function(result, event){
+
+             if(event.type == 'exception') {
+                error.apply(this, arguments);         
+             } else {      
+               success(result);         
+             }
+         });
+        },
+        onSelect: function(param){ fixEscapedHTML($('#add_material').combogrid('getText'), 'add_material');}
+    });
+$('#dd2').dialog({  
+          title: 'Add New Material',  
+          width: 475,  
+          height: 275,     
+          closed: true,  
+          cache: false, 
+          modal: true,
+          toolbar:[{
+                text:'Save',
+                iconCls:'icon-save',
+                handler:function(){
+                
+                var bValid = $('#amform').form('validate');
+                if(bValid && $('#add_material').combogrid('getValue')!='' && $('#add_acct').combogrid('getValue') !='')
+                {  
+                      Nexprice.saveaccountmaterial($('#add_acct').combogrid('getValue'), $('#add_material').combogrid('getValue'), function(result, event){
+                         if(event.type == 'exception') {
+                           console.log('saveaccountmaterial');
+                           console.log(event);      
+                          } else { 
+                           
+                           var bAdded = (result.length > 0);
+     
+                           if(bAdded)
+                             fnAddData(result,$('#price_maintenance').dataTable());
+                          }
+                      });
+                      $('#dd2').dialog('close');
+                }
+              }
+            },{
+                text:'Cancel',
+                iconCls:'icon-cancel',
+                handler:function(){$('#dd2').dialog('close');}
+            }]   
+        });
+        $('#addmaterial').click(function(){ 
+          if($('#mm1').menu('findItem', 'Add Material').disabled == false)
+          {
+
+            $('#add_acct').combogrid('clear');
+            $('#add_material').combogrid('clear');
+            $('#dd2').dialog('open');
+            <!--Added code to set the filters -->
+
+            Nexprice.getAccount($('#acct-search').combogrid('getValue'), function(result, event){
+                    if(event.type == 'exception') {
+                       console.log(event.type);     
+                    } else { 
+                    console.log(result);
+                    if(result.SAP_DivisionCode__c != '' || result.SAP_DivisionCode__c != null)         
+                       $('#mdivs').combobox('setValue', result.SAP_DivisionCode__c);
+                     if(result.SAP_Sales_Org__c != '' || result.SAP_Sales_Org__c != null) 
+                       $('#morgs').combobox('setValue', result.SAP_Sales_Org__c);  
+                     if((result.Id != '' || result.Id != null) &&  (result.Name != '' || result.Name != null))
+                     {
+                       $('#add_acct').combogrid('setValue', result.Id);
+                       $('#add_acct').combogrid('setText', result.Name);
+                     }
+                        
+                    }
+            });
+            
+            <!--Code Change End -->
+            
+          }
+        });
+}
+function fnInitSearchBox( oWidget, oSel, sName){
+var oTable = $('#price_maintenance').dataTable();
+var oInput = $(oWidget).find('input');
+var aaSelected = new Array();
+var aaExisting = new Array();
+
+
+if(sName == 'Sold To' || sName == 'Ship To' || sName == 'Corporate')
+{
+                 var f = '((NOT NAME LIKE \'%DO NOT USE%\') and recordtype.Name = \'Distribution Customer\' AND (Name LIKE \'%' + $(oInput).val() + '%\'  or AccountNumber LIKE \'%' + $(oInput).val() + '%\' )';
+                 if(sName != 'Corporate')
+                 (sName == 'Sold To')? f += 'and SAP_Partner_Functions__c LIKE \'%SOLD%\')' : f += ' and SAP_Partner_Functions__c LIKE \'%SHIP%\')';
+                 else
+                 f += ' and SAP_Partner_Functions__c = \'\')';
+                 console.log(f);
+                 $("select[data-acctfieldname]").each(function(i, mselect){
+
+                       for(var j=0; j<aaSelected[$(mselect).attr('name')].length; j++)
+                       {
+                          if(j == 0)
+                            f += ' AND (';
+                          f += $(mselect).attr('data-acctfieldname') + " = \'" + aaSelected[$(mselect).attr('name')] + "\'";
+                          if(j < aaSelected[$(mselect).attr('name')].length-1)
+                            f += ' OR ';
+                          else
+                            f += ')';
+                       }                      
+                 }); 
+                 $(oWidget).find('.iSearch').show();
+                 $(oWidget).find('.iClear').hide();
+                 if($(oSel).is('[data-searching]') == false)
+                  {
+                    $(oSel).attr('data-searching', 'searching');
+                    console.log(aaExisting[$(oSel).attr('name')]);
+                  Nexprice.getSelectOptions(aaExisting[$(oSel).attr('name')], $(oInput).val(), 'Account', 'Name, AccountNumber, SAP_Sales_Org__c, SAP_DivisionCode__c', f, 'Name ASC', '100', function(result, event){
+                    $(oSel).removeAttr('data-searching');
+                    if(event.type == 'exception') {         
+                      $(oWidget).find('.iSearch').hide(); 
+                      $(oWidget).find('.iClear').show();  
+                      console.log('getSelectOptions');
+                      console.log(event);
+
+                    } else {     
+                       console.log(result);       
+                       var sResult = '';
+                       var aData = oTable.fnGetColumnData[aColumnIndex[$(oSel).attr('name')]];
+                       
+                       $(result.rows).each(function(i, r){
+                         if(jQuery.inArray(r.Id, aData) == -1)
+                           sResult += '<option value="' + r.Id + '" data-id="' + r.Id + '">' + r.Name + ' - ' + r.AccountNumber + ' / ' + r.SAP_Sales_Org__c + ' / ' + r.SAP_DivisionCode__c + '</option>';
+                       });   
+                       console.log(sResult);
+                       $(oSel).append(sResult);
+
+                       $(oWidget).find('.iSearch').hide();   
+                       $(oWidget).find('.iClear').show();                        
+                    }
+                  });
+                 }
+}
+if(sName == 'Base Code')
+{
+                 var f = '(NOT Material_Base_Code_Description__c LIKE \'%DO NOT USE%\') and (Material_Base_Code_Description__c LIKE \'%' + $(oInput).val() + '%\' OR Material_Base_Code__c LIKE \'%' + $(oInput).val() + '%\')';
+                 $(oWidget).find('.iSearch').show();
+                 $(oWidget).find('.iClear').hide();
+                  if($(oSel).is('[data-searching]') == false)
+                  {
+                    $(oSel).attr('data-searching', 'searching');
+                  Nexprice.getSelectOptions(aaExisting[$(oSel).attr('name')],$(oInput).val(), 'Material_Base_Code__c', 'Name, Material_Base_Code__c,  Material_Base_Code_Description__c', f, 'Name ASC', iLimit, function(result, event){
+                    $(oSel).removeAttr('data-searching');
+                    if(event.type == 'exception') {
+                      $(oWidget).find('.iSearch').hide();
+                      $(oWidget).find('.iClear').show();
+                      console.log('getSelectOptions');
+                      console.log(event);
+                    } else {            
+                       var sResult = '';
+                       var aData = oTable.fnGetColumnData[aColumnIndex[$(oSel).attr('name')]];
+                       $(result.rows).each(function(i, r){
+                       if(jQuery.inArray(r.Material_Base_Code__c, aData) == -1)
+                          sResult += '<option value="' + r.Material_Base_Code__c + '" data-id="' + r.Id + '">' + r.Material_Base_Code_Description__c + ' - ' + r.Material_Base_Code__c + '</option>';
+                       });   
+
+                       console.log(sResult);
+                       $(oSel).append(sResult);
+
+                       $(oWidget).find('.iSearch').hide();   
+                       $(oWidget).find('.iClear').show();                        
+                    }
+                  });
+                 }
+}
+
+if(sName == 'Material')
+{
+                 var f = '(NOT NAME LIKE \'%DO NOT USE%\') and Name LIKE \'%' + $(oInput).val() + '%\'';
+                  $("select[data-matfieldname]").each(function(i, mselect){
+
+                       for(var j=0; j<aaSelected[$(mselect).attr('name')].length; j++)
+                       {
+                          if(j == 0)
+                            f += ' AND (';
+                          f += $(mselect).attr('data-matfieldname') + " = \'" + aaSelected[$(mselect).attr('name')] + "\'";
+                          if(j < aaSelected[$(mselect).attr('name')].length-1)
+                            f += ' OR ';
+                          else
+                            f += ')';
+                       }                      
+                 }); 
+                  console.log(f);
+                  $(oWidget).find('.iSearch').show();
+                  $(oWidget).find('.iClear').hide();
+                  
+                  if($(oSel).is('[data-searching]') == false)
+                  {
+                    $(oSel).attr('data-searching', 'searching');
+                  
+                    Nexprice.getSelectOptions(aaExisting[$(oSel).attr('name')],$(oInput).val(), 'Material_Sales_Data2__c', 'Name, Material_Number__c,  Sales_Org_Code__c, Division_Code__c', f, 'Name ASC', iLimit, function(result, event){
+                    $(oSel).removeAttr('data-searching'); 
+                    if(event.type == 'exception') {
+                       console.log('getSelectOptions');
+                       console.log(event); 
+                       $(oWidget).find('.iSearch').hide();   
+                       $(oWidget).find('.iClear').show();  
+                    } else {            
+                       var sResult = '';
+                       var aData = oTable.fnGetColumnData[aColumnIndex[$(oSel).attr('data-value')]];
+                       $(result.rows).each(function(i, r){
+                       if(jQuery.inArray(r.Id, aData) == -1)
+                          sResult += '<option value="' + r.Id + '" data-id="' + r.Id + '">' + r.Name + ' / ' + r.Sales_Org_Code__c + ' / ' + r.Division_Code__c + '</option>';
+                       }); 
+
+                       $(oSel).append(sResult);
+
+                       $(oWidget).find('.iSearch').hide();   
+                       $(oWidget).find('.iClear').show();  
+                                        
+                    }
+                  });
+                 }
+}
+}
+function fnInitForm(){
+
+
+$('.addRow').click(function(){ fnAddRow(); });
+$('.removeRow').click(function(){
+      $(this).parent().parent().remove();
+      $('.bracketcontainer').each(function(i, bc){
+         $(this).find('.bracketvolume').attr('name', 'bracketvolume_' + i);
+         $(this).find('.bracketprice').attr('name', 'bracketprice_' + i);
+      });
+   });
+$('#formtable').dataTable({
+"fnCreatedRow": function( nRow, aData, iDataIndex ) {
+                    $('td:eq(0)', nRow).html( '<img class="details_img" src="{!URLFOR($Resource.JQuery_Pricing, '/JQuery_Pricing/images/details_open.png')}">' );
+                    fnSetImgListener(nRow, 'formtable');
+},
+"aoColumnDefs": [
+                    { "aTargets":[ "level" ],"mData": "Approval_Level__c"},
+                    { "aTargets":[ "appr" ],"mData": "Approver__r.Name" },
+                    { "aTargets":[ "type" ],"mData": "Type__c" },
+                    { "aTargets":[ "sold" ],"mData": "Account_Material__r.Account_Sold_To__c" },
+                    { "aTargets":[ "ship" ],"mData": "Account_Material__r.Account_Name__c" },
+                    { "aTargets":[ "mat" ],"mData": "Account_Material__r.Material_Name__c" },
+                    { "aTargets":[ "start" ],"mData": "Requested_Effective_Date__c",
+                    "mData": function ( source, type, val ) {
+                          if (type === 'set') {
+                              return;
+                          }
+                          else if (type === 'display' || type == 'filter') {
+                            if((typeof source.Requested_Effective_Date__c == 'undefined') && source.Requested_Effective_Date__c == null)
+                              return '';
+                            else 
+                             return (new Date(source.Requested_Effective_Date__c).getFullYear() + '-' + (new Date(source.Requested_Effective_Date__c).getMonth() + 1) + '-' + new Date(source.Requested_Effective_Date__c).getDate());
+                          }
+                          else if (type === 'sort') { 
+                           if((typeof source.Requested_Effective_Date__c == 'undefined') || source.Requested_Effective_Date__c == null)
+                              return '';
+                            else 
+                              return new Date(source.Requested_Effective_Date__c);
+                          }
+                          return source.Requested_Effective_Date__c;
+                    }
+                    },
+                    { "aTargets":[ "end" ],"mData": "Requested_Expiration_Date__c",
+                    "mData": function ( source, type, val ) {
+                          if (type === 'set') {
+                              return;
+                          }
+                          else if (type === 'display' || type == 'filter') {
+                            if((typeof source.Requested_Expiration_Date__c == 'undefined') && source.Requested_Expiration_Date__c == null)
+                              return '';
+                            else 
+                             return (new Date(source.Requested_Expiration_Date__c).getFullYear() + '-' + (new Date(source.Requested_Expiration_Date__c).getMonth() + 1) + '-' + new Date(source.Requested_Expiration_Date__c).getDate());
+                          }
+                          else if (type === 'sort') { 
+                           if((typeof source.Requested_Expiration_Date__c == 'undefined') || source.Requested_Expiration_Date__c == null)
+                              return '';
+                            else 
+                              return new Date(source.Requested_Expiration_Date__c);
+                          }
+                          return source.Requested_Expiration_Date__c;
+                    }
+                    },
+                    { "aTargets":[ "vol" ],"mData": "Volume__c"},
+                    { "aTargets":[ "voluom" ],"mData": "Requested_UoM__c" },
+                    { "aTargets":[ "price" ],"mData": "Price__c",
+                    "mData": function ( source, type, val ) {
+                          if (type === 'set') {
+                              return;
+                          }
+                          else if (type === 'display' || type == 'sort' || type == 'filter') { 
+                             if(source.Price__c == '' || source.Price__c == null || typeof source.Price__c == 'undefined')
+                               return;
+                             else
+                             return source.CurrencyIsoCode + ' ' + source.Price__c.toFixed(4);
+                          }
+                          return source.Price__c;
+                      } },
+                    { "aTargets":[ "priceuom" ],"mData": "Requested_Price_UoM__c"},
+                    { "aTargets":[ "TPI" ], 
+                      "mData": function ( source, type, val ) {
+                          if (type === 'set') {
+                              return;
+                          }
+                          else if (type === 'display') { 
+                            if((typeof source.TPI__c == 'undefined') || source.TPI__c == null)
+                              return '';
+                            else 
+                              return (source.TPI__c + '%');
+                          }
+                          return source.TPI__c;
+                      }
+                    }
+             ]
+
+});
+
+
+   var uoms = new Array();
+   $('#brpriceuom').find('option').each(function(i, opt){ uoms.push($(opt).val()); });
+   
+   $('.easyui-combo').combobox({editable:false, panelHeight: 'auto'});
+   $('#priceprot').combobox({editable:false});
+   var oTable = $('#price_maintenance').dataTable();
+   var TR = $('#price_maintenance').find('tr').has('input:checked').first();
+
+   console.log(TR[0]);
+   console.log(oTable.fnGetData(TR[0]));
+   var pp = oTable.fnGetData(TR[0]);
+
+   console.log('pp:');
+   console.log(pp);
+   if(pp.Price_Protection__c == '' ||
+      pp.Price_Protection__c == null || 
+      typeof pp.Price_Protection__c == 'undefined')
+   {
+   $('#priceprot').combobox('setValue', 'Z0 - No Protection');
+   $('#priceprot').combobox('setText', 'Z0 - No Protection');
+   }else{
+   $('#priceprot').combobox('setValue', pp.Price_Protection__c);
+   $('#priceprot').combobox('setValue', pp.Price_Protection__c);
+   }
+   
+   $('#currencies').combobox('setValue', $('#currencies').attr('data-value'));
+   $('.uom').each(function(i, u){ if(jQuery.inArray($(u).attr('data-value'), uoms) > -1){ $(u).combobox('setValue',  $(u).attr('data-value')); } });
+   
+   $('.easyui-linkbutton').linkbutton({plain:false});
+   $('#SaveSubmit').linkbutton('disable');
+   $( "#edate" ).datepicker({ minDate: 0, required:true , editable:false });
+   $( "#exdate" ).datepicker({ minDate: 0, maxDate: "+1Y", required:true, editable:false });
+   $( "#edate" ).change(function() {
+            var date = new Date($(this).val());
+            var d = date.getDate();
+              var m = date.getMonth();
+              var y = date.getFullYear();
+              var newdate = new Date(y+1, m, d);          
+              $( "#exdate" ).datepicker( "option" ,{ minDate: date, maxDate: newdate, required:true});
+              $( "#exdate" ).datepicker( "setDate" , newdate );
+
+   });
+   
+   $('#Competitors').combogrid({  
+        panelWidth:200, 
+        width:200, 
+        value:'',    
+        delay: 500,  
+        idField:'Id',  
+        textField:'Name', 
+        keyHandler: {
+          query: function(q){
+                  var g = $(this).combogrid('grid');
+                  Nexprice.getComboGridData(q, 'Nexeo_Competitor__c', 'Name', 'status__c = \'Active\' and Competitor_or_Supplier__c = \'Competitor\'', 'Name ASC', '1000', function(result, event){
+                    if(event.type == 'exception') {
+                      error.apply(this, arguments);         
+                    } else {      
+                      g.datagrid('loadData', result);         
+                    }
+                  });
+           }
+        },
+        columns:[[  
+               {field:'Name',title:'Name',width:300} 
+        ]],
+        loader: function(param,success,error){
+            Nexprice.getComboGridData('', 'Nexeo_Competitor__c', 'Name', 'status__c = \'Active\' and Competitor_or_Supplier__c = \'Competitor\'', 'Name ASC', '1000', function(result, event){
+
+             if(event.type == 'exception') {
+                error.apply(this, arguments);         
+             } else {      
+               success(result);         
+             }
+         });
+        },
+        onSelect: function(param){ fixEscapedHTML($('#Competitors').combogrid('getText'), 'Competitors');
+                                   if($('#Competitors').combobox('getValue') != '')
+                                  { $('#CompetitorsFrame').removeClass('error');
+                                    $('#CompetitorsError').html('');
+                                  }           
+        }
+    });
+   
+   $('#Competitors').combogrid('textbox').focusin(function(){ 
+        $('#Competitors').combogrid('clear');
+     });
+   $('#Competitors').combogrid('textbox').blur(function(){ 
+        if($('#Competitors').combobox('getValue') == '' && $('#CompetitorsFrame').attr('data-submitted') == 'submitted')
+        { $('#CompetitorsFrame').addClass('error');
+          $('#CompetitorsError').html('This field is required.');
+        }
+     });
+   $('#Competitors').combogrid('setValue', $('#Competitors').attr('data-compid'));
+   fixEscapedHTML($('#Competitors').attr('data-compname'), 'Competitors');
+
+
+
+   $('#edate').keyup(function(){ $(this).val('')});
+   $('#exdate').keyup(function(){ $(this).val('')});
+   $('#exdate').datepicker( "hide" );
+   
+
+    $("#createform").validate({
+       errorPlacement: function(error, element){
+          error.insertAfter(element.parent().find('.error_container'));  
+       }
+    });
+    jQuery.validator.addMethod("currency", function(value, element) { 
+          return this.optional(element) || /^([1-9]{1}[0-9]{0,2}(\,[0-9]{3})*(\.[0-9]{2,4})?|[1-9]{1}[0-9]{0,}(\.[0-9]{2,4})?|0(\.[0-9]{2,4})?|(\.[0-9]{2,4})?)$/.test(value); 
+       }, "Please enter a valid number.");
+
+}
+function fnSimulate(){
+                    $('#CompetitorsFrame').attr('data-submitted', 'submitted');
+                    $('#operation').val('simulate');
+                   if(fnValidateCreateForm() == true){
+                   $('#createform').ajaxSubmit({  
+                        dataType:  'json', 
+                        beforeSubmit: beforeSubmit
+                    });
+                    $('#SaveSubmit').linkbutton('enable');
+                   }
+}
+function fnCancel(){
+     $('#loadtarget').empty();
+}
+function fnSave(){ 
+                    $('#loadingbanner').show();
+                    $('#CompetitorsFrame').attr('data-submitted', 'submitted');
+                    $('#operation').val('savesubmit');
+                    if(fnValidateCreateForm() == true){
+                    $('#createform').ajaxSubmit({  
+                        dataType:  'json', 
+                        beforeSubmit: beforeSubmit
+                    });
+                       $('#loadtarget').empty();
+                       
+                    }
+                    var oTable = $('#price_maintenance').dataTable();   
+                    var aasIds = new Array();
+                    var aaiDisplayMaster = new Array();
+                    $('#price_maintenance').find('tr').has('input:checked').each(
+                       function(i, e){ 
+                          aasIds.push(oTable.fnGetData(e).Id);
+                          aaiDisplayMaster.push(oTable.fnGetPosition(e)); 
+                       });
+                    
+                    Nexprice.getPricing( aaiDisplayMaster, aasIds, function(result, event){   
+                        
+                        if(event.type == 'exception') {
+                        console.log('getPricing');
+                        $('#loadingbanner').hide();
+
+                          } else { 
+                              
+                              console.log('results');
+                              for(var j=0; j<result.length; j++)
+                              {
+                              console.log(result[j]);
+                              var nTR = $('#price_maintenance').dataTable().fnGetNodes(aRecordIds[result[j].Id]);
+                              console.log(nTR);
+                              var ss = oTable.fnUpdate(result[j], nTR );  
+                              console.log(ss);
+
+                              $('td:eq(' + aColumnIndex['Open'] + ')', nTR).html( '<img class="details_img" src="{!URLFOR($Resource.JQuery_Pricing, '/JQuery_Pricing/images/details_open.png')}">' );
+                              fnSetImgListener(nTR, 'price_maintenance');
+                              if(result[j].Has_Open_PRT__c == true || result[j].Has_Unit_Options__c == false)
+                                $('td:eq(' + aColumnIndex['Select'] + ')', nTR).html( '<input class="select_row" type="checkbox", value="' + result[j].Id + '" disabled="disabled">' );
+                              else
+                              $('td:eq(' + aColumnIndex['Select'] + ')', nTR).html( '<input class="select_row" type="checkbox", value="' + result[j].Id + '">' );
+                              fnSetCheckboxListener(nTR, oTable);
+                              $('#loadingbanner').hide();
+                              }     
+                              $('#Reset').click();   
+                         }  
+                    });
+    }
+function fnValidateCreateForm(){
+  
+  var isValid;
+  if($('#Competitors').combobox('getValue') != '')
+  { $('#CompetitorsFrame').removeClass('error');
+    $('#CompetitorsError').html('');
+  }
+  else
+  { $('#CompetitorsFrame').addClass('error');
+    $('#CompetitorsError').html('This field is required.');
+  }
+  
+  if($("#createform").valid() == true && $('#Competitors').combobox('getValue') != '')
+     return true;
+  else
+  {  $('#loadingbanner').hide(); 
+     return false;
+  }
+
+}
+function beforeSubmit(formData, jqForm, options){
+  $(formData).each(function(i, data){ 
+           if(data.name == 'effdate')
+             data.value = Date.parse($('#edate').datepicker('getDate'));
+           if(data.name == 'exdate')
+             data.value = Date.parse($('#exdate').datepicker('getDate'));
+        });
+  fnProcessForm(formData);
+  $('#loadingbanner').hide();
+  return false;
+}
+function fnProcessForm(formData){
+var oTable = $('#price_maintenance').dataTable();
+                  var sData = new Array();
+                  oTable.$('input:checked').each(function(i, sel){ sData.push($(sel).val()); });
+                  oTable = $('#formtable').dataTable();
+                  oTable.fnClearTable();
+                  //console.log(formData);
+                  console.log(sData);
+                  Nexprice.SubmitForm(sData, formData, $('#operation').val(), function(result, event){
+                     
+                      if(event.type == 'exception') {
+                      console.log('exception');
+                      console.log('SubmitForm');  
+                      console.log(event);  
+                      alert(event.message);
+                      $('#Reset').click();
+                      $('#loadingbanner').hide();      
+                      } else { 
+                        console.log(result);
+                        if(result.length > 0)
+                           oTable.fnAddData(result);  
+                        $('#loadingbanner').hide(); 
+                       }
+                  });
+}
+function fixEscapedHTML(html, fieldid) {
+  var value = $("<div />").html(html).text();
+  setTimeout(function(){
+      $('#' + fieldid).combogrid('textbox').val(value);
+}, 10)
+}
+function processSerialize($form, options){
+  $('#existingids').val($('#price_maintenance').dataTable().fnGetColumnData(aColumnIndex['Id']).join('-'));
+}
+
+function startSearch(formData, jqForm, options){
+   console.log(formData);
+   console.log($('#submitsearch').html());
+   console.log($('#submitsearch').val());
+   
+  $('#loadingbanner').show();
+  var existingids =  $('#price_maintenance').dataTable().fnGetColumnData(aColumnIndex['Id'], true, false, true);
+  fnClearTable();
+
+    console.log('start search');
+
+    Nexprice.getData(existingids ,formData, '{!$Setup.nexPrice_Settings__c.Salesforce_Limit_Per_Call__c}', '0', function(result, event){ 
+          if(event.type == 'exception') {
+            console.log('getData');
+            console.log(event);
+            alert(event.message);
+            $('#Reset').click();
+            $('#loadingbanner').hide();               
+            } else {
+             if(result.rows.length > 0){
+                console.log('getData Result');
+                console.log(result);
+                fnAddData(result.rows, $('#price_maintenance').dataTable());
+                $('#submitsearch').html('Search');
+                console.log($('#submitsearch').html());
+                var pages = result.total / {!$Setup.nexPrice_Settings__c.Salesforce_Record_Limit__c}
+                var pageoptions = '';
+                for(var i=0; i<pages; i++)
+                  pageoptions += '<option value="' + i + '">Page ' + (i + 1) + '</option>';
+                $('#pageselect').empty();
+                $('#pageselect').html(pageoptions);
+                $('#pageselect').removeAttr('disabled');
+                onChangeMultiPage(formData);
+              }
+              else
+              { $('#loadingbanner').hide(); 
+                $('#pageselect').empty();
+                $('#pageselect').html('<option>--None--</option>');
+                $('#pageselect').attr('disabled', 'disabled');
+              }
+            }
+   });
+  
+  return false;
+}
+function onChangeMultiPage(formData){
+
+$('#pageselect').change(function(){
+                 
+                 var existingids =  $('#price_maintenance').dataTable().fnGetColumnData(aColumnIndex['Id'], true, false, true);
+                 fnClearTable();
+                 $('#loadingbanner').show();
+                 var off = {!$Setup.nexPrice_Settings__c.Salesforce_Limit_Per_Call__c} * $('#pageselect').val();
+                 console.log(off);
+                 console.log(existingids);
+                 Nexprice.getData(existingids ,formData, '{!$Setup.nexPrice_Settings__c.Salesforce_Limit_Per_Call__c}', off.toString() , function(result, event){ 
+                          if(event.type == 'exception') {
+                           $('#loadingbanner').hide();
+                           console.log(event);
+                           alert(error.message);
+                           $('#Reset').click();   
+                          } else {
+                            console.log(existingids);
+                            console.log(formData);
+                            console.log(result);
+                            fnAddData(result.rows, $('#price_maintenance').dataTable());  
+                          } 
+                      });
+  });
+
+}
+function processJson(data) {
+    fnAddData(data, $('#price_maintenance').dataTable());
+}
+function fnFormatDetails( nTr, type )
+{
+   var aData = $('#' + type).dataTable().fnGetData( nTr);
+   var toreturn = '';
+   console.log(type);
+   if(type == 'price_maintenance')
+   toreturn = $("<div />").html(aData.Inner_Table__c).text();
+   else if(type == 'formtable')
+   toreturn = $("<div />").html(aData.Simulate_Table__c).text();
+   else if(type == 'audittable')
+   toreturn = $("<div />").html(aData.Inner_Table__c).text();
+   else if(type == 'quotetable')
+   toreturn = $("<div />").html(aData.Inner_Table__c).text();
+   else if(type == 'pendingtable')
+   toreturn = $("<div />").html(aData.Inner_Table__c).text();
+
+   return toreturn;
+}
+function fnInitPage(){ 
+$('#loadingbanner').show();
+$('#acct-search').combogrid({  
+        panelWidth:1200,  
+        value:'',      
+        idField:'Id', 
+        delay: 500, 
+        textField:'ShipTo',
+        onFocus: function(){ alert('Hi!'); },
+        remoteSort:false,  
+        keyHandler: {
+          query: function(q){
+                  var g = $(this).combogrid('grid');                
+                  Nexprice.FetchMyAccounts($('#UserLookup').combogrid('getValue'), '','', q, function(result, event){
+                    if(event.type == 'exception') {
+                      error.apply(this, arguments);         
+                    } else {   
+                      g.datagrid('loadData', result);         
+                    }
+                  });
+           }
+        },
+        columns:[[ 
+               {field:'Corp',title:'Corporate Account',width:240, sortable:true, sorter: function(a, b){
+                 var va = (a === null) ? "" : "" + a,
+                 vb = (b === null) ? "" : "" + b;
+                 return va > vb ? 1 : ( va === vb ? 0 : -1 );
+               }},
+               {field:'SoldTo',title:'Sold To Account',width:240, sortable:true, sortable:true, sorter: function(a, b){
+                 var va = (a === null) ? "" : "" + a,
+                 vb = (b === null) ? "" : "" + b;
+                 return va > vb ? 1 : ( va === vb ? 0 : -1 );
+               }},
+               {field:'ShipTo',title:'Ship To',width:200, sortable:true, sorter: function(a, b){
+                 var va = (a === null) ? "" : "" + a,
+                 vb = (b === null) ? "" : "" + b;
+                 return va > vb ? 1 : ( va === vb ? 0 : -1 );
+               }},
+               {field:'ShipToAcctNum',title:'Account #',width:90, sortable:true, sortable:true, sorter: function(a, b){
+                 var va = (a === null) ? "" : "" + a,
+                 vb = (b === null) ? "" : "" + b;
+                 return va > vb ? 1 : ( va === vb ? 0 : -1 );
+               }},
+               {field:'ShipCity',title:'City',width:90, sortable:true, sortable:true, sorter: function(a, b){
+                 var va = (a === null) ? "" : "" + a,
+                 vb = (b === null) ? "" : "" + b;
+                 return va > vb ? 1 : ( va === vb ? 0 : -1 );
+               }},
+               {field:'ShipState',title:'State',width:40, sortable:true, sortable:true, sorter: function(a, b){
+                 var va = (a === null) ? "" : "" + a,
+                 vb = (b === null) ? "" : "" + b;
+                 return va > vb ? 1 : ( va === vb ? 0 : -1 );
+               }},
+               {field:'OwnerName',title:'Owner',width:100, sortable:true, sortable:true, sorter: function(a, b){
+                 var va = (a === null) ? "" : "" + a,
+                 vb = (b === null) ? "" : "" + b;
+                 return va > vb ? 1 : ( va === vb ? 0 : -1 );
+               }}
+        ]],
+        loader: function(param,success,error){
+            Nexprice.FetchMyAccounts($('#UserLookup').combogrid('getValue'), '', '','', function(result, event){
+   
+             if(event.type == 'exception') {
+                
+                error.apply(this, arguments);         
+             } else {      
+                success(result);         
+             }
+         }); 
+        },
+        onSelect: function(param){ 
+           fnClearTable();
+           fixEscapedHTML($('#acct-search').combogrid('getText'), 'acct-search'); 
+      },
+      onChange: function(newValue, oldValue){ 
+
+           console.log('old:' + oldValue + ' new:' + newValue); 
+           if(newValue != undefined && newValue != '' && newValue != oldValue && newValue != sPrevAccount)
+           { console.log('old:' + oldValue + ' new:' + newValue); 
+             sPrevAccount = newValue; 
+             $('#loadingbanner').show();
+             fnClearTable();
+             Nexprice.getAccount(newValue, function(result, event){ 
+                 var formDataObj = new Object();
+                 if(typeof result.SAP_Partner_Function__c == 'undefined' && 
+                    typeof result.SAP_Corporate_Account_Id__c != 'undefined')
+                 {  formDataObj.name = 'Account_Corp_Account_Id_Ext__c';
+                    formDataObj.value = result.SAP_Corporate_Account_Id__c;
+                 }
+                 else if(typeof result.SAP_Sold_To_Account_Id__c != 'undefined')
+                 {
+                    formDataObj.name = 'Account_Sold_To_Id_Ext__c';
+                    formDataObj.value = result.SAP_Sold_To_Account_Id__c
+                 }
+                 else
+                 {
+                    formDataObj.name = 'Account__c'
+                    formDataObj.value = result.Id;
+                 }
+                 console.log(result);
+                 var formData = new Array();
+                 formData.push(formDataObj);
+                 startSearch(formData, null, null);
+             });
+           }
+        }
+       });
+    
+    $('#acct-search').combogrid('setValue', '{!$CurrentPage.parameters.id}');
+    $('#acct-search').combogrid('setText', "{!$CurrentPage.parameters.name}"); 
+    $('#acct-search').combogrid('textbox').focusin(function(){ 
+        $('#acct-search').combogrid('clear');
+     });
+     $('#acct-search-container').click(function(){ 
+        $('#acct-search').combogrid('enable');
+        $('#mimipanel').hide();      
+     });
+     $('#hidesearch').click(function(){ 
+        $('#acct-search').combogrid('enable');
+        $('#mimipanel').hide();      
+     });
+    $('#acct-search').combogrid('setValue', '{!$CurrentPage.parameters.id}');
+    $('#acct-search').combogrid('setText', "{!$CurrentPage.parameters.name}");
+    
+    $('#ph6').combobox({
+          onSelect: function(param){
+             Nexprice.FetchPH7($('#ph6').combobox('getValue'),function(result, event){
+              if(event.type == 'exception') {
+                error.apply(this, arguments);  
+                alert(error.message);   
+              } else {      
+                $('#ph7').combobox('destroy');    
+                var phi7 = '<select class="mimiselect easyui-combobox" id = "ph7" style="width:225px;" data-label="Material_SubSegment__c" name="PH7__c" data-matfieldname="PH7_SubSegment__c" data-name="Subsegments" >';
+                phi7 += $('<div/>').html(result).text() + '</select>';
+                $('#ph7holder').append(phi7);
+                console.log(result);
+                $('#ph7').combobox();     
+             }
+          }); 
+             
+          }
+        });
+        $('#ph7').combobox();
+        $('#ph7').combobox('disable');
+    
+    
+    
+ $('#mimipanel').hide();
+ $('#mimi').click(function() {  
+         
+          $('#mimipanel').toggle();
+         
+          if($('#mimipanel').is(':hidden'))
+          {
+             $('#acct-search').combogrid('enable'); 
+          }
+          else
+          {
+          $('#shtoowners').combogrid('setValue', $('#UserLookup').combogrid('getValue'));
+          $('#shtoowners').combogrid('setText', $('#UserLookup').combogrid('getText'));
+          $('#acct-search').combogrid('setValue', '');
+          $('#acct-search').combogrid('setText', '');
+          $('#acct-search').combogrid('disable');
+          fnClearTable();
+          }
+          
+       });  
+$('.UserLookup').combogrid({  
+        panelWidth:450,  
+        value:'',   
+        delay: 500,    
+        idField:'User__c',  
+        textField:'Full_Name__c', 
+        required: true,
+        hasDownArrow: true,
+        keyHandler: {
+          query: function(q){
+                  var bHierarchy = {!$User.nexPrice_Disregard_Hierarchy__c};
+                  var g = $(this).combogrid('grid');
+                  var f = '';
+                  if(bHierarchy)
+                  {  f += 'Active__c = \'TRUE\' AND Role__c = \'AD Sales\''; }
+                  else
+                     f += 'Active__c = \'TRUE\' AND Role_Id__c = \'{!$user.UserRoleId}\'';
+
+                  Nexprice.getComboGridData(q, 'Role_Reportee__c', 'First_Name__c, Last_Name__c, Full_Name__c, User__c-id', f , 'Name ASC', '1000', function(result, event){
+                    if(event.type == 'exception') {
+                      error.apply(this, arguments);         
+                    } else {      
+                      g.datagrid('loadData', result);         
+                    }
+                  });
+           }
+        },
+        columns:[[  
+               {field:'First_Name__c',title:'First Name',width:225,sortable:true, sorter: function(a, b){
+                 var va = (a === null) ? "" : "" + a,
+                 vb = (b === null) ? "" : "" + b;
+                 return va > vb ? 1 : ( va === vb ? 0 : -1 );
+               }},  
+               {field:'Last_Name__c',title:'Last Name',width:225, sortable:true, sorter: function(a, b){
+                 var va = (a === null) ? "" : "" + a,
+                 vb = (b === null) ? "" : "" + b;
+                 return va > vb ? 1 : ( va === vb ? 0 : -1 );
+               }} 
+        ]],
+        loader: function(param,success,error){
+           var bHierarchy = {!$User.nexPrice_Disregard_Hierarchy__c};
+           var f = '';
+           if(bHierarchy)
+           {  f += 'Active__c = \'TRUE\' AND Role__c = \'AD Sales\''; }
+           else
+              f += 'Active__c = \'TRUE\' AND Role_Id__c = \'{!$user.UserRoleId}\''; 
+
+            Nexprice.getComboGridData('', 'Role_Reportee__c', 'First_Name__c, Last_Name__c, Full_Name__c, User__c-id', f , 'Name ASC', '1000', function(result, event){
+
+             if(event.type == 'exception') {
+                error.apply(this, arguments);         
+             } else {      
+               success(result);         
+             }
+         });
+        }
+         
+    });
+ $('#UserLookup').combogrid({
+   onSelect: function(param){   
+              
+              fixEscapedHTML($('#UserLookup').combogrid('getText'), 'UserLookup');        
+              var oTable = $('#price_maintenance').dataTable();
+              fnClearTable();
+              var tab = $('#main').tabs('getSelected');
+              var index = $('#main').tabs('getTabIndex',tab);
+              var g = $('#acct-search').combogrid('grid');
+               
+              if(index == 0)
+              {   
+                 $("#loadtarget").empty();
+              }
+              if(index == 1){ 
+                 fnGetQuotes();
+              }
+              if(index == 2){ 
+                 fnGetAudit();
+              }
+              if(index == 3){ 
+                 $("#loadtarget").empty();
+              }              
+              if(index == 4){ 
+                 $("#loadtarget").empty();
+                
+                 console.log('4 '+$('#UserLookup').combogrid('getValue'));
+                 fnGetPending();
+              } 
+            }
+    });
+    $('.UserLookup').combogrid('textbox').focusin(function(){ 
+        $(this).parent().prev().combogrid('clear');
+     });
+ $('#nextoolbar2').hide();
+
+ $( ".helpicon" ).button({icons: {primary: "ui-icon-help"},text: false });
+ $('#ClearFilters').click(function(){ 
+   $('#price_maintenance').find('.textinput, .selectinput').each(function(i, ti){ $(this).val($(this).attr('name')); 
+      $('#price_maintenance').dataTable().fnFilter('', aColumnIndex[$(this).attr('data-field')]);
+   });
+   $('#price_maintenance').find('.dateinputfrom, .dateinputto, .numberinputfrom, .numberinputto').each(function(){
+    $(this).val($(this).attr('name')); 
+   }); 
+   $('#price_maintenance').dataTable().fnDraw();
+ });
+  $('#ClearFilters2').click(function(){ 
+   $('#quotetable').find('.textinput, .selectinput').each(function(i, ti){ $(this).val($(this).attr('name')); 
+      $('#quotetable').dataTable().fnFilter('', aColumnIndex_Draft[$(this).attr('data-field')]);
+   });
+   $('#quotetable').find('.dateinputfrom, .dateinputto, .numberinputfrom, .numberinputto').each(function(){
+    $(this).val($(this).attr('name')); 
+   }); 
+   $('#quotetable').dataTable().fnDraw();
+ });
+
+ 
+
+ $('#shto').combogrid({  
+        panelWidth:1200,  
+        value:'',      
+        idField:'Id', 
+        delay: 500, 
+        textField:'ShipTo',
+        onFocus: function(){ alert('Hi!'); },
+        remoteSort:false,  
+        keyHandler: {
+          query: function(q){
+                  var g = $(this).combogrid('grid');  
+                  var sold = '';
+                  console.log($('#sldto').combogrid('getValue'));
+                  if($('#sldto').combogrid('getValue') != '--None--')
+                    sold = $('#sldto').combogrid('getValue');
+                     
+                  Nexprice.FetchMyAccounts($('#shtoowners').combogrid('getValue'),  sold, '',q, function(result, event){
+                    if(event.type == 'exception') {
+                      console.log(event);
+                      error.apply(this, arguments);         
+                    } else {    
+                      console.log('Result size: ' + result.length);  
+                      g.datagrid('loadData', result); 
+                      console.log(result);        
+                    }
+                  });
+           }
+        },
+        columns:[[ 
+               {field:'Corp',title:'Corporate Account',width:240, sortable:true, sorter: function(a, b){
+                 var va = (a === null) ? "" : "" + a,
+                 vb = (b === null) ? "" : "" + b;
+                 return va > vb ? 1 : ( va === vb ? 0 : -1 );
+               }},
+               {field:'SoldTo',title:'Sold To Account',width:240, sortable:true, sortable:true, sorter: function(a, b){
+                 var va = (a === null) ? "" : "" + a,
+                 vb = (b === null) ? "" : "" + b;
+                 return va > vb ? 1 : ( va === vb ? 0 : -1 );
+               }},
+               {field:'ShipTo',title:'Ship To',width:200, sortable:true, sorter: function(a, b){
+                 var va = (a === null) ? "" : "" + a,
+                 vb = (b === null) ? "" : "" + b;
+                 return va > vb ? 1 : ( va === vb ? 0 : -1 );
+               }},
+               {field:'ShipToAcctNum',title:'Account #',width:90, sortable:true, sortable:true, sorter: function(a, b){
+                 var va = (a === null) ? "" : "" + a,
+                 vb = (b === null) ? "" : "" + b;
+                 return va > vb ? 1 : ( va === vb ? 0 : -1 );
+               }},
+               {field:'ShipCity',title:'City',width:90, sortable:true, sortable:true, sorter: function(a, b){
+                 var va = (a === null) ? "" : "" + a,
+                 vb = (b === null) ? "" : "" + b;
+                 return va > vb ? 1 : ( va === vb ? 0 : -1 );
+               }},
+               {field:'ShipState',title:'State',width:40, sortable:true, sortable:true, sorter: function(a, b){
+                 var va = (a === null) ? "" : "" + a,
+                 vb = (b === null) ? "" : "" + b;
+                 return va > vb ? 1 : ( va === vb ? 0 : -1 );
+               }},
+               {field:'OwnerName',title:'Owner',width:100, sortable:true, sortable:true, sorter: function(a, b){
+                 var va = (a === null) ? "" : "" + a,
+                 vb = (b === null) ? "" : "" + b;
+                 return va > vb ? 1 : ( va === vb ? 0 : -1 );
+               }}
+        ]],
+        loader: function(param,success,error){
+            
+            Nexprice.FetchMyAccounts($('#shtoowners').combogrid('getValue'), $('#sldto').combogrid('getValue'),'','', function(result, event){
+   
+             if(event.type == 'exception') {
+                
+                error.apply(this, arguments);         
+             } else {      
+                success(result);         
+             }
+         }); 
+        },
+        
+        onSelect: function(param){ 
+            fixEscapedHTML($('#shto').combogrid('getText'), 'shto');
+            $('#sldto').combogrid('disable');
+        }
+    });
+    $('#shto').combogrid('textbox').focusin(function(){ 
+        $('#shto').combogrid('clear');
+        $('#sldto').combogrid('enable');
+     });  
+$('#sldto').combogrid({  
+        panelWidth:1200,  
+        value:'',      
+        idField:'Id', 
+        delay: 500, 
+        textField:'SoldTo',
+        onFocus: function(){ alert('Hi!'); },
+        remoteSort:false,  
+        keyHandler: {
+          query: function(q){
+                  var g = $(this).combogrid('grid');                
+                  Nexprice.FetchMyAccounts($('#shtoowners').combogrid('getValue'), '', 'SoldTo',q,function(result, event){
+                    if(event.type == 'exception') {
+                      error.apply(this, arguments);         
+                    } else {      
+                      g.datagrid('loadData', result);         
+                    }
+                  });
+           }
+        },
+        columns:[[ 
+               {field:'Corp',title:'Corporate Account',width:240, sortable:true, sorter: function(a, b){
+                 var va = (a === null) ? "" : "" + a,
+                 vb = (b === null) ? "" : "" + b;
+                 return va > vb ? 1 : ( va === vb ? 0 : -1 );
+               }},
+               {field:'SoldTo',title:'Sold To Account',width:240, sortable:true, sortable:true, sorter: function(a, b){
+                 var va = (a === null) ? "" : "" + a,
+                 vb = (b === null) ? "" : "" + b;
+                 return va > vb ? 1 : ( va === vb ? 0 : -1 );
+               }},
+               {field:'ShipTo',title:'Ship To',width:200, sortable:true, sorter: function(a, b){
+                 var va = (a === null) ? "" : "" + a,
+                 vb = (b === null) ? "" : "" + b;
+                 return va > vb ? 1 : ( va === vb ? 0 : -1 );
+               }},
+               {field:'ShipToAcctNum',title:'Account #',width:90, sortable:true, sortable:true, sorter: function(a, b){
+                 var va = (a === null) ? "" : "" + a,
+                 vb = (b === null) ? "" : "" + b;
+                 return va > vb ? 1 : ( va === vb ? 0 : -1 );
+               }},
+               {field:'ShipCity',title:'City',width:90, sortable:true, sortable:true, sorter: function(a, b){
+                 var va = (a === null) ? "" : "" + a,
+                 vb = (b === null) ? "" : "" + b;
+                 return va > vb ? 1 : ( va === vb ? 0 : -1 );
+               }},
+               {field:'ShipState',title:'State',width:40, sortable:true, sortable:true, sorter: function(a, b){
+                 var va = (a === null) ? "" : "" + a,
+                 vb = (b === null) ? "" : "" + b;
+                 return va > vb ? 1 : ( va === vb ? 0 : -1 );
+               }},
+               {field:'OwnerName',title:'Owner',width:100, sortable:true, sortable:true, sorter: function(a, b){
+                 var va = (a === null) ? "" : "" + a,
+                 vb = (b === null) ? "" : "" + b;
+                 return va > vb ? 1 : ( va === vb ? 0 : -1 );
+               }}
+        ]],
+        loader: function(param,success,error){
+            Nexprice.FetchMyAccounts($('#shtoowners').combogrid('getValue'), '', 'SoldTo','', function(result, event){
+   
+             if(event.type == 'exception') {
+                
+                error.apply(this, arguments);         
+             } else {      
+                success(result);         
+             }
+         }); 
+        },
+        
+        onSelect: function(param){ fixEscapedHTML($('#sldto').combogrid('getText'), 'sldto'); }
+    });
+    $('#mat').combogrid({  
+        panelWidth:650,  
+        value:'',      
+        idField:'Id',  
+        textField:'Name',
+        delay: 500,
+        keyHandler: {
+          query: function(q){
+                 var f = '(NOT NAME LIKE \'%DO NOT USE%\')';
+                 if($('#multiorgs').combobox('getValue') != 'All Sales Orgs')
+                    f += ' and Sales_Org_Code__c = \'' + $('#multiorgs').combobox('getValue') + '\'';
+                 if($('#multidivs').combobox('getValue') != 'All Divisions')
+                    f += ' and Division_Code__c = \'' + $('#multidivs').combobox('getValue') + '\''; 
+                      
+                  var g = $(this).combogrid('grid');
+                  Nexprice.getComboGridData(q, 'Material_Sales_Data2__c', 'Name, Material_Number__c,  Sales_Org_Code__c, Division_Code__c', f, 'Name ASC', '1000', function(result, event){
+                    if(event.type == 'exception') {
+                      error.apply(this, arguments);         
+                    } else {      
+                      g.datagrid('loadData', result);         
+                    }
+                  });
+           }
+        },
+        columns:[[  
+               {field:'Name',title:'Name',width:350},  
+               {field:'Sales_Org_Code__c', title:'Sales Org',width:150},
+               {field:'Division_Code__c', title:'Division',width:150}
+        ]],
+        loader: function(param,success,error){
+                 var f = '(NOT NAME LIKE \'%DO NOT USE%\')';
+                 if($('#multiorgs').combobox('getValue') != 'All Sales Orgs')
+                    f += ' and Sales_Org_Code__c = \'' + $('#multiorgs').combobox('getValue') + '\'';
+                 if($('#multidivs').combobox('getValue') != 'All Divisions')
+                    f += ' and Division_Code__c = \'' + $('#multidivs').combobox('getValue') + '\'';   
+                    
+            Nexprice.getComboGridData('', 'Material_Sales_Data2__c', 'Name, Sales_Org_Code__c, Division_Code__c', f , 'Name ASC', '1000',function(result, event){
+
+             if(event.type == 'exception') {
+                error.apply(this, arguments);         
+             } else {      
+               success(result);         
+             }
+         });
+        },
+        onSelect: function(param){ 
+            fixEscapedHTML($('#mat').combogrid('getText'), 'mat');
+            $('#matbasecode').combogrid('disable');
+        }
+    });
+    
+    $('#mat').combogrid('textbox').focusin(function(){ 
+        $('#mat').combogrid('clear');
+        $('#matbasecode').combogrid('enable');
+     });
+    
+    $('#matbasecode').combogrid({  
+        panelWidth:550,  
+        value:'',      
+        idField:'Material_Base_Code__c',  
+        textField:'Material_Base_Code_Description__c', 
+        delay: 500,
+        keyHandler: {
+          query: function(q){
+                 var f = '(NOT NAME LIKE \'%DO NOT USE%\')';
+                  
+                    
+                  var g = $(this).combogrid('grid');
+                  Nexprice.getComboGridData(q, 'Material_Base_Code__c', 'Name, Material_Base_Code__c, Material_Base_Code_Description__c', f, 'Material_Base_Code_Description__c ASC', '1000', function(result, event){
+                    if(event.type == 'exception') {
+                      error.apply(this, arguments);         
+                    } else {      
+                      g.datagrid('loadData', result);         
+                    }
+                  });
+           }
+        },
+        columns:[[  
+               {field:'Material_Base_Code_Description__c',title:'Name',width:350},  
+               {field:'Material_Base_Code__c', title:'Code',width:200}
+
+        ]],
+        loader: function(param,success,error){
+                 var f = '(NOT NAME LIKE \'%DO NOT USE%\')';
+                                     
+            Nexprice.getComboGridData('', 'Material_Base_Code__c', 'Name,Material_Base_Code__c, Material_Base_Code_Description__c', f , 'Material_Base_Code_Description__c ASC', '1000',function(result, event){
+
+             if(event.type == 'exception') {
+                error.apply(this, arguments);         
+             } else {      
+               success(result);         
+             }
+         });
+        },
+        
+        onSelect: function(param){
+            $('#mat').combogrid('disable');
+        }
+    });
+    
+    $('#matbasecode').combogrid('textbox').focusin(function(){ 
+        $('#matbasecode').combogrid('clear');
+        $('#mat').combogrid('enable');
+    });
+    
+    $('#shto').combogrid('setValue', '--None--');
+    $('#sldto').combogrid('setValue', '--None--');
+    $('#mat').combogrid('setValue', '--None--');
+    $('#matbasecode').combogrid('setValue', '--None--');
+    
+
+ $('#SelectAll').click(function(){ 
+
+     $('#price_maintenance').find('input:checkbox').not('input[disabled="disabled"]').attr('checked', 'checked');
+     fnEvaluateTable($('#price_maintenance' ).dataTable()); 
+ });
+ $('#SelectAll2').click(function(){ 
+
+     $('#quotetable').find('input:checkbox').not('input[disabled="disabled"]').attr('checked', 'checked');
+ });
+ $('#Reset').click(function(){ 
+
+     $('#price_maintenance').find('input:checkbox').not('input[disabled="disabled"]').removeAttr('checked'); 
+     fnEvaluateTable($('#price_maintenance' ).dataTable()); 
+ });
+  $('#Reset2').click(function(){ 
+
+     $('#quotetable').find('input:checkbox').not('input[disabled="disabled"]').removeAttr('checked'); 
+ });
+ $('#setprice').click(function(){
+   if($('#mm1').menu('findItem', 'Set Price').disabled == false)
+   {
+     $('#loadtarget').empty();
+     var arr = new Array();
+     $('#price_maintenance').find('input:checked').each(function(i, sel){ arr.push($(sel).val()); });
+       if(arr.length > 0)
+         $('#loadtarget').load('/apex/Price_Request_Form?ids=' + arr.join('-'), function() {
+            fnInitForm();
+         });
+   }
+ });
+ $('#adjust').click(function(){
+   if($('#mm1').menu('findItem', 'Adjust Price').disabled == false)
+   {
+     $('#loadtarget').empty();
+     var arr = new Array();
+     $('#price_maintenance').find('input:checked').each(function(i, sel){ arr.push($(sel).val()); });
+       if(arr.length > 0)
+         $('#loadtarget').load('/apex/Price_Request_Adjust_Form?ids=' + arr.join('-'), function() {
+            fnInitForm();
+         });
+   }
+ });
+ 
+ 
+ $('#mimipanel').ajaxForm({  
+        dataType:  'json', 
+        beforeSubmit: startSearch,
+        beforeSerialize: processSerialize 
+    });
+ $('#clearsearch, #cleartable').button();
+
+ 
+ $('#cleartable').click(function(){ fnClearTable(); $('#submitsearch').html('Search');});
+ $('#sb1,#sb2').splitbutton({plain:false});
+ 
+ $('#UserLookup').combogrid('setValue', '{!$User.Id}');
+ $('#UserLookup').combogrid('setText', "{!$User.FirstName} {!$User.LastName}");
+        
+ $('#main').tabs({  
+        border:false,  
+        onSelect:function(title, index){
+          $('#nextoolbar').hide();
+          $('#nextoolbar2').hide();
+          if(index == 0)
+          {
+            console.log(index);
+            $('#nextoolbar').show();
+          }
+          if(index == 1)
+          {
+             $('#nextoolbar2').show();
+             fnGetQuotes();
+          }
+          if(index == 2)
+          {
+             $('#nextoolbar2').show();
+             fnGetAudit();
+          }
+          if(index == 4)
+          {console.log('inside 4 tab index check'+$('#UserLookup').combogrid('getValue'));
+             $('#nextoolbar2').show();
+             fnGetPending();
+          }
+          
+        }
+ });
+
+}
+
+function fnGetAudit(){
+var arr = new Array();
+arr.push($('#UserLookup').combogrid('getValue'));
+Nexprice.getAuditnew(arr, function(result, event){
+                         if(event.type == 'exception') {
+                           console.log('getAuditnew');
+                           console.log(event);      
+                          } else { 
+                             $('#audittable').dataTable().fnClearTable();
+                             $('#audittable').dataTable().fnAddData(result);
+                             fnUpdateFilterSelect('audittable', aColumnIndex_Draft);
+                          }
+           });
+}
+function fnGetQuotes(){
+Nexprice.getQuotes($('#UserLookup').combogrid('getValue'), function(result, event){
+                         if(event.type == 'exception') {
+                           console.log('getQuotes');
+                           console.log(event);      
+                          } else { 
+                             $('#quotetable').dataTable().fnClearTable();
+                             $('#quotetable').dataTable().fnAddData(result);
+                             fnUpdateFilterSelect('quotetable', aColumnIndex_Draft);
+                          }
+           });
+}
+function fnGetPending(){
+console.log('inside pending function');
+Nexprice.getPending($('#UserLookup').combogrid('getValue'), function(result, event){
+console.log('user is:'+$('#UserLookup').combogrid('getValue'));
+                         if(event.type == 'exception') {
+                           console.log('getpending');
+                           console.log(event);      
+                          } else { 
+                             $('#pendingtable').dataTable().fnClearTable();
+                             $('#pendingtable').dataTable().fnAddData(result);
+                             
+                          }
+           });
+}
+
+function fnInitTable(){
+  $('#price_maintenance').dataTable({
+                "bDestroy": true,
+                "fnDrawCallback": function( oSettings ) {
+                   $('.row_selected').removeClass('row_selected');
+                   $('.row_error').removeClass('row_error'); 
+                },
+                "bSort": true,
+                "bPaginate": false,
+                "sScrollY": "400px",
+                "sAjaxDataProp": "accounts",
+                "sErrMode": false,
+                "sDom": '<"pricepager">frtip',
+                "bAutoWidth": false,
+                 "aoColumnDefs": [
+                    { "aTargets":[ "Open"], sClass:"Open" ,sWidth:"2px", "bAutoWidth": false},
+                    { "aTargets":[ "Select"], sClass:"Select", sWidth:"2px", "bAutoWidth": false },
+                    { "aTargets":[ "Sold_To" ], "mData": "Account_Sold_To__c", sClass:"Account_Sold_To__c",sWidth:"2px", "bAutoWidth": false },
+                    { "aTargets":[ "Ship_To" ], "mData": "Account_Name__c", sClass:"Account_Name__c",sWidth:"2px", "bAutoWidth": false },
+                    { "aTargets":[ "Account_Number" ], "mData": "Account_Number__c", sClass:"Account_Number__c",sWidth:"2px", "bAutoWidth": false },
+                    { "aTargets":[ "Account_City" ], "mData": "Account_City__c", sClass:"Account_City__c",sWidth:"2px", "bAutoWidth": false },
+                    { "aTargets":[ "Material" ], "mData": "Material_Name__c", sClass:"Material_Name__c",sWidth:"2px", "bAutoWidth": false },
+                    { "aTargets":[ "Base_Code" ], "mData": "Material_Base_Code__c", sClass:"Material_Base_Code__c",sWidth:"2px", "bAutoWidth": false },
+                    { "aTargets":[ "Eff_Date" ], "mData": "", sClass:"CSP_Effective_Date__c",sWidth:"2px", "bAutoWidth": false,
+                      "mData": function ( source, type, val ) {
+                          if (type === 'set') {
+                              return;
+                          }
+                          else if (type === 'display' || type === 'filter') { 
+                          if (source.CSP_Effective_Date__c != '' && source.CSP_Effective_Date__c != null){
+                             var CSPDate = new Date(source.CSP_Effective_Date__c);
+                             return CSPDate.getMonth()+1 + "/" + CSPDate.getDate() + "/" + CSPDate.getFullYear();}
+                          else return '';}
+                         
+                          else if (type === 'sort') { 
+                           if((typeof source.CSP_Effective_Date__c == 'undefined') || source.CSP_Effective_Date__c == null)
+                              return '';
+                            else 
+                             return new Date(source.CSP_Effective_Date__c);
+                          }
+                          return source.CSP_Effective_Date__c;
+                      }
+                    },
+                    { "aTargets":[ "Exp_Date" ], sClass:"CSP_Expiration_Date__c",sWidth:"2px", "bAutoWidth": false,
+                      "mData": function ( source, type, val ) {
+                          if (type === 'set') {
+                              return;
+                          }
+                          else if (type === 'display' || type === 'filter') { 
+                              if (source.CSP_Expiration_Date__c != '' && source.CSP_Expiration_Date__c != null){
+                                 var ReqDate = new Date(source.CSP_Expiration_Date__c);
+                                 return ReqDate.getMonth()+1 + "/" + ReqDate.getDate() + "/" + ReqDate.getFullYear();}
+                              else return '';}
+                          
+                          else if (type === 'sort') { 
+                           if((typeof source.CSP_Expiration_Date__c == 'undefined') || source.CSP_Expiration_Date__c == null)
+                              return '';
+                            else 
+                             return new Date(source.CSP_Expiration_Date__c);
+                          }
+                          return source.CSP_Expiration_Date__c;
+                      }
+                    },
+                    { "aTargets":[ "Avg_Order" ], sClass:"Avg_Order__c",sWidth:"2px", "bAutoWidth": false, 
+                      "mData": function ( source, type, val ) {
+                          if (type === 'set') {
+                              return;
+                          }
+                          else if (type === 'display') { return source.Avg_Order__c;}
+                          else if (type === 'filter') {  return source.Avg_Order__c; }
+                          else if (type === 'sort') { return source.Avg_Order_Qty__c; }
+                          return source.Target__c;
+                      }
+                    },
+                    { "aTargets":[ "Est_Order" ], sClass:"Estimated_Order_Quantity__c",sWidth:"2px", "bAutoWidth": false,
+                      "mData": function ( source, type, val ) {
+                          if (type === 'set') {
+                              return;
+                          }
+                          else if (type === 'display') { return source.Estimated_Order_Qty__c;}
+                          else if (type === 'filter') {  return source.Estimated_Order_Qty__c; }
+                          else if (type === 'sort') { return source.Estimated_Order_Quantity__c; }
+                          return source.Target__c;
+                      }
+                    },
+                    { "aTargets":[ "CSP_Tier" ], "mData": "CSP_Tier__c", sClass:"CSP_Tier__c",sWidth:"2px", "bAutoWidth": false },
+                    { "aTargets":[ "CSP" ], sClass:"CSP__c",sWidth:"2px", "bAutoWidth": false,
+                      "mData": function ( source, type, val ) {
+                          if (type === 'set') {
+                              return;
+                          }
+                          else if (type === 'display') { return source.CSP__c;}
+                          else if (type === 'filter') {  return source.CSP__c; }
+                          else if (type === 'sort') { return source.CSP_Price__c; }
+                          return source.CSP__c;
+                      }
+                    
+                    }, 
+                    { "aTargets":[ "TPI" ], sClass:"TPI__c",sWidth:"2px", "bAutoWidth": false,
+                      "mData": function ( source, type, val ) {
+                          if (type === 'set') {
+                              return;
+                          }
+                          else if (type === 'display') { 
+                            if((typeof source.TPI__c == 'undefined') || source.TPI__c == null)
+                              return '';
+                            else 
+                              return (source.TPI__c + '%');
+                          }
+                          else if (type === 'filter') {  return source.TPI__c; }
+                          else if (type === 'sort') { return source.TPI__c; }
+                          return source.TPI__c;
+                      }
+                    },
+                    { "aTargets":[ "Target_Tier" ], "mData": "Target_Tier__c", sClass:"Target_Tier__c",sWidth:"2px", "bAutoWidth": false },
+                    { "aTargets":[ "Target" ], sClass:"Target__c",sWidth:"2px", "bAutoWidth": false, 
+                      "mData": function ( source, type, val ) {
+                          if (type === 'set') {
+                              return;
+                          }
+                          else if (type === 'display') { return source.Target__c;}
+                          else if (type === 'filter') {  return source.Target__c; }
+                          else if (type === 'sort') { return source.Target_Price__c; }
+                          return source.Target__c;
+                      }
+                    },
+                    { "aTargets":[ "Drum_Dep" ],"mData": "Drum_Deposit__c", sClass:"Drum_Deposit__c",sWidth:"2px", "bAutoWidth": false },
+                    { "aTargets":[ "Price_Protection" ], "mData": "Price_Protection__c", sClass:"Price_Protection__c",sWidth:"2px", "bAutoWidth": false },
+                    { "aTargets":[ "Id" ],"mData": "Id", sClass:"Id", bVisible: false,sWidth:"2px", "bAutoWidth": false},
+                    { "aTargets":[ "Has_Open_PRT" ],"mData": "Has_Open_PRT__c", sClass:"Has_Open_PRT__c",sWidth:"2px", "bAutoWidth": false, "bVisible":false},
+                    { "aTargets":[ "Has_Unit_Options" ],"mData": "Has_Unit_Options__c", sClass:"Has_Unit_Options__c",sWidth:"2px", "bAutoWidth": false, "bVisible":false},
+                    { "aTargets":[ "UoMs" ], "mData":"UoMs__c", sClass:"UoMs__c", sWidth:"2px", "bAutoWidth":false, "bVisible":false},
+                    { "aTargets":[ "UoM" ], "mData":"CSP_UoM__c", saClass:"CSP_UoM__c", sWidth:"2px", "bAutoWidth":false, "bVisible":false}
+                    ],
+                  "fnInitComplete": function(oSettings) { 
+                     aColumnIndex = fnGetColumnIndex(oSettings);
+                  },
+                  "fnCreatedRow": function( nRow, aData, iDataIndex ) {
+                    
+                    $('td:eq(' + aColumnIndex['Open'] + ')', nRow).html( '<img class="details_img" src="{!URLFOR($Resource.JQuery_Pricing, '/JQuery_Pricing/images/details_open.png')}">' );
+                    fnSetImgListener(nRow, 'price_maintenance');
+
+                    if(aData.Has_Open_PRT__c == true || aData.Has_Unit_Options__c == false)
+                        $('td:eq(' + aColumnIndex['Select'] + ')', nRow).html( '<input class="select_row" type="checkbox", value="' + aData.Id + '" disabled="disabled">' );
+                    else
+                        $('td:eq(' + aColumnIndex['Select'] + ')', nRow).html( '<input class="select_row" type="checkbox", value="' + aData.Id + '">' );
+                    fnSetCheckboxListener(nRow, $('#price_maintenance').dataTable())
+                    aRecordIds[aData.Id] = iDataIndex;
+                  }         
+              });
+     
+}
+
+function fnSetCheckboxListener(nRow, oTable){
+  $(nRow).find('input:checkbox').click(function(){
+      fnEvaluateTable(oTable);
+  });
+}
+function fnEvaluateTable(oTable){
+
+  var sText = null;
+  var sText2 = null;
+  var bSame = true;
+  var bSame2 = true;
+  var item = $('#mm1').menu('findItem', 'Set Price');
+  var item2 = $('#mm1').menu('findItem', 'Adjust Price');
+         
+  var iSelected = 0;
+         $(".select_row").each(function(i, v){
+           if($(this).attr("checked") == "checked")
+           { iSelected ++;
+             var nTr = this.parentNode.parentNode;
+             aData = oTable.fnGetData( nTr );
+             if(sText == null)
+                sText = aData.UoMs__c
+             else
+               if(sText != aData.UoMs__c)
+                 bSame = false;
+
+             if(sText2 == null)
+               sText2 = aData.CSP_UoM__c;
+             
+             if((sText2 != null && sText2 != aData.CSP_UoM__c) || aData.CSP_UoM__c == '' || aData.CSP_UoM__c == undefined || aData.CSP_UoM__c == null)
+                 bSame2 = false;          
+           }      
+         });
+         
+         if(iSelected == 0) 
+         {    
+              $('#mm1').menu('disableItem', item.target);
+              $('#mm1').menu('disableItem', item2.target);
+         }
+         else
+         {   
+             if(bSame == true) 
+                $('#mm1').menu('enableItem', item.target);
+             else
+                $('#mm1').menu('disableItem', item.target);
+             if(bSame2 == true) 
+                $('#mm1').menu('enableItem', item2.target);
+             else
+                $('#mm1').menu('disableItem', item2.target);
+         }
+}
+function fnSetImgListener(nRow, type){
+$('.details_img', nRow).click(function(){
+        
+        if ( this.src.match('details_close') )
+        {
+           this.src = "{!URLFOR($Resource.JQuery_Pricing, '/JQuery_Pricing/images/details_open.png')}";
+           $('#' + type).dataTable().fnClose( nRow );
+        }else{
+           this.src = "{!URLFOR($Resource.JQuery_Pricing, '/JQuery_Pricing/images/details_close.png')}";
+           $('#' + type).dataTable().fnOpen( nRow, fnFormatDetails(nRow, type ), 'details' ); 
+           $('.innerTable').dataTable({
+                 "bDestroy": true,
+                 "bPaginate": false,
+                 "bLengthChange": false,
+                 "bFilter": false,
+                 "bSort": false,
+                 "bInfo": false
+            });
+         }
+  });
+}
+
+function fnGetColumnIndex(oSettings){
+    var aColumns = new Array();
+    $.each(oSettings.aoColumns, function(c){
+        var mData = oSettings.aoColumns[c].sClass;
+            aColumns[mData] = c;
+    });
+
+    return aColumns;
+}
+function fnClearTable(){
+  $('#price_maintenance').dataTable().fnClearTable();
+  aRecordIds = new Array();
+}
+function fnReleaseQuote(){
+  var arr = new Array();
+  $('#quotetable').find('input:checked').not('input[disabled="disabled"]').each(function(i, nRow){ arr.push($(nRow).val()); });
+
+  Nexprice.ReleaseQuote(arr, function(result, event){
+                         if(event.type == 'exception') {
+                           console.log('ReleaseQuote');
+                           console.log(event);      
+                          } else { 
+                           fnGetQuotes();
+                          } 
+  });
+}
+
+function fnAddData(data, oTable){
+
+fnUpdateFilterSelect('price_maintenance', aColumnIndex);
+var aaIds = new Array();
+var iSets = {!$Setup.nexPrice_Settings__c.Salesforce_Record_Limit__c} / {!$Setup.nexPrice_Settings__c.SAP_Record_Limit__c};
+var iHigh = {!$Setup.nexPrice_Settings__c.Salesforce_Record_Limit__c} / iSets;
+console.log(iHigh);
+var x = 0;
+var y = 0;
+aaIds[0] = new Array();
+$(data).each(function(i, e){
+   if(y<iHigh)
+   {  aaIds[x][y] = e.Id; 
+      y = y + 1;
+   }  
+   else
+   {  x = x + 1;
+      y = 0;
+      aaIds[x] = new Array();
+      aaIds[x][y] = e.Id;
+      y = y + 1;
+   }
+});
+console.log(aaIds);
+var a = new Array();
+iProcessing = 0;
+
+for(var i=0; i<aaIds.length; i++)
+{   
+    if(aaIds[i].length > 0)
+    Nexprice.getPricing( a, aaIds[i], function(result, event){   
+            if(event.type == 'exception') {
+            console.log('getPricing');
+            console.log(event);
+            $('#loadingbanner').hide();
+            } else {                  
+                  oTable.fnAddData(result);  
+                  console.log(result);
+                  $('#loadingbanner').hide();
+            }
+    });
+}
+}
+function fnUpdateFilterSelect(stableid, aColIndex){
+$('#' + stableid).find('.selectinput').each(function(i, sel){
+
+  var val = $(sel).val();
+  $(sel).empty();
+  
+  var opt = '<option value="' + $(sel).attr('name') + '"';
+  if(val == $(sel).attr('name'))
+  opt += ' selected="selected" ';
+  opt += '>' + $(sel).attr('name') + '</option>';
+  var arr = $('#' + stableid).dataTable().fnGetColumnData(aColIndex[$(sel).attr('data-field')]);
+  $(arr).each(function(j, o){
+    opt = opt + '<option value="' + o + '"';
+    if(val == o)
+    opt += ' selected="selected" ';
+    opt += '>' + o + '</option>';
+  });
+  $(sel).append(opt);
+ 
+});
+  
+}
+function fnPrepFilters(stableid, aColIndex){
+$('#' + stableid).find('.textfilter').each(function(i, f){ $(f).html('<div style="width:105px;"<input data-field="'+ $(f).attr('data-field') +'" class="textinput" value="' + $(f).html() + '" name="' + $(f).html() + '" style="width:100px;"/>') });
+$('#' + stableid).find('.numberfilter').each(function(i, f){ $(f).html('<div class="numberinput" data-field="'+ $(f).attr('data-field') +'" style="width:105px;"><input data-field="'+ $(f).attr('data-field') +'" class="numberinputfrom" value="From ' + $(f).html() + '" name="From ' + $(f).html() + '" style="width:50px;"/><b>&nbsp;To&nbsp;</b><input class="numberinputto" value="To ' + $(f).html() + '" name="To ' + $(f).html() + '" style="width:50px;"/></div>') });
+$('#' + stableid).find('.datefilter').each(function(i, f){ $(f).html('<div class="dateinput" style="width:155px;" data-field="'+ $(f).attr('data-field') +'"><input class="dateinputfrom" name="From ' + $(f).html() + '" value="From ' + $(f).html() + '" style="width:75px;"/><b>&nbsp;To&nbsp;</b><input class="dateinputto" value="To ' + $(f).html() + '" name="To ' + $(f).html() + '" style="width:75px;"/></div>') });
+$('#' + stableid).find('.listfilter').each(function(i, f){ $(f).html('<div style="width:105px;"><select data-field="'+ $(f).attr('data-field') +'" class="selectinput" name="' + $(f).html() + '" style="width:100px;"><option selected="selected" value="' + $(f).html() + '">' + $(f).html() + '</option></select></div>') });
+$( ".dateinputfrom, .dateinputto" ).datepicker({dateFormat: "yy-mm-dd", changeMonth:true, changeYear:true});
+fnUpdateFilterSelect(stableid, aColIndex);
+$('.selectinput').change(function(){
+   $('#' + stableid).dataTable().fnFilter($(this).val(), aColIndex[$(this).attr('data-field')] );
+   fnUpdateFilterSelect(stableid, aColIndex);
+  });
+$(".textinput").keyup( function () { $('#' + stableid).dataTable().fnFilter( this.value, aColIndex[$(this).attr('data-field')] ); fnUpdateFilterSelect(stableid, aColIndex); });
+$(".numberinputfrom, .numberinputto, .dateinputfrom, .dateinputto").focus( function () { if( $(this).val() == $(this).attr('name') ){ this.value = "";}});
+$(".numberinputfrom, .numberinputto, .dateinputfrom, .dateinputto").blur( function (i) { if( $(this).val() == "" ){ this.value = $(this).attr('name'); }});
+$('.numberinputfrom, .numberinputto').keyup(function(){ $('#' + stableid).dataTable().fnDraw(); fnUpdateFilterSelect(stableid, aColIndex);});
+$('.dateinputfrom, .dateinputto').change(function(){ $('#' + stableid).dataTable().fnDraw(); fnUpdateFilterSelect(stableid, aColIndex); });
+$(".numberinput").each(function(i, ni){
+  $('#' + stableid).dataTable().dataTableExt.afnFiltering.push(
+    function (oSettings, aData, iDataIndex) {
+                    if ($('#' + stableid).dataTable().attr("id") != oSettings.sTableId){ return true; }
+                    var iMin = $(ni).find('.numberinputfrom').val();
+                    var iMax = $(ni).find('.numberinputto').val();
+                    var iValue = (isNaN(aData[aColIndex[$(ni).attr('data-field')]]) || aData[aColIndex[$(ni).attr('data-field')]] == null || aData[aColIndex[$(ni).attr('data-field')]] == "")? -1 : aData[aColIndex[$(ni).attr('data-field')]];
+                    if ((iMin == "" || isNaN(iMin)) && (iMax == "" || isNaN(iMax))) { return true;} 
+                    else if ((iMin == "" || isNaN(iMin)) && iValue <= iMax) { return true; }
+                    else if (iMin <= iValue && (iMax == "" || isNaN(iMax))) { return true; }
+                    else if (iMin <= iValue && iValue <= iMax) { return true; }
+                    return false;
+   });
+});
+$(".dateinput").each(function(i, di){
+  $('#' + stableid).dataTable().dataTableExt.afnFiltering.push(
+    function (oSettings, aData, iDataIndex) {
+                    if ($('#' + stableid).dataTable().attr("id") != oSettings.sTableId){ return true; }
+                    var iMin =  $(di).find('.dateinputfrom').val();
+                    if(iMin !=  $(di).find('.dateinputfrom').attr('name'))
+                      iMin = $(di).find('.dateinputfrom').datepicker( "getDate" );
+                    var iMax =  $(di).find('.dateinputto').val();
+                    if(iMax !=  $(di).find('.dateinputto').attr('name'))  
+                      iMax = $(di).find('.dateinputto').datepicker( "getDate" );
+                    
+                    var iValue = new Date( aData[aColIndex[$(di).attr('data-field')]]);
+                    if ((iMin == "" || iMin == null || iMin == $(di).find('.dateinputfrom').attr('name')) && (iMax == "" || iMax == null || iMax == $(di).find('.dateinputto').attr('name')) ) { return true;} 
+                    else if ((iMin == "" || iMin == null || iMin == $(di).find('.dateinputfrom').attr('name'))  && iValue <= iMax) { return true; }
+                    else if (iMin <= iValue && (iMax == "" || iMax == null || iMax == $(di).find('.dateinputto').attr('name'))) { return true; }
+                    else if (iMin <= iValue && iValue <= iMax) { return true; }
+                    return false;
+   });
+});
+
+}
+
+</script>
+<style>
+label.error {
+    color: red;
+}
+div.error{
+border-style:solid;
+border-width:1.5px;
+border-color:red;
+}
+input.error{
+border-style:solid;
+border-color:red;
+}
+select.error{
+border-style:solid;
+border-color:red;
+}
+</style>
+<div id="loadingbanner" style="position:relative;left:px">
+<c:EnhancedActionStatus BackColor="#efefef" borderColor="#336699" borderSize="3" height="20px" width="100px" ImageUrl="{!$Resource.spinner}" Message="Loading..." messageStyle="color:darkred;font-size:11pt;font-weight:bold;"/>
+
+</div>
+<table><tr><td>
+<div id="nextoolbar" >
+        <a href="javascript:void(0)" id="sb1" class="easyui-splitbutton" data-options="menu:'#mm1',iconCls:'icon-edit'" >Menu</a>
+        <a href="javascript:void(0)" id="sb2" class="easyui-splitbutton" data-options="menu:'#mm2',iconCls:'icon-search'" >Show / Hide</a>
+
+</div>
+<div id="nextoolbar2" >
+        <a href="javascript:void(0)" id="sb1" class="easyui-splitbutton" data-options="menu:'#mm21',iconCls:'icon-edit'" >Menu</a>
+</div>
+</td><td>
+<span>
+<b>View As:</b>
+    <input id="UserLookup" name="user" class="UserLookup" style="width:250px;"/> 
+    <span id="acct-search-container"><b>Account Search:</b><input id="acct-search" name="amform-acct" style="width:250px;"/></span>
+    </span>
+</td></tr></table>
+<br/>
+<div  id="main" style="width:2500px;"> 
+<div id="maintab" title="Price Maintenance" style="padding:10px;width:2500px;">
+    <div id="mm1" style="width:150px;">
+        <div id="SelectAll" >Select All</div>
+        <div id="Reset" >Deselect All</div>
+        <div id="ClearFilters">Clear Filters</div>
+        <div class="menu-sep" id="sep1"></div>
+        <div id="setprice">Set Price</div>
+        <div id="adjust">Adjust Price</div>
+        <div id="addmaterial">Add Material</div>
+        <div class="menu-sep" id="sep2"></div>
+        <div id="mimi" data-options="iconCls:'icon-search'">Multi-Search</div>
+    </div>
+    <div id="mm2" style="width:150px;">
+        <div ><input onclick="fnShowHide(this, 'Sold To')" id="sldto" type="checkbox" name="Sold To" />&nbsp;&nbsp;Sold To</div>
+        <div><input onclick="fnShowHide(this, 'Ship To')" type="checkbox" name="Ship To" />&nbsp;&nbsp;Ship To</div>
+        <div><input onclick="fnShowHide(this, 'Acct Numbr')" type="checkbox" name="Acct Numbr" />&nbsp;&nbsp;Account Number</div>
+        <div><input onclick="fnShowHide(this, 'City')" type="checkbox" name="City" />&nbsp;&nbsp;City</div>
+        <div ><input onclick="fnShowHide(this, 'Material Name')"  type="checkbox" name="Material Name" />&nbsp;&nbsp;Material Name</div>
+        <div ><input onclick="fnShowHide(this, 'Material Base')"  type="checkbox" name="Material Base" />&nbsp;&nbsp;Material Base</div>
+        <div ><input onclick="fnShowHide(this, 'Start Date')"  type="checkbox" name="Start Date" />&nbsp;&nbsp;Start Date</div>
+        <div ><input onclick="fnShowHide(this, 'AOQ')"  type="checkbox" name="AOQ" />&nbsp;&nbsp;Average Order Qty</div>
+        <div ><input onclick="fnShowHide(this, 'EOQ')"  type="checkbox" name="EOQ" />&nbsp;&nbsp;Estimated Order Qty</div>
+        <div><input onclick="fnShowHide(this, 'Tier')"  type="checkbox" name="Tier" />&nbsp;&nbsp;Tier</div>
+        <div><input onclick="fnShowHide(this, 'CSP')"  type="checkbox" name="CSP" />&nbsp;&nbsp;CSP</div>
+        <div><input onclick="fnShowHide(this, 'Target')"  type="checkbox" name="Target" />&nbsp;&nbsp;Target</div>
+        <div><input onclick="fnShowHide(this, 'Drum Deposit')"  type="checkbox" name="Drum Deposit" />&nbsp;&nbsp;Drum Deposit</div>
+        <div><input onclick="fnShowHide(this, 'Price Prot.')"  type="checkbox" name="Price Prot." />&nbsp;&nbsp;Price Protection</div>
+    </div>
+
+<form id="mimipanel" action="/apex/Account_Material_Ajax" method="post">
+<apex:panelgrid columns="6">
+<apex:panelgroup ><b>Account Owner</b></apex:panelgroup>
+<apex:panelgroup ><b>Sales Org</b></apex:panelgroup>
+<apex:panelgroup ><b>ShipTo Account</b></apex:panelgroup>
+<apex:panelgroup ><b>SoldTo Account</b></apex:panelgroup>
+<apex:panelgroup ><b>Material</b></apex:panelgroup>
+<apex:panelgroup ><b>Base Code</b></apex:panelgroup>
+
+<apex:panelgroup >
+<select class="mimiselect UserLookup" style="width:225px;" data-label="Account_Owner_Id__c" name="Account__r.Ownerid" data-acctfieldname="Ownerid" data-name="Owners" id="shtoowners"><apex:outputtext value="{!ReporteeOptions}" escape="false"/></select> 
+</apex:panelgroup>
+<apex:panelgroup > 
+<select class="mimiselect easyui-combobox" style="width:225px;" data-label="Account_Sales_Org__c" name="Account_Sales_Org_Code__c" data-acctfieldname="SAP_Sales_Org__c" data-name="Sales Orgs" id="multiorgs"><apex:outputtext value="{!OrgOptions}" escape="false"/></select>
+</apex:panelgroup>
+<apex:panelgroup >
+<select id="shto" class="mimiselect" style="width:225px;" data-label="Account_Name__c"  name="Account__c" data-acctfieldname="Id" data-name="Ship To"></select>
+</apex:panelgroup>
+<apex:panelgroup >
+<select id="sldto" class="mimiselect" style="width:225px;" data-label="Account_Sold_To__c" data-acctfieldname="SAP_Sold_To_Account__c" name="Account_Sold_To_Id_Ext__c" data-name="Sold To" ></select>
+</apex:panelgroup>
+<apex:panelgroup >
+<select id="mat" class="mimiselect" style="width:225px;" data-label="Material_Name__c" name="SAP_Material__c" data-matfieldname="Name" data-name="Material" ></select>
+</apex:panelgroup>
+<apex:panelgroup >
+<select id="matbasecode" class="mimiselect" style="width:225px;" data-label="Material_Base_Code__c" name="Material_Base__c"  data-matfieldname="Material_Base_Code__c" data-name="Base Code" ></select>
+</apex:panelgroup>
+
+
+<apex:panelgroup ><b>Account Industry</b></apex:panelgroup>
+<apex:panelgroup ><b>Account State</b></apex:panelgroup>
+<apex:panelgroup ><b>Account Division</b></apex:panelgroup>
+<apex:panelgroup ><b>PH 6 - Segment</b></apex:panelgroup>
+<apex:panelgroup ><b>PH 7 - Subsegment</b></apex:panelgroup>
+<apex:panelgroup />
+<apex:panelgroup >
+<select class="mimiselect easyui-combobox" style="width:225px;" data-label="Account_Industry__c" name="Account_Industry_Code__c" data-acctfieldname="SAP_Industry_Key__c" data-name="Account Industries"><apex:outputtext value="{!IndOptions}" escape="false"/></select>
+</apex:panelgroup>
+<apex:panelgroup >
+<select id="accstate" style="width:225px;" class="mimiselect easyui-combobox" data-label="Account_Ship_To_State__c"  name="Account_Ship_To_State__c" data-acctfieldname="BillingState" data-name="Account State"><apex:outputtext value="{!StateOptions}" escape="false"/></select>
+</apex:panelgroup>
+<apex:panelgroup >
+<select class="mimiselect easyui-combobox" style="width:225px;" data-label="Account_Division__c" name="Account_Division_Code__c" data-acctfieldname="SAP_DivisionCode__c" data-name="Divisions" id="multidivs"><apex:outputtext value="{!DivOptions}" escape="false"/></select>
+</apex:panelgroup>
+
+<apex:panelgroup >
+<select class="mimiselect easyui-combobox" id = "ph6" style="width:225px;" data-label="Material_Segment__c" name="PH6__c" data-name="Segments" data-matfieldname="PH6_Segment__c"><apex:outputtext value="{!ph6s}" escape="false"/></select>
+</apex:panelgroup>
+
+<apex:panelgroup >
+<div id="ph7holder"><select class="mimiselect easyui-combobox" id = "ph7" style="width:225px;" data-label="Material_SubSegment__c" name="PH7__c" data-matfieldname="PH7_SubSegment__c" data-name="Subsegments" ><option value="">--None--</option></select></div>
+</apex:panelgroup>
+<apex:panelgroup >
+<button type="submit" id="submitsearch" value="Search">Search</button>
+<button type="button" id="hidesearch" value="Hide">Hide</button>
+</apex:panelgroup>
+</apex:panelgrid>
+</form>
+<br/>
+<select id="pageselect" disabled="disabled"><option value="">--None--</option></select>
+<br/>
+
+<table id="price_maintenance" class="display" width="100%">
+<thead>
+<tr>
+<th class="Open" rowspan="2"></th>
+<th class="Select" rowspan="2">Select</th>
+<th><div style="width:105px;"><input data-field="Account_Sold_To__c" class="textinput" placeholder="Sold To" name="Sold To" style="width:100px;"/></div></th>
+<th><div style="width:105px;"><input data-field="Account_Name__c" class="textinput" placeholder="Ship To" name="Ship To" style="width:100px;"/></div></th>
+<th><div style="width:105px;"><input data-field="Account_Number__c" class="textinput" placeholder="Account Number" name="Account Number" style="width:100px;"/></div></th>
+<th><div style="width:105px;"><input data-field="Account_City__c" class="textinput" placeholder="City" name="City" style="width:100px;"/></div></th>
+<th><div style="width:105px;"><input data-field="Material_Name__c" class="textinput" placeholder="Material" name="Material" style="width:100px;"/></div></th>
+<th><div style="width:105px;"><input data-field="Material_Base_Code__c" class="textinput" placeholder="Base Code" name="Base Code" style="width:100px;"/></div></th>
+<th><div style="width:105px;"><input data-field="CSP_Effective_Date__c" class="textinput" placeholder="Start Date" name="Eff Date (Y-M-D)" style="width:100px;"/></div></th>
+<th><div style="width:105px;"><input data-field="CSP_Expiration_Date__c" class="textinput" placeholder="End Date" name="End Date (Y-M-D)" style="width:100px;"/></div></th>
+<th><div style="width:105px;"><input data-field="Avg_Order__c" class="textinput" placeholder="AOQ" name="Avg Order" style="width:100px;"/></div></th>
+<th><div style="width:105px;"><input data-field="Estimated_Order_Quantity__c" class="textinput" placeholder="EOQ" name="Est Order" style="width:100px;"/></div></th>
+<th><div style="width:105px;"><input data-field="CSP_Tier__c" class="textinput" placeholder="Tier" name="CSP Tier" style="width:100px;"/></div></th>
+<th><div style="width:105px;"><input data-field="CSP__c" class="textinput" placeholder="CSP" name="CSP" style="width:100px;"/></div></th>
+<th><div style="width:105px;"><input data-field="TPI__c" class="textinput" placeholder="TPI" name="TPI" style="width:100px;"/></div></th>
+<th><div style="width:105px;"><input data-field="Target_Tier__c" class="textinput" placeholder="Tar. Tier" name="Target Tier" style="width:100px;"/></div></th>
+<th><div style="width:105px;"><input data-field="Target__c" class="textinput" placeholder="Target" name="Target" style="width:100px;"/></div></th>
+<th><div style="width:105px;"><input data-field="Drum_Deposit__c" class="textinput" placeholder="Drum Dep" name="Drum Dep" style="width:100px;"/></div></th>
+<th><div style="width:105px;"><input data-field="Price_Protection__c" class="textinput" placeholder="Price Protection" name="Price Protection" style="width:100px;"/></div></th>
+<th >Id</th>
+<th >Has Open PRT</th>
+<th >Has Unit Options</th>
+<th >UoMs</th>
+<th >UoM</th>
+</tr>
+<tr>
+
+
+<th class="Sold_To">Sold To</th>
+<th class="Ship_To">Ship To</th>
+<th class="Account_Number">Account Number</th>
+<th class="Account_City">City</th>
+<th class="Material">Material</th>
+<th class="Base_Code">Base Code</th>
+<th class="Eff_Date">Start Date</th>
+<th class="Exp_Date">End Date</th>
+<th class="Avg_Order">AOQ</th>
+<th class="Est_Order">EOQ</th>
+<th class="CSP_Tier">Tier</th>
+<th class="CSP">CSP</th>
+<th class="TPI">TPI %</th>
+<th class="Target_Tier">Tier</th>
+<th class="Target">Target</th>
+<th class="Drum_Dep">Drum Dep</th>
+<th class="Price_Protection">Price Protection</th>
+<th class="Id">Id</th>
+<th class="Has_Open_PRT">Has Open PRT</th>
+<th class="Has_Unit_Options">Has Unit Options</th>
+<th class="UoMs">UoMs</th>
+<th class="UoM">UoM</th>
+</tr>
+</thead>
+<tbody></tbody>
+</table>
+<br/><br/><br/>
+<div id="loadtarget"></div>
+</div><!--End Price Maintenance Tab-->
+<div id="quotetab" title="Price Quotes" style="padding:10px;"> 
+
+    <div id="mm21" style="width:150px;">
+        <div id="SelectAll2">Select All</div>
+        <div id="Reset2">Deselect All</div>
+        <div id="ClearFilters2">Clear Filters</div>
+        <div class="menu-sep"></div>
+        <div id="ReleaseQuote" onclick="fnReleaseQuote()">Release Quote</div>
+    </div>
+<div style="width:1500px;">
+            <table id="quotetable" class="display viewtable">
+                <thead>
+                    <tr>
+                          <th class="Open"></th>
+                          <th class="Select">Select</th>
+                          <th class="Approval_Status">Status</th>
+                          <th class="Approval_Level">Approval Level</th>
+                          <th class="Approver">Approver</th>
+                          <th class="Type">Type</th>
+                          <th class="Sold_To">Sold To</th>
+                          <th class="Ship_To">Ship To</th>
+                          <th class="Material">Material</th>
+                          <th class="Eff_Date">Start Date</th>
+                          <th class="Exp_Date">Expiration Date</th>
+                          <th class="Volume">Volume</th>
+                          <th class="Requested_UoM">UoM</th>
+                          <th class="Price">Price</th>
+                          <th class="Requested_Price_UoM">UoM</th>
+                          <th class="TPI">TPI</th>
+                          <th class="Comments">Comments</th>
+                          <th class="Approval_Rejection_Comments">Approval Comments</th>
+                          <th class="Id">Id</th>
+                          <th class="Inner_Table">Inner Table</th>
+                    </tr>
+                </thead>
+                <tbody></tbody>
+            </table>
+      </div>
+</div>
+<div id="audittab" title="SFDC Price Audit" style="padding:10px;"> 
+<div style="width:1500px;">
+            <table id="audittable" class="display viewtable">
+                <thead>
+
+                    <tr>
+                          <th class="Open" ></th>
+                          <th class="Select" >Select</th>
+                          <th class="Approval_Status">Status</th>
+                          <th class="Approval_Level">Approval Level</th>
+                          <th class="Approver">Approver</th>
+                          <th class="Type">Type</th>
+                          <th class="Sold_To">Sold To</th>
+                          <th class="Ship_To">Ship To</th>
+                          <th class="Material">Material</th>
+                          <th class="Eff_Date">Start Date</th>
+                          <th class="Exp_Date">Expiration Date</th>
+                          <th class="Volume">Volume</th>
+                          <th class="Requested_UoM">UoM</th>
+                          <th class="Price">Price</th>
+                          <th class="Requested_Price_UoM">UoM</th>
+                          <th class="TPI">TPI</th>
+                          <th class="Comments">Comments</th>
+                          <th class="Approval_Rejection_Comments">Approval Comments</th>
+                          <th class="Id">Id</th>
+                          <th class="Inner_Table">Inner Table</th>
+                    </tr>
+                </thead>
+                <tbody></tbody>
+            </table>
+</div>
+</div>
+<div id="historytab" title="SAP Price History" style="padding:10px;"> 
+<div style="width:1500px;">
+<span id="dates">
+    <form id="historydates">
+    <b>From:</b><input id="FromDate" name="FromDate" style="width:75px;"/>
+    <b>To:</b><input id="ToDate" name="ToDate" style="width:75px;"/>
+    <b>Base Code:</b><input id="basecode" name="basecode" style="width:250px;"/>
+    <a href="javascript:void(0)" id="gohistory" class="easyui-linkbutton" data-options="iconCls:'icon-search'" >Go</a> 
+    </form>
+    </span><br/>
+            <table id="historytable" class="display viewtable">
+                <thead>
+                    <tr>
+                          <th class="Open"></th>
+                          <th class="Select">Select</th>
+                          <th class="Approval_Status">Status</th>
+                          <th class="Approval_Level">Approval Level</th>
+                          <th class="Approver">Approver</th>
+                          <th class="Type">Type</th>
+                          <th class="Sold_To">Sold To</th>
+                          <th class="Ship_To">Ship To</th>
+                          <th class="Material">Material</th>
+                          <th class="Eff_Date">Start Date</th>
+                          <th class="Exp_Date">Expiration Date</th>
+                          <th class="Volume">Volume</th>
+                          <th class="Requested_UoM">UoM</th>
+                          <th class="Price">Price</th>
+                          <th class="Requested_Price_UoM">UoM</th>
+                          <th class="TPI">TPI</th>
+                          <th class="Comments">Comments</th>
+                          <th class="Approval_Rejection_Comments">Approval Comments</th>
+                          <th class="Id">Id</th>
+                          <th class="Inner_Table">Inner Table</th>
+                    </tr>
+                </thead>
+                <tbody></tbody>
+            </table>
+</div>
+</div>
+<div id="pendingtab" title="Pending" style="padding:10px;"> 
+
+<br/>
+            <table id="pendingtable" class="display viewtable">
+                <thead>
+                    
+                    <tr>
+                          <th class="Open"></th>
+                          <th class="Approval_Status">Status</th>
+                          <th class="Approval_Level">Approval Level</th>
+                          <th class="Approver">Approver</th>
+                          <th class="Type">Type</th>
+                          <th class="Sold_To">Sold To</th>
+                          <th class="Ship_To">Ship To</th>
+                          <th class="Material">Material</th>
+                          <th class="Eff_Date">Start Date</th>
+                          <th class="Exp_Date">Expiration Date</th>
+                          <th class="Volume">Volume</th>
+                          <th class="Requested_UoM">UoM</th>
+                          <th class="Price">Price</th>
+                          <th class="Requested_Price_UoM">UoM</th>
+                          <th class="TPI">TPI</th>
+                          <th class="Comments">Comments</th>
+                          <th class="Approval_Rejection_Comments">Approval Comments</th>
+                          <th class="Id">Id</th>
+                          <th class="Inner_Table">Inner Table</th>
+                    </tr>
+                </thead>
+                <tbody></tbody>
+            </table>
+
+</div>
+</div><!--End Tab Set-->
+<div id="dd2" class="easyui-dialog" style="width:400px;" >
+    <form id="amform">
+    <br/>
+    <center><span>
+    <table>
+    <tr><td><b>Sales Orgs</b></td><td>
+    <select class="easyui-combobox" id="morgs" style="width:225px;" name="Account_Sales_Org_Code__c" >
+    <apex:outputtext value="{!OrgOptions}" escape="false"/>
+    </select>
+    </td></tr>
+    <tr><td><b>Divisions</b></td><td>
+    <select class="easyui-combobox" id="mdivs" style="width:225px;" name="Account_Division_Code__c">
+    <apex:outputtext value="{!DivOptions}" escape="false"/>
+    </select>
+    </td></tr>
+    <tr><td><b>Account</b></td>
+    <td id="acct_holder"><input id="add_acct" name="add_acct" data-label="Account_Name__c" data-value="Account__c" style="width:225px;"/>
+    </td>
+    </tr>
+    <tr><td><b>SAP Material</b></td>
+    <td><input id="add_material" name="amform-material" style="width:225px;"/></td>
+    </tr>
+    </table>
+    </span></center>
+    </form>
+
+
+</div>
+
+
+</apex:page>

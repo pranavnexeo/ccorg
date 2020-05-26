@@ -1,0 +1,25 @@
+<apex:page showHeader="false" > <!--title="{!$Label.site.site_under_construction}"-->
+  <!--<apex:composition template="StdExceptionTemplate">
+    <apex:define name="icon">
+      <apex:image url="{!URLFOR($Resource.SiteSamples, 'img/tools.gif')}"/>
+    </apex:define>
+    <apex:define name="error">
+      <apex:outputText escape="false" styleClass="title" value="{!$Label.site.under_construction}">
+        <apex:param value="{!$Site.CurrentSiteUrl}"/>
+      </apex:outputText>
+      <br/>
+      <br/>
+      <apex:outputText value="{!$Label.site.stay_tuned}"/>
+      <apex:outputText escape="false" value=" {!$Label.site.get_in_touch}">
+      <apex:param value="mailto:{!$Site.AdminEmailAddress}"/>
+      <apex:param value="{!$Label.site.email_us}"/>
+    </apex:outputText>
+   </apex:define>
+  </apex:composition>-->
+  <style type="text/css">
+        p { font-weight: bold; color: Green; font-weight: bold; font-size:25px}
+  </style>
+   <!-- <p> We apologize for the inconvenience as we are implementing system changes at this time. Access to the portal will become available again Sunday March 3rd at 12:00pm Eastern Standard Time.</p> 
+        <p> We apologize for the inconvenience as we are implementing system changes at this time. Access to the portal will become available again as soon as possible.</p> -->
+        <p> We apologize for the inconvenience as we are implementing system changes at this time. Access to the portal will become available again Tuesday May 27th at 8:00am CST.</p>
+</apex:page>

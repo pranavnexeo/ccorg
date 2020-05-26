@@ -1,0 +1,132 @@
+<apex:page standardController="Business_Contract__c" extensions="BusinessContractPdfController" showHeader="false" renderAs="pdf" applyBodyTag="false" applyHtmlTag="false">
+    <html>
+     
+    <head>
+        <style>
+            @page {
+                    padding-top: 75px;
+                    @top-center {
+                       content: element(header);
+                    }
+                    @bottom-left {
+                       content: element(footer);
+                    }
+                 }
+             div.header {
+              padding: 10px;
+              position: running(header);
+             }
+                      
+            body { font-family: 'Arial Unicode MS'; }
+            table.gridtable {
+               font-family: verdana,arial,sans-serif;
+               font-size:12px;
+               color:#333333;
+               border-width: 1px;
+               border-color: #111111;
+             }
+             tr.spaceUnder>td {
+                padding-bottom: 1em;
+             }
+            
+        </style> 
+        
+    </head>
+    
+    
+    <body>
+        <div class = "header">
+            <apex:image value="{!$Resource.BusinessContractLetterHead}" height="100%" width="100%"/>
+        </div>
+        <div style="page-break-after:always;">
+        <p style="font-size:15px;color:green;"><apex:outputlabel value="{!pdfData.Heading__c}"  escape="false" /></p>
+        <p style="font-size:12px;line-height:1.3">Date: <apex:outputlabel value="{!MONTH(TODAY())}/{!DAY(TODAY())}/{!YEAR(TODAY())}" style="color:green"/></p>
+        <p style="font-size:12px;line-height:1.3"><apex:outputlabel value="{!pdfData.First_Block__c}" escape="false" /></p>
+        <p style="font-size:12px;line-height:1.3"><apex:outputlabel value="{!Business_Contract__c.Customer_Name__r.Name}" style="color:blue" />,<apex:outputlabel value="{!Business_Contract__c.Customer_Name__r.Mapquest_Address__c}" style="color:blue" />,<apex:outputlabel value="{!pdfData.Second_Block__c}" escape="false" />
+            </p>
+            <table Class = "gridtable" border ="1" style="width: 100%; " cellspacing="0" >
+                <tr>
+                    <td ><b>Nexeo Plastics Stocking Location:</b><apex:outputText value="{!Business_Contract__c.Nexeo_Solutions_Stocking_Location__r.Plant_Name__c}" /></td>
+                </tr>
+                <tr>
+                    <td><b>Account Name and Number:</b><apex:outputText value="{!Business_Contract__c.Customer_Name__r.Name}" />&nbsp;-&nbsp;<apex:outputText value="{!Business_Contract__c.Customer_Name__r.AccountNumber}" /></td>
+                </tr>
+                <tr>
+                    <td><b>Purchase Order Number:</b></td>
+                </tr>
+                <tr>
+                    <td><b>Manufacturer:</b><apex:outputText value="{!Business_Contract__c.SAP_Material__r.PH4_Supplier__c}" /></td>
+                </tr>
+                <tr>
+                    <td><b>Product Description &amp; Code:</b><apex:outputText value="{!Business_Contract__c.SAP_Material__r.Material_Desc__c}" /> - <apex:outputText value="{!Business_Contract__c.SAP_Material__r.Material_General_Data__r.Material_Number__c}" /></td>
+                </tr>
+                <tr>
+                    <td><b>Forecast Monthly Quantity (include unit of measure)</b><apex:outputText value="{!Business_Contract__c.Forecasted_Quantity__c}" /> <apex:outputText value="{!Business_Contract__c.Stocking_Unit__c}" /></td>
+                </tr>
+                <tr>
+                    <td><b>Start Date &amp; End Date (maximum 12 months):</b> <apex:outputField value="{!Business_Contract__c.Effective_Date__c}" />-<apex:outputField value="{!Business_Contract__c.Expiration_Date__c}" /></td>
+                </tr>
+            </table> 
+            
+        <p style="font-size:12px;line-height:1.3"><apex:outputlabel value="{!pdfData.Third_Block__c}" escape="false" /></p>
+        <p style="font-size:12px;line-height:1.3"><apex:outputlabel value="{!pdfData.Third_Block_1__c}" escape="false" /></p>
+        <p style="font-size:12px;line-height:1.3"><apex:outputlabel value="{!pdfData.Third_Block_2__c}" escape="false" /></p>
+        <p style="font-size:12px;line-height:1.3"><apex:outputlabel value="{!pdfData.Third_Block_3__c}" escape="false" /></p>
+        <p style="font-size:12px;line-height:1.3"><apex:outputlabel value="{!pdfData.Fourth_block__c}" escape="false" style="color:red" /></p>
+        <p style="font-size:12px;line-height:1.3">To confirm your agreement of this order and conditions, please sign below and return a scanned copy via email to <apex:outputlabel value="{!Business_Contract__c.Customer_Name__r.Owner.Email}" escape="false" style="color:green" /></p>
+        <table Class = "gridtable" style="width: 100%; " cellspacing="2" >
+                <tr class="spaceUnder">
+                    <td ><apex:outputlabel value="{!Business_Contract__c.Customer_Name__r.Name}" style="font-size:15px;color:blue"/></td>
+                    <td style="font-size:15px">Nexeo Plastics,LLC</td>
+                </tr>
+                <tr class="spaceUnder">
+                    <td>By:_________________________________________</td>
+                    <td>By:_________________________________________</td>
+                </tr>
+                <tr class="spaceUnder">
+                    <td>Name:_______________________________________</td>
+                    <td>Name:_______________________________________</td>
+                </tr>
+                <tr class="spaceUnder">
+                    <td>Title:_______________________________________</td>
+                    <td>Title:_______________________________________</td>
+                </tr>
+                <tr class="spaceUnder">
+                    <td>Date:_______________________________________</td>
+                    <td>Date:_______________________________________</td>
+                </tr>
+            </table>
+            </div>
+        <div>
+        <div style="text-align:center;font-size: 12px;font-weight: 1200">
+              <apex:outputText value="Nexeo Plastics, LLC" />
+        </div>
+        <div style="text-align:center;font-size: 12px;font-weight: bold">
+               <apex:outputText value="SALES TERMS AND CONDITIONS – US" /> 
+        </div>
+        
+        <p style="font-size:10px;line-height:1.3"><apex:outputtext value="{!pdfData.Terms_1__c}"   escape="false" /></p>
+        <p style="font-size:10px;line-height:1.3"><apex:outputtext value="{!pdfData.Terms_2__c}"   escape="false" /></p>
+        <p style="font-size:10px;line-height:1.3"><apex:outputtext value="{!pdfData.Terms_3__c}"   escape="false" /></p>
+        <p style="font-size:10px;line-height:1.3"><apex:outputtext value="{!pdfData.Terms_4__c}"   escape="false" /></p>
+        <p style="font-size:10px;line-height:1.3"><apex:outputtext value="{!pdfData.Terms_5__c}"   escape="false" /></p>
+        <p style="font-size:10px;line-height:1.3"><apex:outputtext value="{!pdfData.Terms_6__c}"   escape="false" /></p>
+        <p style="font-size:10px;line-height:1.3"><apex:outputtext value="{!pdfData.Terms_7__c}"   escape="false" /></p>
+        <p style="font-size:10px;line-height:1.3"><apex:outputtext value="{!pdfData.Terms_8__c}"   escape="false" /></p>
+        <p style="font-size:10px;line-height:1.3"><apex:outputtext value="{!pdfData.Terms_9__c}"   escape="false" /></p>
+        <p style="font-size:10px;line-height:1.3"><apex:outputtext value="{!pdfData.Terms_10__c}"  escape="false" /></p>
+        <p style="font-size:10px;line-height:1.3"><apex:outputtext value="{!pdfData.Terms_11__c}"  escape="false" /></p>
+        <p style="font-size:10px;line-height:1.3"><apex:outputtext value="{!pdfData.Terms_12__c}"  escape="false" /></p>
+        <p style="font-size:10px;line-height:1.3"><apex:outputtext value="{!pdfData.Terms_13__c}"  escape="false" /></p>
+        <p style="font-size:10px;line-height:1.3"><apex:outputtext value="{!pdfData.Terms_14__c}"  escape="false" /></p>
+        <p style="font-size:10px;line-height:1.3"><apex:outputtext value="{!pdfData.Terms_15__c}"  escape="false" /></p>
+        <p style="font-size:10px;line-height:1.3"><apex:outputtext value="{!pdfData.Terms_16__c}"  escape="false" /></p>
+        <p style="font-size:10px;line-height:1.3"><apex:outputtext value="{!pdfData.Terms_17__c}"  escape="false" /></p>
+        <p style="font-size:10px;line-height:1.3"><apex:outputtext value="{!pdfData.Terms_18__c}"  escape="false" /></p>
+        
+       
+        </div>
+    </body>
+    </html>
+
+</apex:page>

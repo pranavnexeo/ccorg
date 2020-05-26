@@ -1,0 +1,3 @@
+<apex:page standardcontroller="R_D_Requests__c" extensions="RD_Page_Banner" showheader="False" sidebar="false" action="{!setmessages}">
+<apex:pagemessages />
+</apex:page>

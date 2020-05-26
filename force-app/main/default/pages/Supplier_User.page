@@ -1,0 +1,27 @@
+<apex:page standardController="Supplier_User_Request__c" title="Supplier User Request">
+
+    <apex:pageMessages > </apex:pageMessages>
+      <apex:form >
+        <apex:pageBlock >
+        
+       <apex:pageBlockButtons id="button">
+        <apex:commandButton value="Save" action="{!save}"/>
+        <apex:commandButton value="Cancel" action="{!cancel}" />
+       </apex:pageBlockButtons>
+        
+        <apex:pageBlockSection id="supuser" columns="2"> 
+        
+        <apex:inputfield value="{!Supplier_User_Request__c.Division__c}" required="true"/>
+        <apex:inputfield value=" {!Supplier_User_Request__c.Request_Type__c}" required="true">
+        <apex:actionSupport event="onchange" reRender="supuser" immediate="true"/>  </apex:inputfield> 
+        <apex:inputfield rendered="{!Supplier_User_Request__c.Request_Type__c='New User'}" value="{!Supplier_User_Request__c.New_User_Name__c}" required="true"/>
+        <apex:inputfield rendered="{!Supplier_User_Request__c.Request_Type__c!='New User'}" value="{!Supplier_User_Request__c.Full_Name__c}" required="true"/>
+        <apex:inputfield value="{!Supplier_User_Request__c.Phone__c}"/>
+        <apex:inputfield value="{!Supplier_User_Request__c.Additional_Instructions__c}"/>
+        <apex:inputfield value="{!Supplier_User_Request__c.Supplier_Company__c}" required="true"/>
+        <apex:inputfield value="{!Supplier_User_Request__c.Supplier_User_Fax__c}"/>
+        <apex:inputfield value="{!Supplier_User_Request__c.Supplier_User_Email_Id__c}" required="true"/>
+      </apex:pageBlockSection>
+       </apex:pageBlock>
+      </apex:form>
+</apex:page>

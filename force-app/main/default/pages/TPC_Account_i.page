@@ -1,0 +1,3 @@
+<apex:page standardcontroller="Account" showHeader="false" sidebar="false" standardstylesheets="false">
+<iframe src="/apex/TPC_Account?nooverride=1&id={!Account.Id}" height="449px" width="100%"/>
+</apex:page>

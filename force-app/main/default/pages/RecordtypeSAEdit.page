@@ -1,0 +1,2 @@
+<apex:page standardController="Sample_Analysis_Request__c" extensions="DispatcherContactEditController" action="{!getRedirEdit}">
+</apex:page>

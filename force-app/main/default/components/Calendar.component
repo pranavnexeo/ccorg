@@ -1,0 +1,181 @@
+<apex:component controller="CalendarComponent" allowDML="true" >
+
+    <apex:attribute name="Value" description="List of sObjects" type="CalEventItem[]" required="true" assignTo="{!sobj}" />
+    <apex:attribute name="Months" description="Number of Months to Display" type="Integer" required="false" default="1" assignTo="{!multi}"/>
+    <apex:attribute name="EventRelatedTo" description="Id of Record to which SFDC Relates New Events" type="String" required="false" assignTo="{!relatedTo}"/>
+    
+    <apex:stylesheet value="/sCSS/Theme2/default/homeCalendar.css" /> 
+        
+        <apex:outputPanel id="theCalendar">
+          <apex:commandbutton value="Calendar Options" action="{!showoptions}"/>
+          <apex:repeat value="{!Calendar.multimonth}" var="month"  >
+            <div class="bCalendar">
+            <table class="calendarMonthView" width="100%">
+              <apex:actionregion >
+                <caption>
+                <div class="calHeader"><apex:commandlink action="{!Calendar.prev}"
+                    rerender="theCalendar">
+                    <img title="Previous Month" class="prevCalArrow"
+                        alt="Previous Month" src="/s.gif" />
+                </apex:commandlink>
+                &nbsp;&nbsp;{!month.monthname}&nbsp;&nbsp;{!month.yearname}&nbsp;&nbsp;
+                <apex:commandLink action="{!Calendar.next}" rerender="theCalendar">
+                    <img title="Next Month" class="nextCalArrow" alt="Next Month"
+                        src="/s.gif" />
+                </apex:commandLink></div>
+                </caption>
+                </apex:actionregion>
+                <tbody>
+                    <tr class="headerRow">
+                        <th scope="col" class="calDays">Sunday</th>
+                        <th scope="col" class="calDays">Monday</th>
+                        <th scope="col" class="calDays">Tuesday</th>
+                        <th scope="col" class="calDays">Wednesday</th>
+                        <th scope="col" class="calDays">Thursday</th>
+                        <th scope="col" class="calDays">Friday</th>
+                        <th scope="col" class="calDays">Saturday</th>
+                    </tr>
+
+                    <apex:repeat value="{!month.weeks}" var="wk" id="foreachWeek">
+                        <tr>
+                            <apex:repeat value="{!wk.days}" var="day" id="foreachday">
+                            
+                                <td class="{!day.cssname}" height="90" valign="top">
+                         
+                                <div class="date">
+                                <apex:commandlink action="{!showevent}" rerender="newevent">
+                                <img src="/s.gif"
+                                    alt="Add Event - {!day.date}" class="addNewEventIcon"
+                                    title="Add Event - {!day.date}" />
+                                <apex:param assignTo="{!displaydate}" value="{!day.DateString}" Name="DisplayDate"/>
+                                </apex:commandlink>
+                                {!day.dayofmonth}
+                                </div>
+                            
+                                <div><apex:repeat value="{!day.eventstodayshort}" var="v"
+                                    id="foreachevent">
+                                    <apex:outputpanel rendered="{!v.rendered}">
+                                    <span class="event">{!v.formateddate} - {!v.objname}</span>
+                                    <apex:outputlink value="/{!v.ev.id}" target="_blank">{!v.subject}</apex:outputlink>
+                                    <br />
+                                    </apex:outputpanel>
+                                </apex:repeat></div>
+                                    <apex:commandlink action="{!showmore}" rendered="{!day.showmore}" rerender="showmore" >Shore More...
+                                    <apex:param assignTo="{!displaydate}" value="{!day.DateString}" Name="DisplayDate"/>                                  
+                                    </apex:commandlink>
+                                </td>
+                            </apex:repeat>
+                        </tr>
+
+                    </apex:repeat>
+
+                </tbody>
+            </table>
+            </div>
+            
+         <apex:outputPanel id="showmore">
+            <apex:outputPanel styleClass="customPopup" layout="block" rendered="{!displaylonglist}">
+                <center>
+                <b><span class="event">{!DisplayDate}</span></b><br/>
+                </center>
+                <div><apex:repeat value="{!LongList}" var="v"
+                                    id="foreachevent">
+                                    <apex:outputpanel rendered="{!v.rendered}">
+                                    <b><span class="event">{!v.formateddate} - {!v.objname}</span></b><br/>
+                                    <apex:outputlink value="/{!v.ev.id}" target="_blank">{!v.subject}</apex:outputlink>
+                                    <br/>
+                                    <br/>
+                                    </apex:outputpanel>
+                                </apex:repeat></div>
+                 
+                <br/><br/><br/>
+                <center>
+                <apex:commandButton value="Close" action="{!showless}" rerender="showmore"/>
+                </center>
+            </apex:outputPanel>
+        </apex:outputPanel>
+        
+        <apex:outputPanel id="newevent">
+            <apex:outputPanel styleClass="customEventPopup" layout="block" rendered="{!displaycreateevent}">
+
+                <div>
+                <apex:pageblock >
+                <apex:pageblockbuttons >
+                <apex:commandbutton value="Save" action="{!saveevent}" />
+                <apex:commandButton value="Cancel" action="{!hideevent}" rerender="newevent" immediate="true"/>
+                </apex:pageblockbuttons>
+                <apex:pageblocksection columns="1">
+                <apex:inputfield value="{!event.subject}" required="true"/>
+                <apex:inputfield value="{!event.Type}" required="true"/>
+                <apex:inputfield value="{!event.ownerid}"/>
+                <apex:inputfield value="{!event.whoid}"/>
+                <apex:inputfield value="{!event.whatid}"/>
+                <apex:inputfield value="{!event.startdatetime}"/>
+                <apex:inputfield value="{!event.enddatetime}"/>
+                <apex:inputfield value="{!event.description}"/>
+                </apex:pageblocksection>
+                </apex:pageblock>
+                </div>              
+
+            </apex:outputPanel>
+        </apex:outputPanel>   
+        </apex:repeat>
+        
+        <apex:outputPanel id="options">
+            <apex:outputPanel styleClass="customPopup" layout="block" rendered="{!renderoptions}">
+                <div>
+                   <center><b><apex:outputlabel value="Display Options"/></b></center>
+                   <br/><br/>                  
+                   <apex:datatable value="{!Calendar.calendaroptions}" var="opt">
+                   <apex:column >
+                   <apex:inputcheckbox value="{!opt.render}" />
+                   </apex:column>
+                   <apex:column >
+                   <apex:outputlabel value="{!opt.option}"/>
+                   </apex:column>
+                   </apex:datatable>
+                </div>             
+                <br/><br/><br/>
+                <center>
+                <apex:commandButton value="Save" action="{!saveoptions}" />
+                </center>
+            </apex:outputPanel>
+        </apex:outputPanel>
+      </apex:outputPanel>
+
+    <style type="text/css">
+       .customPopup{
+            background-color: white;
+            border-style: solid;
+            border-width: 2px;
+            left: 50%;
+            padding:10px;
+            position: absolute;
+            z-index: 9999;
+            /* These are the 3 css properties you will need to tweak so the pop 
+            up displays in the center of the screen. First set the width. Then set 
+            margin-left to negative half of what the width is. You can also add 
+            the height property for a fixed size pop up.*/
+            width: 300px;
+            margin-left: -150px;
+            top:100px;
+        }
+         .customEventPopup{
+            background-color: white;
+            border-style: solid;
+            border-width: 2px;
+            left: 50%;
+            padding:10px;
+            position: absolute;
+            z-index: 9999;
+            /* These are the 3 css properties you will need to tweak so the pop 
+            up displays in the center of the screen. First set the width. Then set 
+            margin-left to negative half of what the width is. You can also add 
+            the height property for a fixed size pop up.*/
+            width: 500px;
+            margin-left: -250px;
+            top:100px;
+        }
+    </style>
+    
+</apex:component>

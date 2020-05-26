@@ -1,0 +1,31 @@
+<apex:component >
+<!-- Attribute Definitions -->
+<apex:attribute name="Width" type="String" required="true" description=""></apex:attribute>
+<apex:attribute name="Height" type="String" required="true" description=""></apex:attribute>
+<apex:attribute name="Message" type="String" required="false" description=""></apex:attribute>
+
+
+<div id="salesFroceSource_StatusBox" style="position:absolute;cursor: wait;left:500px; top: 250px;width: {!Width}; height:{!Height}; opacity:1;filter:alpha(opacity=100)">
+    <apex:image url="{!$Resource.BusyImage}" alt="{!Message}" />
+</div>
+
+<script type="text/javascript">
+
+var ContainerElem = document.getElementById("salesFroceSource_StatusBox");
+//ContainerElem.style.display = "block";
+AlignToCenter( ContainerElem );
+
+function AlignToCenter( Element ){
+
+    var availableHeight = window.screen.availHeight / 2;
+    var availableWidth = window.screen.availWidth / 2;
+
+    var msgBoxTop = parseInt( availableHeight - parseInt(Element.style.height) / 2 );
+    var msgBoxleft = parseInt( availableWidth - parseInt(Element.style.width) / 2 );
+
+    Element.style.left = msgBoxleft + "px";
+    Element.style.top = msgBoxTop + "px";
+    
+}
+</script>
+</apex:component>

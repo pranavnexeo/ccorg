@@ -1,0 +1,644 @@
+<apex:page standardController="Procurement_Contract__c" renderAs="PDF">
+
+<html>
+    <head>
+        <title>HTML Generator Sample Page</title>
+    </head>
+    <body>
+        <div>
+            <p align="center">
+               <apex:image url="{!$Resource.Nexeo_Logo}" width="144" height="50" /></p>
+            <p align="center">
+                &nbsp;</p>
+            <p align="center">
+                <strong>Nexeo Solutions, LLC&nbsp; </strong>-&nbsp;P. O.&nbsp; BOX 1063&nbsp; -&nbsp; COLUMBUS,&nbsp; OHIO&nbsp; 43216&nbsp; -&nbsp; PHONE&nbsp; (614) 790-3333</p>
+            <p align="center">
+                &nbsp;</p>
+            <p>
+                PURCHASING DEPARTMENT</p>
+            <p>
+                Fax: (614) 790-3784</p>
+            <p>
+                &nbsp;</p>
+                      <p>
+                Date : </p>
+            <p>
+                &nbsp;</p>
+                            <p>
+            <apex:outputText value=" {!Procurement_Contract__c.Vendor__r.Name}" />
+</p>
+    <p>  <apex:outputText value=" {!Procurement_Contract__c.Vendor_Contacts__r.name}" /></p>
+
+      <p><apex:outputText value="{!Procurement_Contract__c.Vendor_Address__c}" /></p>
+
+ 
+
+       
+               <p> &nbsp;</p>
+            <p>
+                &nbsp;</p>
+            <p>
+                Dear &nbsp;&nbsp;<apex:outputText value=" {!Procurement_Contract__c.Vendor_Contacts__r.name}" />:</p>
+            <p>
+                &nbsp;</p>
+            <p>
+                We wish to establish a Scrap Metal Recycling Agreement between your company and Nexeo Solutions, LLC.&nbsp; This agreement must be completed and on file before any work can be performed by your company.</p>
+            <p>
+                &nbsp;</p>
+            <p>
+                Please sign and return (2) complete copies <strong>(include all pages)</strong> to the address below:</p>
+                       <p>
+                Nexeo Solutions, LLC.</p>
+            <p>
+                P.O. Box 2219</p>
+            <p>
+                Columbus, OH 43216</p>
+                                      e-mail: &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;          <p>
+                &nbsp;</p>
+            <p>
+                You must provide a copy of your company&#39;s certificate of insurance naming Nexeo Solutions, LLC as additional insured.&nbsp;</p>
+            <p>
+                Following signature by an Nexeo Solutions, LLC corporate officer, one (1) copy of each will be returned to you.</p>
+            <p>
+                &nbsp;</p>
+            <p>
+                If you have any questions, please do not hesitate to call ____________________________  regarding the contracts at ____________________ .</p>
+            <p>
+                &nbsp;</p>
+            <p>
+                Sincerely,</p>
+            <p>
+                &nbsp;</p>
+            <p>
+                {!$User.FirstName}</p>
+            <p>
+                &nbsp;</p>
+            <p>
+                Enc.</p>
+            <p>
+                &nbsp;</p>
+            <p>
+                &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</p>
+            <p>
+                &nbsp;</p>
+            <p align="center">
+                &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</p>
+            <p>
+            &nbsp;</p>
+            <p>
+            &nbsp;</p>
+            <p>
+            &nbsp;</p>
+            <p>
+            &nbsp;</p>
+             <p>
+            &nbsp;</p>
+            <p>
+            &nbsp;</p>
+             <p>
+            &nbsp;</p>
+            <p>
+            &nbsp;</p>
+             <p>
+            &nbsp;</p>
+             <p>
+            &nbsp;</p>
+
+
+
+             <p align="center">
+                <strong>SCRAP MATERIAL RECYCLING AGREEMENT</strong></p>
+                        <p align="center">
+                {!today()}</p>
+            <p align="center">
+                &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</p>
+                                      <p align="centre">
+                &nbsp;</p>
+                          <p>
+                &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; PARTIES</p>
+        
+        </div>
+               <div>
+            <ol>
+                <li>
+                Nexeo Solutions, LLC</li>
+            </ol>
+            <p>
+                5200 Blazer Parkway</p>
+            <p>
+                Dublin, OH&nbsp; 43017;</p>
+            <p>
+                &nbsp;</p>
+            <p>
+2.<apex:outputText value=" {!Procurement_Contract__c.Vendor__r.Name}" /></p>
+
+
+      <p>
+<apex:outputText value=" {!Procurement_Contract__c.Vendor_Contacts__r.name}" /></p>
+
+
+     <p>
+ <apex:outputText value="{!Procurement_Contract__c.Vendor_Address__c}" /></p>
+
+
+         
+
+       
+
+            <p style="margin-left: 1in">
+                &nbsp;</p>
+            <p>
+                &nbsp;</p>
+            <p>
+                <strong>2.&nbsp;&nbsp; &nbsp;&nbsp;&nbsp; TERM</strong></p>
+            <p>
+                &nbsp;</p>
+            <p>
+                This Agreement shall remain in effect for two (2) years from the above date, unless earlier terminated by either party on thirty (30) days written notice.</p>
+            <p>
+                &nbsp;</p>
+                <p>
+                &nbsp;</p>
+<p>
+                &nbsp;</p>
+
+            <p>
+                <strong>3.&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; SERVICES BY CONTRACTOR</strong></p>
+            <p>
+                &nbsp;</p>
+                 <p>
+                &nbsp;</p>
+ <p>
+                &nbsp;</p>
+ <p>
+                &nbsp;</p>
+ <p>
+                &nbsp;</p>
+ <p>
+                &nbsp;</p>
+                 <p>
+                &nbsp;</p>
+ <p>
+                &nbsp;</p>
+
+
+            <p style="margin-left: 1in">
+                (a) &nbsp;&nbsp;&nbsp;&nbsp;&nbsp; Contractor shall from time to time as requested in writing by an authorized representative of Nexeo Solutions, LLC, furnish and pay for all material, labor, power, equipment, transportation and all other items necessary to recycle certain scrap materials (&ldquo;Materials&rdquo;) generated at the facilities listed on <strong>Exhibit A</strong>, in the manner required on <strong>Exhibit B</strong>.&nbsp; CONTRACTOR SHALL NOT SELL, TRANSFER, OR MAKE ANY OTHER USE WHATSOEVER OF THE MATERIALS OR ANY PORTION THEREOF WITHOUT PRIOR WRITTEN CONSENT FROM NEXEO SOLUTIONS, LLC.</p>
+            <p>
+                &nbsp;</p>
+            <p style="margin-left: 1in">
+                (b) &nbsp;&nbsp;&nbsp;&nbsp;&nbsp; Contractor recognizes that the Materials to be handled may be hazardous to human health and Contractor shall familiarize itself with respect to such hazards and take all reasonable and necessary precautions to prevent such hazards, and shall advise employees and others who handle the Materials for Contractor in this regard.</p>
+            <p>
+                &nbsp;</p>
+            <p>
+                <strong>4.&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; PAYMENT</strong></p>
+            <p>
+                &nbsp;</p>
+            <p>
+                Contractor shall be compensated in accordance with the rate schedule attached as <strong>Exhibit C</strong> which may be amended from time to time by Nexeo Solutions, LLC or Contractor upon thirty (30) days written notice to the other party.&nbsp; Payment will be made to Contractor within thirty (30) days of receipt of Contractor&rsquo;s substantiated invoice with all proper documentation, including a Certificate of Recycling, an example of which is set forth as <strong>Exhibit D</strong>.</p>
+            <p>
+                &nbsp;</p>
+            <p>
+                <strong>5.&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; INDEPENDENT CONTRACTOR</strong></p>
+            <p>
+                &nbsp;</p>
+            <p>
+                Contractor is an independent contractor and not an agent or employee of Nexeo Solutions, LLC for the performance of all work undertaken under this Agreement. Nexeo Solutions, LLC is to exercise and have no control whatsoever over the methods and means of such performance, except that the Contractor shall observe Nexeo Solutions, LLC&rsquo;s safety rules while on Nexeo Solutions, LLC&rsquo;s property.</p>
+            <p>
+                &nbsp;</p>
+            <p>
+                <strong>6.&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; SUBCONTRACTORS</strong></p>
+            <p>
+                &nbsp;</p>
+            <p>
+                Contractor shall not use subcontractors to perform any of its obligations hereunder without the prior written consent of Nexeo Solutions, LLC.&nbsp; In the event such consent is granted, Contractor agrees to remain primarily liable for compliance with all the provisions hereof.</p>
+            <p>
+                &nbsp;</p>
+            <p>
+                <strong>7.&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; LICENSES, PERMITS AND COMPLIANCE WITH LAW</strong></p>
+            <p>
+                &nbsp;</p>
+            <p style="margin-left: 1in">
+                (a) &nbsp;&nbsp;&nbsp;&nbsp;&nbsp; Contractor shall secure all permits and licenses necessary for the performance of its obligations and provide Nexeo Solutions, LLC a copy of same prior to beginning work.&nbsp; Contractor shall promptly provide Nexeo Solutions, LLC a copy of any new or amended permit or license which Contractor obtains after the execution of this Agreement.</p>
+            <p style="margin-left: 1in">
+                &nbsp;</p>
+            <p style="margin-left: 1in">
+                (b) &nbsp;&nbsp;&nbsp;&nbsp;&nbsp; Contractor represents that it is familiar with, understands and will comply with all applicable local, state and federal laws, guidelines, regulations, permits, licenses and approvals concerning the handling, transportation and recycling of the Materials.&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</p>
+            <p style="margin-left: 1in">
+                &nbsp;</p>
+            <p style="margin-left: 1in">
+                (c) &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; Contractor shall immediately give written notice to Nexeo Solutions, LLC of any revocation, suspension, surrender or denial of any permit or license and any notices, warnings or asserted violations issued by any governmental agencies which relate to the services performed hereunder or other activities at Contractor&rsquo;s facilities where services are performed hereunder, as well as any other complaints communicated to Contractor, its agents, assigns, subcontractors, or any others acting for it or performing any services hereunder.&nbsp; Contractor shall also immediately notify Nexeo Solutions, LLC of any spill, release or other incident which occurs in the course of transporting Materials to Contractor&rsquo;s facility.&nbsp; Copies of documents pertaining to the foregoing shall promptly be supplied to Nexeo Solutions, LLC upon its request.</p>
+            <p>
+                &nbsp;</p>
+            <p>
+                &nbsp;</p>
+            <p>
+                <strong>8.&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; WARRANTIES</strong></p>
+            <p>
+                &nbsp;</p>
+            <p style="margin-left: 1in">
+                (a) &nbsp;&nbsp;&nbsp;&nbsp;&nbsp; Contractor represents that it has the requisite skills and facilities to perform the work hereunder in a manner protective of public and worker safety and the environment and that all work will be performed in a good and workmanlike manner by qualified workers in strict conformity with the best standard practices and with all legal requirements.&nbsp; Contractor represents that it has adequate processes and procedures in place to ensure that it is not accepting Materials from any of its customers which are &ldquo;hazardous substances&rdquo; pursuant to the Comprehensive Environmental Response, Compensation and Liability Act, 49 USC 9601 et seq., or similar laws.</p>
+            <p style="margin-left: 1in">
+                &nbsp;</p>
+            <p style="margin-left: 1in">
+                (b) &nbsp;&nbsp;&nbsp;&nbsp;&nbsp; Nexeo Solutions, LLC warrants that: (i) the Materials shall conform to the description stated in <strong>Exhibit A</strong>; (ii) it will convey good title to the Materials to Contractor free from any security interest, lien or encumbrance; and (iii) it shall comply with all applicable requirements with respect to the Materials under federal, state or local laws and regulations, including, but not limited to, the Federal Resource Conservation and Recovery Act of 1976, as amended, 42 USC 6901 et seq.</p>
+            <p>
+                &nbsp;</p>
+            <p>
+                <strong>9.&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; TRANSFER OF TITLE</strong></p>
+            <p>
+                &nbsp;</p>
+            <p>
+                Title, risk of loss and all other incidents of ownership of the Materials and the responsibilities and risks associated with the handling of the Materials, shall vest in Contractor at the time the Materials are loaded onto Contractor&rsquo;s vehicles at Nexeo Solutions, LLC&rsquo;s facility, or at the time the Materials are delivered to a facility designated by Contractor, whichever is applicable.</p>
+            <p>
+                &nbsp;</p>
+            <p>
+                <strong>10.&nbsp;&nbsp;&nbsp;&nbsp; METHODS OF TREATMENT AND DISPOSAL</strong></p>
+            <p>
+                &nbsp;</p>
+            <p>
+                The methods of recycling shall be determined by Contractor.&nbsp; Contractor represents that such methods are suitable for the Materials and in compliance with all federal, state and local laws, permits and licenses&nbsp; governing the Materials.</p>
+            <p>
+                &nbsp;</p>
+            <p>
+                Contractor shall advise Nexeo Solutions, LLC of all recycling locations utilized for the original Materials and for any mixtures and/or residues created by Contractor&rsquo;s activity.</p>
+            <p>
+                &nbsp;</p>
+            <p>
+                Nexeo Solutions, LLC reserves the right to have its representatives audit Contractor&rsquo;s Materials management process (transport and recycling) and Contractor agrees to assist Nexeo Solutions, LLC in these visits.&nbsp; Additionally, Nexeo Solutions, LLC may inspect Contractor&rsquo;s records and permits relevant to the management of Materials.</p>
+            <p>
+                &nbsp;</p>
+            <p>
+                <strong>11.&nbsp;&nbsp;&nbsp;&nbsp; INDEMNIFICATION</strong></p>
+            <p>
+                &nbsp;</p>
+            <p>
+                Contractor will indemnify, hold harmless and defend Nexeo Solutions, LLC, its subsidiaries and related companies, and the officers, directors, employees, workers, agents, servants and invitees of Nexeo Solutions, LLC, its subsidiaries and related companies (&ldquo;Nexeo Solutions, LLC Indemnitees&rdquo;), from and against any and all liabilities, claims, fines, penalties, exemplary or punitive damages, forfeitures, suits and the costs and expenses incident thereto (including costs of defense, settlement, investigation, expert fees and reasonable attorneys fees), which Nexeo Solutions, LLC may hereafter incur, become responsible for or pay out as a result of death or bodily injury (including sickness, disease, and emotional or mental distress) to any person, destruction of or damage to any property (including loss of use), contamination of or adverse effects on the environment, and remediation thereof, or any violation of governmental laws, regulations or orders, (collectively &ldquo;Claims&rdquo;) caused, in whole or in part, by:</p>
+            <p>
+                &nbsp;</p>
+            <p style="margin-left: 1.5in">
+                (i) &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; Contractor&rsquo;s breach of any term or provision of this Agreement; or</p>
+            <p style="margin-left: 1.5in">
+                &nbsp;</p>
+        </div>
+        <p>
+            <br clear="all" />
+            &nbsp;</p>
+        <ol>
+            <li>
+                any act or omission of Contractor, its employees or subcontractors in performance of this agreement, including, but not limited to, transshipment of Materials to a facility other than those referenced on <strong>Exhibit B</strong>.</li>
+        </ol>
+        <p>
+            &nbsp;</p>
+        <p>
+            provided that Contractor shall not be liable for any such Claims which are solely the result of&nbsp; Nexeo Solutions, LLC Indemnitees&rsquo; negligent acts or omission or breach of any term or provision of this Agreement.</p>
+        <p>
+            &nbsp;</p>
+        <p>
+            <strong>&nbsp;12.&nbsp;&nbsp;&nbsp; INSURANCE</strong></p>
+        <p>
+            &nbsp;</p>
+        <p>
+            Without limiting, negating or reducing Contractor&rsquo;s undertaking to protect, indemnify, hold harmless, reimburse and defend Nexeo Solutions, LLC and other parties as provided in Paragraph 11 hereof, and as part of the consideration for sums paid Contractor by Nexeo Solutions, LLC hereunder, Contractor shall, at its own cost and expense, procure and keep in force and effect the insurance listed below with insurance carrier(s) acceptable to Nexeo Solutions, LLC.&nbsp; Before commencing any work, Contractor shall furnish Nexeo Solutions, LLC with certificates of insurance attested by a duly authorized representative of the insurance carrier(s) and evidencing that the insurance required hereunder is in force and effect and that such insurance will not be cancelled, materially changed, or allowed to lapse without giving to Nexeo Solutions, LLC&rsquo;s Electronic Chemicals Division, P.O. Box 2219, Columbus, Ohio 43216 at least thirty (30) days prior written notice.&nbsp; In the event of cancellation, material change, lapse, or Contractor&rsquo;s failure to furnish Nexeo Solutions, LLC with acceptable certificates of insurance before the time named in this Agreement for commencing work, Nexeo Solutions, LLC shall have the right to immediately terminate this Agreement, notwithstanding any other requirements of notice contained herein.</p>
+        <p>
+            &nbsp;</p>
+        <p style="margin-left: 1in">
+            (a)&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; Workers&rsquo; Compensation and Employer&rsquo;s Liability Insurance: Contractor and all subcontractors retained by or through Contractor, and all their employees, workmen, agents, and servants shall comply with all requirements of the workers&rsquo; or workmen&rsquo;s compensation laws of the state or states or other governmental authority in which Contractor or any subcontractor retained by or through Contractor is performing any work hereunder.&nbsp; In addition, Contractor shall carry Employer&rsquo;s Liability Insurance covering all operations and work hereunder in an amount not less than $1,000,000 per occurrence.</p>
+        <p>
+            &nbsp;</p>
+        <p>
+            (b)&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; General Liability Insurance and Automobile Insurance (occurrence form):</p>
+        <p>
+            &nbsp;</p>
+        <p style="margin-left: 1.5in">
+            (i) &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; General Liability Insurance, including Blanket Contractual Liability, Products and Completed Operations Liability, and Broad Form Property Damage, covering all work hereunder, with limits of not less than $1,000,000 for all liability arising out of injury to or death of one or more persons, in any one occurrence, and $1,000,000 for all liability arising out of damage to or destruction of property, including loss of use thereof and any business interruption loss, in any one occurrence;</p>
+        <p>
+            &nbsp;</p>
+        <p style="margin-left: 1.5in">
+            (ii) &nbsp;&nbsp;&nbsp;&nbsp;&nbsp; Automobile Liability Insurance on all motor vehicles owned, hired, or non-owned, which may be used or connected with any of the work hereunder, with limits of not less than $1,000,000 for all liability arising out of injury to or death of one or more persons, in any one occurrence, and $1,000,000 for all liability arising out of damage to or destruction of property, including loss of use thereof and any business interruption loss, in any one occurrence.</p>
+        <p>
+            &nbsp;</p>
+        <p style="margin-left: 1.5in">
+            (iii) &nbsp;&nbsp;&nbsp;&nbsp; The policy or policies providing for such insurance shall be endorsed to specifically include the liability assumed by Contractor under this Agreement in Paragraph 11 above in the amounts shown in this Paragraph 12.&nbsp; In addition, such insurance shall specifically name Nexeo Solutions, LLC as an additional insured party and shall specifically state that it shall be primary to any and all other insurance of Nexeo Solutions, LLC with respect to any and all claims and demands which may be made against Nexeo Solutions, LLC for bodily injury or death resulting therefrom, including injury to or death to Contractor and its employees, workers, agents and servants, and for property damage, including damage to Contractor&rsquo;s property, caused by any act, omission or default, negligent or otherwise, of Nexeo Solutions, LLC by reason of operations or work hereunder.&nbsp; Such insurance shall specifically provide that it applies separately to each insured against which claim is made or suit is brought, except with respect to the limits of the insurer&rsquo;s liability.&nbsp; All such insurance shall specifically state that the insurer waives any and all rights of subrogation against Nexeo Solutions, LLC.</p>
+        <p>
+            &nbsp;</p>
+        <p style="margin-left: 1in">
+            (c)&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; Environmental Impairment Liability (sudden and non-sudden occurrences) with limits of $1,000,000 each occurrence, $6,000,000 aggregate, or as required by law, whichever is greater.</p>
+        <p style="margin-left: 1in">
+            &nbsp;</p>
+        <p style="margin-left: 1in">
+            (d) &nbsp;&nbsp;&nbsp;&nbsp;&nbsp; Professional Liability Insurance: To protect Contractor for its errors and omissions arising out of Any Professional Services provided under this Agreement in an amount not less than $1,000,000 per occurrence.</p>
+        <p>
+            &nbsp;</p>
+        <p style="margin-left: 1in">
+            (e)&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; The above insurance requirements are minimum requirements and shall not limit Contractor&rsquo;s liability to Nexeo Solutions, LLC in any manner.</p>
+        <p>
+            &nbsp;</p>
+        <p>
+            &nbsp;</p>
+             <p>
+            &nbsp;</p>
+              <p>
+            &nbsp;</p>
+
+        <p>
+            &nbsp;</p>
+             <p>
+            &nbsp;</p>
+ 
+        <p>
+            <strong>13.&nbsp;&nbsp;&nbsp;&nbsp; CONFIDENTIALITY</strong></p>
+        <p>
+            &nbsp;</p>
+        <p>
+            Contractor, its employees and agents shall treat and maintain as Nexeo Solutions, LLC&rsquo;s confidential property, and not use or disclose to others, including governmental agencies or other authorities, during or subsequent to the term of this Agreement any information (including any technical information, experience or data) regarding Nexeo Solutions, LLC&rsquo;s products, plans, programs, plants, processes, costs, equipment, operations, or customers, to Contractor, which may be disclosed to, or come within the knowledge of, Contractor, its employees and agents in the performance of this Agreement, without in each instance securing Nexeo Solutions, LLC&rsquo;s prior written consent.</p>
+        <p>
+            &nbsp;</p>
+        <p>
+            <strong>&nbsp;14.&nbsp;&nbsp;&nbsp; NOTICES</strong></p>
+        <p>
+            &nbsp;</p>
+        <p>
+            All notices required under this Agreement shall be in writing and if to Nexeo Solutions, LLC shall be sufficient in all respects if delivered in person or sent by registered mail, return receipt requested, or by telex, telecopy or other facsimile to:</p>
+        <p>
+            &nbsp;</p>
+        <p style="margin-left: 1in">
+            &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; Nexeo Solutions, LLC</p>
+        <p>
+            &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; P.O. Box 2219</p>
+        <p>
+            &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; Columbus, OH 43216</p>
+        <p>
+            &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; Attention: &lt;&lt;%%PurchAsst%%&gt;&gt;</p>
+        <p>
+            &nbsp;</p>
+        <p>
+            And if to Contractor shall be sufficient in all respects if delivered in person or sent by registered or certified mail, return receipt requested, or by telex, telecopy or other facsimile to:</p>
+              <p>
+            &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;   <apex:outputText value=" {!Procurement_Contract__c.Vendor_Contacts__r.Fax}" /></p>
+        <p>
+            &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; Attention: <apex:outputText value=" {!Procurement_Contract__c.Vendor_Contacts__r.name}" />
+</p>
+        <p>
+            &nbsp;</p>
+        <p>
+            <strong>15.&nbsp;&nbsp;&nbsp;&nbsp; WAIVER</strong></p>
+        <p>
+            &nbsp;</p>
+        <p>
+            Nexeo Solutions, LLC&rsquo;s waiver of any breach or failure to enforce any of the terms and conditions of this Agreement at any time shall not be in any manner a limit or waiver of its right thereafter to enforce or compel strict compliance with every term and condition of the Agreement.</p>
+        <p>
+            &nbsp;</p>
+        <p>
+            <strong>16.&nbsp;&nbsp;&nbsp;&nbsp; ENTIRE AGREEMENT</strong></p>
+        <p>
+            &nbsp;</p>
+        <p>
+            This Agreement, and any documents referred to herein, supersede all prior understandings, transactions and communications, whether oral or written, with respect to the matters referred to herein and form the complete contract between Nexeo Solutions, LLC and Contractor.&nbsp; No modification, alteration or amendment shall be binding upon Nexeo Solutions, LLC unless in writing and signed by Nexeo Solutions, LLC&rsquo;s authorized representative.</p>
+        <p>
+            &nbsp;</p>
+        <p>
+            &nbsp;</p>
+        <p>
+            &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; WITNESS the following signatures as of the day and year first written above.</p>
+        <p>
+            &nbsp;</p>
+        <p>
+            &nbsp;</p>
+        <p>
+             <apex:outputText value=" {!Procurement_Contract__c.Vendor__r.Name}" />&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; 
+</p>
+        <p style="margin-left: 3in">
+            &nbsp;</p>
+        <p>
+            By: _____________________________&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; By: ______________________________</p>
+        <p>
+            &nbsp;</p>
+        <p>
+            &nbsp;</p>
+        <p>
+            Title: ____________________________&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; Title: _____________________________</p>
+        <p>
+            &nbsp;</p>
+        <p style="margin-left: 3in">
+            &nbsp;</p>
+        <p align="center">
+            &nbsp;</p>
+        <p align="center">
+            &nbsp;</p>
+        <p align="center">
+            <strong>EXHIBIT A</strong></p>
+        <p align="center">
+            &nbsp;</p>
+        <p align="center">
+            Contract for Plastic Recycling</p>
+        <p align="center">
+            &nbsp;</p>
+        <p align="center">
+            Dated:&nbsp; {!today()}</p>
+        <p>
+            &nbsp;</p>
+        <p>
+            &nbsp;</p>
+        <p>
+            &nbsp;</p>
+        <p>
+            &nbsp;</p>
+        <p>
+            FACILITIES COVERED:</p>
+        <p>
+            &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</p>
+        <p>
+            &nbsp;</p>
+        <p>
+            &nbsp;</p>
+        <p>
+            &nbsp;</p>
+        <p>
+            &nbsp;</p>
+        <p>
+            MATERIALS:</p>
+        <p>
+            &nbsp;</p>
+        <p>
+            &nbsp;</p>
+        <p>
+            &nbsp;</p>
+            <p>
+            &nbsp;</p>
+        <p>
+            &nbsp;</p>
+        <p>
+            &nbsp;</p>
+                <p>
+            &nbsp;</p>
+        <p>
+            &nbsp;</p>
+        <p>
+            &nbsp;</p>
+               <p>
+            &nbsp;</p>
+        <p>
+            &nbsp;</p>
+        <p>
+            &nbsp;</p>
+
+
+
+
+
+
+        <p align="center">
+            <strong>EXHIBIT B</strong></p>
+             <p align="center">
+            &nbsp;</p>
+        <p align="center">
+            Contract for Plastic Recycling</p>
+        <p align="center">
+            &nbsp;</p>
+               <p align="center">
+            Dated:&nbsp; {!today()}</p>
+        <p>
+            &nbsp;</p>
+        <p>
+            &nbsp;</p>
+        <p>
+            &nbsp;</p>
+        <p>
+            &nbsp;</p>
+        <p>
+            LOCATION AND MANNER OF DISPOSITION OF MATERIALS:</p>
+        <p>
+            &nbsp;</p>
+        <p>
+            &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; Location:&nbsp;</p>
+        <p>
+            &nbsp;</p>
+        <p>
+            &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; Manner:&nbsp;&nbsp;&nbsp;</p>
+        <p>
+            &nbsp;</p>
+        <p>
+            &nbsp;</p>
+             <p>
+            &nbsp;</p>
+        <p>
+            &nbsp;</p>
+            <p>
+            &nbsp;</p>
+        <p>
+            &nbsp;</p>
+ <p>
+            &nbsp;</p>
+        <p>
+            &nbsp;</p>
+            <p>
+            &nbsp;</p>
+        <p>
+            &nbsp;</p>
+ <p>
+            &nbsp;</p>
+        <p>
+            &nbsp;</p>
+            <p>
+            &nbsp;</p>
+        <p>
+            &nbsp;</p>
+
+        <p align="center">
+            <strong>EXHIBIT C</strong></p>
+        <p align="center">
+            &nbsp;</p>
+        <p align="center">
+            &nbsp;</p>
+        <p align="center">
+            Contract for Plastic Recycling</p>
+        <p align="center">
+            &nbsp;</p>
+        <p align="center">
+            &nbsp;</p>
+        <p align="center">
+            Dated:&nbsp; {!today()}</p>
+        <p>
+            &nbsp;</p>
+        <p>
+            &nbsp;</p>
+        <p>
+            &nbsp;</p>
+        <p>
+            &nbsp;</p>
+        <p>
+            FEE SCHEDULE:</p>
+        <p>
+            &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; Transportation of materials to Contractor&rsquo;s facility to be the responsibility of Nexeo Solutions, LLC (or authorized customer).&nbsp;</p>
+        <p>
+            &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; Cost to process material and sell recovered resin to be the responsibility of Contractor.</p>
+        <p>
+            &nbsp;</p>
+        <p>
+            &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; Contractor to receive uncrushed, unbaled material at no charge to or payment from Nexeo Solutions, LLC or customer.</p>
+        <p>
+            &nbsp;</p>
+        <p>
+            &nbsp;</p>
+        <p>
+            &nbsp;</p>
+        <p align="center">
+            &nbsp;</p>
+              <p>
+            &nbsp;</p>
+        <p>
+            &nbsp;</p>
+        <p>
+            &nbsp;</p>
+  <p>
+            &nbsp;</p>
+        <p>
+            &nbsp;</p>
+        <p>
+            &nbsp;</p>
+            <p>
+            &nbsp;</p>
+        <p>
+        <p align="center">
+            <strong>EXHIBIT D</strong></p>
+               <p align="center">
+            &nbsp;</p>
+        <p align="center">
+       Certification of Plastic Recycling</p>
+        <p>
+            &nbsp;</p>
+                   &nbsp;</p>
+        <p>
+            &nbsp;</p>
+        <p>
+             <apex:outputText value=" {!Procurement_Contract__c.Vendor__r.Name}" />(Contractor) certifies that the Materials represented by the attached invoice were recycled in a manner consistent with federal, state and local laws and regulations and the provisions of the Recycling Contract between Nexeo Solutions, LLC and Contractor, dated &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;,</p>
+        <p>
+            on or before the date hereof.</p>
+                <p>
+            &nbsp;</p>
+        <p>
+            &nbsp;</p>
+        <p>
+            &nbsp;</p>
+        <p>
+            &nbsp;</p>
+        <p>
+            &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; <u> <apex:outputText value=" {!Procurement_Contract__c.Vendor__r.Name}" /></u></p>
+        <p>
+            &nbsp;</p>
+        <p>
+            &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; By:&nbsp;&nbsp; &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</p>
+        <p>
+            &nbsp;</p>
+        <p>
+            &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; Title:&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</p>
+        <p>
+            &nbsp;</p>
+        <p>
+            &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; Date: &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</p>
+        <p>
+            &nbsp;</p></body>
+</html>
+
+ </apex:page>

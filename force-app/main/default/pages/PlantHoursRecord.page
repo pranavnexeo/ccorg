@@ -1,0 +1,52 @@
+<apex:page standardController="Plant_Hours_Report__c" extensions="plantHoursController" id="thePage">
+<apex:sectionHeader title="Plant Hour Edit" />
+<apex:form id="myForm">
+
+<apex:pageBlock title="Plant Hour Edit" id="pb">
+
+<apex:pageBlockButtons location="both">
+<apex:commandButton value="Save" action="{!saveCustom}"/>
+<apex:commandButton value="Cancel" action="{!cancel}"/>
+</apex:pageBlockButtons>
+
+<apex:pageBlockSection title="Information" columns="2">
+<apex:pageBlockSectionItem >
+<apex:outputLabel value="{!$ObjectType.Plant_Hours_Report__c.fields.Report_Type__c.label}" />
+<apex:actionRegion >
+<apex:inputField value="{!Plant_Hours_Report__c.Report_Type__c}" id="statusfield" required="true">
+<apex:actionsupport event="onchange" rerender="sec1" status="status" />
+</apex:inputField>
+</apex:actionRegion>
+</apex:pageBlockSectionItem>
+<apex:inputField id="repotperiod" value="{!Plant_Hours_Report__c.Reporting_Period__c}"/>
+<apex:selectList id="selectyear" value="{!Plant_Hours_Report__c.Report_Year__c}" size="1">
+<apex:selectOption itemValue="None" itemLabel="None"/>
+<apex:selectOption itemValue="{!YEAR(TODAY())-5}" itemLabel="{!YEAR(TODAY())-5}"/>
+<apex:selectOption itemValue="{!YEAR(TODAY())-4}" itemLabel="{!YEAR(TODAY())-4}"/>
+<apex:selectOption itemValue="{!YEAR(TODAY())-3}" itemLabel="{!YEAR(TODAY())-3}"/>
+<apex:selectOption itemValue="{!YEAR(TODAY())-2}" itemLabel="{!YEAR(TODAY())-2}"/>
+<apex:selectOption itemValue="{!YEAR(TODAY())-1}" itemLabel="{!YEAR(TODAY())-1}"/>
+<apex:selectOption itemValue="{!YEAR(TODAY())}" itemLabel="{!YEAR(TODAY())}"/>
+<apex:selectOption itemValue="{!YEAR(TODAY())+1}" itemLabel="{!YEAR(TODAY())+1}"/>
+</apex:selectList>
+</apex:pageBlockSection>
+
+<apex:pageBlockSection id="sec1">
+<apex:inputField id="facility" rendered="{!(1==1 && Plant_Hours_Report__c.Report_Type__c == 'Facility')}" value="{!Plant_Hours_Report__c.Facility__c}"/>
+<apex:inputField id="country" rendered="{!(1==1 && (Plant_Hours_Report__c.Report_Type__c == 'Sub' || Plant_Hours_Report__c.Report_Type__c == 'Division' || Plant_Hours_Report__c.Report_Type__c == 'Corp'))}" value="{!Plant_Hours_Report__c.Country__c}"/>
+<apex:inputField id="reportcategory" rendered="{!(1==1 && Plant_Hours_Report__c.Report_Type__c == 'Sub')}" value="{!Plant_Hours_Report__c.Reporting_Category_Sub__c}"/>
+<apex:inputField id="division" rendered="{!(1==1 && Plant_Hours_Report__c.Report_Type__c == 'Division')}" value="{!Plant_Hours_Report__c.Division_div__c}"/>
+</apex:pageBlockSection>
+
+<apex:pageBlockSection title="Goal Section" columns="3">
+<apex:inputField id="basicinjury" value="{!Plant_Hours_Report__c.Basic_Injuries_Illnesses__c}"/>
+<apex:inputField id="targetinjury" value="{!Plant_Hours_Report__c.Target_Injuries_Illnesses__c}"/>
+<apex:inputField id="outstandinginjury" value="{!Plant_Hours_Report__c.Outstanding_Injuries_Illnesses__c}"/>
+<apex:inputField id="basictrr" value="{!Plant_Hours_Report__c.Basic_TRR__c}"/>
+<apex:inputField id="targettrr" value="{!Plant_Hours_Report__c.Target_TRR__c}"/>
+<apex:inputField id="outstandingtrr" value="{!Plant_Hours_Report__c.Outstanding_TRR__c}"/>
+</apex:pageBlockSection>
+
+</apex:pageBlock>
+</apex:form>
+</apex:page>

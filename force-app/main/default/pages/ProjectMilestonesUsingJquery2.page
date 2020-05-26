@@ -1,0 +1,77 @@
+<apex:page standardStylesheets="false" controller="apexjsoncontroller" sidebar="false">
+    
+   <script src="{!URLFOR($Resource.JqueryGantt, '/jQuery.Gantt-master/js/jquery.min.js')}" type="text/javascript"/> 
+   <script src="{!URLFOR($Resource.JqueryGantt, '/jQuery.Gantt-master/js/jquery.fn.gantt.js')}" type="text/javascript"/> 
+   <apex:stylesheet value="{!URLFOR($Resource.JqueryGantt, '/jQuery.Gantt-master/css/style.css')}"/>
+   
+    <style type="text/css">
+            body {
+                font-family: Helvetica, Arial, sans-serif;
+                font-size: 13px;
+                padding: 0 0 50px 0;
+            }
+            .contain {
+                width: 800px;
+                margin: 0 auto;
+            }
+            h1 {
+                margin: 40px 0 20px 0;
+            }
+            h2 {
+                font-size: 1.5em;
+                padding-bottom: 3px;
+                border-bottom: 1px solid #DDD;
+                margin-top: 50px;
+                margin-bottom: 25px;
+            }
+            table th:first-child {
+                width: 150px;
+            }
+      /* Bootstrap 3.0 re-reset */
+      .fn-gantt *,
+      .fn-gantt *:after,
+      .fn-gantt *:before {
+        -webkit-box-sizing: content-box;
+           -moz-box-sizing: content-box;
+                box-sizing: content-box;
+      }
+        </style>
+   <div class="gantt" />
+    
+   <script type="text/javascript">
+   
+ $(function () {
+         projectId = '{!$CurrentPage.parameters.projectId}';
+         "use strict";
+         var res = '{!result1}';
+         var i;
+         var milestone = '{!milestoneSize}';
+         for(i=0;i<milestone;i++)
+         {
+         res = res.replace("frm","from");
+         res = res.replace("dsc","desc");
+         }
+         
+         var new_obj = JSON.parse(res);
+         
+         
+               $(".gantt").gantt({
+               source: new_obj,
+               navigate: "scroll",
+               scale  :  "weeks",
+               maxScale: "months",
+                itemsPerPage: 10,
+
+                    onRender: function() {
+                       
+                    }
+                    });
+               
+
+        
+          
+       });
+   
+  </script>
+   
+</apex:page>

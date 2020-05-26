@@ -1,0 +1,4 @@
+<apex:page standardcontroller="ART_Project__c" extensions="ListViewExportPage" recordsetvar="default" standardstylesheets="false" sidebar="false" contenttype="application/vnd.ms-excel#projects.xls">
+
+ <c:ListViewExport instance="na38" sobj_type="ART_Project__c" Viewid="{!ViewId}"/>
+</apex:page>

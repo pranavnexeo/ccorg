@@ -1,0 +1,119 @@
+<apex:page controller="NCAR_Queue_Viewer_New" sidebar="false" showheader="false" contenttype="application/vnd.ms-excel#NCAR_Pending_Approval.xls" cache="true">
+
+<apex:datatable value="{!caselines}" var="N">
+
+<apex:column headervalue="Approver" rendered="{!IF(selectedoption = 'All', true, false)}">
+<apex:outputtext value="{!N.approver}"/>
+</apex:column>
+<apex:column >
+<apex:facet name="header">
+Case
+</apex:facet>
+<apex:outputlink value="/{!N.thecase.id}">{!N.thecase.name}</apex:outputlink>
+</apex:column>
+<apex:column >
+<apex:facet name="header">
+Account
+</apex:facet>
+<apex:outputlink value="/{!N.thecase.Account__c}">{!N.thecase.account__r.name}</apex:outputlink>
+</apex:column>
+<apex:column >
+<apex:facet name="header">
+Nexeo Plant
+</apex:facet>
+<apex:outputtext value="{!N.thecase.Nexeo_Plant__r.Name}"/>
+</apex:column>
+<apex:column >
+<apex:facet name="header">
+Return Plant
+</apex:facet>
+<apex:outputtext value="{!N.thecase.Ship_To_Warehouse__r.Name}"/>
+</apex:column>
+<apex:column >
+<apex:facet name="header">
+Sales Org
+</apex:facet>
+<apex:outputtext value="{!N.thecase.account__r.SAP_Sales_Org__c} - {!N.thecase.account__r.SAP_Sales_Org_Desc__c}"/>
+</apex:column>
+<apex:column >
+<apex:facet name="header">
+Status
+</apex:facet>
+<apex:outputtext value="{!N.thecase.Status__c}"/>
+</apex:column>
+<apex:column >
+<apex:facet name="header">
+Subject
+</apex:facet>
+<apex:outputtext value="{!N.thecase.subject__c}"/>
+</apex:column>
+<apex:column >
+<apex:facet name="header">
+Record Type
+</apex:facet>
+<apex:outputtext value="{!N.thecase.RecordType.Name}"/>
+</apex:column>
+<apex:column >
+<apex:facet name="header">
+Type
+</apex:facet>
+<apex:outputtext value="{!N.thecase.Type__c}"/>
+</apex:column>
+<apex:column >
+<apex:facet name="header">
+Import / Export
+</apex:facet>
+<apex:outputtext value="{!N.thecase.Import_Export__c}"/>
+</apex:column>
+<apex:column >
+<apex:facet name="header">
+Division
+</apex:facet>
+<apex:outputfield value="{!N.thecase.Account__r.SAP_Division_Desc__c}"/>
+</apex:column>
+<apex:column >
+<apex:facet name="header">
+Sales Group
+</apex:facet>
+<apex:outputtext value="{!N.thecase.Account__r.SAP_Sales_Group_Desc__c}"/>
+</apex:column>
+<apex:column >
+<apex:facet name="header">
+Created Date
+</apex:facet>
+<apex:outputfield value="{!N.thecase.createddate}"/>
+</apex:column>
+
+<apex:column headervalue="Sales Order">
+<apex:outputtext value="{!N.line.open_orders__r.Sales_Order_Number__c}"/>
+</apex:column>
+<apex:column headervalue="Material">
+<apex:outputfield value="{!N.line.open_orders__r.Material__c}"/>
+</apex:column>
+<apex:column headervalue="Supplier">
+<apex:outputtext value="{!N.line.open_orders__r.PH4_Supplier__c}"/>
+</apex:column>  
+
+<apex:column >
+<apex:facet name="header">
+Memo - CSR
+</apex:facet>
+<apex:outputfield value="{!N.thecase.Memo_CSR__c}"/>
+</apex:column>
+
+<apex:column >
+<apex:facet name="header">
+Memo - Plant
+</apex:facet>
+<apex:outputfield value="{!N.thecase.Memo_Plant__c}"/>
+</apex:column>
+
+<apex:column >
+<apex:facet name="header">
+Memo - Purchasing
+</apex:facet>
+<apex:outputfield value="{!N.thecase.Memo_Purchasing__c}"/>
+</apex:column>
+
+</apex:datatable>
+</apex:page>

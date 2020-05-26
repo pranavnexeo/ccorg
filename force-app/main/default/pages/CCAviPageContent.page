@@ -1,0 +1,46 @@
+<apex:page id="CCAviPageContent"
+    controller="CCAviPageContentController"
+    applyHtmlTag="false" 
+    docType="html-5.0" 
+    sidebar="false" 
+    showHeader="false" 
+    standardStylesheets="false" 
+    readOnly="true">
+
+    <apex:repeat value="{!cssUrls}" var="cssurl">
+        <apex:stylesheet value="{!cssurl}"/>
+    </apex:repeat>
+
+    <apex:outputPanel id="pageContentFragment" layout="block">
+        <div id="pageContentBlock">
+            <apex:outputText value="{!content}" escape="false" />
+        </div>
+    </apex:outputPanel>
+
+    <script type="text/javascript">
+    jQuery(function($) {
+        CCRZ.subsc       = CCRZ.subsc || {};
+        CCRZ.subsc.views = CCRZ.subsc.views || {};
+
+        CCRZ.subsc.views.PageContentView = CCRZ.CloudCrazeView.extend({
+            events : {},
+            className: 'CCAviPageContentController',
+            viewName:  'PageContentView',
+            template: CCRZ.util.template('ContentFrame'),
+
+            init : function() {
+                this.render();
+            },
+            renderDesktop: function() {
+            },
+            renderPhone: function() {
+                var text = $('#pageContentBlock').html();
+                $('.phone_center_column').html(text);
+            }
+        });
+
+        CCRZ.subsc.pageContent = new CCRZ.subsc.views.PageContentView();
+    });
+    </script>
+
+</apex:page>

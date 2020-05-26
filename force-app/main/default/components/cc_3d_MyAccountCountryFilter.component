@@ -1,0 +1,86 @@
+<apex:component controller="cc_3d_ctrl_CheckoutUserInfoController">
+
+<script type="text/javascript">
+
+    var countryMap = {!countryMapJSON};
+    var currencyMap = {!currencyMapJSON};
+    var defaultCurrencyMap = {!defaultCurrencyMapJSON};
+
+    jQuery(function($) {
+        CCRZ.pubSub.once("view:myaccountView:refresh", function(view) {
+            var countryList = _.filter(view.model.attributes.countryList, function(country) {
+                return (countryMap[country.value] != null); 
+            });
+            view.model.attributes.countryList = countryList;
+        });
+        CCRZ.pubSub.on("view:myAddressBookView:refresh", function(view) {
+            var countryList = _.filter(view.model.attributes.countryList, function(country) {
+                return (countryMap[country.value] != null); 
+            });
+            view.model.attributes.countryList = countryList;
+        });
+        CCRZ.pubSub.on("view:editAccountView:refresh", function(view) {
+            $(".my_account_information select[name='currencyCode']").parents(".row").hide();
+        });
+        CCRZ.pubSub.once("view:myAddressBookView:refresh", function(view) {
+            var viewPrototype = Object.getPrototypeOf(view);
+            if (viewPrototype != null) {
+                viewPrototype.saveEntity = function(event) {
+                    var objLink = $(event.target);
+                    var id = objLink.data("id");
+                    var v = this;
+                    var formData = form2js('editAddressForm', '.', false, function(node) {}, false);
+                    formData.addressBean.country = $('select.countryListing option:selected').text();
+                    this.closeModal(id);
+                    this.addressList.editEntity(id, formData,function(id){
+                        v.addressList.fetch(function() { v.render();});
+                    });
+                    this.updateCurrency(formData);
+                };               
+                viewPrototype.updateCurrency = function(data) {
+                    var type = _.find(data.addressTypes, function(t) { 
+                        return (t.isDefault && (t.addressType == 'Billing'));
+                    });
+                    if (type) {
+                        var countryCode = data.addressBean.countryCode;
+                        var currency = currencyMap[countryCode];
+                        if (!currency) {
+                            currency = defaultCurrencyMap[countryCode];
+                            if (!currency) {
+                                currency = 'USD';
+                            }
+                        }
+                        var exists = _.find(CCRZ.myaccountModel.attributes.currencyList, function(c) { 
+                            return (c.value == currency);
+                        });
+                        if (!exists) {
+                            currency = defaultCurrencyMap[countryCode];
+                            if (!currency) {
+                                currency = 'USD';
+                            }
+                        }
+                        if (CCRZ.myaccountModel.attributes.currencyCode != currency) {
+                            var countries = CCRZ.myaccountModel.attributes.countryList;
+                            var info = {
+                                "userFirstName":CCRZ.myaccountModel.attributes.userFirstName,
+                                "userLastName":CCRZ.myaccountModel.attributes.userLastName,
+                                "userPhone":CCRZ.myaccountModel.attributes.userPhone,
+                                "username":CCRZ.myaccountModel.attributes.username,
+                                "emailAddress":CCRZ.myaccountModel.attributes.emailAddress,
+                                "language":CCRZ.myaccountModel.attributes.languageKey,
+                                "currencyCode":currency
+                            };
+                            CCRZ.myaccountModel.updateUserInformation(info, true, function(response) {
+                            });
+                        }
+                    }
+                };               
+                view.delegateEvents();
+            }
+        });
+
+    });
+
+</script>
+
+</apex:component>

@@ -1,0 +1,63 @@
+<apex:page standardcontroller="Call_Report__c" extensions="BBBSendCallReportController">
+<apex:form >
+<apex:sectionHeader title="{!cr}" subtitle="Email Call Report"/>
+<apex:pageblock >
+<apex:pageblockbuttons >
+<apex:commandButton action="{!refreshthis}" value="Find User"/>
+<apex:commandbutton action="{!refreshthis}" value="Add User"/>
+<apex:commandbutton action="{!removeuser}" value="Remove User"/>
+<apex:commandbutton action="{!sendemail}" value="Send Email"/>
+</apex:pageblockbuttons>
+<apex:pageblocksection >
+<apex:pageblocksectionitem >
+<apex:outputlabel for="search" value="User Last Name: "/>
+<apex:inputtext id="search" value="{!searchuser}"/>
+</apex:pageblocksectionitem>
+<apex:pageblocksectionitem >
+<apex:outputlabel for="m" value="Matched users: "/>
+<apex:selectlist size="1" id="m" value="{!selectedmatch}">
+<apex:selectoptions value="{!matched}"/>
+</apex:selectlist>
+</apex:pageblocksectionitem>
+<apex:pageblocksectionitem >
+<apex:outputlabel for="s" value="Send To: "/>
+<apex:selectlist size="5" id="s" value="{!selectedsendto}">
+<apex:selectoptions value="{!sendto}"/>
+</apex:selectlist>
+</apex:pageblocksectionitem>
+<apex:pageblocksectionitem >
+<apex:outputlabel for="a" value="Addt'l Address: "/>
+<apex:inputtext id="a" value="{!manualaddresses}"/>
+</apex:pageblocksectionitem>
+</apex:pageblocksection>
+</apex:pageblock>
+<apex:outputPanel id="popup">
+            <apex:outputPanel styleClass="customPopup" layout="block" rendered="{!displayPopUp}">
+                <center> <apex:outputlabel value="Success!" rendered="{!success}"/>
+                <apex:outputlabel value="Error." rendered="{!Not(success)}"/> <br/><br/><br/>
+                <apex:commandButton value="OK" action="{!closePopup}" rerender="popup"/></center>
+            </apex:outputPanel>
+        </apex:outputPanel>
+
+</apex:form>
+
+    <style type="text/css">
+       .customPopup{
+            background-color: white;
+            border-style: solid;
+            border-width: 2px;
+            left: 50%;
+            padding:10px;
+            position: absolute;
+            z-index: 9999;
+            /* These are the 3 css properties you will need to tweak so the pop 
+            up displays in the center of the screen. First set the width. Then set 
+            margin-left to negative half of what the width is. You can also add 
+            the height property for a fixed size pop up.*/
+            width: 50px;
+            margin-left: -25px;
+            top:100px;
+        }
+    </style>
+
+</apex:page>

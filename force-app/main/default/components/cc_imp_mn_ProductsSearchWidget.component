@@ -1,0 +1,68 @@
+<apex:component >
+	<script type="text/javascript">
+      CCRZ.uiProperties.productSearchView.desktop.tmpl = 'productSearchTemplateDesktopImp';
+      CCRZ.uiProperties.productSearchView.phone.tmpl   = 'productSearchTemplatePhoneImp';
+ 	</script>
+    
+    <script type="text/javascript">
+
+     $( window ).load(function() {
+
+         var ESUser = CCRZ.getCookie("apex__isESUser");
+		 if (ESUser !== undefined) {
+            
+             var ua = window.navigator.userAgent;
+    		 var msie = ua.indexOf("MSIE ");
+             if (msie > 0 || navigator.userAgent.match(/Trident.*rv\:11\./) || window.navigator.userAgent.indexOf("Edge") > -1) {
+                 ESUser = ESUser.toString();
+             }
+        
+             if (ESUser.toLowerCase() != 'true') {
+                 if ($('#searchBoxCC')) {
+                        $('#searchBoxCC').css("display","");
+                 }
+         
+                 if ($('#searchBoxCCPH')) {
+                        $('#searchBoxCCPH').css("display","");
+                 }         
+                       
+             } 
+         }
+     });
+    
+    </script>
+
+	<script id="productSearchTemplateDesktopImp" type="text/template">
+	{{#if {!(ISPICKVAL($User.UserType,'Guest'))} }}
+	 {{else}}
+		{{#ifDisplay 'H.DisplSearch'}}
+        	<span id = "searchBoxCC" style = "display:none">
+                <input name="" id="searchText" class="search_input" type="text" placeholder="{{pageLabelMap 'ProductSearch'}}" title="{{pageLabelMap 'ProductSearch_Tooltip'}}"/>
+                <input id="doSearch" class="search_button" type="Submit" value="&gt;&gt;" />
+                <div class="alert alert-error searchTopBarErrorMessage searchBoxWidgetError" style="display:none;"></div>
+            </span>    
+		{{/ifDisplay}}
+	{{/if}}	
+	</script>
+
+	<script id="productSearchTemplatePhoneImp" type="text/template">
+	{{#if {!(ISPICKVAL($User.UserType,'Guest'))} }}
+	 {{else}}
+		<span id = "searchBoxCCPH" style = "display:none">		
+            <div class="left_column">
+                <div class="product_search_container">
+                    <h2 class="title">{{pageLabelMap 'Title_ProductSearch'}}</h2>
+                    <div class="product_search">
+                        <input name="" id="searchText" type="text" placeholder="{{pageLabelMap 'ProductSearch'}}" title="{{pageLabelMap 'ProductSearch_Tooltip'}}"/>
+                        <input name="" id="doSearch" type="image" src="{{image 'Static Resource' 'images/phone_search.png' locale=locale}}" />
+                        <p>
+                            <div class="alert alert-error searchBoxWidgetError" style="display:none;"></div>
+                        </p>
+                    </div>
+                </div>
+            </div>
+         </span>              
+	{{/if}}		
+	</script>
+	
+</apex:component>

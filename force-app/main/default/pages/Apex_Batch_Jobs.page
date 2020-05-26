@@ -1,0 +1,79 @@
+<apex:page setup="true" controller="Apex_Batch_Jobs_Controller">
+
+<script language="javascript">
+    function getConfirm(q) {
+        answer = confirm(q);
+        return (answer != 0);
+    }
+</script>
+
+    <apex:form >
+    
+        <apex:pageBlock id="filter" title="Recent Jobs">
+            <apex:actionPoller rerender="prog" interval="15"/>
+            <apex:pageBlockButtons >
+            </apex:pageBlockButtons>
+            <apex:pageBlockTable id="prog" value="{!AsyncJobs}" var="item">
+                <apex:column headerValue="Action">
+                    <apex:outputPanel rendered="{!if(item.ItemCompleted = true,false,true)}">
+                        <b><a href="/setup/asyncApex/abortJob?id={!item.Name}" 
+                              target="_blank" onclick="return getConfirm('Abort the job?');">Abort Job</a></b>
+                    </apex:outputPanel>
+                </apex:column>
+                   
+                <apex:column value="{!item.Job_Type}"/> 
+                <apex:column headerValue="Start Date" value="{!item.Formatted_CreatedDate}"/> 
+                <apex:column headerValue="Completion Info"> 
+                    <apex:outputPanel >
+                        <apex:outputText value="{!item.EstimatedCompletionDateTime}" rendered="{!if(item.ItemCompleted = true,false,true)}" />
+                        <apex:outputText value="{!item.Formatted_CompletedDate}" rendered="{!if(item.ItemCompleted = true,true,false)}" />
+                    </apex:outputPanel>
+                </apex:column>   
+                <apex:column value="{!item.Status}"/> 
+                <apex:column headerValue="Progress"> 
+                    <div class="prog-border" >
+                        <apex:outputPanel layout="block" styleClass="{!if(item.ItemCompleted = true,'prog-bar-done','prog-bar')}" style="width: {!item.Percent*2}px;">
+                            <apex:outputText value="{!item.Percent}" rendered="{!if(item.ItemCompleted = false,true,false)}" />
+                        </apex:outputPanel> 
+                    </div>
+                </apex:column>
+                <apex:column headerValue="Method Name" value="{!item.MethodName}"/> 
+                <apex:column headerValue="Batches Processed" value="{!item.Records_Processed}"/> 
+                <apex:column headerValue="Total Batches" value="{!item.Total_Records}"/> 
+                <apex:column headerValue="Number of Errors" value="{!item.NumberOfErrors}"/> 
+                
+            </apex:pageBlockTable>
+        </apex:pageBlock>
+    </apex:form>
+ 
+<style>
+    .prog-bar {
+      height: 14px;
+      margin: 3px;
+      padding: 0px;
+      padding-right:3px;
+      background: #FFA037;
+      text-align:right;
+      font-size:12px;
+      font-weight:bold;
+      color:#333333;
+    }
+
+    .prog-bar-done {
+      height: 14px;
+      margin: 3px;
+      padding: 0px;
+      padding-right:3px;
+      background: #C9DDEC;
+    }
+
+    .prog-border {
+      width: 209px;
+      background: #fff;
+      border: 1px solid silver;
+      margin: 0px;
+      padding: 0px;
+    }
+</style>
+ 
+</apex:page>

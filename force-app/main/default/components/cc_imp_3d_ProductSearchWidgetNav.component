@@ -1,0 +1,12 @@
+<apex:component >
+	<script type="text/javascript">
+      CCRZ.uiProperties.searchWidget.tmpl = 'SidebarSearchImp';
+   </script>
+
+<script id="SidebarSearchImp-View-Desktop" type="text/template">
+</script>
+
+<script id="SidebarSearchImp-View-Phone" type="text/template">
+ 
+</script>
+</apex:component>

@@ -1,0 +1,104 @@
+<apex:page showHeader="false" sidebar="false" controller="PriceSupportMassChangeController" id="massChange">
+<apex:pageMessages id="error"/>
+<script>
+	
+	function saveMassChange(){
+		
+		if('{!renewFlag}'=='false'){
+			if(document.getElementById('massChange:priceForm:pageBlock:section:effectiveDate').value==''){
+				alert('Please enter effective date.');
+			}else{
+				doSave();
+			}
+		}else{
+			//if(document.getElementById('massChange:priceForm:pageBlock:section:expirationDate').value==''){
+			//	alert('Please enter expiration date.');
+			//}else{
+				doSave();
+			//}
+		}
+		
+		return false;
+	}
+	
+	function saveSuccess(){
+	
+		if('{!renewFlag}'=='false'){
+			alert('Mass Change Completed.');
+		}else{
+			alert('Mass Renew With Price Change Completed.');
+		}
+		
+		window.top.close();
+	}
+	
+	function close_window() {   
+		if (confirm("Close Window?")) {
+	     	window.top.close();   
+	     } 
+	} 
+
+</script>
+
+<apex:form id="priceForm"> 
+
+<apex:actionFunction name="doSave" action="{!customSave}"  rerender="error" status="busyStatus" oncomplete="saveSuccess();"/>
+        
+ 
+<apex:pageblock >
+                <apex:pageBlockButtons id="buttons" location="top">
+                
+                        <apex:commandButton value="Save"  onclick="return saveMassChange();" />
+                        <apex:commandButton value="Cancel"  onclick="close_window();return false;" />
+                       
+                </apex:pageBlockButtons>
+ </apex:pageblock> 
+ 
+  <apex:ActionStatus id="busyStatus" >
+        <apex:facet name="start" >
+            <c:BusyStatusComp height="300px" width="300px" Message="Pleas Wait..." />
+        </apex:facet>
+  </apex:ActionStatus>
+ 
+ 
+ 
+ <apex:pageBlock id="pageBlock">
+ 	
+ 	<apex:pageBlockSection title="{!IF(renewFlag==false,'Mass Change','Mass Renew With Price Change')}" columns="3" id="section">
+ 		<apex:outputLabel value="Supplier Supported Price Change *"/>
+ 		<apex:inputText value="{!supplierSupportedPriceChange}" id="supplierSupportedPriceChange"/>
+ 		<apex:outputLabel value="(example -.10 = 10% Supplier Supported Price decrease)"/>
+ 		<apex:outputLabel value="Type" />
+ 		<apex:selectRadio value="{!supportedPriceType}" >
+ 			<apex:selectOption itemValue="$" itemLabel="$"/>
+			<apex:selectOption itemValue="%" itemLabel="%"/>
+ 		</apex:selectRadio>
+ 		<apex:outputLabel value=""/>
+ 		<apex:outputLabel value="Increase Final Rebate Amount By *" />
+ 		<apex:inputText value="{!increaseRebateAmountBy}" id="increaseRebateAmountBy" />
+ 		<apex:outputLabel value="(only for Flat Supports)" />
+ 		<apex:outputLabel value="Purchase Cost Change *"/>
+ 		<apex:inputText value="{!purchaseCostChange}" id="purchaseCostChange"/>
+ 		<apex:outputLabel value="(example .10 = 10% Purchase Cost increase)"/>
+ 		<apex:outputLabel value="Type"/>
+ 		<apex:selectRadio value="{!purchaseCostType}">
+ 			<apex:selectOption itemValue="$" itemLabel="$"/>
+			<apex:selectOption itemValue="%" itemLabel="%"/>
+ 		</apex:selectRadio>
+ 		<apex:outputLabel value=""/>
+ 		<apex:outputLabel value="Comments"/>
+ 		<apex:inputText value="{!comments}"/>
+ 		<apex:outputLabel value=""/>
+ 		<apex:outputLabel value="Effective Date *" rendered="{!NOT(renewFlag)}"/>
+ 		<apex:inputText styleClass="cssbody" value="{!effectiveDate}" size="10" id="effectiveDate" onfocus="DatePicker.pickDate(false, 'massChange:priceForm:pageBlock:section:effectiveDate', false);" rendered="{!NOT(renewFlag)}"/>
+ 		<apex:outputLabel value="" rendered="{!NOT(renewFlag)}"/>
+ 		<apex:outputLabel value="Expiration Date *" rendered="{!renewFlag}"/>
+ 		<apex:outputLabel value="Expiration Date " rendered="{!NOT(renewFlag)}"/>
+ 		<apex:inputText styleClass="cssbody" value="{!expirationDate}" size="10" id="expirationDate" onfocus="DatePicker.pickDate(false, 'massChange:priceForm:pageBlock:section:expirationDate', false);"/>
+ 		<apex:outputLabel value=""/>
+ 	</apex:pageBlockSection>
+ </apex:pageBlock>
+ 
+ </apex:form>
+
+</apex:page>

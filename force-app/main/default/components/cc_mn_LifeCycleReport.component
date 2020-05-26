@@ -1,0 +1,428 @@
+<apex:component controller="cc_mn_ctrl_LifeCycleReport">
+    <script id="MyOrdersES-Template" type="text/template">
+  	
+    <h2 class="title">{{pageLabelMap 'lifecycle_title'}}</h2>
+    <div class='messaging_block' style="display: none">
+    	<div class='dynamic_page_message dynamic_page_message_info'></div>
+	</div>
+    <div class="alert alert-error messagingSection-Error" style="display: none"></div>
+   		  <div class="panel">
+    		  {{pageLabelMap 'lifecycle_instructions'}}
+              <div class="panel-body" style="margin-top:20px;">
+                  
+                   <div class="form-row">
+                       <div class="col">
+                     		{{pageLabelMap 'lifecycle_fromDate'}} <input id="fromdate" type="text" class="form-control" data-zdp_readonly_element="true">
+                     		{{pageLabelMap 'lifecycle_toDate'}} <input id="todate" type="text" class="form-control" data-zdp_readonly_element="true">                                    
+                                	<label for="email">{{pageLabelMap 'lifecycle_toEmail'}}</label>
+                       				<input type="email" size="35" class="form-control input-lg" disabled id="email" aria-describedby="emailHelp" value="{!email}">                                
+                            		<label for="account">{{pageLabelMap 'lifecycle_Account'}}</label>
+                       				<!--<input type="text" size="50" class="form-control" disabled id="account" aria-describedby="Account" value="{!acct}">-->
+                                  
+        
+                                        
+                                    <div class="btn-group">
+                                  	<a class="btn dropdown-toggle" data-toggle="dropdown" href="#">
+                                    	{{pageLabelMap 'Select_Account'}}
+                                    	<span class="caret"></span>
+                                  	</a> 
+                                        <ul class="dropdown-menu" role="menu" aria-labelledby="dropdownMenu">
+                                                                                      
+                                        <table border="0">   
+                                        
+                                          <apex:repeat value="{!accts}" var="acct" id="theRepeatDesktop">										                                                                                                                  
+                                        	<tr><td><input type="checkbox" class="checkboxSelector" onclick="accountSelected()" name="{!acct}" value="{!acct}"></td><td>{!acct}</td></tr>
+                                          </apex:repeat>	
+                                        </li>
+                                        </table>
+                                        </ul>                                        
+                                	</div>
+                                      <input type="checkbox" id="generateforall"  onclick="checkAll()"  name="{!acct}" value="ALL">{{pageLabelMap 'Generate_for_All'}}
+                                        
+                   		</div>
+                     </div>
+                     <div class="form-row">
+                       	<div class="col">    
+                                <br/>   
+                                {{pageLabelMap 'lifecycle_message'}} <br/> <br/> 
+                          		<input class="large_green_button disabled" name="" id="request_button" type="button" onclick="saveRecord()" value="{{pageLabelMap 'lifecycle_Button'}}" disabled />                                
+                        </div>
+                     </div>
+               </div>
+          		</div>
+		  </div>
+        <h2 class="title"> {{pageLabelMap 'lifecycle_PreviousReports'}}</h2>	 
+              <div class="panel-body" style="margin-top:20px;">
+			  
+			<table id="lifecycleTable" class="shopping_cart">
+				<tr class="even">
+					<td class="right_align">{{pageLabelMap 'lifecycle_Table_genDate'}}</td>
+					<td class="right_align">{{pageLabelMap 'lifecycle_Table_Status'}}</td>
+                    <td class="right_align">{{pageLabelMap 'lifecycle_fromDate'}}</td>
+                    <td class="right_align">{{pageLabelMap 'lifecycle_toDate'}}</td>
+                  	<td class="right_align">{{pageLabelMap 'Reported_Accounts'}}</td>
+                    <td class="right_align">{{pageLabelMap 'lifecycle_PDF'}}</td>
+				</tr>                       
+          	</table>
+                                </div>
+                                </div>
+   <div id="requestSuccess" class="modal hide fade in" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
+   <div class="modal-header">
+    <button type="button" class="close finishButton">×</button>
+    <h3 id="myModalLabel">{{pageLabelMap 'lifecycle_title'}}</h3>
+   </div>
+
+   <div class="modal-body">
+    <div class="alert alert-error messagingSection-maContactUsModal-Error" style="display: none"></div>
+    <form id="">
+     <p id="reportGeneratedMessage"></p>
+    </form>
+   </div>
+   <div class="modal-footer">
+    <input type="button" class="finishButton" data-id="" onclick="closePopup()" value="{{pageLabelMap 'lifecycle_Ok'}}" id="finishButton" />
+   </div>
+  </div>
+  <input type="hidden" id="getDocumentText" value="{{pageLabelMap 'lifecycle_GetDocument'}}">
+  <input type="hidden" id="noResultsMessage" value="{{pageLabelMap 'lifecycle_NoResultsReports'}}">
+  <input type="hidden" id="reportGeneratedText" value="{{pageLabelMap 'lifecycle_ReportGeneratedConfirm'}}">
+  <input type="hidden" id="reportGeneratedTextDuplicate" value="{{pageLabelMap 'lifecycle_ReportDuplicated'}}">
+  <input type="hidden" id="reportNotAvailableYet" value="{{pageLabelMap 'lifecycle_ReportNotAvailableYet'}}">
+    </script>
+
+    <script id="MyOrdersES-Mobile-Template" type="text/template">
+ 
+    <h2 class="title">{{pageLabelMap 'lifecycle_title'}}</h2>
+    <div class='messaging_block' style="display: none">
+    	<div class='dynamic_page_message dynamic_page_message_info'></div>
+	</div>
+    <div class="alert alert-error messagingSection-Error" style="display: none"></div>
+   		  <div class="panel">
+    		  {{pageLabelMap 'lifecycle_instructions'}}
+              <div class="panel-body" style="margin-top:20px;">
+                  
+                   <div class="form-row">
+                       <div class="col">
+                     		{{pageLabelMap 'lifecycle_fromDate'}} <input id="fromdate" type="text" class="form-control" data-zdp_readonly_element="true">
+                     		{{pageLabelMap 'lifecycle_toDate'}} <input id="todate" type="text" class="form-control" data-zdp_readonly_element="true">                                    
+                                	<label for="email">{{pageLabelMap 'lifecycle_toEmail'}}</label>
+                       				<input type="email" size="35" class="form-control input-lg" disabled id="email" aria-describedby="emailHelp" value="{!email}">                                
+                            		<label for="account">{{pageLabelMap 'lifecycle_Account'}}</label>
+                       				<!--<input type="text" size="50" class="form-control" disabled id="account" aria-describedby="Account" value="{!acct}">-->
+                                  
+                                        <!--
+                                        <select multiple size="1" id="accounts" class="form-control input-lg ">  
+                                        <option class="divider">Select All</option>
+                                        		<apex:repeat value="{!accts}" var="acct" id="theRepeat">										                                  
+                                        <option>{!acct}</option>
+                                        </apex:repeat>	
+									</select>-->          
+                                        
+                                    <div class="btn-group">
+                                  	<a class="btn dropdown-toggle" data-toggle="dropdown" href="#">
+                                    	Select Account
+                                    	<span class="caret"></span>
+                                  	</a> 
+                                        <ul class="dropdown-menu" role="menu" aria-labelledby="dropdownMenu">
+                                                                                      
+                                        <table border="0">   
+                                        
+                                          <apex:repeat value="{!accts}" var="acct" id="theRepeat">										                                                                                                                  
+                                        	<tr><td><input type="checkbox" class="checkboxSelector" onclick="accountSelected()" name="{!acct}" value="{!acct}"></td><td>{!acct}</td></tr>
+                                          </apex:repeat>	
+                                        </li>
+                                        </table>
+                                        </ul>                                        
+                                	</div>
+                                      <input type="checkbox" id="generateforall"  onclick="checkAll()"  name="{!acct}" value="ALL">Generate Report for All 
+                                        
+                   		</div>
+                     </div>
+                     <div class="form-row">
+                       	<div class="col">    
+                                <br/>   
+                                {{pageLabelMap 'lifecycle_message'}} <br/> <br/> 
+                          		<input class="large_green_button disabled" name="" id="request_button" type="button" onclick="saveRecord()" value="{{pageLabelMap 'lifecycle_Button'}}" disabled />                                
+                        </div>
+                     </div>
+               </div>
+          		</div>
+		  </div>
+        <h2 class="title"> {{pageLabelMap 'lifecycle_PreviousReports'}}</h2>	 
+              <div class="panel-body" style="margin-top:20px;">
+			  
+			<table id="lifecycleTable" class="shopping_cart">
+				<tr class="even">
+					<td class="right_align">{{pageLabelMap 'lifecycle_Table_genDate'}}</td>
+					<td class="right_align">{{pageLabelMap 'lifecycle_Table_Status'}}</td>
+                    <td class="right_align">{{pageLabelMap 'lifecycle_fromDate'}}</td>
+                    <td class="right_align">{{pageLabelMap 'lifecycle_toDate'}}</td>
+                  	<td class="right_align">Reported Accounts</td>
+                    <td class="right_align">{{pageLabelMap 'lifecycle_PDF'}}</td>
+				</tr>                       
+          	</table>
+                                </div>
+                                </div>
+   <div id="requestSuccess" class="modal hide fade in" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
+   <div class="modal-header">
+    <button type="button" class="close finishButton">×</button>
+    <h3 id="myModalLabel">{{pageLabelMap 'lifecycle_title'}}</h3>
+   </div>
+
+   <div class="modal-body">
+    <div class="alert alert-error messagingSection-maContactUsModal-Error" style="display: none"></div>
+    <form id="">
+     <p id="reportGeneratedMessage"></p>
+    </form>
+   </div>
+   <div class="modal-footer">
+    <input type="button" class="finishButton" data-id="" onclick="closePopup()" value="{{pageLabelMap 'lifecycle_Ok'}}" id="finishButton" />
+   </div>
+  </div>
+  <input type="hidden" id="getDocumentText" value="{{pageLabelMap 'lifecycle_GetDocument'}}">
+  <input type="hidden" id="noResultsMessage" value="{{pageLabelMap 'lifecycle_NoResultsReports'}}">
+  <input type="hidden" id="reportGeneratedText" value="{{pageLabelMap 'lifecycle_ReportGeneratedConfirm'}}">
+  <input type="hidden" id="reportGeneratedTextDuplicate" value="{{pageLabelMap 'lifecycle_ReportDuplicated'}}">
+  <input type="hidden" id="reportNotAvailableYet" value="{{pageLabelMap 'lifecycle_ReportNotAvailableYet'}}">
+    
+    </script>
+    <script>
+    $('#myForm').bind('click', function (e) { e.stopPropagation() })
+        			function checkAll() {
+                        if(document.getElementById("generateforall").checked){                      		 
+                            //$('#checkboxSelector').removeAttr('checked'); 
+                    		$('.checkboxSelector').prop({checked: true});
+                                if(validDates() && accountSelected()) { 
+                                    $('#request_button').removeAttr('disabled').removeClass('disabled'); 
+                                    $('#request_button').prop({disabled: false});
+                                } else {
+                                    $('#request_button').addClass("disabled");
+                                    $('#request_button').prop({disabled: true});
+                                } 
+                            }
+                         else{                             
+                                $('.checkboxSelector').removeAttr('checked');
+                                $('.checkboxSelector').prop({checked: false});                                                            
+                                $('#request_button').addClass("disabled");
+                                $('#request_button').prop({disabled: true});                                
+                             }
+ 					}
+     function accountSelected(){ 
+            	if(document.getElementById("generateforall").checked){ 
+                	return true;                
+                }              
+                else if(checkboxAccount()){                
+                    if(validDates()) { 
+                        $('#request_button').removeAttr('disabled').removeClass('disabled'); 
+                        $('#request_button').prop({disabled: false});
+                    } else {
+                        $('#request_button').addClass("disabled");
+                        $('#request_button').prop({disabled: true});
+                    }                     
+                	return true;
+                }
+         		else{                
+                     $('#request_button').addClass("disabled");
+                     $('#request_button').prop({disabled: true});
+                	return false;
+                }
+            }
+    function checkboxAccount(){       
+        var anyboxChecked=false;
+    $('input[type=checkbox]').each(function () {                
+           if (this.checked) {
+              anyboxChecked=true;               
+           }        
+	});
+        return anyboxChecked;
+    }
+    function validDates(){
+                
+                var fromDate = $('#fromdate').val();                
+                var toDate = $('#todate').val();
+                if(fromDate!='' && toDate!=''){
+		         	if(fromDate<toDate){                        
+                        var from = $("#fromdate").val().split("-");
+						var f = new Date(from[2],from[0]-1,from[1]); 
+                        var year=f.getFullYear();
+                        year+=1;
+                        var newdate=new Date(year,from[0]-1,from[1]);
+                        var tod = $("#todate").val().split("-");
+						var newtod = new Date(tod[2],tod[0]-1,tod[1]);                                                                        
+                    	if(newtod<=newdate){
+                        return true;
+                        }                      
+                    }                  
+                }
+            return false;            
+            }    
+    				function closePopup(){
+                    $('#request_button').addClass("disabled");
+                    document.getElementById('fromdate').value='';
+                    document.getElementById('todate').value='';                    
+                    $("#requestSuccess").modal("hide");
+					location.reload();                        
+                    }
+                   function saveRecord() {   
+                       var accountsWithName='';                       
+                       var accountNumbers='';
+                    $('input[type=checkbox]').each(function () {                
+          		   		if (this.checked && this.value!='ALL') {
+                            accountsWithName+='<br>'+this.value;
+                            accountNumbers+=this.value.substring(0,10)+',';
+              				anyboxChecked=true;               
+           				}        
+					});                                                  
+                   var fromDate = document.getElementById('fromdate').value;
+                   var toDate = document.getElementById('todate').value;                       
+            cc_mn_ctrl_LifeCycleReport.saveRecord(fromDate,toDate,'{!acctId}', accountsWithName,accountNumbers,function(result, event){
+				if(event.status && result) {
+                    $("#reportGeneratedMessage").append($("#reportGeneratedText").val() + ' ' + $("#email").val());
+                    $("#requestSuccess").modal("show");
+                } else if (event.status && !result) {
+                    $("#reportGeneratedMessage").append($("#reportGeneratedTextDuplicate").val());
+                    $("#requestSuccess").modal("show");
+                } else {
+                    CCRZ.pubSub.trigger('pageMessage',{
+                            		messages :      [{
+                            		type:          'CUSTOM',
+                            		severity:      'ERROR',
+                            		classToAppend: 'messagingSection-Error',
+                            		labelId:       'lifecycle_error_CreatingRecord'}]
+                            	});
+                	
+                }
+            }); 
+        }
+
+       jQuery(function($){
+            function checkboxAccount(){       
+        		var anyboxChecked=false;
+    			$('input[type=checkbox]').each(function () {                
+           		if (this.checked) {
+              		anyboxChecked=true;               
+           		}        
+				});
+	        	return anyboxChecked;
+    		}
+   
+            function accountSelected(){                                
+            	if(document.getElementById("generateforall").checked){                      
+                	return true;                
+                }              
+                else{                        
+                	return false;
+                }
+            }
+         
+            function validDates(){
+                
+                var fromDate = $('#fromdate').val();                
+                var toDate = $('#todate').val();
+                if(fromDate!='' && toDate!=''){
+		         	if(fromDate<toDate){                        
+                        var from = $("#fromdate").val().split("-");
+						var f = new Date(from[2],from[0]-1,from[1]); 
+                        var year=f.getFullYear();
+                        year+=1;
+                        var newdate=new Date(year,from[0]-1,from[1]);
+                        var tod = $("#todate").val().split("-");
+						var newtod = new Date(tod[2],tod[0]-1,tod[1]);                                                                        
+                    	if(newtod<=newdate){
+                        return true;
+                        }                      
+                    }                  
+                }
+            return false;            
+            }
+     
+            $(document).ready(function() {      
+                	
+              	var date = new Date();					
+                // Format day/month/year to two digits
+                var formattedDate = ('0' + date.getDate()).slice(-2);
+                var formattedMonth = ('0' + (date.getMonth() + 1)).slice(-2);
+                var formattedYear = date.getFullYear().toString();            
+                // Combine and format date string
+                var dateString = formattedMonth + '-' + formattedDate + '-' + formattedYear;
+                
+    		$('#fromdate').Zebra_DatePicker({
+                direction: ['01-01-2017', dateString],
+                format: "m-d-Y",
+                onSelect: function(view, elements) {                    
+             	validDateFields();
+                },           
+                onClear: function(view, elements) {                    
+                validDateFields();
+                }       
+            });
+            $('#todate').Zebra_DatePicker({
+            	direction: ['01-01-2017', dateString],
+            	format: "m-d-Y",
+                onSelect: function(view, elements) {                 
+                   	validDateFields();
+                },
+                onClear: function(view, elements) {                    
+                	validDateFields();
+                } 
+            });                
+            });
+           
+			function validDateFields(){
+            
+               if(validDates()){
+                   if(accountSelected() || checkboxAccount()) {                    
+                		$('#request_button').removeAttr('disabled').removeClass('disabled'); 
+                    	$('#request_button').prop({disabled: false});
+                	} 
+                   else {
+            	 		$('#request_button').addClass("disabled");
+                    	$('#request_button').prop({disabled: true});
+            		}
+               }else{
+                   $('#request_button').addClass("disabled");
+                   $('#request_button').prop({disabled: true});
+               }
+            
+            }            
+            CCRZ.util.createView({
+            	desktop: {target:'MyOrdersESDskTarget', template:'MyOrdersES-Template'},
+                phone: {target:'phone_center_column', template:'MyOrdersES-Mobile-Template'},
+            });
+         
+            var map = {!extendedLifeCycleReportsJSON};
+            var htmlTable = '';
+            var getDocumentText =  $('#getDocumentText').val();
+            var reportNotAvailableYet =  $('#reportNotAvailableYet').val();
+            //Iterate over values from life cycle 
+            Object.keys(map).forEach(function(key) {
+                value = map[key];
+                var fromDateList = value.From_Date__c.split("-");
+				var toDateList = value.To_Date__c.split("-");
+                var createDateList = value.CreatedDate.substring(0,10).split("-");
+              	htmlTable += '<tr class="odd myAccOrderRows myNexeoOrders" >';
+                htmlTable += '<td class="right_align">' + createDateList[1] + '-' + createDateList[2] + '-' + createDateList[0] + '</td>';
+                htmlTable += '<td class="right_align">' + value.Status__c + '</td>';
+                htmlTable += '<td class="right_align">' + fromDateList[1] + '-' + fromDateList[2] + '-' + fromDateList[0] + '</td>';
+                htmlTable += '<td class="right_align">' + toDateList[1] + '-' + toDateList[2] + '-' + toDateList[0] + '</td>';
+                htmlTable += '<td class="right_align">' + value.Accounts_on_Report__c + '</td>';
+                if (value.Status__c != 'Requested') {
+                	htmlTable += '<td class="right_align"><a  href="/mynexeo/servlet/servlet.FileDownload?file=' + value.Document_ID__c + '" data-id="" class="gotoOrderDetails" target="_blank" >' + getDocumentText + '</a></td>'; 
+                } else {
+                	htmlTable += '<td class="right_align" >' + reportNotAvailableYet + '</td>'; 
+                }
+                	
+                htmlTable += '</tr>';    
+            });
+            
+            if (!htmlTable.trim()) {
+             	htmlTable += '<tr class="odd myAccOrderRows myNexeoOrders" >';
+                htmlTable += '<td class="right_align" colspan = "6">' + $('#noResultsMessage').val() + '</td>'; 
+                htmlTable += '</tr>';    
+            }
+
+            $("#lifecycleTable").append(htmlTable);
+           
+        });
+    </script>
+    <div class="MyOrdersESDskTarget"></div>
+</apex:component>

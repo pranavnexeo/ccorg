@@ -1,0 +1,172 @@
+<apex:page standardController="Opportunity" sidebar="false" extensions="EditWasteProfilesExtension" id="thepage">
+<apex:form >
+<apex:pageblock id="block1" rendered="{!NOT(displayattachmentscreen)}">
+
+<apex:pageblockbuttons >
+<apex:commandbutton value="Add Profile" action="{!addprofile}" immediate="true" />                                       
+<!--
+<apex:commandbutton value="Add Attachments" action="{!openadd}" immediate="true"/>
+<apex:commandbutton value="Replace Attachments" action="{!openreplace}" immediate="true"/>
+<apex:commandbutton value="Close Attachments" action="{!closefiledialogs}" immediate="true"/>
+-->
+<apex:commandbutton value="Save and close" action="{!saveprofiles}" />
+<apex:commandbutton value="Save and Continue" action="{!saveandcontinue}" />
+<apeX:commandbutton value="Cancel" action="{!cancel}"/>
+</apex:pageblockbuttons>
+<apex:pageblocksection >
+<apex:outputfield value="{!opp.accountid}"/>
+<apex:pageblocksectionItem >
+<apex:outputlabel value="Account Owner"/>
+<apeX:outputfield value="{!opp.Account.ownerid}"/>
+</apex:pageblocksectionItem>
+<apex:pageblocksectionItem >
+<apex:outputlabel value="Opportunity"/>
+<apex:inputfield value="{!opp.name}"/>
+<!--<apex:outputlink value="/{!opp.id}">{!opp.name}</apex:outputlink> -->
+</apex:pageblocksectionItem>
+<apeX:outputfield value="{!opp.ownerid}"/>
+<apeX:inputfield value="{!opp.Submitted_to_WMS__c}"/>
+</apex:pageblocksection>
+</apex:pageblock>
+
+<apex:pageblock id="block2" rendered="{!NOT(displayattachmentscreen)}">
+<!--<apex:pageMessage summary="<b>Attachments:</b> Remember to Attach your profiles. Click on the Link to Profile to open the profile in a new tab to manage attachments." severity="Info" strength = "3" escape="false"  /> -->
+<apex:pageblocktable value="{!wrappers}" var="w">
+<apex:column headervalue="Approval">
+<apex:commandlink value="Submit" action="{!submitforapproval}" rendered="{!w.rendersubmit}" styleclass="myButton">
+<apex:param assignTo="{!submitid}" value="{!w.profile.id}" name="submitid"/>
+</apex:commandlink>
+<apex:commandlink value="Approve" action="{!openpopup}" rendered="{!w.renderapprove}">
+<apex:param assignTo="{!submitid}" value="{!w.profile.id}" name="submitid"/>
+</apex:commandlink>
+</apex:column>
+<apex:column headervalue="Link to Profile">
+<apex:outputlink value="/{!w.profile.id}" target="_blank" rendered="{!NOT(ISNULL(w.profile.id))}" styleclass="myButton">Link to Profile</apex:outputlink>
+</apex:column>
+<apex:column headervalue="Profile Name">
+<apex:inputfield value="{!w.profile.name}" required="true" />
+</apex:column>
+<apex:column headervalue="Stage" >
+<apex:inputfield value="{!w.profile.Stage__c}" rendered="{!NOT(w.Stage_ReadOnly)}" required="true">
+
+</apex:inputfield>
+<apex:outputfield value="{!w.profile.Stage__c}" rendered="{!w.Stage_ReadOnly}"/>
+</apex:column>
+<apex:column headervalue="Risk Category" rendered="{!Risk_Category_Rendered}">
+<apex:inputfield value="{!w.profile.Risk_Category__c}" rendered="{!NOT(w.Risk_Category_ReadOnly)}"/>
+<apex:outputfield value="{!w.profile.Risk_Category__c}" rendered="{!w.Risk_Category_ReadOnly}"/>
+</apex:column>
+<apex:column headervalue="Edit Pricing" rendered="{!Price_Request_Rendered}">
+<apex:outputlink target="_top" value="/{!w.profile.id}/e?retURL=%2Fapex%2feditwasteprofiles?oppid={!opp.id}" styleclass="myButton" rendered="{!w.price_Request_Rendered}">Edit Pricing</apex:outputlink>
+</apex:column>
+<apex:column headervalue="Comments">
+<apex:inputfield value="{!w.profile.Comments__c}"/>
+</apex:column>
+<!--
+<apex:column headervalue="Price Request" rendered="{!Price_Request_Rendered}">
+<apex:inputfield value="{!w.profile.Price_Request__c}" required="true" rendered="{!NOT(w.Price_Request_ReadOnly)}"/>
+<apex:outputfield value="{!w.profile.Price_Request__c}" rendered="{!w.Price_Request_ReadOnly}"/>
+</apex:column>
+<apex:column headervalue="Estimated Price" rendered="{!Estimated_Price_Rendered}">
+<apex:inputfield value="{!w.profile.Estimated_Price__c}" required="true" rendered="{!NOT(w.Estimated_Price_ReadOnly)}"/>
+<apex:outputfield value="{!w.profile.Estimated_Price__c}" rendered="{!w.Estimated_Price_ReadOnly}"/>
+</apex:column>
+<apex:column headervalue="Price Unit" rendered="{!Price_Unit_Rendered}">
+<apex:inputfield value="{!w.profile.Price_Unit__c}" required="true" rendered="{!NOT(w.Price_Unit_ReadOnly)}"/>
+<apex:outputfield value="{!w.profile.Price_Unit__c}" rendered="{!w.Price_Unit_ReadOnly}"/>
+</apex:column>
+-->
+<apex:column >
+<apex:facet name="header">Attachments</apex:facet>
+<apex:commandlink value="New Attachment" action="{!opennewattachmentscreen}" styleclass="myButton" rendered="{!NOT(ISNULL(w.profile.id))}">
+<apex:param assignTo="{!profileid}" value="{!w.profile.id}" name="profileid"/>
+</apex:commandlink>
+<apex:pageblocktable var="a" value="{!w.attachments}">
+  <apex:column >
+  <apex:outputlink value="/servlet/servlet.FileDownload?file={!a.id}" target="_blank">{!a.name}</apex:outputlink>
+  </apeX:column> 
+  <apex:column >
+<apex:commandlink value="Replace Attachment" action="{!openupdateattachmentscreen}" styleclass="myButton" rendered="{!NOT(ISNULL(w.profile.id))}">
+<apex:param assignTo="{!attachmentid}" value="{!a.id}" name="attachmentid"/>
+</apex:commandlink>
+  </apex:column>
+</apex:pageblocktable>
+</apex:column>
+
+</apex:pageblocktable>
+</apeX:pageblock>
+
+<apex:pageblock id="block3" rendered="{!displayattachmentscreen}">
+<apex:pageblockbuttons >
+<apex:commandbutton value="Save Attachment" action="{!savenewattachment}" rendered="{!displaynewattachmentbutton}"/>
+<apex:commandbutton value="Save Attachment" action="{!savereplaceattachment}" rendered="{!displayupdateattachmentbutton}"/>
+<apex:commandbutton value="Cancel" action="{!cancelattachment}"/>
+</apex:pageblockbuttons>
+<apex:pagemessages />
+<apex:pageblocksection >
+<apex:pageblocksectionitem >
+<apex:outputlabel value="File to Upload:" />
+<apex:inputfile value="{!attachment.body}" filename="{!attachment.name}"/>
+</apex:pageblocksectionitem>
+</apex:pageblocksection>
+</apex:pageblock>
+<apex:outputPanel id="popup" >
+            <apex:outputPanel styleClass="customPopup" layout="block" rendered="{!displaypopup}">
+               <apex:commandbutton value="Close" action="{!closepopup}"/><br/>
+               <apex:iframe height="110px" src="/apex/approvewasteprofile?id={!submitid}"/>
+             </apex:outputPanel>
+</apex:outputPanel>
+<apex:pageBlock id="hiddenBlock" rendered="false"></apex:pageBlock>
+
+</apex:form>
+
+    <style type="text/css">
+       .customPopup{
+            background-color: white;
+            border-style: solid;
+            border-width: 2px;
+            left: 50%;
+            padding:10px;
+            position: absolute;
+            z-index: 9999;
+            /* These are the 3 css properties you will need to tweak so the pop 
+            up displays in the center of the screen. First set the width. Then set 
+            margin-left to negative half of what the width is. You can also add 
+            the height property for a fixed size pop up.*/
+            width: 220px;
+            margin-left: -110px;
+            height: 120px;
+            top:100px;
+        }
+        
+     .myButton {
+    -moz-box-shadow:inset 0px 1px 0px 0px #ffffff;
+    -webkit-box-shadow:inset 0px 1px 0px 0px #ffffff;
+    box-shadow:inset 0px 1px 0px 0px #ffffff;
+    background:-webkit-gradient( linear, left top, left bottom, color-stop(0.05, #ededed), color-stop(1, #dfdfdf) );
+    background:-moz-linear-gradient( center top, #ededed 5%, #dfdfdf 100% );
+    filter:progid:DXImageTransform.Microsoft.gradient(startColorstr='#ededed', endColorstr='#dfdfdf');
+    background-color:#ededed;
+    -moz-border-radius:8px;
+    -webkit-border-radius:8px;
+    border-radius:8px;
+    border:1px solid #dcdcdc;
+    display:inline-block;
+    color:#777777;
+    font-family:arial;
+    font-size:12px;
+    font-weight:bold;
+    padding:4px 6px;
+    text-decoration:none;
+    text-shadow:1px 1px 0px #ffffff;
+}.myButton:hover {
+    background:-webkit-gradient( linear, left top, left bottom, color-stop(0.05, #dfdfdf), color-stop(1, #ededed) );
+    background:-moz-linear-gradient( center top, #dfdfdf 5%, #ededed 100% );
+    filter:progid:DXImageTransform.Microsoft.gradient(startColorstr='#dfdfdf', endColorstr='#ededed');
+    background-color:#dfdfdf;
+}.myButton:active {
+    position:relative;
+    top:1px;
+}
+    </style>
+</apex:page>

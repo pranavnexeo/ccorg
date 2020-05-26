@@ -1,0 +1,5 @@
+<apex:page standardController="Account" extensions="QlikView_Account_Controller">
+
+<iframe height="1500px" width="2500px" id="AppName" scrolling="true" name="AppName" src="{!iframeSource},{!accId}"></iframe>
+
+</apex:page>

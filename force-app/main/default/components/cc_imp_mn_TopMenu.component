@@ -1,0 +1,225 @@
+<apex:component >
+
+<style>
+.not-active {
+   pointer-events: none;
+   cursor: default;
+}    
+</style>
+    
+<script type="text/javascript">
+    CCRZ.uiProperties.Menu.desktop.tmpl = 'menuDesktopTemplateImp';
+    CCRZ.uiProperties.Menu.phone.tmpl   = 'menuMobileTemplate';
+</script>
+
+    
+<script id="menuDesktopTemplateImp" type="text/template">
+       {{#if {!(ISPICKVAL($User.UserType,'Guest'))} }}
+      	<div class="navbar main_navigation_container">
+		  <div class="navbar-inner">
+			<div class="container">
+			<button type="button" class="btn btn-navbar" data-toggle="collapse" data-target=".nav-collapse">          
+					<span class="icon-bar"></span>
+					<span class="icon-bar"></span>
+					<span class="icon-bar"></span>
+				</button>
+			  <a class="brand visible-tablet">{{pageLabelMap 'Main_Navigation'}}</a>
+				<div class="nav-collapse collapse">
+					<ul class="nav">
+						{{#each .}}
+						   {{#if children}}
+								
+						 {{else}}
+							{{#ifEquals mType 'URL'}}
+								<li><a class="menuTypeURL not-active" href="javascript:void(0);" data-href="{{linkURL}}" data-menuid="{{menuId}}" {{linkTarget openInNewWindow}}>{{displayName}}</a></li>
+							{{/ifEquals}}
+							{{#ifEquals mType 'None'}}
+								<li><a class="not-active" href="javascript:void(0);" data-menuid="{{menuId}}">{{displayName}}</a></li>
+							{{/ifEquals}}
+							{{/if}}
+						{{/each}}
+					</ul>
+				</div>
+			</div>
+		</div>
+	</div>
+     {{else}}
+		<div class="navbar main_navigation_container">
+		<div class="navbar-inner">
+			<div class="container">
+				<button type="button" class="btn btn-navbar" data-toggle="collapse" data-target=".nav-collapse">      
+					<span class="icon-bar"></span>
+					<span class="icon-bar"></span>
+					<span class="icon-bar"></span>
+				</button>
+				<a class="brand visible-tablet">{{pageLabelMap 'Main_Navigation'}}</a>
+				<div class="nav-collapse collapse">
+					<ul class="nav">
+						{{#each .}}
+							{{#if children}}
+								<li class="dropdown">
+									<a data-toggle="dropdown" class="dropdown-toggle " href="{{linkURL}}" data-menuid="{{menuId}}" {{linkTarget openInNewWindow}}>{{displayName}}  <b class="caret"></b></a>
+									<ul class="dropdown-menu">
+										{{> subMenuItem}}
+									</ul>
+								</li>
+							{{else}}
+								{{#ifEquals mType 'Category'}}
+                                	<li><a class="category" href="javascript:void(0);" data-id="{{linkURL}}" data-menuid="{{menuId}}" {{linkTarget openInNewWindow}}>{{displayName}}</a></li>
+								{{/ifEquals}}
+								{{#ifEquals mType 'Product'}}
+									<li><a class="product" href="javascript:void(0);" data-id="{{linkURL}}" data-menuid="{{menuId}}" {{linkTarget openInNewWindow}}>{{displayName}}</a></li>
+								{{/ifEquals}}
+								{{#ifEquals mType 'URL'}}
+									<li><a class="menuTypeURL" href="javascript:void(0);" data-href="{{linkURL}}" data-menuid="{{menuId}}" {{linkTarget openInNewWindow}}>{{displayName}}</a></li>
+								{{/ifEquals}}
+								{{#ifEquals mType 'None'}}
+									<li><a href="javascript:void(0);" data-menuid="{{menuId}}">{{displayName}}</a></li>
+								{{/ifEquals}}
+							{{/if}}
+						{{/each}}
+					</ul>
+				</div>
+			</div>
+		</div>
+	</div>
+{{/if}}
+</script>
+
+<script id="menuMobileTemplate" type="text/template">
+  {{#if {!(ISPICKVAL($User.UserType,'Guest'))} }}
+	 <div class="navbar main_navigation_container">
+		<div class="navbar-inner">
+			<div class="container">
+				<button type="button" class="btn btn-navbar" data-toggle="collapse" data-target=".nav-collapse">          
+					<span class="icon-bar"></span>
+					<span class="icon-bar"></span>
+					<span class="icon-bar"></span>
+				</button>
+				<a class="brand visible-tablet">Main Navigation</a>
+				<div class="nav-collapse collapse">
+					<ul class="nav">
+						{{#each .}}
+							{{#if children}}
+								<li class="dropdown">
+									<a data-toggle="dropdown" class="dropdown-toggle" href="{{linkURL}}" data-menuid="{{menuId}}">{{displayName}} <b class="caret"></b></a>
+									<ul class="dropdown-menu sub-menu" >
+										{{#each children}}
+											{{#if children}}
+												<li class="sub">
+													<a href="javascript:void(0);" data-menuid="{{menuId}}">{{displayName}}</a>
+													<ul>
+														{{#each children}}
+															{{#ifEquals mType 'URL'}}
+																<li><a class="menuTypeURL not-active" href="javascript:void(0);" data-href="{{linkURL}}" data-menuid="{{menuId}}" {{linkTarget openInNewWindow}}>{{displayName}}</a></li>
+															{{/ifEquals}}
+															{{#ifEquals mType 'None'}}
+																<li><a class="not-active" href="javascript:void(0);" data-menuid="{{menuId}}">{{displayName}}</a></li>
+															{{/ifEquals}}
+														{{/each}}
+													</ul>
+												</li>
+											{{else}}
+												{{#ifEquals mType 'URL'}}
+													<li><a class="menuTypeURL not-active" href="javascript:void(0);" data-href="{{linkURL}}" data-menuid="{{menuId}}" {{linkTarget openInNewWindow}}>{{displayName}}</a></li>
+												{{/ifEquals}}
+												{{#ifEquals mType 'None'}}
+													<li><a class="not-active" href="javascript:void(0);" data-menuid="{{menuId}}">{{displayName}}</a></li>
+												{{/ifEquals}}
+											{{/if}}
+										{{/each}}
+									</ul>
+								</li>
+							{{else}}
+								{{#ifEquals mType 'URL'}}
+									<li><a class="menuTypeURL not-active" href="javascript:void(0);" data-href="{{linkURL}}" data-menuid="{{menuId}}" {{linkTarget openInNewWindow}}>{{displayName}}</a></li>
+								{{/ifEquals}}
+								{{#ifEquals mType 'None'}}
+									<li><a class="not-active" href="javascript:void(0);">{{displayName}}</a></li>
+								{{/ifEquals}}
+							{{/if}}
+						{{/each}}
+					</ul>
+				</div>
+			</div>
+		</div>
+	</div>	
+    {{else}}
+	 <div class="navbar main_navigation_container">
+		<div class="navbar-inner">
+			<div class="container">
+				<button type="button" class="btn btn-navbar" data-toggle="collapse" data-target=".nav-collapse">          
+					<span class="icon-bar"></span>
+					<span class="icon-bar"></span>
+					<span class="icon-bar"></span>
+				</button>
+				<a class="brand visible-tablet">Main Navigation</a>
+				<div class="nav-collapse collapse">
+					<ul class="nav">
+						{{#each .}}
+							{{#if children}}
+								<li class="dropdown">
+									<a data-toggle="dropdown" class="dropdown-toggle" href="{{linkURL}}" data-menuid="{{menuId}}">{{displayName}} <b class="caret"></b></a>
+									<ul class="dropdown-menu sub-menu" >
+										{{#each children}}
+											{{#if children}}
+												<li class="sub">
+													<a href="javascript:void(0);" data-menuid="{{menuId}}">{{displayName}}</a>
+													<ul>
+														{{#each children}}
+															{{#ifEquals mType 'Category'}}
+																<li><a class="category" href="javascript:void(0);" data-id="{{linkURL}}" data-menuid="{{menuId}}" {{linkTarget openInNewWindow}}>{{displayName}}</a></li>
+															{{/ifEquals}}
+															{{#ifEquals mType 'Product'}}
+																<li><a class="product" href="javascript:void(0);" data-id="{{linkURL}}" data-menuid="{{menuId}}" {{linkTarget openInNewWindow}}>{{displayName}}</a></li>
+															{{/ifEquals}}
+															{{#ifEquals mType 'URL'}}
+																<li><a class="menuTypeURL" href="javascript:void(0);" data-href="{{linkURL}}" data-menuid="{{menuId}}" {{linkTarget openInNewWindow}}>{{displayName}}</a></li>
+															{{/ifEquals}}
+															{{#ifEquals mType 'None'}}
+																<li><a href="javascript:void(0);" data-menuid="{{menuId}}">{{displayName}}</a></li>
+															{{/ifEquals}}
+														{{/each}}
+													</ul>
+												</li>
+											{{else}}
+												{{#ifEquals mType 'Category'}}
+													<li><a class="category" href="javascript:void(0);" data-id="{{linkURL}}" data-menuid="{{menuId}}" {{linkTarget openInNewWindow}}>{{displayName}}</a></li>
+												{{/ifEquals}}
+												{{#ifEquals mType 'Product'}}
+													<li><a class="product" href="javascript:void(0);" data-id="{{linkURL}}" data-menuid="{{menuId}}" {{linkTarget openInNewWindow}}>{{displayName}}</a></li>
+												{{/ifEquals}}
+												{{#ifEquals mType 'URL'}}
+													<li><a class="menuTypeURL" href="javascript:void(0);" data-href="{{linkURL}}" data-menuid="{{menuId}}" {{linkTarget openInNewWindow}}>{{displayName}}</a></li>
+												{{/ifEquals}}
+												{{#ifEquals mType 'None'}}
+													<li><a href="javascript:void(0);" data-menuid="{{menuId}}">{{displayName}}</a></li>
+												{{/ifEquals}}
+											{{/if}}
+										{{/each}}
+									</ul>
+								</li>
+							{{else}}
+								{{#ifEquals mType 'Category'}}
+									<li><a class="category" href="javascript:void(0);" data-id="{{linkURL}}" data-menuid="{{menuId}}" {{linkTarget openInNewWindow}}>{{displayName}}</a></li>
+								{{/ifEquals}}
+								{{#ifEquals mType 'Product'}}
+									<li><a class="product" href="javascript:void(0);" data-id="{{linkURL}}" data-menuid="{{menuId}}" {{linkTarget openInNewWindow}}>{{displayName}}</a></li>
+								{{/ifEquals}}
+								{{#ifEquals mType 'URL'}}
+									<li><a class="menuTypeURL" href="javascript:void(0);" data-href="{{linkURL}}" data-menuid="{{menuId}}" {{linkTarget openInNewWindow}}>{{displayName}}</a></li>
+								{{/ifEquals}}
+								{{#ifEquals mType 'None'}}
+									<li><a href="javascript:void(0);">{{displayName}}</a></li>
+								{{/ifEquals}}
+							{{/if}}
+						{{/each}}
+					</ul>
+				</div>
+			</div>
+		</div>
+	</div>
+	{{/if}}
+</script>
+
+</apex:component>

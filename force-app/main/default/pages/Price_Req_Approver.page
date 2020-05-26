@@ -1,0 +1,52 @@
+<apex:page standardcontroller="Price_Request_Approver__c" extensions="Price_Requests_Approver" id="thepage" >
+
+<apex:form id="theform">
+<apex:pageblock >
+<apex:pageblockbuttons >
+<apex:commandbutton value="Save" action="{!save}" />
+<apex:commandbutton value="Cancel" action="{!cancel}"/>
+</apex:pageblockbuttons>
+
+<apex:pageblocksection title="General Information">
+<apex:inputfield value="{!approver.Process_Order__c}" required="true"/>
+<apex:inputfield value="{!approver.Is_Active__c}" />
+<apex:inputfield value="{!approver.Approval_Level__c}" required="true"/>
+<apex:inputfield value="{!approver.Approver__c}"/>
+<apex:pageblocksectionitem >
+<apex:outputlabel value="Division"/>
+<apex:selectlist value="{!division}" size="1">
+<apex:selectoptions value="{!divisions}"/>
+</apex:selectlist>
+</apex:pageblocksectionitem>
+<apex:pageblocksectionitem >
+<apex:outputlabel value="Sales Group"/>
+<apex:selectlist value="{!salesgroup}" size="1">
+<apex:selectoptions value="{!salesgroups}"/>
+</apex:selectlist>
+</apex:pageblocksectionitem>
+</apex:pageblocksection>
+<apex:pageblocksection title="Chemicals">
+<apex:pageblocksectionitem >
+<apex:outputlabel value="PLM"/>
+<apex:selectlist value="{!plm}" size="1">
+<apex:selectoptions value="{!plms}"/>
+</apex:selectlist>
+</apex:pageblocksectionitem>
+<apex:pageblocksectionitem > 
+<apex:outputlabel value="Supplier"/>
+<apex:selectlist value="{!supplier}" size="1">
+<apex:selectoptions value="{!suppliername}"/>
+</apex:selectlist>
+</apex:pageblocksectionitem>
+<apex:pageblocksectionitem >
+<apex:outputlabel value="Material Group 4"/>
+<apex:selectlist value="{!mg4}" size="1">
+<apex:selectoptions value="{!mg4s}"/>
+</apex:selectlist>
+</apex:pageblocksectionitem>
+<apex:inputfield value="{!approver.SAP_Seller__c}"/>
+</apex:pageblocksection>
+</apex:pageblock>
+</apex:form>
+
+</apex:page>

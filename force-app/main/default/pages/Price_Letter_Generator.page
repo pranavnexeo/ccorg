@@ -1,0 +1,1184 @@
+<apex:page id="thepage" controller="Price_Letter_Nexprice_12" sidebar="false" >
+<meta http-equiv="X-UA-Compatible" content="chrome=1"/>
+<script src="{!URLFOR($Resource.JQuery_Pricing, '/JQuery_Pricing/js/jquery-1.8.3.min.js')}" type="text/javascript"/> 
+<script src="{!URLFOR($Resource.JQuery_Pricing, '/JQuery_Pricing/js/jquery-ui-1.9.2.custom.js')}" type="text/javascript"/>
+<script src="{!URLFOR($Resource.JQuery_Pricing, '/JQuery_Pricing/js/jquery.mobile.events.js')}" type="text/javascript"/>
+<script src="{!URLFOR($Resource.JQuery_Pricing, '/JQuery_Pricing/js/jquery.dataTables.js')}" type="text/javascript"/>
+<script src="{!URLFOR($Resource.JQuery_Pricing, '/JQuery_Pricing/js/jquery.dataTables.columnFilter.js')}" type="text/javascript"></script>
+<script src="{!URLFOR($Resource.JQuery_Pricing, '/JQuery_Pricing/js/jquery-ui.toggleSwitch.js')}" type="text/javascript"/>
+<script src="{!URLFOR($Resource.JQuery_Pricing, '/JQuery_Pricing/js/jquery.sortElements.js')}" type="text/javascript"></script>
+<script src="{!URLFOR($Resource.JQuery_Pricing, '/JQuery_Pricing/js/jquery.dataTables.extensions.js')}" type="text/javascript"></script>
+<script src="{!URLFOR($Resource.JQuery_Pricing, '/JQuery_Pricing/js/jquery.tooltip.js')}" type="text/javascript"></script>
+<script src="{!URLFOR($Resource.JQuery_Pricing, '/JQuery_Pricing/js/jquery.multiselect.min.js')}" type="text/javascript"/> 
+<script src="{!URLFOR($Resource.JQuery_Pricing, '/JQuery_Pricing/js/jquery.multiselect.filter.js')}" type="text/javascript"/>
+<script src="{!URLFOR($Resource.JQuery_Pricing, '/JQuery_Pricing/js/jquery.validate.js')}" type="text/javascript"/>
+<script src="{!URLFOR($Resource.JQuery_Pricing, '/JQuery_Pricing/js/jquery.form.js')}" type="text/javascript"/>
+<script src="{!URLFOR($Resource.JQuery_Pricing, '/JQuery_Pricing/js/jquery.bbq.js')}" type="tgetext/javascript"/>
+<script src="{!URLFOR($Resource.JQuery_Pricing, '/JQuery_Pricing/js/jquery.form.wizard.js')}" type="text/javascript"/>
+<script src="{!URLFOR($Resource.JQuery_Pricing, '/JQuery_Pricing/js/jquery.easyui.min.js')}" type="text/javascript"></script>
+
+<apex:stylesheet value="{!URLFOR($Resource.JQuery_Pricing, '/JQuery_Pricing/themes/default/easyui.css')}"/>  
+<apex:stylesheet value="{!URLFOR($Resource.JQuery_Pricing, '/JQuery_Pricing/css/jquery.tooltip.css')}"/>
+<apex:stylesheet value="{!URLFOR($Resource.JQuery_Pricing, '/JQuery_Pricing/css/start/jquery-ui-1.10.1.custom.min.css')}"/>
+<apex:stylesheet value="{!URLFOR($Resource.JQuery_Pricing, '/JQuery_Pricing/css/demo_table.css')}"/> 
+<apex:stylesheet value="{!URLFOR($Resource.JQuery_Pricing, '/JQuery_Pricing/themes/default/easyui.css')}"/>    
+<apex:stylesheet value="{!URLFOR($Resource.JQuery_Pricing, '/JQuery_Pricing/themes/icon.css')}"/> 
+<apex:stylesheet value="{!URLFOR($Resource.JQuery_Pricing, '/JQuery_Pricing/themes/default/menu.css')}"/>
+<apex:stylesheet value="{!URLFOR($Resource.JQuery_Pricing, '/JQuery_Pricing/themes/default/menubutton.css')}"/>
+<apex:stylesheet value="{!URLFOR($Resource.JQuery_Pricing, '/JQuery_Pricing/themes/default/splitbutton.css')}"/>
+<apex:stylesheet value="{!URLFOR($Resource.JQuery_Pricing, '/JQuery_Pricing/themes/icon.css')}"/>
+<apex:stylesheet value="{!URLFOR($Resource.JQuery_Pricing, '/JQuery_Pricing/css/jquery-ui.toggleSwitch.css')}"/> 
+<apex:stylesheet value="{!URLFOR($Resource.JQuery_Pricing, '/JQuery_Pricing/css/jquery.multiselect.css')}"/> 
+<apex:stylesheet value="{!URLFOR($Resource.JQuery_Pricing, '/JQuery_Pricing/css/jquery.multiselect.filter.css')}"/> 
+<script  src="/soap/ajax/25.0/connection.js" type="text/javascript"></script>
+<script  src="/soap/ajax/25.0/apex.js" type="text/javascript"></script>
+
+<script type="text/javascript" charset="utf-8">
+
+var aRecordIds = new Array();
+var aColumnIndex = new Array();
+var aColumnIndex_Draft = new Array();
+var iProcessing = 0;
+var iLimit = {!$Setup.nexPrice_Settings__c.Salesforce_Record_Limit__c};
+var sPrevAccount = '';
+console.log('limit: ' + "{!$Setup.nexPrice_Settings__c.Salesforce_Record_Limit__c}");
+console.log('limit: ' + "{!$Setup.nexPrice_Settings__c.SAP_Record_Limit__c}");
+
+$(document).ready(function() { 
+  
+  $('#loadingbanner').show();
+  fnInitPage();
+  fnInitTable();
+  fnEvaluateTable($('#price_maintenance' ).dataTable());
+  fnPrepFilters('price_maintenance', aColumnIndex);
+  $('#loadingbanner').show();
+ 
+  if('{!$CurrentPage.parameters.id}' == '')
+    $('#loadingbanner').hide();
+  console.log('hide: ' + ('{!$CurrentPage.parameters.id}' == ''));
+  
+});
+
+
+function fixEscapedHTML(html, fieldid) {
+  var value = $("<div />").html(html).text();
+  setTimeout(function(){
+      $('#' + fieldid).combogrid('textbox').val(value);
+}, 10)
+}
+function processSerialize($form, options){
+  $('#existingids').val($('#price_maintenance').dataTable().fnGetColumnData(aColumnIndex['Id']).join('-'));
+}
+
+function startSearch(formData, jqForm, options){
+   console.log(formData);
+   
+   
+  $('#loadingbanner').show();
+  var existingids =  $('#price_maintenance').dataTable().fnGetColumnData(aColumnIndex['Id'], true, false, true);
+  fnClearTable();
+
+    console.log('start search');
+
+    Price_Letter_Nexprice_12.getData(existingids ,formData, '{!$Setup.nexPrice_Settings__c.Salesforce_Limit_Per_Call__c}', '0', function(result, event){ 
+          if(event.type == 'exception') {
+            console.log('getData');
+            console.log(event);
+            alert(event.message);
+            $('#Reset').click();
+            $('#loadingbanner').hide();               
+            } else {
+             if(result.rows.length > 0){
+                console.log('getData Result');
+                console.log(result);
+                fnAddData(result.rows, $('#price_maintenance').dataTable());
+               
+                var pages = result.total / {!$Setup.nexPrice_Settings__c.Salesforce_Record_Limit__c}
+                var pageoptions = '';
+                for(var i=0; i<pages; i++)
+                  pageoptions += '<option value="' + i + '">Page ' + (i + 1) + '</option>';
+                $('#pageselect').empty();
+                $('#pageselect').html(pageoptions);
+                $('#pageselect').removeAttr('disabled');
+                onChangeMultiPage(formData);
+              }
+              else
+              { $('#loadingbanner').hide(); 
+                $('#pageselect').empty();
+                $('#pageselect').html('<option>--None--</option>');
+                $('#pageselect').attr('disabled', 'disabled');
+              }
+            }
+   }, {buffer: true, escape: true, timeout:120000});
+  
+  return false;
+}
+function onChangeMultiPage(formData){
+
+$('#pageselect').change(function(){
+                 
+                 var existingids =  $('#price_maintenance').dataTable().fnGetColumnData(aColumnIndex['Id'], true, false, true);
+                 fnClearTable();
+                 $('#loadingbanner').show();
+                 var off = {!$Setup.nexPrice_Settings__c.Salesforce_Limit_Per_Call__c} * $('#pageselect').val();
+                 console.log(off);
+                 console.log(existingids);
+                 Price_Letter_Nexprice_12.getData(existingids ,formData, '{!$Setup.nexPrice_Settings__c.Salesforce_Limit_Per_Call__c}', off.toString() , function(result, event){ 
+                          if(event.type == 'exception') {
+                           $('#loadingbanner').hide();
+                           console.log(event);
+                           alert(error.message);
+                           $('#Reset').click();   
+                          } else {
+                            console.log(existingids);
+                            console.log(formData);
+                            console.log(result);
+                            fnAddData(result.rows, $('#price_maintenance').dataTable());  
+                          } 
+                      }, {buffer: true, escape: true, timeout:120000});
+  });
+
+}
+function processJson(data) {
+    fnAddData(data, $('#price_maintenance').dataTable());
+}
+function fnFormatDetails( nTr, type )
+{
+   var aData = $('#' + type).dataTable().fnGetData( nTr);
+   var toreturn = '';
+   console.log(type);
+   if(type == 'price_maintenance')
+   toreturn = $("<div />").html(aData.Inner_Table__c).text();
+   else if(type == 'formtable')
+   toreturn = $("<div />").html(aData.Simulate_Table__c).text();
+   else if(type == 'audittable')
+   toreturn = $("<div />").html(aData.Inner_Table__c).text();
+   else if(type == 'quotetable')
+   toreturn = $("<div />").html(aData.Inner_Table__c).text();
+   else if(type == 'pendingtable')
+   toreturn = $("<div />").html(aData.Inner_Table__c).text();
+
+   return toreturn;
+}
+function fnInitPage(){ 
+//$('#loadingbanner').show();
+$('#acct-search').combogrid({  
+        panelWidth:1200,  
+        value:'',      
+        idField:'Id', 
+        delay: 500, 
+        textField:'ShipTo',
+        onFocus: function(){ alert('Hi!'); },
+        remoteSort:false,  
+        keyHandler: {
+          query: function(q){
+                  var g = $(this).combogrid('grid');                
+                  Price_Letter_Nexprice_12.FetchMyAccounts($('#UserLookup').combogrid('getValue'), '','', q, function(result, event){
+                    if(event.type == 'exception') {
+                      error.apply(this, arguments);         
+                    } else {   
+                      g.datagrid('loadData', result);         
+                    }
+                  }, {buffer: true, escape: true, timeout:120000});
+           }
+        },
+        columns:[[ 
+               {field:'Corp',title:'Corporate Account',width:240, sortable:true, sorter: function(a, b){
+                 var va = (a === null) ? "" : "" + a,
+                 vb = (b === null) ? "" : "" + b;
+                 return va > vb ? 1 : ( va === vb ? 0 : -1 );
+               }},
+               {field:'SoldTo',title:'Sold To Account',width:240, sortable:true, sortable:true, sorter: function(a, b){
+                 var va = (a === null) ? "" : "" + a,
+                 vb = (b === null) ? "" : "" + b;
+                 return va > vb ? 1 : ( va === vb ? 0 : -1 );
+               }},
+               {field:'ShipTo',title:'Ship To',width:200, sortable:true, sorter: function(a, b){
+                 var va = (a === null) ? "" : "" + a,
+                 vb = (b === null) ? "" : "" + b;
+                 return va > vb ? 1 : ( va === vb ? 0 : -1 );
+               }},
+               {field:'ShipToAcctNum',title:'Account #',width:90, sortable:true, sortable:true, sorter: function(a, b){
+                 var va = (a === null) ? "" : "" + a,
+                 vb = (b === null) ? "" : "" + b;
+                 return va > vb ? 1 : ( va === vb ? 0 : -1 );
+               }},
+               {field:'ShipCity',title:'City',width:90, sortable:true, sortable:true, sorter: function(a, b){
+                 var va = (a === null) ? "" : "" + a,
+                 vb = (b === null) ? "" : "" + b;
+                 return va > vb ? 1 : ( va === vb ? 0 : -1 );
+               }},
+               {field:'ShipState',title:'State',width:40, sortable:true, sortable:true, sorter: function(a, b){
+                 var va = (a === null) ? "" : "" + a,
+                 vb = (b === null) ? "" : "" + b;
+                 return va > vb ? 1 : ( va === vb ? 0 : -1 );
+               }},
+               {field:'OwnerName',title:'Owner',width:100, sortable:true, sortable:true, sorter: function(a, b){
+                 var va = (a === null) ? "" : "" + a,
+                 vb = (b === null) ? "" : "" + b;
+                 return va > vb ? 1 : ( va === vb ? 0 : -1 );
+               }}
+        ]],
+        loader: function(param,success,error){
+            Price_Letter_Nexprice_12.FetchMyAccounts($('#UserLookup').combogrid('getValue'), '', '','', function(result, event){
+   
+             if(event.type == 'exception') {
+                
+                error.apply(this, arguments);         
+             } else {      
+                success(result);         
+             }
+         }, {buffer: true, escape: true, timeout:120000}); 
+        },
+        onSelect: function(param){ 
+           fnClearTable();
+           fixEscapedHTML($('#acct-search').combogrid('getText'), 'acct-search'); 
+      },
+      onChange: function(newValue, oldValue){ 
+
+           console.log('old:' + oldValue + ' new:' + newValue); 
+           if(newValue != undefined && newValue != '' && newValue != oldValue && newValue != sPrevAccount)
+           { console.log('old:' + oldValue + ' new:' + newValue); 
+             sPrevAccount = newValue; 
+             $('#loadingbanner').show();
+             fnClearTable();
+             Price_Letter_Nexprice_12.getAccount(newValue, function(result, event){ 
+                 var formDataObj = new Object();
+                 if(typeof result.SAP_Partner_Function__c == 'undefined' && 
+                    typeof result.SAP_Corporate_Account_Id__c != 'undefined')
+                 {  formDataObj.name = 'Account_Corp_Account_Id_Ext__c';
+                    formDataObj.value = result.SAP_Corporate_Account_Id__c;
+                 }
+                 else if(typeof result.SAP_Sold_To_Account_Id__c != 'undefined')
+                 {
+                    formDataObj.name = 'Account_Sold_To_Id_Ext__c';
+                    formDataObj.value = result.SAP_Sold_To_Account_Id__c
+                 }
+                 else
+                 {
+                    formDataObj.name = 'Account__c'
+                    formDataObj.value = result.Id;
+                 }
+                 console.log(result);
+                 var formData = new Array();
+                 formData.push(formDataObj);
+                 startSearch(formData, null, null);
+             }, {buffer: true, escape: true, timeout:120000});
+           }
+        }
+       });
+    
+    $('#acct-search').combogrid('setValue', '{!$CurrentPage.parameters.id}');
+    $('#acct-search').combogrid('setText', "{!$CurrentPage.parameters.name}"); 
+    $('#acct-search').combogrid('textbox').focusin(function(){ 
+        $('#acct-search').combogrid('clear');
+     });
+     $('#acct-search-container').click(function(){ 
+        $('#acct-search').combogrid('enable');
+        $('#mimipanel').hide();      
+     });
+     $('#hidesearch').click(function(){ 
+        $('#acct-search').combogrid('enable');
+        $('#mimipanel').hide();      
+     });
+    $('#acct-search').combogrid('setValue', '{!$CurrentPage.parameters.id}');
+    $('#acct-search').combogrid('setText', "{!$CurrentPage.parameters.name}");
+    
+    
+    
+    
+    
+ $('#mimipanel').hide();
+ $('#mimi').click(function() {  
+         
+          $('#mimipanel').toggle();
+         
+          if($('#mimipanel').is(':hidden'))
+          {
+             $('#acct-search').combogrid('enable'); 
+          }
+          else
+          {
+          $('#shtoowners').combogrid('setValue', $('#UserLookup').combogrid('getValue'));
+          $('#shtoowners').combogrid('setText', $('#UserLookup').combogrid('getText'));
+          $('#acct-search').combogrid('setValue', '');
+          $('#acct-search').combogrid('setText', '');
+          $('#acct-search').combogrid('disable');
+          fnClearTable();
+          }
+          
+       });  
+$('.UserLookup').combogrid({  
+        panelWidth:450,  
+        value:'',   
+        delay: 500,    
+        idField:'User__c',  
+        textField:'Full_Name__c', 
+        required: true,
+        hasDownArrow: true,
+        keyHandler: {
+          query: function(q){
+                  var bHierarchy = {!$User.nexPrice_Disregard_Hierarchy__c};
+                  var g = $(this).combogrid('grid');
+                  var f = '';
+                  if(bHierarchy)
+                  {  f += 'Active__c = \'TRUE\' AND Role__c = \'AD Sales\''; }
+                  else
+                     f += 'Active__c = \'TRUE\' AND Role_Id__c = \'{!$user.UserRoleId}\'';
+
+                  Price_Letter_Nexprice_12.getComboGridData(q, 'Role_Reportee__c', 'First_Name__c, Last_Name__c, Full_Name__c, User__c-id', f , 'Name ASC', '1000', function(result, event){
+                    if(event.type == 'exception') {
+                      error.apply(this, arguments);         
+                    } else {      
+                      g.datagrid('loadData', result);         
+                    }
+                  }, {buffer: true, escape: true, timeout:120000});
+           }
+        },
+        columns:[[  
+               {field:'First_Name__c',title:'First Name',width:225,sortable:true, sorter: function(a, b){
+                 var va = (a === null) ? "" : "" + a,
+                 vb = (b === null) ? "" : "" + b;
+                 return va > vb ? 1 : ( va === vb ? 0 : -1 );
+               }},  
+               {field:'Last_Name__c',title:'Last Name',width:225, sortable:true, sorter: function(a, b){
+                 var va = (a === null) ? "" : "" + a,
+                 vb = (b === null) ? "" : "" + b;
+                 return va > vb ? 1 : ( va === vb ? 0 : -1 );
+               }} 
+        ]],
+        loader: function(param,success,error){
+           var bHierarchy = {!$User.nexPrice_Disregard_Hierarchy__c};
+           var f = '';
+           if(bHierarchy)
+           {  f += 'Active__c = \'TRUE\' AND Role__c = \'AD Sales\''; }
+           else
+              f += 'Active__c = \'TRUE\' AND Role_Id__c = \'{!$user.UserRoleId}\''; 
+
+            Price_Letter_Nexprice_12.getComboGridData('', 'Role_Reportee__c', 'First_Name__c, Last_Name__c, Full_Name__c, User__c-id', f , 'Name ASC', '1000', function(result, event){
+
+             if(event.type == 'exception') {
+                error.apply(this, arguments);         
+             } else {      
+               success(result);         
+             }
+         }, {buffer: true, escape: true, timeout:120000});
+        }
+         
+    });
+ $('#UserLookup').combogrid({
+   onSelect: function(param){   
+              
+              fixEscapedHTML($('#UserLookup').combogrid('getText'), 'UserLookup');        
+              var oTable = $('#price_maintenance').dataTable();
+              fnClearTable();
+              
+              var g = $('#acct-search').combogrid('grid');
+               
+                         
+              
+            }
+    });
+    $('.UserLookup').combogrid('textbox').focusin(function(){ 
+        $(this).parent().prev().combogrid('clear');
+     });
+ $('#nextoolbar2').hide();
+
+ $( ".helpicon" ).button({icons: {primary: "ui-icon-help"},text: false });
+ 
+ $('#ClearFilters').click(function(){ 
+   $('.textinput, .selectinput').each(function(i, ti){ 
+       $('#price_maintenance').dataTable().fnFilter('', aColumnIndex[$(this).attr('data-field')]);
+       console.log($(ti).val());
+       $(ti).val('');
+       console.log($(ti).val()); 
+   });
+   
+   $('.dateinputfrom, .dateinputto, .numberinputfrom, .numberinputto').each(function(){
+    $(this).val(''); 
+   }); 
+   $('#price_maintenance').dataTable().fnDraw();
+ });
+  
+    
+
+ $('#SelectAll').click(function(){ 
+
+     $('#price_maintenance').find('input:checkbox').not('input[disabled="disabled"]').attr('checked', 'checked');
+     fnEvaluateTable($('#price_maintenance' ).dataTable()); 
+ });
+ 
+ $('#Reset').click(function(){ 
+
+     $('#price_maintenance').find('input:checkbox').not('input[disabled="disabled"]').removeAttr('checked'); 
+     fnEvaluateTable($('#price_maintenance' ).dataTable()); 
+ });
+  
+ $('#dd3').dialog({  
+          title: 'Send Price Letter',     
+          closed: true,  
+          cache: false, 
+          modal: true,
+          width:800,  
+          height:400, 
+          collapsible: true,
+          maximizable: true,
+          maximized: true,                 
+          toolbar:[{
+                text:'Save and Send',
+                iconCls:'icon-save',
+                handler:function(){
+                var bValid = $('#plform').form('validate');
+                if(bValid == true)
+                { 
+                   console.log('pl-form:'+$('#plform').serialize());
+                   Price_Letter_Nexprice_12.sendpriceletter($('#plform').serialize(),function(result, event){ 
+                      if(event.type == 'exception') {
+                            console.log(event);}  
+                      else{
+                            $('#dd3').dialog('close');}
+                             }, {buffer: true, escape: true, timeout:120000});
+                }
+              }
+            },{
+                text:'Cancel',
+                iconCls:'icon-cancel',
+                handler:function(){$('#dd3').dialog('close');}
+            },
+            {
+                text:'Add Contact',
+                iconCls:'icon-add',
+                handler:function(){
+                 fnOpenContactPanel();
+                 $('#cform-acct').combobox(setText, $('#acct-search').combobox('getText'));
+                 $('#cform-acct').combobox(setValue,$('#acct-search').combobox('getValue'));
+              }
+            }]   
+        });
+        
+        
+        $('#dd4').dialog({  
+          title: 'Add New Contact',  
+          width: 425,  
+          height: 325,     
+          closed: true,  
+          cache: false, 
+          modal: true,
+          toolbar:[{
+                text:'Save',
+                iconCls:'icon-save',
+                handler:function(){
+                var bValid = $('#cform').form('validate');
+                if(bValid == true){
+                console.log('c-form:'+$('#cform').serialize());
+                  Price_Letter_Nexprice_12.saveContact($('#cform').serialize(),function(result, event){ 
+                      if(event.type == 'exception') {
+                            console.log(event);}  
+                      else{
+                            $('#dd3').dialog('open');
+                        $('#dd4').dialog('close');}       }, {buffer: true, escape: true, timeout:120000});
+                }}
+            },{
+                text:'Cancel',
+                iconCls:'icon-cancel',
+                handler:function(){
+                $('#dd3').dialog('open');
+                $('#dd4').dialog('close');}
+            }]   
+        });
+        
+ $('#savepriceletter').click(function(){
+   if($('#mm1').menu('findItem', 'Save Price Letter').disabled == false)
+   {      
+         var oTable = $('#price_maintenance').dataTable();
+         var sData = oTable.$('input').serialize();
+
+          var aaSelected = new Array();
+          $('#price_maintenance tr input').each(function(){ 
+                if($(this).prop('checked') == true){
+                    aaSelected.push($(this).val());
+                }
+          });
+        console.log(aaSelected);
+        Price_Letter_Nexprice_12.savepriceletter(aaSelected,function(result, event){ 
+          if(event.type == 'exception') {
+            console.log(event);
+          }else{
+              console.log('Result is:'+result);
+            fnOpenPriceLetter(result);
+            
+          }
+           }, {buffer: true, escape: true, timeout:120000});
+   }
+ });
+ 
+ function fnOpenPriceLetter(result){
+
+  var content = '';
+  content += '<br/><table><tr><td style="vertical-align:top;padding-right:1px;">';
+  content += '<form id="plform"><table><tr><input type="hidden" id="hiddenplid" name="hiddenplid"/></tr><tr><td><b>Contacts:</b></td></tr><tr><td><input id="plcontacts"/></td></tr>';
+  content += '<tr><td><b>To:</b></td></tr><tr><td><textarea rows="10" cols="40" id="plemails" name="plemails"/></td></tr>';
+  content += '<tr><td><b>Subject:</b></td></tr><tr><td><input style="width:400px;" id="plsubject" name="plsubject"/></td></tr>';
+  content += '<tr><td><b>Email Body:</b></td></tr><tr><td><textarea rows="10" cols="40" id="plbody" name="plbody"/></td></tr></table></form></td><td style="vertical-align:top;padding-right:1px;">';
+  content += '<iframe scrolling="auto" id="frameid" frameborder="0" style="width:800px;height:600px;"></iframe></td></tr></table>';
+  $('#dd3').dialog('open');
+  
+
+  $('#dd3container').html(content);
+  $('#frameid').attr('src', '/apex/price_letter?id=' + result);
+  $('#hiddenplid').attr('value', result);
+  $('#plemails').validatebox({required: true});
+  $('#plsubject').validatebox({required: true});
+  $('#plbody').validatebox({required: true});
+  $('#plcontacts').combogrid({  
+        panelWidth:450,  
+        value:'',      
+        idField:'Id',  
+        textField:'Email', 
+        keyHandler: {
+          query: function(q){
+                  var g = $(this).combogrid('grid');
+                  
+                 
+            Price_Letter_Nexprice_12.FetchMyContacts(q, $('#UserLookup').combogrid('getValue'), $('#acct-search').combogrid('getValue'), function(result, event){
+                    if(event.type == 'exception') {
+                      error.apply(this, arguments);         
+                    } else {      
+                      g.datagrid('loadData', result);         
+                    }
+                  }, {buffer: true, escape: true, timeout:120000});
+           }
+        },
+        columns:[[  
+               {field:'ContactLastName',title:'Last Name',width:100}, 
+               {field:'ContactFirstName',title:'First Name',width:100}, 
+               {field:'Email',title:'Email Address',width:100},
+               {field:'ShipTo',title:'Ship To',width:100},
+               {field:'SoldTo',title:'Sold To',width:100},
+               {field:'Corp',title:'Corporate',width:100}
+                
+        ]],
+        loader: function(param,success,error){
+            Price_Letter_Nexprice_12.FetchMyContacts('', $('#UserLookup').combogrid('getValue'), $('#acct-search').combogrid('getValue'), function(result, event){
+
+             if(event.type == 'exception') {
+                error.apply(this, arguments);         
+             } else {      
+               success(result);         
+             }
+             }, {buffer: true, escape: true, timeout:120000});
+        },
+        onSelect: function(param){ 
+         var sEmails = $('#plemails').val();
+         var sEm =  $('#plcontacts').combogrid('getText');
+         if(sEm != '' && sEm != undefined)
+           sEmails += $('#plcontacts').combogrid('getText') + ', ';
+         else
+         {
+           var sContact = $('#plcontacts').combogrid('getValue');
+           $('#cform-id').val(sContact);
+           Price_Letter_Nexprice_12.FetchContact(sContact, function(result, event){
+                    if(event.type == 'exception') {
+                      error.apply(this, arguments);         
+                    } else {   
+                        $('#cform-firstname').val(result.FirstName);
+                        $('#cform-lastname').val(result.LastName);
+                        $('#cform-email').val(result.Email);
+                        $('#cform-acct').combogrid(setText, result.Account.Name);
+                        $('#cform-acct').combogrid(setValue, result.accountid);         
+                    }
+                  }, {buffer: true, escape: true, timeout:120000});
+          fnOpenContactPanel();
+           
+           
+         }
+         
+         $('#plemails').val(sEmails);
+         $('#plcontacts').combogrid('clear');
+         }
+    });
+    
+
+}
+ 
+
+ $('#sb1,#sb2').splitbutton({plain:false});
+ 
+ $('#UserLookup').combogrid('setValue', '{!$User.Id}');
+ $('#UserLookup').combogrid('setText', "{!$User.FirstName} {!$User.LastName}");
+   
+
+}
+
+function fnOpenContactPanel(){
+ $('#dd3').dialog('minimize');
+ $('#dd4').dialog('open');
+    $('#cform-email').validatebox({  
+        required: true,  
+        validType: 'email'  
+    });
+    $('#cform-firstname').validatebox({  
+        required: true 
+    }); 
+    $('#cform-lastname').validatebox({  
+        required: true 
+    }); 
+    $('#cform-acct').combogrid({  
+        panelWidth:1200,  
+        value:'',      
+        idField:'Id',  
+        textField:'ShipTo',
+        remoteSort:false,
+        required: true,  
+        keyHandler: {
+          query: function(q){
+                  var g = $(this).combogrid('grid');                
+                  Price_Letter_Nexprice_12.FetchMyAccounts($('#UserLookup').combogrid('getValue'), $('#acct-search').combogrid('getValue'), '', q, function(result, event){
+                    if(event.type == 'exception') {
+                      error.apply(this, arguments);         
+                    } else {      
+                      g.datagrid('loadData', result);         
+                    }
+                  }, {buffer: true, escape: true, timeout:120000});
+           }
+        },
+        columns:[[ 
+               {field:'Corp',title:'Corporate',width:200, sortable:true, sorter: function(a, b){
+                 var va = (a === null) ? "" : "" + a,
+                 vb = (b === null) ? "" : "" + b;
+                 return va > vb ? 1 : ( va === vb ? 0 : -1 );
+               }},
+               {field:'CorpAcctNum',title:'Account #',width:100, sortable:true, sorter: function(a, b){
+                 var va = (a === null) ? "" : "" + a,
+                 vb = (b === null) ? "" : "" + b;
+                 return va > vb ? 1 : ( va === vb ? 0 : -1 );
+               }},
+               {field:'SoldTo',title:'Sold To',width:200, sortable:true, sortable:true, sorter: function(a, b){
+                 var va = (a === null) ? "" : "" + a,
+                 vb = (b === null) ? "" : "" + b;
+                 return va > vb ? 1 : ( va === vb ? 0 : -1 );
+               }},
+               {field:'SoldToAcctNum',title:'Account #',width:100, sortable:true, sortable:true, sorter: function(a, b){
+                 var va = (a === null) ? "" : "" + a,
+                 vb = (b === null) ? "" : "" + b;
+                 return va > vb ? 1 : ( va === vb ? 0 : -1 );
+               }},
+               {field:'ShipTo',title:'Ship To',width:200, sortable:true, sorter: function(a, b){
+                 var va = (a === null) ? "" : "" + a,
+                 vb = (b === null) ? "" : "" + b;
+                 return va > vb ? 1 : ( va === vb ? 0 : -1 );
+               }},
+               {field:'ShipToAcctNum',title:'Account #',width:100, sortable:true, sortable:true, sorter: function(a, b){
+                 var va = (a === null) ? "" : "" + a,
+                 vb = (b === null) ? "" : "" + b;
+                 return va > vb ? 1 : ( va === vb ? 0 : -1 );
+               }},
+               {field:'ShipCity',title:'City',width:100, sortable:true, sortable:true, sorter: function(a, b){
+                 var va = (a === null) ? "" : "" + a,
+                 vb = (b === null) ? "" : "" + b;
+                 return va > vb ? 1 : ( va === vb ? 0 : -1 );
+               }},
+               {field:'ShipState',title:'State',width:100, sortable:true, sortable:true, sorter: function(a, b){
+                 var va = (a === null) ? "" : "" + a,
+                 vb = (b === null) ? "" : "" + b;
+                 return va > vb ? 1 : ( va === vb ? 0 : -1 );
+               }},
+               {field:'OwnerName',title:'Owner',width:100, sortable:true, sortable:true, sorter: function(a, b){
+                 var va = (a === null) ? "" : "" + a,
+                 vb = (b === null) ? "" : "" + b;
+                 return va > vb ? 1 : ( va === vb ? 0 : -1 );
+               }}
+        ]],
+        loader: function(param,success,error){
+            Price_Letter_Nexprice_12.FetchMyAccounts($('#UserLookup').combogrid('getValue'), $('#acct-search').combogrid('getValue'), '', '', function(result, event){
+   
+             if(event.type == 'exception') {
+                error.apply(this, arguments);         
+             } else {      
+                success(result);         
+             }
+         }, {buffer: true, escape: true, timeout:120000}); 
+        }
+      });
+      $('#cform-acct').combogrid('setValue', $('#acct-search').combogrid('getValue'));
+      $('#cform-acct').combogrid('setText', $('#acct-search').combogrid('getText'));
+}
+
+
+
+function fnInitTable(){
+  $('#price_maintenance').dataTable({
+                "bDestroy": true,
+                "fnDrawCallback": function( oSettings ) {
+                   $('.row_selected').removeClass('row_selected');
+                   $('.row_error').removeClass('row_error'); 
+                },
+                "bSort": true,
+                "bPaginate": false,
+                "sScrollY": "400px",
+                "sAjaxDataProp": "accounts",
+                "sErrMode": false,
+                "sDom": '<"pricepager">frtip',
+                "bAutoWidth": false,
+                 "aoColumnDefs": [
+                    { "aTargets":[ "Open"], sClass:"Open" ,sWidth:"2px", "bAutoWidth": false},
+                    { "aTargets":[ "Select"], sClass:"Select", sWidth:"2px", "bAutoWidth": false },
+                    { "aTargets":[ "Sold_To" ], "mData": "Account_Sold_To__c", sClass:"Account_Sold_To__c",sWidth:"2px", "bAutoWidth": false },
+                    { "aTargets":[ "Ship_To" ], "mData": "Account_Name__c", sClass:"Account_Name__c",sWidth:"2px", "bAutoWidth": false },
+                    { "aTargets":[ "Account_Number" ], "mData": "Account_Number__c", sClass:"Account_Number__c",sWidth:"2px", "bAutoWidth": false },
+                    { "aTargets":[ "Account_City" ], "mData": "Account_City__c", sClass:"Account_City__c",sWidth:"2px", "bAutoWidth": false },
+                    { "aTargets":[ "Material" ], "mData": "Material_Name__c", sClass:"Material_Name__c",sWidth:"2px", "bAutoWidth": false },
+                    { "aTargets":[ "Base_Code" ], "mData": "Material_Base_Code__c", sClass:"Material_Base_Code__c",sWidth:"2px", "bAutoWidth": false },
+                    { "aTargets":[ "Eff_Date" ], "mData": "", sClass:"CSP_Effective_Date__c",sWidth:"2px", "bAutoWidth": false,
+                      "mData": function ( source, type, val ) {
+                          if (type === 'set') {
+                              return;
+                          }
+                          else if (type === 'display') { 
+                          if (source.CSP_Effective_Date__c != '' && source.CSP_Effective_Date__c != null){
+                             var CSPDate = new Date(source.CSP_Effective_Date__c);
+                             return CSPDate.getMonth()+1 + "/" + CSPDate.getDate() + "/" + CSPDate.getFullYear();}
+                          else return '';}
+                          else if (type === 'filter') {  return source.CSP_Effective_Date__c; }
+                          else if (type === 'sort') { 
+                           if((typeof source.CSP_Effective_Date__c == 'undefined') || source.CSP_Effective_Date__c == null)
+                              return '';
+                            else 
+                             return new Date(source.CSP_Effective_Date__c);
+                          }
+                          return source.CSP_Effective_Date__c;
+                      }
+                    },
+                    { "aTargets":[ "Avg_Order" ], sClass:"Avg_Order__c",sWidth:"2px", "bAutoWidth": false, 
+                      "mData": function ( source, type, val ) {
+                          if (type === 'set') {
+                              return;
+                          }
+                          else if (type === 'display') { return source.Avg_Order__c;}
+                          else if (type === 'filter') {  return source.Avg_Order_Qty__c; }
+                          else if (type === 'sort') { return source.Avg_Order_Qty__c; }
+                          return source.Target__c;
+                      }
+                    },
+                    { "aTargets":[ "Est_Order" ], sClass:"Estimated_Order_Quantity__c",sWidth:"2px", "bAutoWidth": false,
+                      "mData": function ( source, type, val ) {
+                          if (type === 'set') {
+                              return;
+                          }
+                          else if (type === 'display') { return source.Estimated_Order_Qty__c;}
+                          else if (type === 'filter') {  return source.Estimated_Order_Quantity__c; }
+                          else if (type === 'sort') { return source.Estimated_Order_Quantity__c; }
+                          return source.Target__c;
+                      }
+                    },
+                    { "aTargets":[ "CSP_Tier" ], "mData": "CSP_Tier__c", sClass:"CSP_Tier__c",sWidth:"2px", "bAutoWidth": false },
+                    { "aTargets":[ "CSP" ], sClass:"CSP__c",sWidth:"2px", "bAutoWidth": false,
+                      "mData": function ( source, type, val ) {
+                          if (type === 'set') {
+                              return;
+                          }
+                          else if (type === 'display') { return source.CSP__c;}
+                          else if (type === 'filter') {  return source.CSP_Price__c; }
+                          else if (type === 'sort') { return source.CSP_Price__c; }
+                          return source.CSP__c;
+                      }
+                    
+                    }, 
+                    { "aTargets":[ "TPI" ], sClass:"TPI__c",sWidth:"2px", "bAutoWidth": false,
+                      "mData": function ( source, type, val ) {
+                          if (type === 'set') {
+                              return;
+                          }
+                          else if (type === 'display') { 
+                            if((typeof source.TPI__c == 'undefined') || source.TPI__c == null)
+                              return '';
+                            else 
+                              return (source.TPI__c + '%');
+                          }
+                          else if (type === 'filter') {  return source.TPI__c; }
+                          else if (type === 'sort') { return source.TPI__c; }
+                          return source.TPI__c;
+                      }
+                    },
+                    { "aTargets":[ "Target_Tier" ], "mData": "Target_Tier__c", sClass:"Target_Tier__c",sWidth:"2px", "bAutoWidth": false },
+                    { "aTargets":[ "Target" ], sClass:"Target__c",sWidth:"2px", "bAutoWidth": false, 
+                      "mData": function ( source, type, val ) {
+                          if (type === 'set') {
+                              return;
+                          }
+                          else if (type === 'display') { return source.Target__c;}
+                          else if (type === 'filter') {  return source.Target_Price__c; }
+                          else if (type === 'sort') { return source.Target_Price__c; }
+                          return source.Target__c;
+                      }
+                    },
+                    { "aTargets":[ "Drum_Dep" ],"mData": "Drum_Deposit__c", sClass:"Drum_Deposit__c",sWidth:"2px", "bAutoWidth": false },
+                    { "aTargets":[ "Price_Protection" ], "mData": "Price_Protection__c", sClass:"Price_Protection__c",sWidth:"2px", "bAutoWidth": false },
+                    { "aTargets":[ "Id" ],"mData": "Id", sClass:"Id", bVisible: false,sWidth:"2px", "bAutoWidth": false},
+                    { "aTargets":[ "Has_Open_PRT" ],"mData": "Has_Open_PRT__c", sClass:"Has_Open_PRT__c",sWidth:"2px", "bAutoWidth": false, "bVisible":false},
+                    { "aTargets":[ "Has_Unit_Options" ],"mData": "Has_Unit_Options__c", sClass:"Has_Unit_Options__c",sWidth:"2px", "bAutoWidth": false, "bVisible":false},
+                    { "aTargets":[ "UoMs" ], "mData":"UoMs__c", sClass:"UoMs__c", sWidth:"2px", "bAutoWidth":false, "bVisible":false},
+                    { "aTargets":[ "UoM" ], "mData":"CSP_UoM__c", saClass:"CSP_UoM__c", sWidth:"2px", "bAutoWidth":false, "bVisible":false}
+                    ],
+                  "fnInitComplete": function(oSettings) { 
+                     aColumnIndex = fnGetColumnIndex(oSettings);
+                  },
+                  "fnCreatedRow": function( nRow, aData, iDataIndex ) {
+                    
+                    $('td:eq(' + aColumnIndex['Open'] + ')', nRow).html( '<img class="details_img" src="{!URLFOR($Resource.JQuery_Pricing, '/JQuery_Pricing/images/details_open.png')}">' );
+                    fnSetImgListener(nRow, 'price_maintenance');
+
+                    
+                        $('td:eq(' + aColumnIndex['Select'] + ')', nRow).html( '<input class="select_row" type="checkbox", value="' + aData.Id + '">' );
+                    fnSetCheckboxListener(nRow, $('#price_maintenance').dataTable())
+                    aRecordIds[aData.Id] = iDataIndex;
+                  }         
+              });
+     
+}
+
+function fnSetCheckboxListener(nRow, oTable){
+  $(nRow).find('input:checkbox').click(function(){
+      fnEvaluateTable(oTable);
+  });
+}
+function fnEvaluateTable(oTable){
+
+  var sText = null;
+  var sText2 = null;
+  var bSame = true;
+  var bSame2 = true;
+  var item = $('#mm1').menu('findItem', 'Save Price Letter');
+        
+  var iSelected = 0;
+         $(".select_row").each(function(i, v){
+           if($(this).attr("checked") == "checked")
+           { iSelected ++;
+                     
+           }      
+         });
+         
+         if(iSelected == 0) 
+         {    
+              $('#mm1').menu('disableItem', item.target);
+         }
+         else
+         {   
+                $('#mm1').menu('enableItem', item.target);
+         }
+}
+function fnSetImgListener(nRow, type){
+$('.details_img', nRow).click(function(){
+        
+        if ( this.src.match('details_close') )
+        {
+           this.src = "{!URLFOR($Resource.JQuery_Pricing, '/JQuery_Pricing/images/details_open.png')}";
+           $('#' + type).dataTable().fnClose( nRow );
+        }else{
+           this.src = "{!URLFOR($Resource.JQuery_Pricing, '/JQuery_Pricing/images/details_close.png')}";
+           $('#' + type).dataTable().fnOpen( nRow, fnFormatDetails(nRow, type ), 'details' ); 
+           $('.innerTable').dataTable({
+                 "bDestroy": true,
+                 "bPaginate": false,
+                 "bLengthChange": false,
+                 "bFilter": false,
+                 "bSort": false,
+                 "bInfo": false
+            });
+         }
+  });
+}
+
+function fnGetColumnIndex(oSettings){
+    var aColumns = new Array();
+    $.each(oSettings.aoColumns, function(c){
+        var mData = oSettings.aoColumns[c].sClass;
+            aColumns[mData] = c;
+    });
+
+    return aColumns;
+}
+
+function fnClearTable(){
+  $('#price_maintenance').dataTable().fnClearTable();
+  aRecordIds = new Array();
+}
+
+
+function fnAddData(data, oTable){
+
+fnUpdateFilterSelect('price_maintenance', aColumnIndex);
+var aaIds = new Array();
+var iSets = {!$Setup.nexPrice_Settings__c.Salesforce_Record_Limit__c} / {!$Setup.nexPrice_Settings__c.SAP_Record_Limit__c};
+var iHigh = {!$Setup.nexPrice_Settings__c.Salesforce_Record_Limit__c} / iSets;
+console.log(iHigh);
+var x = 0;
+var y = 0;
+aaIds[0] = new Array();
+$(data).each(function(i, e){
+   if(y<iHigh)
+   {  aaIds[x][y] = e.Id; 
+      y = y + 1;
+   }  
+   else
+   {  x = x + 1;
+      y = 0;
+      aaIds[x] = new Array();
+      aaIds[x][y] = e.Id;
+      y = y + 1;
+   }
+});
+console.log(aaIds);
+var a = new Array();
+iProcessing = 0;
+
+for(var i=0; i<aaIds.length; i++)
+{   
+    if(aaIds[i].length > 0)
+    Price_Letter_Nexprice_12.getPricing( a, aaIds[i], function(result, event){   
+            if(event.type == 'exception') {
+            console.log('getPricing');
+            console.log(event);
+            $('#loadingbanner').hide();
+            } else {                  
+                  oTable.fnAddData(result);  
+                  console.log(result);
+                  $('#loadingbanner').hide();
+            }
+    }, {buffer: true, escape: true, timeout:120000});
+}
+}
+function fnUpdateFilterSelect(stableid, aColIndex){
+$('#' + stableid).find('.selectinput').each(function(i, sel){
+
+  var val = $(sel).val();
+  $(sel).empty();
+  
+  var opt = '<option value=""';
+  if(val == $(sel).attr('name'))
+  opt += ' selected="selected" ';
+  opt += '>' + $(sel).attr('name') + '</option>';
+  var arr = $('#' + stableid).dataTable().fnGetColumnData(aColIndex[$(sel).attr('data-field')]);
+  $(arr).each(function(j, o){
+    opt = opt + '<option value="' + o + '"';
+    if(val == o)
+    opt += ' selected="selected" ';
+    opt += '>' + o + '</option>';
+  });
+  $(sel).append(opt);
+ 
+});
+  
+}
+
+function fnPrepFilters(stableid, aColIndex){
+$('#' + stableid).find('.textfilter').each(function(i, f){console.log($(f).html()); $(f).html('<div style="width:105px;"><input data-field="'+ $(f).attr('data-field') +'" class="textinput" placeholder="' + $(f).html() + '" name="' + $(f).html() + '" style="width:100px;"/></div>') });
+$('#' + stableid).find('.numberfilter').each(function(i, f){ $(f).html('<div class="numberinput" data-field="'+ $(f).attr('data-field') +'" style="width:105px;"><input data-field="'+ $(f).attr('data-field') +'" class="numberinputfrom" placeholder="From ' + $(f).html() + '" name="From ' + $(f).html() + '" style="width:50px;"/><b>&nbsp;To&nbsp;</b><input class="numberinputto" placeholder="To ' + $(f).html() + '" name="To ' + $(f).html() + '" style="width:50px;"/></div>') });
+$('#' + stableid).find('.datefilter').each(function(i, f){ $(f).html('<div class="dateinput" style="width:155px;" data-field="'+ $(f).attr('data-field') +'"><input class="dateinputfrom" name="From ' + $(f).html() + '" placeholder="From ' + $(f).html() + '" style="width:75px;"/><b>&nbsp;To&nbsp;</b><input class="dateinputto" placeholder="To ' + $(f).html() + '" name="To ' + $(f).html() + '" style="width:75px;"/></div>') });
+$('#' + stableid).find('.listfilter').each(function(i, f){ $(f).html('<div style="width:105px;"><select data-field="'+ $(f).attr('data-field') +'" class="selectinput" name="' + $(f).html() + '" style="width:100px;"><option selected="selected" value="' + $(f).html() + '">' + $(f).html() + '</option></select></div>') });
+$( ".dateinputfrom, .dateinputto" ).datepicker({ changeMonth:true, changeYear:true});
+fnUpdateFilterSelect(stableid, aColIndex);
+$('.selectinput').change(function(){
+   $('#' + stableid).dataTable().fnFilter($(this).val(), aColIndex[$(this).attr('data-field')] );
+   fnUpdateFilterSelect(stableid, aColIndex);
+  });
+$(".textinput").keyup( function () { $('#' + stableid).dataTable().fnFilter( this.value, aColIndex[$(this).attr('data-field')] ); fnUpdateFilterSelect(stableid, aColIndex); });
+
+$('.numberinputfrom, .numberinputto').keyup(function(){ $('#' + stableid).dataTable().fnDraw(); fnUpdateFilterSelect(stableid, aColIndex);});
+$('.dateinputfrom, .dateinputto').change(function(){ $('#' + stableid).dataTable().fnDraw(); fnUpdateFilterSelect(stableid, aColIndex); });
+$(".numberinput").each(function(i, ni){
+  $('#' + stableid).dataTable().dataTableExt.afnFiltering.push(
+    function (oSettings, aData, iDataIndex) {
+                    if ($('#' + stableid).dataTable().attr("id") != oSettings.sTableId){ return true; }
+                    var iMin = $(ni).find('.numberinputfrom').val();
+                    var iMax = $(ni).find('.numberinputto').val();
+                    var iValue = (isNaN(aData[aColIndex[$(ni).attr('data-field')]]) || aData[aColIndex[$(ni).attr('data-field')]] == null || aData[aColIndex[$(ni).attr('data-field')]] == "")? -1 : aData[aColIndex[$(ni).attr('data-field')]];
+                    if ((iMin == "" || isNaN(iMin)) && (iMax == "" || isNaN(iMax))) { return true;} 
+                    else if ((iMin == "" || isNaN(iMin)) && iValue <= iMax) { return true; }
+                    else if (iMin <= iValue && (iMax == "" || isNaN(iMax))) { return true; }
+                    else if (iMin <= iValue && iValue <= iMax) { return true; }
+                    return false;
+   });
+});
+$(".dateinput").each(function(i, di){
+  $('#' + stableid).dataTable().dataTableExt.afnFiltering.push(
+    function (oSettings, aData, iDataIndex) {
+                    if ($('#' + stableid).dataTable().attr("id") != oSettings.sTableId){ return true; }
+                    var iMin =  $(di).find('.dateinputfrom').val();
+                    if(iMin !=  $(di).find('.dateinputfrom').attr('name'))
+                      iMin = $(di).find('.dateinputfrom').datepicker( "getDate" );
+                    var iMax =  $(di).find('.dateinputto').val();
+                    if(iMax !=  $(di).find('.dateinputto').attr('name'))  
+                      iMax = $(di).find('.dateinputto').datepicker( "getDate" );
+                    
+                    var iValue = new Date( aData[aColIndex[$(di).attr('data-field')]]);
+                    if ((iMin == "" || iMin == null || iMin == $(di).find('.dateinputfrom').attr('name')) && (iMax == "" || iMax == null || iMax == $(di).find('.dateinputto').attr('name')) ) { return true;} 
+                    else if ((iMin == "" || iMin == null || iMin == $(di).find('.dateinputfrom').attr('name'))  && iValue <= iMax) { return true; }
+                    else if (iMin <= iValue && (iMax == "" || iMax == null || iMax == $(di).find('.dateinputto').attr('name'))) { return true; }
+                    else if (iMin <= iValue && iValue <= iMax) { return true; }
+                    return false;
+   });
+});
+
+}
+
+</script>
+<style>
+label.error {
+    color: red;
+}
+div.error{
+border-style:solid;
+border-width:1.5px;
+border-color:red;
+}
+input.error{
+border-style:solid;
+border-color:red;
+}
+select.error{
+border-style:solid;
+border-color:red;
+}
+</style>
+<div id="loadingbanner" style="position:relative;left:px">
+<c:EnhancedActionStatus BackColor="#efefef" borderColor="#336699" borderSize="3" height="20px" width="100px" ImageUrl="{!$Resource.spinner}" Message="Loading..." messageStyle="color:darkred;font-size:11pt;font-weight:bold;"/>
+
+</div>
+<table><tr><td>
+<div id="nextoolbar" >
+        <a href="javascript:void(0)" id="sb1" class="easyui-splitbutton" data-options="menu:'#mm1',iconCls:'icon-edit'" >Menu</a>
+        <a href="javascript:void(0)" id="sb2" class="easyui-splitbutton" data-options="menu:'#mm2',iconCls:'icon-search'" >Show / Hide</a>
+
+</div>
+<div id="nextoolbar2" >
+        <a href="javascript:void(0)" id="sb1" class="easyui-splitbutton" data-options="menu:'#mm21',iconCls:'icon-edit'" >Menu</a>
+</div>
+</td><td>
+<span>
+<b>View As:</b>
+    <input id="UserLookup" name="user" class="UserLookup" style="width:250px;"/> 
+    <span id="acct-search-container"><b>Account Search:</b><input id="acct-search" name="amform-acct" style="width:250px;"/></span>
+    </span>
+</td></tr></table>
+<br/>
+<!-- <div  id="main" style="width:2500px;"> -->
+<!-- <div id="maintab" title="Price Maintenance" style="padding:10px;width:2500px;"> -->
+    <div id="mm1" style="width:150px;">
+        <div id="SelectAll" >Select All</div>
+        <div id="ClearFilters">Clear Filters</div>
+        <div id="Reset" >Reset</div>
+        
+        <!-- <div class="menu-sep" id="sep1"></div> -->       
+        <div class="savepriceletter" id="savepriceletter">Save Price Letter</div>
+        <!-- <div class="menu-sep" id="sep2"></div>
+        <div id="mimi" data-options="iconCls:'icon-search'">Multi-Search</div> -->
+    </div>
+    <div id="mm2" style="width:150px;">
+        <div ><input onclick="fnShowHide(this, 'Sold To')" id="sldto" type="checkbox" name="Sold To" />&nbsp;&nbsp;Sold To</div>
+        <div><input onclick="fnShowHide(this, 'Ship To')" type="checkbox" name="Ship To" />&nbsp;&nbsp;Ship To</div>
+        <div><input onclick="fnShowHide(this, 'Acct Numbr')" type="checkbox" name="Acct Numbr" />&nbsp;&nbsp;Account Number</div>
+        <div><input onclick="fnShowHide(this, 'City')" type="checkbox" name="City" />&nbsp;&nbsp;City</div>
+        <div ><input onclick="fnShowHide(this, 'Material Name')"  type="checkbox" name="Material Name" />&nbsp;&nbsp;Material Name</div>
+        <div ><input onclick="fnShowHide(this, 'Material Base')"  type="checkbox" name="Material Base" />&nbsp;&nbsp;Material Base</div>
+        <div ><input onclick="fnShowHide(this, 'Start Date')"  type="checkbox" name="Start Date" />&nbsp;&nbsp;Start Date</div>
+        <div ><input onclick="fnShowHide(this, 'AOQ')"  type="checkbox" name="AOQ" />&nbsp;&nbsp;Average Order Qty</div>
+        <div ><input onclick="fnShowHide(this, 'EOQ')"  type="checkbox" name="EOQ" />&nbsp;&nbsp;Estimated Order Qty</div>
+        <div><input onclick="fnShowHide(this, 'Tier')"  type="checkbox" name="Tier" />&nbsp;&nbsp;Tier</div>
+        <div><input onclick="fnShowHide(this, 'CSP')"  type="checkbox" name="CSP" />&nbsp;&nbsp;CSP</div>
+        <div><input onclick="fnShowHide(this, 'Target')"  type="checkbox" name="Target" />&nbsp;&nbsp;Target</div>
+        <div><input onclick="fnShowHide(this, 'Drum Deposit')"  type="checkbox" name="Drum Deposit" />&nbsp;&nbsp;Drum Deposit</div>
+        <div><input onclick="fnShowHide(this, 'Price Prot.')"  type="checkbox" name="Price Prot." />&nbsp;&nbsp;Price Protection</div>
+    </div>
+
+
+<br/>
+<select id="pageselect" disabled="disabled"><option value="">--None--</option></select>
+<br/>
+
+<table id="price_maintenance" class="display" width="100%">
+<thead>
+<tr>
+<th class="Open" rowspan="2"></th>
+<th class="Select" rowspan="2">Select</th>
+<th><div style="width:105px;"><input data-field="Account_Sold_To__c" class="textinput" placeholder="Sold To" name="Sold To" style="width:100px;"/></div></th>
+<th><div style="width:105px;"><input data-field="Account_Name__c" class="textinput" placeholder="Ship To" name="Ship To" style="width:100px;"/></div></th>
+<th><div style="width:105px;"><input data-field="Account_Number__c" class="textinput" placeholder="Account Number" name="Account Number" style="width:100px;"/></div></th>
+<th><div style="width:105px;"><input data-field="Account_City__c" class="textinput" placeholder="City" name="City" style="width:100px;"/></div></th>
+<th><div style="width:105px;"><input data-field="Material_Name__c" class="textinput" placeholder="Material" name="Material" style="width:100px;"/></div></th>
+<th><div style="width:105px;"><input data-field="Material_Base_Code__c" class="textinput" placeholder="Base Code" name="Base Code" style="width:100px;"/></div></th>
+<th><div style="width:105px;"><input data-field="CSP_Effective_Date__c" class="textinput" placeholder="Start Date" name="Eff Date (Y-M-D)" style="width:100px;"/></div></th>
+<th><div style="width:105px;"><input data-field="Avg_Order__c" class="textinput" placeholder="AOQ" name="Avg Order" style="width:100px;"/></div></th>
+<th><div style="width:105px;"><input data-field="Estimated_Order_Quantity__c" class="textinput" placeholder="EOQ" name="Est Order" style="width:100px;"/></div></th>
+<th><div style="width:105px;"><input data-field="CSP_Tier__c" class="textinput" placeholder="Tier" name="CSP Tier" style="width:100px;"/></div></th>
+<th><div style="width:105px;"><input data-field="CSP__c" class="textinput" placeholder="CSP" name="CSP" style="width:100px;"/></div></th>
+<th><div style="width:105px;"><input data-field="TPI__c" class="textinput" placeholder="TPI" name="TPI" style="width:100px;"/></div></th>
+<th><div style="width:105px;"><input data-field="Target_Tier__c" class="textinput" placeholder="Tar. Tier" name="Target Tier" style="width:100px;"/></div></th>
+<th><div style="width:105px;"><input data-field="Target__c" class="textinput" placeholder="Target" name="Target" style="width:100px;"/></div></th>
+<th><div style="width:105px;"><input data-field="Drum_Deposit__c" class="textinput" placeholder="Drum Dep" name="Drum Dep" style="width:100px;"/></div></th>
+<th><div style="width:105px;"><input data-field="Price_Protection__c" class="textinput" placeholder="Price Protection" name="Price Protection" style="width:100px;"/></div></th>
+<th >Id</th>
+<th >Has Open PRT</th>
+<th >Has Unit Options</th>
+<th >UoMs</th>
+<th >UoM</th>
+</tr>
+<tr>
+
+
+<th class="Sold_To">Sold To</th>
+<th class="Ship_To">Ship To</th>
+<th class="Account_Number">Account Number</th>
+<th class="Account_City">City</th>
+<th class="Material">Material</th>
+<th class="Base_Code">Base Code</th>
+<th class="Eff_Date">Start Date</th>
+<th class="Avg_Order">AOQ</th>
+<th class="Est_Order">EOQ</th>
+<th class="CSP_Tier">Tier</th>
+<th class="CSP">CSP</th>
+<th class="TPI">TPI %</th>
+<th class="Target_Tier">Tier</th>
+<th class="Target">Target</th>
+<th class="Drum_Dep">Drum Dep</th>
+<th class="Price_Protection">Price Protection</th>
+<th class="Id">Id</th>
+<th class="Has_Open_PRT">Has Open PRT</th>
+<th class="Has_Unit_Options">Has Unit Options</th>
+<th class="UoMs">UoMs</th>
+<th class="UoM">UoM</th>
+</tr>
+</thead>
+<tbody></tbody>
+</table>
+<br/><br/><br/>
+<div id="loadtarget"></div>
+<!-- </div> --><!--End Price Maintenance Tab-->
+<!-- </div> -->
+<div id="dd3" class="easyui-dialog" style="width:300px;" >
+<div id="dd3container"/>
+</div>
+<div id="dd4" class="easyui-dialog" style="width:150px;" >
+<form id="cform">
+    <br/>
+    <input type="hidden" id="cform-id" name="cform-id"/>
+    <center><span>
+    <table>
+    <tr><td><b>Account</b></td>
+    <td><input id="cform-acct" class="ccacct" name="cform-acct" style="width:250px;"/></td>
+    </tr>
+    <tr><td><b>First Name</b></td>
+    <td><input id="cform-firstname" name="cform-firstname" style="width:200px;"/></td>
+    </tr>
+    <tr><td><b>Last Name</b></td>
+    <td><input id="cform-lastname" name="cform-lastname" style="width:200px;"/></td>
+    </tr>
+    <tr><td><b>Email</b></td>
+    <td><input id="cform-email" name="cform-email" style="width:200px;"/></td>
+    </tr>
+    </table>
+    </span></center>
+    </form>
+</div>
+
+</apex:page>

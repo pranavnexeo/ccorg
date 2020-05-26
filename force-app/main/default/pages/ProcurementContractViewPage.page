@@ -1,0 +1,148 @@
+<apex:page standardController="Procurement_Contract__c" extensions="ProcurementContractExtension"  sidebar="false">
+<script>
+
+function getRenewalLetter(){
+    
+    //alert('getRenewalLetter');
+    
+    window.open('/apex/ProcurementContractRenewalLetter?Id={!Procurement_Contract__c.Id}');
+    return false;
+
+}
+
+function getTerminationLetter(){
+
+    alert('Termination letter template is currently not available in the system');
+    return false;
+}
+
+
+function getContractPDF(){
+
+    //alert('getcontractPDF');
+    
+    if('{!Procurement_Contract__c.Location__c}'==''){
+        
+        alert('Please enter originator location');
+        return false;
+    }
+    
+    var contractType = '{!Procurement_Contract__c.Contract_Type__c}';
+    var eval = '{!Procurement_Contract__c.Evaluation_Required__c}';
+    //alert(eval);
+    try{
+        if(contractType=='Tank/Rail Car Wash' || contractType=='Procurement Agreement' || contractType=='Material Agreement - (ER)'){
+            alert('Contract Template not available in the system for this contract type');
+            return false;
+        }else if(contractType=='Hazardous Waste Disposal/Solvent Recycling'){
+            window.open('/apex/HazardousWasteDisposalRecycling_No?Id={!Procurement_Contract__c.Id}');
+            return false;
+        }
+        else if(contractType=='Scrap Metal Recycling'){
+            window.open('/apex/ScrapMetalRecycling_No?Id={!Procurement_Contract__c.Id}');
+            return false;
+        }else if(contractType=='Canada - Labor Supervision and Materials - (ER)'){
+            if(eval=='YES'){
+                window.open('/apex/CanadaLaborSupervisionAndMaterials_Yes?Id={!Procurement_Contract__c.Id}');
+            }else{
+                window.open('/apex/CanadaLaborSupervisionAndMaterials_No?Id={!Procurement_Contract__c.Id}');
+            }
+            return false;
+        }else if(contractType=='Plant & Engineering Services Agreement - (ER)'){
+            if(eval=='YES'){
+                window.open('/apex/PlantEngineeringServicesAgreement_Yes?Id={!Procurement_Contract__c.Id}');
+            }else{
+                window.open('/apex/PlantEngineeringServicesAgreement_No?Id={!Procurement_Contract__c.Id}');
+            }
+            return false;
+        }else if(contractType=='Labor Supervision and Materials - (ER)'){
+            if(eval=='YES'){
+                window.open('/apex/LaborSupervisionAndMaterials_Yes?Id={!Procurement_Contract__c.Id}');
+            }else{
+                window.open('/apex/LaborSupervisionAndMaterials_No?Id={!Procurement_Contract__c.Id}');
+            }
+            return false;
+        }else if(contractType=='Services Agreement - Canadian - (ER)'){
+            if(eval=='YES'){
+                window.open('/apex/ServicesAgreementCanadian_Yes?Id={!Procurement_Contract__c.Id}');
+            }else{
+                window.open('/apex/ServicesAgreementCanadian_No?Id={!Procurement_Contract__c.Id}');
+            }
+            return false;
+        }else if(contractType=='Services Agreement - (ER)'){
+            if(eval=='YES'){
+                window.open('/apex/ServicesAgreement_Yes?Id={!Procurement_Contract__c.Id}');
+            }else{
+                window.open('/apex/ServicesAgreement_No?Id={!Procurement_Contract__c.Id}');
+            }
+            return false;
+        }
+        else{
+            alert('Unable to find a matching letter for '+' {!Procurement_Contract__c.Contract_Type__c} '+ 'Evaluation: {!Procurement_Contract__c.Evaluation_Required__c}');
+            return false;
+        }
+    }catch(e){
+        alert('Unable to find a matching letter for '+' {!Procurement_Contract__c.Contract_Type__c} '+ 'Evaluation: {!Procurement_Contract__c.Evaluation_Required__c}');
+    }
+       
+    
+}
+
+function recordAudit()
+
+{
+
+callRecordAudit();
+
+alert('Auditing Done');
+return true;
+
+ 
+
+}
+
+function connectToBrowz(){
+
+    window.open('http://www.browz.com');
+    return false;
+}
+
+</script>
+
+    <apex:pagemessages ></apex:pagemessages>
+    
+   <apex:form >
+        
+        <apex:actionFunction name="callRecordAudit" action="{!recordAudit}" reRender="pageDetails"/>
+        
+         
+        <apex:pageBlock id="pageBlock">
+        <apex:pageBlockButtons location="top">
+        
+            <apex:commandButton action="{!URLFOR($Action.Procurement_Contract__c.Edit,Procurement_Contract__c.Id)}" value="Edit"/>
+            <apex:commandButton action="{!URLFOR($Action.Procurement_Contract__c.Delete,Procurement_Contract__c.Id)}" value="Delete"/>
+            <apex:commandButton value="Vendor Contract Letter"  onclick=" return getContractPDF();" />
+            <apex:commandButton value="Termination Letter" onclick="return getTerminationLetter();"/>
+            <apex:commandButton value="Renewal Letter" onclick="return getRenewalLetter();"/>
+            <!--<apex:commandButton value="Record Audit" onclick="recordAudit();" reRender="pageDetails" status="myStatus"/> -->
+            <apex:commandButton value="Connect To Browz" onclick="return connectToBrowz();" rendered="{!Procurement_Contract__c.Evaluation_Required__c='YES'}"/>
+           
+
+            
+         </apex:pageBlockButtons>
+         <!--<apex:outputPanel id="browzLink" rendered="{!Material_Contract__c.Evaluation_Required__c='YES'}">
+             <center><apex:outputLink value="http://www.browz.com"  target="_blank">Connect To Browz</apex:outputLink></center>
+         </apex:outputPanel>    -->     
+        </apex:pageBlock>
+        
+        <apex:outputPanel id="pageDetails">
+            <apex:actionStatus startText="Recording Audit..." id="myStatus">
+             <apex:facet name="stop"></apex:facet>
+            </apex:actionStatus>
+ <apex:detail subject="{!Procurement_Contract__c.Id}" relatedList="true" title="false" relatedListHover="false" id="detailPage"/>
+            
+        </apex:outputPanel>
+
+
+              </apex:form>
+</apex:page>

@@ -1,0 +1,91 @@
+<apex:page standardcontroller="Account_Material__c" docType="html-5.0" standardStylesheets="false" extensions="AccountMaterial_Information" >
+<script src="{!URLFOR($Resource.JQuery_Pricing, '/JQuery_Pricing/js/jquery-1.8.3.min.js')}" type="text/javascript"/> 
+        
+<c:importvisualstrap />
+<style>
+ .omb_btn-facebook {
+  font-size: 1.5em;
+  color: #bbb;
+  background: #9ACD32;   
+}
+</style>
+
+<script>
+
+ $(document).ready(function() {
+  
+ var hasOpenPRT = "{!Account_Material__c.Has_Open_PRT__c}";
+ var hasUnitOption = "{!Account_Material__c.Has_Unit_Options__c}";
+
+ 
+ if(hasUnitOption == 'true' && hasOpenPRT == 'false')
+     $("#setPrice").show();
+ else
+     $("#setPrice").hide();
+ 
+ $("#setPrice").click(function(){
+ var url1 = '/apex/formwizard_x?id='+ "{!Account_Material__c.Id}";
+ console.log(url1)
+ gotourl('/apex/formwizard_x?id='+ "{!Account_Material__c.Id}");
+ 
+ 
+ 
+ });
+ 
+ 
+ $("#checkInv").click(function(){
+ var url1 = '/apex/Atp_Inventory_search?id='+ "{!Account_Material__c.Id}";
+ var source = 'mobile';
+ console.log(url1)
+ gotourl('/apex/Atp_Inventory_search?id='+ "{!Account_Material__c.Id}"+'&source='+source);
+ });
+ 
+ 
+ });
+ 
+     function gotourl(url){
+    
+        if(typeof sforce == 'undefined') 
+            window.location.href = url
+        else
+            sforce.one.navigateToURL(url);
+        }
+
+</script>
+
+<c:visualstrapblock style="padding:5px"> 
+
+<br></br>          
+<c:panel title="" type="primary">
+
+<br></br>
+
+<Center>
+<input type="button" onclick="" class="toHide" id="setPrice" name="setPrice" value="Set Price" styleClass="btn btn-lg btn-block"></input>
+<input type="button" onclick=""  id="checkInv" name="checkInv" value="Check Inventory" styleClass="btn btn-lg btn-block"></input>
+
+</Center>
+<br></br>
+<c:Account_Material_Info recId="{!AccountMaterial.Id}"/>
+
+<br></br>
+
+<br></br>
+
+<c:row >
+<c:column type="col-sm-6">
+<c:AM_CSP_Tier recordid="{!AccountMaterial.id}"/>
+</c:column>
+
+<c:column type="col-sm-6">
+<c:AM_Target_Tier recordid="{!AccountMaterial.id}"/>
+</c:column>
+</c:row>
+
+</c:panel>  
+
+
+
+</c:visualstrapblock>
+
+</apex:page>

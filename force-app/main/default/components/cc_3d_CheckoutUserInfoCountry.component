@@ -1,0 +1,545 @@
+<apex:component controller="cc_3d_ctrl_CheckoutUserInfoController">
+
+<script id="Nexeo-UserInfo-AddressEdit-Desktop" type="text/template">
+    <form id="{{classPrefix}}AddressForm" class="horizontal_form addressForm">
+    <div class="alert alert-error {{classPrefix}}-messagingSection-Error" style="display: none"></div>
+    <fieldset>
+        <legend>{{pageLabelMap sectionLabel}}</legend>
+        {{#ifEquals classPrefix 'shipping'}}
+        <a class="copyAddress">{{pageLabelMap 'Checkout_UseBillingAddress'}}</a>
+        {{/ifEquals}}
+        <div class="change_address"><a href="#modal_{{classPrefix}}" data-toggle="modal">{{pageLabelMap 'UserInfo_AddressBook'}}</a></div>
+        <div class="clear"></div>
+        {{#ifDisplay 'SO.DsplAddrName'}}
+        <label>{{pageLabelMap 'CheckOut_FirstName'}}
+            <input class="{{classPrefix}}firstNameField {{classPrefix}}Field wide" name="{{classPrefix}}Address.firstName" value="{{this.firstName}}" />
+        </label>
+        <label>{{pageLabelMap 'CheckOut_LastName'}}
+            <input class="{{classPrefix}}lastNameField {{classPrefix}}Field wide" name="{{classPrefix}}Address.lastName" value="{{this.lastName}}" />
+        </label>
+        <div class="clear"></div>
+        {{/ifDisplay}}
+        {{#ifDisplay 'SO.DsplAddrCompany'}}
+        <label>{{pageLabelMap 'Profile_CompanyName'}}
+            <input class="{{classPrefix}}companyField {{classPrefix}}Field wide" name="{{classPrefix}}Address.companyName" value="{{this.companyName}}" />
+        </label>
+        <div class="clear"></div>
+        {{/ifDisplay}}
+        <input type="hidden" class="{{classPrefix}}acctIdField {{classPrefix}}Field" name="{{classPrefix}}Address.partnerId" value="{{this.partnerId}}" />
+        <label class="address1">{{pageLabelMap 'Profile_Address'}}
+            <input name="{{classPrefix}}Address.address1" class="addresswide {{classPrefix}}Address1 {{classPrefix}}Field" value="{{this.address1}}" maxlength="40" />
+        </label>
+        <label class="address2"><input name="{{classPrefix}}Address.address2" class="addresswide {{classPrefix}}Address2 {{classPrefix}}Field" value="{{this.address2}}" maxlength="40" /></label>
+        <label class="address2"><input name="{{classPrefix}}Address.address3" class="addresswide {{classPrefix}}Address3 {{classPrefix}}Field" value="{{this.address3}}" maxlength="40" /></label>
+
+        <div class="clear"></div>
+        <label>{{pageLabelMap 'CheckOut_Country'}}
+            <div class="countrySection"></div>
+        </label>
+        <label>{{pageLabelMap 'CheckOut_State'}}
+            <div class="stateSection"></div>
+        </label>
+        <div class="clear"></div>
+        <label>{{pageLabelMap 'CheckOut_City'}}
+            <input name="{{classPrefix}}Address.city" class="{{classPrefix}}City {{classPrefix}}Field wide" value="{{this.city}}" />
+        </label>
+        <label>{{pageLabelMap 'CheckOut_PostalCode'}}
+            <input name="{{classPrefix}}Address.postalCode" class="{{classPrefix}}PostalCode {{classPrefix}}Field wide" value="{{this.postalCode}}" />
+        </label>
+        <div class="countySection"></div>
+    </fieldset>
+    </form>
+    <div id="modal_{{classPrefix}}" class="modal hide fade in">
+        <div class="modal-header">
+            <button type="button" class="close" data-dismiss="modal" aria-hidden="true">x</button>
+            <h3>{{pageLabelMap 'UserInfo_AddressBookModal'}}</h3>
+        </div>
+        <div class="modal-body">
+        {{#each this.addressList}}
+            <div class="billing_shipping_info">
+                <div class="personal_info">
+                {{> addressDisplay}}
+                </div>
+                <div class="select">
+                    <input name="" type="button" value="{{pageLabelMap 'UserInfo_selectAddress'}}" class="large_red_button {{../classPrefix}}Field selectAddress" data-id="{{this.sfid}}"/>
+                </div>
+            </div>
+        {{/each}}
+        </div>
+    </div>
+</script>
+
+<script id="Nexeo-UserInfo-AddressList-Mobile" type="text/template">  <div class="change_address">
+  <div class="change_address">
+   <a href="#modal_{{classPrefix}}" data-toggle="modal">{{pageLabelMap 'UserInfo_AddressBook'}}</a>
+  </div><br/>
+
+  <form id="{{classPrefix}}AddressForm">
+   <div class="alert alert-error {{classPrefix}}-messagingSection-Error" style="display: none"></div>
+   <label>{{pageLabelMap 'CheckOut_FirstName'}}</label>
+   <input type="text" class="{{classPrefix}}firstNameField checkout_wide contactInput" name="{{classPrefix}}Address.firstName" value="{{this.firstName}}">
+
+   <label>{{pageLabelMap 'CheckOut_LastName'}}</label>
+   <input type="text" class="{{classPrefix}}lastNameField checkout_wide contactInput" name="{{classPrefix}}Address.lastName" value="{{this.lastName}}">
+
+   <label>Company Name</label>
+   <input type="text" class="{{classPrefix}}companyField checkout_wide contactInput" name="{{classPrefix}}Address.companyName" value="{{this.companyName}}">
+
+   <label>{{pageLabelMap 'Profile_Address'}}</label>
+   <input type="text" class="{{classPrefix}}Address1 checkout_wide contactInput" name="{{classPrefix}}Address.address1" value="{{this.address1}}">
+   <input type="text" class="{{classPrefix}}Address2 checkout_wide contactInput" name="{{classPrefix}}Address.address2" value="{{this.address2}}">
+   <input type="text" class="{{classPrefix}}Address3 checkout_wide contactInput" name="{{classPrefix}}Address.address3" value="{{this.address3}}">
+
+   <label>{{pageLabelMap 'CheckOut_Country'}}</label>
+   <div class="countrySection"></div>
+
+   <label>{{pageLabelMap 'CheckOut_State'}}</label>
+   <div class="stateSection"></div>
+
+   <label>{{pageLabelMap 'CheckOut_City'}}</label>
+   <input type="text" placeholder="City" class="{{classPrefix}}City checkout_wide contactInput" name="{{classPrefix}}Address.city" value="{{this.city}}">
+
+   <label>{{pageLabelMap 'CheckOut_PostalCode'}}</label>
+   <input type="text" placeholder="Postal Code" class="{{classPrefix}}PostalCode checkout_wide contactInput" name="{{classPrefix}}Address.postalCode"  value="{{this.postalCode}}">
+    <div class="countySection"></div>
+  </form>
+
+  <div id="modal_{{classPrefix}}" class="modal hide fade in">
+   <div class="modal-header">
+    <button type="button" class="close" data-dismiss="modal" aria-hidden="true">x</button>
+    <h3>{{pageLabelMap 'UserInfo_AddressBook'}}</h3>
+   </div>
+   <div class="modal-body">
+    {{#each this.addressList}}
+     <div class="billing_shipping_info">
+      <div class="personal_info">
+       {{> addressDisplay}}
+      </div>
+      {{#ifEquals this.partnerId ../partnerId}}
+       <div class="select"><input name="" type="button" value="{{pageLabelMap 'CheckOut_Selected'}}" class="large_blue_button addrSelected selectAddressPhone" data-id="{{this.sfid}}"/></div>
+      {{else}}
+       <div class="select"><input name="" type="button" value="{{pageLabelMap 'CheckOut_Select'}}" class="large_grey_button selectAddressPhone" data-id="{{this.sfid}}"/></div>
+      {{/ifEquals}}
+     </div>
+    {{/each}}
+   </div>
+  </div>
+</script>
+
+<script id="CountryField" type="text/template">
+    {{{selectGeo this.name this.countryList this.value this.styles this.classPrefix}}}
+</script>
+
+<script id="CountyField" type="text/template">
+    {{#if this.countyList}}
+    {{#if this.isPhone}}
+    <label>{{pageLabelMap 'cc_imp_Checkout_County'}}<label>
+    <select name='{{classPrefix}}Address.county' class='checkout_wide {{this.classPrefix}}county'>
+        <option value=''>{{pageLabelMap 'cc_imp_Checkout_SelectOne'}}</option>
+    {{#each this.countyList}}
+        <option value='{{this}}'>{{this}}</option>
+    {{/each}}
+    </select>
+    {{else}}
+    <div class="clear"></div>
+    <label>{{pageLabelMap 'cc_imp_Checkout_County'}}
+        <select name='{{classPrefix}}Address.county' class='wide {{this.classPrefix}}county'>
+            <option value=''>{{pageLabelMap 'cc_imp_Checkout_SelectOne'}}</option>
+        {{#each this.countyList}}
+            <option value='{{this}}'>{{this}}</option>
+        {{/each}}
+        </select>
+    </label>
+    {{/if}}
+    {{/if}}
+</script>
+
+<script type="text/javascript">
+
+    CCRZ.uiProperties.UserInfoView.partial.addressEntry = "#Nexeo-UserInfo-AddressEdit-Desktop";
+    CCRZ.uiProperties.UserInfoView.partial.addressSelection = "#Nexeo-UserInfo-AddressList-Mobile";
+
+    var countryMap = {!countryMapJSON};
+    var countyMap = {!countyMapJSON};
+
+    jQuery(function($) {
+        CCRZ.views.CountryView = CCRZ.CloudCrazeView.extend({
+            template: CCRZ.util.template('CountryField'),
+            viewName : "countryView",
+
+            render: function(name, value, styles, countryList, classPrefix, ele) {
+                var v = this;
+                v.data = {};
+                v.data.name = name;
+                v.data.value = value;
+                v.data.styles = styles;
+                v.data.classPrefix = classPrefix;
+                v.data.countryList = countryList;
+                v.setElement(ele);
+                v.$el.html(v.template(v.data));
+                CCRZ.pubSub.trigger("view:"+this.viewName+":refresh", this);
+            }
+        });
+
+        CCRZ.views.CountyView = CCRZ.CloudCrazeView.extend({
+            template: CCRZ.util.template('CountyField'),
+            viewName : "countyView",
+            className: "cc_3d_ctrl_CheckoutUserInfoController",
+
+            render: function(value, countyList, classPrefix, ele) {
+                var v = this;
+                v.data = {};
+                v.data.value = value;
+                v.data.classPrefix = classPrefix;
+                v.data.countyList = countyList;
+                v.data.isPhone = CCRZ.display.isPhone();
+                v.setElement(ele);
+                v.$el.html(v.template(v.data));
+                CCRZ.pubSub.trigger("view:"+this.viewName+":refresh", this);
+            }
+        });
+
+        CCRZ.pubSub.on('view:cartCheckoutView:awaitingSubViewInit',function(theView) {
+
+            CCRZ.views.NexeoUserInfoView = CCRZ.views.UserInfoView.extend({
+                countryList: CCRZ.geoCodes.countryList.toJSON(),
+                events: {
+                    "change .countryListing"      : "changeStates",
+                    "change .shippingstate"       : "changeShippingCounties",
+                    "change .billingcountry"      : "changeBillingCountry",
+                    "click .processUserInfo"      : "processUserInfoOverride",
+                    "click .processUserInfoPhone" : "processUserInfoPhone",
+                    "click .selectAddress"        : "processAddressSelection",
+                    "click .selectAddressPhone"   : "processAddressSelectionPhone",
+                    "click .copyAddress"          : "copyAddressOverride"
+                },
+                init: function() {
+                    Handlebars.registerPartial("addressEntry", $(CCRZ.uiProperties.UserInfoView.partial.addressEntry).html());
+                    Handlebars.registerPartial("addressSelection", $(CCRZ.uiProperties.UserInfoView.partial.addressSelection).html());
+                    Handlebars.registerPartial("addressDisplay", $(CCRZ.uiProperties.UserInfoView.partial.addressDisplay).html());
+                    var v = this;
+                    v.addressBook = new CCRZ.models.AddressBookModel();
+                    v.billStateView = new CCRZ.views.StateView();
+                    v.shipStateView = new CCRZ.views.StateView();
+                    v.billCountryView = new CCRZ.views.CountryView();
+                    v.shipCountryView = new CCRZ.views.CountryView();
+                    v.shipCountyView = new CCRZ.views.CountyView();
+
+                    v.countryList = _.filter(CCRZ.geoCodes.countryList.toJSON(), function(country) {
+                        return (countryMap[country.value] != null); 
+                    });
+                },
+
+                // over-riding the base function from CC
+                processUserInfo: function() {
+                    if (this.validateInfo()) {
+                        var formData = form2js('mainform', '.', false, function(node) {}, false);
+                        CCRZ.cartCheckoutModel.set(formData);
+                        if($("#ccEmailForm").length>0){
+                            var ccFormData = form2js('ccEmailForm', '.', false, function(node) {}, false);
+                            CCRZ.cartCheckoutModel.set(ccFormData);
+                        }
+                        //if (!CCRZ.display.isPhone()){
+                        var billData = form2js('billingAddressForm', '.', false, function(node) {}, false);
+                        billData.billingAddress.country = $( ".billingcountry option:selected" ).text();
+                        console.log("*** billing state: " + $(".billingstate :selected").text());
+                        billData.billingAddress.state = $(".billingstate :selected").text();
+                        CCRZ.cartCheckoutModel.set(billData);
+                        var shipData = form2js('shippingAddressForm', '.', false, function(node) {}, false);
+
+                        console.log("*** shipping state: " + $(".shippingstate :selected").text());
+                        shipData.shippingAddress.state = $(".shippingstate :selected").text();
+                        // shipData.shippingAddress.state = $(".shippingAddress.stateCode").name();
+                        CCRZ.cartCheckoutModel.set(shipData);
+                        this.initAddresses();
+                        //}
+                        CCRZ.cartCheckoutView.slideRight();
+                    }else{
+                        window.scrollTo(0,0);
+                    }
+                },
+
+
+                postRender : function() {
+                    var billBean = CCRZ.cartCheckoutModel.get('billingAddress');
+                    var shipBean = CCRZ.cartCheckoutModel.get('shippingAddress');
+
+                    var v = this;
+                    if (billBean.stateCode) {
+                        v.renderBillStates(billBean.stateCode, billBean.countryCode);
+                    } else if (billBean.state) {
+                        v.renderBillStates(billBean.state, billBean.countryCode);
+                    } else {
+                        v.renderBillStates('', billBean.countryCode);
+                    }
+
+                    if (shipBean.stateCode) {
+                        v.renderShipStates(shipBean.stateCode, shipBean.countryCode);
+                    } else if (shipBean.state) {
+                        v.renderShipStates(shipBean.state, shipBean.countryCode);
+                    } else {
+                        v.renderShipStates('', shipBean.countryCode);
+                    }
+
+                    v.renderBillCountries(billBean.countryCode);
+                    v.renderShipCountries(billBean.countryCode, shipBean.countryCode);
+                    //v.renderShipCounties(shipBean.countryCode, shipBean.stateCode);
+
+                    v.processReadOnly();
+                    v.setupValidation();
+                },
+                changeBillingCountry: function(event) {
+                    var v = this;
+                    var selectedCountry = $(event.target).val();
+                    //var shippingCountry = $( ".shippingcountry option:selected" ).val();
+                    v.renderShipCountries(selectedCountry, selectedCountry);
+                    v.renderShipStates('', selectedCountry);
+                    //v.renderShipCounties(selectedCountry, '');
+                },
+                changeShippingCounties: function(event) {
+                    var v = this;
+                    var selectedState = $(event.target).val();
+                    var shippingCountry = $( ".shippingcountry option:selected" ).val();
+                    v.renderShipCounties(shippingCountry, selectedState);
+                },
+                renderBillCountries: function(countryVal) {
+                    var v = this;
+                    var billCountryStyle = 'countryListing wide';
+                    if (CCRZ.display.isPhone()) {
+                        billCountryStyle = 'checkout_wide';
+                    }
+                    v.billCountryView.render('country', countryVal, billCountryStyle, v.countryList, 'billing', '#billingAddressForm .countrySection');
+                },
+                renderShipCountries: function(billingCountryVal, shippingCountryVal) {
+                    var v = this;
+                    var shipCountryStyle = 'countryListing wide';
+                    if (CCRZ.display.isPhone()) {
+                        shipCountryStyle = 'checkout_wide';
+                    }                    
+                    var list = countryMap[billingCountryVal];
+                    var countries =  v.countryList;
+                    if (billingCountryVal) {
+                        countries = _.filter(v.countryList, function(country) {
+                            return _.find(list, function(code) { return code == country.value }); 
+                        });
+                    }
+                    v.shipCountryView.render('country', shippingCountryVal, shipCountryStyle, countries, 'shipping', '#shippingAddressForm .countrySection');
+                },
+                renderShipCounties: function(shippingCountryVal, shippingStateVal) {
+                    var v = this;
+                    var list = null;
+                    if (shippingCountryVal == 'US') {
+                        if (!shippingStateVal) {
+                            shippingStateVal = 'AL';
+                        }
+                        list = countyMap[shippingStateVal];
+                    }
+                    v.shipCountyView.render(null, list, 'shipping', '#shippingAddressForm .countySection');
+                },
+                renderShipStates: function(stateVal, countryVal) {
+                    var v = this;
+
+                    var shipStateStyle = 'wide';
+                    if (CCRZ.display.isPhone()) {
+                        shipStateStyle = 'checkout_wide';
+                    }
+                    v.shipStateView.render('state', stateVal, shipStateStyle, CCRZ.geoCodes.filterStates(countryVal).toJSON(), 'shipping', '#shippingAddressForm .stateSection');
+                    v.renderShipCounties(countryVal, stateVal);
+                },                
+                validateCountries: function() {
+                    var isValid = false;
+                    var v = this;
+                    var billingCountry = $( ".billingcountry option:selected" ).val();
+                    var shippingCountry = $( ".shippingcountry option:selected" ).val();
+                    var list = countryMap[billingCountry];
+                    if (billingCountry) {
+                        isValid =  _.find(list, function(code) { return code == shippingCountry }); 
+                    }
+                    return isValid;
+                },
+                validateCounties: function() {
+                    var isValid = true;
+                    var shippingCountry = $( ".shippingcountry option:selected" ).val();
+                    if (shippingCountry == 'US') {
+                        var shippingCounty = $( ".shippingcounty option:selected" ).val();
+                        if (!shippingCounty) {
+                            isValid = false;
+                        }
+                    }
+                    return isValid;
+                },
+                processUserInfoOverride: function() {
+                    var v = this;
+                    if (v.validateCountries()) {
+                        if (v.validateCounties()) {
+                            v.processUserInfo();
+                        }
+                        else {
+                            var message = CCRZ.processPageLabelMap('cc_imp_Checkout_CountyIsRequiredLabel');
+                            CCRZ.pubSub.trigger('pageMessage', CCRZ.createPageMessage('WARN', 'shipping-messagingSection-Error', message));                         
+                        }
+                    }
+                    else {
+                        var message = CCRZ.processPageLabelMap('cc_imp_Checkout_InvalidShippingCountryLabel');
+                        CCRZ.pubSub.trigger('pageMessage', CCRZ.createPageMessage('WARN', 'shipping-messagingSection-Error', message));
+                    }
+                },
+                copyAddressOverride: function() {
+                    this.copyAddress();
+                }
+            });
+
+            CCRZ.views.NexeoShippingView = CCRZ.views.ShippingView.extend({
+                initSetup: function(callback) {
+                    var v = this;
+                    this.requestDateData.fetch(function () {
+                        v.shippingData.fetch(function() {
+                            if (v.shippingData.length>0) {
+                                var selShip = v.shippingData.at(0);
+                                CCRZ.cartCheckoutModel.set('shippingMethod',selShip.attributes.uniqueId);
+                                CCRZ.cartCheckoutModel.set('shippingCharge',selShip.attributes.price);
+                            } 
+                            CCRZ.cartCheckoutModel.set('shippingMethods', v.shippingData.toJSON());
+                            callback();
+                        });
+                    });
+                },
+                renderView: function(currTemplate) {
+
+                    var v = this;
+                    v.$el.html(currTemplate(CCRZ.cartCheckoutModel.toJSON()));
+                    v.$el.find(".shippingCost").html(formatPrice(CCRZ.cartCheckoutModel.attributes.shippingCharge));
+                    if (CCRZ.pagevars.pageConfig.isTrue('SO.ShowReqDate')) {
+                        v.updateRequestedDate();
+                    }
+                    v.handleTerms();
+                    if (v.shippingData.length == 0) {
+                        var message = CCRZ.processPageLabelMap('cc_imp_Checkout_InvalidShippingWeightLabel');
+                        CCRZ.pubSub.trigger('pageMessage', CCRZ.createPageMessage('ERROR', 'messagingSection-Error', message)); 
+                        $(".processShippingInfo").prop("disabled", true);                       
+                        $("input.terms").prop("disabled", true);                       
+                    }
+                }
+            });
+
+            CCRZ.views.NexeoOrderReviewView = CCRZ.views.OrderReviewView.extend({
+                initSetup: function(callback) {
+                    console.log("***** Calling initSetup");
+                    var tmpModel = CCRZ.cartCheckoutModel.clone();
+                    tmpModel.unset('countryList');
+                    tmpModel.unset('terms');
+                    tmpModel.unset('shippingMethods');
+                    tmpModel.unset('requestedDate');
+                    if(tmpModel.attributes.billingAddress){
+                        tmpModel.attributes.billingAddress.countryList = undefined;
+                    }
+            
+                    if(tmpModel.attributes.shippingAddress){
+                        tmpModel.attributes.shippingAddress.countryList = undefined;
+                    }
+                    var view = this;
+                    tmpModel.save(function(results) {
+                        if (results) {
+                            CCRZ.cartCheckoutModel.set('subTotal', results.subTotal);
+                            CCRZ.cartCheckoutModel.set('surchargeAmount', results.surchargeAmount);
+                            CCRZ.cartCheckoutModel.set('cartItems', results.cartItems);
+                            CCRZ.cartCheckoutModel.set('extrinsic', _.extend(CCRZ.cartCheckoutModel.get('extrinsic')||{},results.extrinsic));
+                            var cartjson = JSON.stringify(CCRZ.cartCheckoutModel.get('shippingAddress'));
+                            if (tmpModel.attributes.shippingAddress.countryCode == 'US' && tmpModel.attributes.shippingAddress.county) {
+                                view.loadOverlay($('.deskLayout'));
+
+                                console.log("***** Calling saveCountry");
+                                cc_3d_ctrl_CheckoutUserInfoController.saveCounty(CCRZ.pagevars.storefrontName, CCRZ.pagevars.portalUserId, tmpModel.attributes.shippingAddress.county, CCRZ.cartCheckoutModel.get('sfid'), function(response) {
+                                    view.unloadOverlay();
+                                    view.invokeContainerLoadingCtx($('.deskLayout'), 'fetchTax',cartjson, CCRZ.cartCheckoutModel.get('sfid'), function(response){
+                                        var taxValue = 0.0;
+                                        // var taxValue = null;
+
+                                        if (response && response.success) // && response.data)
+                                        {
+                                            console.log('*** Response Data: %o', response);
+                                            taxValue = response.data;
+                                        }
+                                        else {
+                                            console.log('*** In 1st else: ' + response.data);
+                                            taxValue = null;
+                                        }
+                                        CCRZ.cartCheckoutModel.set('tax', taxValue);
+                                        callback();
+                                    }, {buffer: false});
+                                });
+                            }
+                            else {
+                                view.invokeContainerLoadingCtx($('.deskLayout'), 'fetchTax', cartjson, CCRZ.cartCheckoutModel.get('sfid'), function(response){
+                                        console.log("**** ELSE RESPONSE: %o", response);
+                                        var taxValue = 0.0;
+                                        //var taxValue = null;
+
+                                        if (response && response.success) // && response.data)
+                                        {
+                                            taxValue = response.data;
+                                        }  
+                                        else {
+                                            console.log('*** In 2nd else ' + response.data);
+                                            taxValue = null;
+                                        }
+
+                                        CCRZ.cartCheckoutModel.set('tax', taxValue);
+                                    callback();
+                                }, {buffer: false});
+                            }
+                        }
+                        else{
+                            callback();
+                        }
+                    });
+                },
+                createOverlay: function(){
+                    if(Modernizr.mq('only all')){
+                        return "<div id='overlay'><div class='circleContainer'><div class='circle'></div><div class='circle1'></div></div></div>";
+                    }else{
+                        return "<div id='overlay'><div class='circleContainer'><img src='" + CCRZ.pagevars.themeBaseURL + "images/loading.gif' alt='loading...' /></div></div>";
+                    }
+                },
+                loadOverlay: function(container) {
+                    $(container).prepend(this.createOverlay());
+                    $("#overlay").css({
+                        width   : $(window).width()/2,
+                        height  : $(window).height()/2,
+                        top  : $(window).height()/4,
+                        left  : $(window).width()/4,
+                    });
+                    $(".circleContainer").css({
+                        top  : $(window).height()/5,
+                        left : $(window).width()/5
+                    });
+                    $("#overlay").show();
+                },
+                unloadOverlay: function(){
+                    $("#overlay").remove();
+                },
+                renderView: function(currTemplate) {
+                    var v = this;
+                    v.$el.html(currTemplate(CCRZ.cartCheckoutModel.toJSON()));
+                    var tax = CCRZ.cartCheckoutModel.get('tax');
+                    console.log('***** RENDER VIEW: ' + tax + ' *****');
+                    if (tax == null) {
+                        var message = CCRZ.processPageLabelMap('cc_imp_Checkout_InvalidTaxLabel');
+                        CCRZ.pubSub.trigger('pageMessage', CCRZ.createPageMessage('ERROR', 'messagingSection-Error', message)); 
+                        $(".processReview").prop("disabled", true);                                               
+                    }
+                },
+            });
+
+            theView.registerView(0, CCRZ.pagevars.pageLabels['CheckOut_InfoStep'], new CCRZ.views.NexeoUserInfoView(), 'images/your_information_header.png');
+            theView.registerView(1, CCRZ.pagevars.pageLabels['CheckOut_ShippingStep'], new CCRZ.views.NexeoShippingView(), 'images/shipping_payment_header.png');
+            theView.registerView(2, CCRZ.pagevars.pageLabels['CheckOut_ReviewStep'], new CCRZ.views.NexeoOrderReviewView(), 'images/order_review_header.png');
+            CCRZ.pubSub.trigger('view:cartCheckoutView:subViewInit'); 
+        });
+        //CCRZ.pubSub.on("all", function(view){
+        //    console.log(view);
+        //});
+    });
+
+</script>
+</apex:component>

@@ -1,0 +1,43 @@
+<apex:page controller="exportExcelSample" action="{!exportToExcelSample}" readOnly="true" contentType="application/vnd.ms-excel#sampleRequestData.xls">
+ 
+     
+    <apex:pageBlock >
+        <apex:pageBlockTable value="{!lstwrapper}" var="x">
+           <apex:column headerValue="Sample Material Id">
+                {!x.Samplematid}
+            </apex:column>
+            <apex:column headerValue="Sample Material Name">
+                {!x.SampleMatname}
+            </apex:column>
+             <apex:column headerValue="Sample Request Id">
+                {!x.sampleid}
+          </apex:column>
+          <apex:column headerValue="Sample Request #">
+                {!x.samplename}
+          </apex:column>
+          <apex:column headerValue="SAP Material Name">
+                {!x.samplesapmat}
+          </apex:column>
+               <apex:column headerValue="Account">
+                {!x.SampleAccount}
+            </apex:column>
+             <apex:column headerValue="Opportunity">
+                {!x.SampleOpp}
+            </apex:column>
+             <apex:column headerValue="Owner">
+                {!x.OwnerName}
+            </apex:column>
+            <apex:column headerValue="Created Date">
+                {!x.CreatedDate}
+            </apex:column>
+             <apex:column headerValue="Status">
+                {!x.Status} 
+            </apex:column>
+            <apex:column headerValue="Supplier">
+                {!x.Supplier} 
+            </apex:column>
+            
+        </apex:pageBlockTable>
+    </apex:pageBlock>   
+ 
+</apex:page>

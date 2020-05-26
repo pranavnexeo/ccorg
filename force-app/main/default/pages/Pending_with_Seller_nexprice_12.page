@@ -1,0 +1,1005 @@
+<apex:page controller="Pending_With_Seller" id="thepage" sidebar="false"
+    standardstylesheets="false">
+
+    <script src="{!URLFOR($Resource.JQuery_Pricing, '/JQuery_Pricing/js/jquery-1.8.3.min.js')}" type="text/javascript"/> 
+    <script src="{!URLFOR($Resource.JQuery_Pricing, '/JQuery_Pricing/js/jquery-ui-1.9.2.custom.js')}" type="text/javascript"/>
+    <script src="{!URLFOR($Resource.JQuery_Pricing, '/JQuery_Pricing/js/jquery.mobile.events.js')}" type="text/javascript"/>
+    <script src="{!URLFOR($Resource.JQuery_Pricing, '/JQuery_Pricing/js/jquery.dataTables.js')}" type="text/javascript"/>
+    <script src="{!URLFOR($Resource.JQuery_Pricing, '/JQuery_Pricing/js/jquery-ui.toggleSwitch.js')}" type="text/javascript"/>
+    <script src="{!URLFOR($Resource.JQuery_Pricing, '/JQuery_Pricing/js/jquery.sortElements.js')}" type="text/javascript"></script>
+    <script src="{!URLFOR($Resource.JQuery_Pricing, '/JQuery_Pricing/js/jquery.dataTables.extensions.js')}" type="text/javascript"></script>
+    <script src="{!URLFOR($Resource.JQuery_Pricing, '/JQuery_Pricing/js/jquery.tooltip.js')}" type="text/javascript"></script>
+    <script src="{!URLFOR($Resource.JQuery_Pricing, '/JQuery_Pricing/js/jquery.multiselect.min.js')}" type="text/javascript"/> 
+    <script src="{!URLFOR($Resource.JQuery_Pricing, '/JQuery_Pricing/js/jquery.multiselect.filter.js')}" type="text/javascript"/>
+    <script src="{!URLFOR($Resource.JQuery_Pricing, '/JQuery_Pricing/js/jquery.validate.js')}" type="text/javascript"/>
+    <script src="{!URLFOR($Resource.JQuery_Pricing, '/JQuery_Pricing/js/jquery.form.js')}" type="text/javascript"/>
+    <script src="{!URLFOR($Resource.JQuery_Pricing, '/JQuery_Pricing/js/jquery.bbq.js')}" type="text/javascript"/>
+    <script src="{!URLFOR($Resource.JQuery_Pricing, '/JQuery_Pricing/js/jquery.form.wizard.js')}" type="text/javascript"/>
+    <script src="{!URLFOR($Resource.JQuery_Pricing, '/JQuery_Pricing/js/jquery.easyui.min.js')}" type="text/javascript"></script>
+
+    <apex:stylesheet value="{!URLFOR($Resource.JQuery_Pricing, '/JQuery_Pricing/themes/default/easyui.css')}"/>  
+    <apex:stylesheet value="{!URLFOR($Resource.JQuery_Pricing, '/JQuery_Pricing/css/jquery.tooltip.css')}"/>
+    <apex:stylesheet value="{!URLFOR($Resource.JQuery_Pricing, '/JQuery_Pricing/css/start/jquery-ui-1.10.1.custom.min.css')}"/>
+    <apex:stylesheet value="{!URLFOR($Resource.JQuery_Pricing, '/JQuery_Pricing/css/demo_table.css')}"/> 
+    <apex:stylesheet value="{!URLFOR($Resource.JQuery_Pricing, '/JQuery_Pricing/themes/default/easyui.css')}"/>    
+    <apex:stylesheet value="{!URLFOR($Resource.JQuery_Pricing, '/JQuery_Pricing/themes/icon.css')}"/> 
+    <apex:stylesheet value="{!URLFOR($Resource.JQuery_Pricing, '/JQuery_Pricing/themes/default/menu.css')}"/>
+    <apex:stylesheet value="{!URLFOR($Resource.JQuery_Pricing, '/JQuery_Pricing/themes/default/menubutton.css')}"/>
+    <apex:stylesheet value="{!URLFOR($Resource.JQuery_Pricing, '/JQuery_Pricing/themes/default/splitbutton.css')}"/>
+    <apex:stylesheet value="{!URLFOR($Resource.JQuery_Pricing, '/JQuery_Pricing/themes/icon.css')}"/>
+    <apex:stylesheet value="{!URLFOR($Resource.JQuery_Pricing, '/JQuery_Pricing/css/jquery-ui.toggleSwitch.css')}"/> 
+    <apex:stylesheet value="{!URLFOR($Resource.JQuery_Pricing, '/JQuery_Pricing/css/jquery.multiselect.css')}"/> 
+    <apex:stylesheet value="{!URLFOR($Resource.JQuery_Pricing, '/JQuery_Pricing/css/jquery.multiselect.filter.css')}"/> 
+    <script  src="/soap/ajax/25.0/connection.js" type="text/javascript"></script>
+    <script  src="/soap/ajax/25.0/apex.js" type="text/javascript"></script>
+
+
+    <apex:outputpanel id="scriptpanel">
+        <script type="text/javascript" charset="utf-8">
+    
+    var aColumnIndex = new Array();
+    var oTable;
+    
+    function fnGetColumnIndex(oSettings){
+        var aColumns = new Array();
+        $.each(oSettings.aoColumns, function(c){
+            var mData = oSettings.aoColumns[c].sClass 
+                aColumns[mData] = c;
+        });
+        return aColumns;
+    
+    }
+    function fnFormatDetails ( oTable, nTr,tableid )
+    {
+        var oSettings = oTable.fnSettings();
+        var aData = oTable.fnGetData( nTr );
+        if(tableid == 'pending'){var sDecoded = $('<div/>').html(aData.Inner_Table__c).text();}
+        else{var sDecoded = $('<div/>').html(aData.Inner_Table_For_Seller__c).text();}
+     //   var sOut = sDecoded.replace(/\+/g,' ');
+        return sDecoded;
+    }
+    $(document).ready(function() { 
+         fnInitViewTable('pending');
+         fnInitViewTable('rejectalternate');
+        $('.UserLookup').combogrid({  
+        panelWidth:450,  
+        value:'',   
+        delay: 500,    
+        idField:'User__c',  
+        textField:'Full_Name__c', 
+        required: true,
+        hasDownArrow: true,
+        keyHandler: {
+          query: function(q){
+                  var bHierarchy = {!$User.nexPrice_Disregard_Hierarchy__c};
+                  var g = $(this).combogrid('grid');
+                  var f = '';
+                  if(bHierarchy)
+                  {  f += 'Active__c = \'TRUE\' AND Role__c = \'AD Sales\''; }
+                  else
+                     f += 'Active__c = \'TRUE\' AND Role_Id__c = \'{!$user.UserRoleId}\'';
+
+                  Pending_With_Seller.getComboGridData(q, 'Role_Reportee__c', 'First_Name__c, Last_Name__c, Full_Name__c, User__c-id', f , 'Name ASC', '1000', function(result, event){
+                    if(event.type == 'exception') {
+                      error.apply(this, arguments);         
+                    } else {      
+                      g.datagrid('loadData', result);         
+                    }
+                  }, {buffer: true, escape: true, timeout:120000});
+           }
+        },
+        columns:[[  
+               {field:'First_Name__c',title:'First Name',width:225,sortable:true, sorter: function(a, b){
+                 var va = (a === null) ? "" : "" + a,
+                 vb = (b === null) ? "" : "" + b;
+                 return va > vb ? 1 : ( va === vb ? 0 : -1 );
+               }},  
+               {field:'Last_Name__c',title:'Last Name',width:225, sortable:true, sorter: function(a, b){
+                 var va = (a === null) ? "" : "" + a,
+                 vb = (b === null) ? "" : "" + b;
+                 return va > vb ? 1 : ( va === vb ? 0 : -1 );
+               }} 
+        ]],
+        loader: function(param,success,error){
+           var bHierarchy = {!$User.nexPrice_Disregard_Hierarchy__c};
+           var f = '';
+           if(bHierarchy)
+           {  f += 'Active__c = \'TRUE\' AND Role__c = \'AD Sales\''; }
+           else
+              f += 'Active__c = \'TRUE\' AND Role_Id__c = \'{!$user.UserRoleId}\''; 
+
+            Pending_With_Seller.getComboGridData('', 'Role_Reportee__c', 'First_Name__c, Last_Name__c, Full_Name__c, User__c-id', f , 'Name ASC', '1000', function(result, event){
+
+             if(event.type == 'exception') {
+                error.apply(this, arguments);         
+             } else {      
+               success(result);         
+             }
+         }, {buffer: true, escape: true, timeout:120000});
+        }
+    });
+    $('#UserLookup').combogrid({ 
+         
+         onSelect: function(param){   
+              
+              fixEscapedHTML($('#UserLookup').combogrid('getText'), 'UserLookup');        
+              var tab = $('#main').tabs('getSelected');
+              var index = $('#main').tabs('getTabIndex',tab);
+              fnFillData(index);
+          }
+    }); 
+        
+        
+        $('#UserLookup').combogrid('setValue', '{!$User.Id}');
+        $('#UserLookup').combogrid('setText', "{!$User.FirstName} {!$User.LastName}");
+        
+        
+        
+        $('#main').tabs({  
+        border:false,  
+        onSelect:function(title, index){ 
+            $('#ClearFilters').click(); 
+            var item2 = $('#mm1').menu('findItem', 'Approve/Reject Change');
+            var item3 = $('#mm1').menu('findItem', 'Deselect All');
+            var item4 = $('#mm1').menu('findItem', 'Select All');
+            if(index == 0){
+                $('#mm1').menu('disableItem', item2.target);
+                $('#mm1').menu('disableItem', item3.target);
+                $('#mm1').menu('disableItem', item4.target);
+            }
+            if(index == 1)
+            {  
+                $('#mm1').menu('enableItem', item3.target);
+                $('#mm1').menu('enableItem', item4.target);
+                var iSelected = 0;
+                $(".SelectedAudit").each(function(i, v){
+                if($(this).attr("checked") == "checked")
+                { iSelected ++;
+                }      
+                 });
+                 if(iSelected == 0) 
+                  {   $('#mm1').menu('disableItem', item2.target);
+                  }
+                  else
+                  {       
+                      $('#mm1').menu('enableItem', item2.target);
+                  }
+            }
+           
+            fnFillData(index);
+            fnClearfilter(index);               
+        }  
+       });
+        
+       function fnClearfilter(index){ 
+           $('#ClearFilters').click(function(){
+               if(index==0){ 
+                   $('#pending').find('.textinput, .selectinput').each(function(i, ti){ $(this).val($(this).attr('name')); 
+                      $('#pending').dataTable().fnFilter('', aColumnIndex[$(this).attr('data-field')]);
+                   });
+                   $('#pending').find('.dateinputfrom, .dateinputto, .numberinputfrom, .numberinputto').each(function(){
+                    $(this).val($(this).attr('name')); 
+                   }); 
+                   $('#pending').dataTable().fnDraw();
+                   fnUpdateFilterSelect('pending');
+                   
+               }else{
+                   $('#rejectalternate').find('.textinput, .selectinput').each(function(i, ti){ $(this).val($(this).attr('name')); 
+                      $('#rejectalternate').dataTable().fnFilter('', aColumnIndex[$(this).attr('data-field')]);
+                   });
+                   $('#rejectalternate').find('.dateinputfrom, .dateinputto, .numberinputfrom, .numberinputto').each(function(){
+                    $(this).val($(this).attr('name')); 
+                   }); 
+                   $('#rejectalternate').dataTable().fnDraw();
+                   fnUpdateFilterSelect('rejectalternate');
+                }
+            });
+        }   
+        
+        $('#pending').dataTable({
+                "aLengthMenu": [[100, 250, 500, 750], [100, 250, 500, 750]],
+                "iDisplayLength": 100,
+                "bDestroy": true,
+                "fnDrawCallback": function( oSettings ) {
+                   $('.row_selected').removeClass('row_selected');
+                 },
+                "bJQueryUI": true,
+                "bSort": true,
+                "sErrMode": false,
+                "sDom": 'lfrtip',
+                "bAutoWidth": false,
+                
+                "aoColumnDefs":[
+                    
+                    { "aTargets":[ "Open"], sClass:"Open" ,sWidth:"2px", "bAutoWidth": false},
+                    { "aTargets":[ "Approval_Status" ], "mData": "Approval_Status__c", sClass:"Approval_Status__c",sWidth:"2px", "bAutoWidth": false },
+                    { "aTargets":[ "Approval_Level" ], "mData": "Approval_Level__c", sClass:"Approval_Level__c",sWidth:"2px", "bAutoWidth": false },
+                    { "aTargets":[ "Approver" ], "mData": "Approver__r.Name", sClass:"Approver__r.Name",sWidth:"2px", "bAutoWidth": false },
+                    { "aTargets":[ "Type" ], "mData": "Type__c", sClass:"Type__c",sWidth:"2px", "bAutoWidth": false },
+                    { "aTargets":[ "Sold_To" ], sClass:"SAP_SoldTo_Account__c",sWidth:"2px", "bAutoWidth": false, 
+                      "mData": function ( source, type, val ) {
+                          if (type === 'set') {
+                              return;
+                          }
+                          else if (type === 'display') { return source.SAP_SoldTo_Account__c;}
+                          else if (type === 'filter') {  return source.Sold_To_Account_Number__c; }
+                          else if (type === 'sort') { return source.Sold_To_Account_Number__c; }
+                          return source.SAP_SoldTo_Account__c;
+                      }
+                    },
+                    { "aTargets":[ "Ship_To" ], sClass:"SAP_ShipTo_Account__c",sWidth:"2px", "bAutoWidth": false, 
+                      "mData": function ( source, type, val ) {
+                          if (type === 'set') {
+                              return;
+                          }
+                          else if (type === 'display') { return source.SAP_ShipTo_Account__c;}
+                          else if (type === 'filter') {  return source.Ship_To_Account_Number__c; }
+                          else if (type === 'sort') { return source.Ship_To_Account_Number__c; }
+                          return source.SAP_ShipTo_Account__c;
+                      }
+                    },
+                    { "aTargets":[ "Material" ], "mData": "SAP_Material__r.Name", sClass:"SAP_Material__r.Name",sWidth:"2px", "bAutoWidth": false },
+                    { "aTargets":[ "Eff_Date" ], sClass:"Requested_Effective_Date__c",sWidth:"2px", "bAutoWidth": false,
+                      "mData": function ( source, type, val ) {
+                          if (type === 'set') {
+                              return;
+                          }
+                          else if (type === 'display') { 
+                            if (source.Requested_Effective_Date__c != '' && source.Requested_Effective_Date__c != null){
+                                 var CSPDate = new Date(source.Requested_Effective_Date__c);
+                                 if('{!DateFormat}' == 'mm/dd/yy')
+                                    return (CSPDate.getUTCMonth()+1) + "/" + CSPDate.getUTCDate() + "/" + CSPDate.getUTCFullYear();
+                                  else{
+                                    return CSPDate.getUTCDate() + "/" + (CSPDate.getUTCMonth()+1) + "/" + CSPDate.getUTCFullYear();
+                                  }
+                                 }
+                            else return '';
+                            
+                          }
+                          else if (type === 'filter') {  return source.Requested_Effective_Date__c; }
+                          else if (type === 'sort') { 
+                           if((typeof source.Requested_Effective_Date__c == 'undefined') || source.Requested_Effective_Date__c == null)
+                              return '';
+                            else 
+                             return new Date(source.Requested_Effective_Date__c);
+                          }
+                          return source.Requested_Effective_Date__c;
+                      }
+                    },
+                    { "aTargets":[ "Exp_Date" ], sClass:"Requested_Expiration_Date__c",sWidth:"2px", "bAutoWidth": false,
+                      "mData": function ( source, type, val ) {
+                          if (type === 'set') {
+                              return;
+                          }
+                          else if (type === 'display') { 
+                            if (source.Requested_Expiration_Date__c != '' && source.Requested_Expiration_Date__c != null){
+                                 var CSPDate = new Date(source.Requested_Expiration_Date__c);
+                                 if('{!DateFormat}' == 'mm/dd/yy')
+                                    return (CSPDate.getUTCMonth()+1) + "/" + CSPDate.getUTCDate() + "/" + CSPDate.getUTCFullYear();
+                                  else{
+                                    return CSPDate.getUTCDate() + "/" + (CSPDate.getUTCMonth()+1) + "/" + CSPDate.getUTCFullYear();
+                                  }
+                                 }
+                            else return '';
+                            
+                          }
+                          else if (type === 'filter') {  return source.Requested_Expiration_Date__c; }
+                          else if (type === 'sort') { 
+                           if((typeof source.Requested_Expiration_Date__c == 'undefined') || source.Requested_Expiration_Date__c == null)
+                              return '';
+                            else 
+                             return new Date(source.Requested_Expiration_Date__c);
+                          }
+                          return source.Requested_Expiration_Date__c;
+                      }
+                    },
+                    { "aTargets":[ "Volume" ], "mData": "Volume__c", sClass:"Volume__c",sWidth:"2px", "bAutoWidth": false },
+                    { "aTargets":[ "Requested_UoM" ], "mData": "Requested_UoM__c", sClass:"Requested_UoM__c",sWidth:"2px", "bAutoWidth": false },
+                    { "aTargets":[ "Price" ], sClass:"Price__c",sWidth:"2px", "bAutoWidth": false,
+                      "mData": function ( source, type, val ) {
+                        if (type === 'set') {
+                              return;
+                          }
+                          else if (type === 'display' || type == 'sort' || type == 'filter') { 
+                             if(source.Price__c == '' || source.Price__c == null || typeof source.Price__c == 'undefined')
+                               return;
+                             else
+                             return source.Price__c.toFixed(4);
+                          }
+                          return source.Price__c;
+                      }
+                    },
+                    { "aTargets":[ "Requested_Price_UoM" ], "mData": "Requested_Price_UoM__c", sClass:"Requested_Price_UoM__c",sWidth:"2px", "bAutoWidth": false },
+                    { "aTargets":[ "TPI" ], sClass:"TPI__c",sWidth:"2px", "bAutoWidth": false,
+                      "mData": function ( source, type, val ) {
+                          if (type === 'set') {
+                              return;
+                          }
+                          else if (type === 'display') { 
+                            if((typeof source.TPI__c == 'undefined') || source.TPI__c == null)
+                              return '';
+                            else 
+                              return (source.TPI__c + '%');
+                          }
+                          else if (type === 'filter') {  return source.TPI__c; }
+                          else if (type === 'sort') { return source.TPI__c; }
+                          return source.TPI__c;
+                      }
+                    },
+                    { "aTargets":[ "Comments" ], "mData": "Comments__c", sClass:"Comments__c",sWidth:"2px", "bAutoWidth": false },
+                    { "aTargets":[ "Approval_Rejection_Comments" ], "mData": "Approval_Rejection_Comments__c", sClass:"Approval_Rejection_Comments__c",sWidth:"2px", "bAutoWidth": false },
+                    { "aTargets":[ "Id" ],"mData": "Id", sClass:"Id", bVisible: false,sWidth:"2px", "bAutoWidth": false},
+                    { "aTargets":[ "Inner_Table" ],"mData": "Inner_Table__c", sClass:"Inner_Table__c",sWidth:"2px", "bAutoWidth": false, "bVisible":false},
+                                   
+                  ],                  
+                 "fnInitComplete": function(oSettings) {
+                     aColumnIndex = fnGetColumnIndex(oSettings);
+                  },
+                  
+                  
+                "fnCreatedRow": function( nRow, aData, iDataIndex ) {
+                    
+                    $('td:eq(0)', nRow).html( '<img src="{!URLFOR($Resource.JQuery_Pricing, '/JQuery_Pricing/images/details_open.png')}">');
+                    
+                 },
+                    
+              })
+              
+          
+     $('#rejectalternate').dataTable({
+                "aLengthMenu": [[100, 250, 500, 750], [100, 250, 500, 750]],
+                "iDisplayLength": 100,
+                "bDestroy": true,
+                "sPaginationType": "four_button",
+                "fnDrawCallback": function( oSettings ) {
+                   $('.row_selected').removeClass('row_selected');
+                 },
+                "bJQueryUI": true,
+                "bSort": true,
+                "sErrMode": false,
+                "sDom": 'lfrtip',
+                "bAutoWidth": false,
+                
+                "aoColumnDefs":[
+                    
+                    { "aTargets":[ "Open"], sClass:"Open" ,sWidth:"2px", "bAutoWidth": false},
+                    { "aTargets":[ "Select"], sClass:"Select", sWidth:"2px", "bAutoWidth": false },
+                    { "aTargets":[ "Approval_Status" ], "mData": "Approval_Status__c", sClass:"Approval_Status__c",sWidth:"2px", "bAutoWidth": false },
+                    { "aTargets":[ "Approval_Level" ], "mData": "Approval_Level__c", sClass:"Approval_Level__c",sWidth:"2px", "bAutoWidth": false },
+                    { "aTargets":[ "Approver" ], "mData": "Approver__r.Name", sClass:"Approver__r.Name",sWidth:"2px", "bAutoWidth": false },
+                    { "aTargets":[ "Type" ], "mData": "Type__c", sClass:"Type__c",sWidth:"2px", "bAutoWidth": false },
+                    { "aTargets":[ "Sold_To" ], sClass:"SAP_SoldTo_Account__c",sWidth:"2px", "bAutoWidth": false, 
+                      "mData": function ( source, type, val ) {
+                          if (type === 'set') {
+                              return;
+                          }
+                          else if (type === 'display') { return source.SAP_SoldTo_Account__c;}
+                          else if (type === 'filter') {  return source.Sold_To_Account_Number__c; }
+                          else if (type === 'sort') { return source.Sold_To_Account_Number__c; }
+                          return source.SAP_SoldTo_Account__c;
+                      }
+                    },
+                    { "aTargets":[ "Ship_To" ], sClass:"SAP_ShipTo_Account__c",sWidth:"2px", "bAutoWidth": false, 
+                      "mData": function ( source, type, val ) {
+                          if (type === 'set') {
+                              return;
+                          }
+                          else if (type === 'display') { return source.SAP_ShipTo_Account__c;}
+                          else if (type === 'filter') {  return source.Ship_To_Account_Number__c; }
+                          else if (type === 'sort') { return source.Ship_To_Account_Number__c; }
+                          return source.SAP_ShipTo_Account__c;
+                      }
+                    },
+                    { "aTargets":[ "Material" ], "mData": "SAP_Material__r.Name", sClass:"SAP_Material__r.Name",sWidth:"2px", "bAutoWidth": false },
+                    { "aTargets":[ "Eff_Date" ], sClass:"Requested_Effective_Date__c",sWidth:"2px", "bAutoWidth": false,
+                      "mData": function ( source, type, val ) {
+                          if (type === 'set') {
+                              return;
+                          }
+                          else if (type === 'display') { 
+                            if (source.Requested_Effective_Date__c != '' && source.Requested_Effective_Date__c != null){
+                                 var CSPDate = new Date(source.Requested_Effective_Date__c);
+                                 if('{!DateFormat}' == 'mm/dd/yy')
+                                    return (CSPDate.getUTCMonth()+1) + "/" + CSPDate.getUTCDate() + "/" + CSPDate.getUTCFullYear();
+                                  else{
+                                    return CSPDate.getUTCDate() + "/" + (CSPDate.getUTCMonth()+1) + "/" + CSPDate.getUTCFullYear();
+                                  }
+                                 }
+                            else return '';
+                            
+                          }
+                          else if (type === 'filter') {  return source.Requested_Effective_Date__c; }
+                          else if (type === 'sort') { 
+                           if((typeof source.Requested_Effective_Date__c == 'undefined') || source.Requested_Effective_Date__c == null)
+                              return '';
+                            else 
+                             return new Date(source.Requested_Effective_Date__c);
+                          }
+                          return source.Requested_Effective_Date__c;
+                      }
+                    },
+                    { "aTargets":[ "Exp_Date" ], sClass:"Requested_Expiration_Date__c",sWidth:"2px", "bAutoWidth": false,
+                      "mData": function ( source, type, val ) {
+                          if (type === 'set') {
+                              return;
+                          }
+                          else if (type === 'display') { 
+                            if (source.Requested_Expiration_Date__c != '' && source.Requested_Expiration_Date__c != null){
+                                 var CSPDate = new Date(source.Requested_Expiration_Date__c);
+                                 if('{!DateFormat}' == 'mm/dd/yy')
+                                    return (CSPDate.getUTCMonth()+1) + "/" + CSPDate.getUTCDate() + "/" + CSPDate.getUTCFullYear();
+                                  else{
+                                    return CSPDate.getUTCDate() + "/" + (CSPDate.getUTCMonth()+1) + "/" + CSPDate.getUTCFullYear();
+                                  }
+                                 }
+                            else return '';
+                            
+                          }
+                          else if (type === 'filter') {  return source.Requested_Expiration_Date__c; }
+                          else if (type === 'sort') { 
+                           if((typeof source.Requested_Expiration_Date__c == 'undefined') || source.Requested_Expiration_Date__c == null)
+                              return '';
+                            else 
+                             return new Date(source.Requested_Expiration_Date__c);
+                          }
+                          return source.Requested_Expiration_Date__c;
+                      }
+                    },
+                    { "aTargets":[ "Volume" ], "mData": "Volume__c", sClass:"Volume__c",sWidth:"2px", "bAutoWidth": false },
+                    { "aTargets":[ "Requested_UoM" ], "mData": "Requested_UoM__c", sClass:"Requested_UoM__c",sWidth:"2px", "bAutoWidth": false },
+                    { "aTargets":[ "Price" ], "mData": "Price__c", sClass:"Price__c",sWidth:"2px", "bAutoWidth": false },
+                    { "aTargets":[ "Requested_Price_UoM" ], "mData": "Requested_Price_UoM__c", sClass:"Requested_Price_UoM__c",sWidth:"2px", "bAutoWidth": false },
+                    { "aTargets":[ "TPI" ], sClass:"TPI__c",sWidth:"2px", "bAutoWidth": false,
+                      "mData": function ( source, type, val ) {
+                          if (type === 'set') {
+                              return;
+                          }
+                          else if (type === 'display') { 
+                            if((typeof source.TPI__c == 'undefined') || source.TPI__c == null)
+                              return '';
+                            else 
+                              return (source.TPI__c + '%');
+                          }
+                          else if (type === 'filter') {  return source.TPI__c; }
+                          else if (type === 'sort') { return source.TPI__c; }
+                          return source.TPI__c;
+                      }
+                    },
+                    { "aTargets":[ "Comments" ], "mData": "Comments__c", sClass:"Comments__c",sWidth:"2px", "bAutoWidth": false },
+                    { "aTargets":[ "Approval_Rejection_Comments" ], "mData": "Approval_Rejection_Comments__c", sClass:"Approval_Rejection_Comments__c",sWidth:"2px", "bAutoWidth": false },
+                    { "aTargets":[ "Id" ],"mData": "Id", sClass:"Id", bVisible: false,sWidth:"2px", "bAutoWidth": false},
+                    { "aTargets":[ "Inner_Table" ],"mData": "Inner_Table__c", sClass:"Inner_Table__c",sWidth:"2px", "bAutoWidth": false, "bVisible":false},
+                                   
+                  ],                  
+                 "fnInitComplete": function(oSettings) {
+                     aColumnIndex = fnGetColumnIndex(oSettings);
+                  },
+                  
+                  
+                "fnCreatedRow": function( nRow, aData, iDataIndex ) {
+                    
+                    $('td:eq(0)', nRow).html( '<img src="{!URLFOR($Resource.JQuery_Pricing, '/JQuery_Pricing/images/details_open.png')}">');
+                    $('td:eq(1)', nRow).html( '<input type="checkbox" name="SelectedAudit" class="SelectedAudit" value="'+ aData.Id+'">');
+                    fnSetCheckboxListener(nRow, $('#rejectalternate' ).dataTable());
+                 },
+                    
+              })
+     
+     
+     $('#Reset').click(function(){
+        var tab = $('#main').tabs('getSelected');
+        var index = $('#main').tabs('getTabIndex',tab);
+        if(index == 0){
+            $('#pending tbody td input').removeAttr("checked");
+            fnEvaluateTable($('#pending' ).dataTable());}
+        if(index == 1){
+            $('#rejectalternate tbody td input').removeAttr("checked");
+            fnEvaluateTable($('#rejectalternate' ).dataTable());}
+        
+     });
+     
+     $('#SelectAll').click(function(){
+        var tab = $('#main').tabs('getSelected');
+        var index = $('#main').tabs('getTabIndex',tab);
+        if(index == 0){
+            $('#pending tbody td input').each(function(){
+                  if($(this).attr("disabled") != "disabled")
+                      $(this).attr("checked", "checked");
+            });
+            fnEvaluateTable($('#pending' ).dataTable());
+         }
+        if(index == 1){
+            $('#rejectalternate tbody td input').each(function(){
+                      if($(this).attr("disabled") != "disabled")
+                         $(this).attr("checked", "checked");
+              });
+              fnEvaluateTable($('#rejectalternate' ).dataTable());
+        }
+        
+       });
+
+            
+       $('#approverejectChange').click(function(){
+         if($('#mm1').menu('findItem', 'Approve/Reject Change').disabled == false){
+             var oTable = $('#rejectalternate').dataTable();
+             var sData = oTable.$('input').serialize();
+             $('#apprids').val(sData);
+             $('#dd').dialog('open');
+         }
+       });
+       
+       
+     $('#dd').dialog({  
+          title: 'Approve / Reject Change',  
+          width: 475,  
+          height: 325,  
+          closed: true,  
+          cache: false, 
+          modal: true,
+          toolbar:[{
+                text:'Approve',
+                iconCls:'icon-ok',
+                handler:function(){ Pending_With_Seller.approveRejectChange($('#apprids').val(),$('#approvalcomments').val(),'Approve',function(result, event){ 
+                                        if(event.type == 'exception') {
+                                            console.log(event);
+                                        } 
+                                }, {buffer: true, escape: true, timeout:120000});
+                                $('#dd').dialog('close'); 
+                                oTable.fnClearTable();
+                                var tab = $('#main').tabs('getSelected');
+                                var index = $('#main').tabs('getTabIndex',tab);
+                                fnFillData(index);
+                                }
+            },{
+                text:'Reject',
+                iconCls:'icon-cancel',
+                handler:function(){ Pending_With_Seller.approveRejectChange($('#apprids').val(),$('#approvalcomments').val(),'Reject',function(result, event){ 
+                                        if(event.type == 'exception') {
+                                            console.log(event);
+                                        } 
+                                }, {buffer: true, escape: true, timeout:120000});
+                                $('#dd').dialog('close'); 
+                                oTable.fnClearTable();
+                                var tab = $('#main').tabs('getSelected');
+                                var index = $('#main').tabs('getTabIndex',tab);
+                                fnFillData(index);
+                                }
+            }]
+        });
+        
+    function fnInitViewTable(tableid){
+        $('#' + tableid + ' tbody td img').live('click', function () {
+            var nTr = this.parentNode.parentNode;
+            oTable = $(nTr.parentNode.parentNode).dataTable();
+            var iRows = oTable.fnSettings().fnRecordsTotal();
+            var iHeight = oTable.fnSettings().oScroll.sY;
+            if ( this.src.match('details_close') )
+            {
+                this.src = "{!URLFOR($Resource.JQuery_Pricing, '/JQuery_Pricing/images/details_open.png')}";
+                oTable.fnClose( nTr );
+                iHeight = iHeight -125;
+            }
+            else
+            {
+                this.src = "{!URLFOR($Resource.JQuery_Pricing, '/JQuery_Pricing/images/details_close.png')}";
+                oTable.fnOpen( nTr, fnFormatDetails(oTable, nTr,tableid), 'details' ); 
+                $('.innerTable').dataTable({
+                "bDestroy": true,
+                "bPaginate": false,
+                "bLengthChange": false,
+                "bFilter": false,
+                "bSort": false,
+                "bInfo": false
+                });
+                iHeight = iHeight + 125;
+            }
+
+                      if(iHeight >= 75 && iHeight < 400 && oTable.fnSettings().oScroll.sY < 400)
+                      {  oTable.fnSettings().oScroll.sY = iHeight;
+                         $(oTable).parent().height(iHeight);
+                      }
+                      if(iHeight > 400 || oTable.fnSettings().oScroll.sY > 400)
+                      {
+                         oTable.fnSettings().oScroll.sY = 400;
+                         $(oTable).parent().height(400);
+                      }
+            } );
+            fnPrepFilters(tableid);
+        }
+        
+              
+       $('#sb1,#sb2').splitbutton({plain:false});
+       $('#mb3').menubutton({plain:false});
+
+
+       
+     
+       
+
+});
+
+function fixEscapedHTML(html, fieldid) {
+  var value = $("<div />").html(html).text();
+  setTimeout(function(){
+      $('#' + fieldid).combogrid('textbox').val(value);
+}, 10)
+}
+</script>
+    </apex:outputpanel>
+    <apex:outputpanel id="scriptpanel3">
+        <script type="text/javascript">
+        
+function fnFillData(index){
+    var stableid;
+    if(index == 0){
+        oTable = $('#pending').dataTable();
+        stableid = 'pending';
+    }
+    if(index == 1){
+        oTable = $('#rejectalternate').dataTable();
+        stableid = 'rejectalternate';
+    }
+    
+    oTable.fnClearTable();
+    Pending_With_Seller.fetchPendingWithSeller(index, $('#UserLookup').combogrid('getValue'),function(result, event){ 
+        if(event.type == 'exception') {
+            console.log(event);
+       
+        } else { 
+            if(result.length > 0)
+            {        
+                oTable.fnAddData(result);
+                fnUpdateFilterSelect(stableid);
+            }
+        }
+    }, {buffer: true, escape: true, timeout:120000});
+    
+ } 
+ 
+function fnSetCheckboxListener(nRow, oTable){
+  $(nRow).find('input:checkbox').click(function(){
+      fnEvaluateTable(oTable);
+  });
+}
+function fnEvaluateTable(oTable){
+
+  var item = $('#mm1').menu('findItem', 'Approve/Reject Change');
+  var iSelected = 0;
+  $(".SelectedAudit").each(function(i, v){
+       if($(this).attr("checked") == "checked")
+       { iSelected ++;
+       }      
+  });
+  if(iSelected == 0) 
+    {   $('#mm1').menu('disableItem', item.target);
+    }
+  else
+    {       
+        $('#mm1').menu('enableItem', item.target);
+    }
+}
+
+
+
+function fnUpdateFilterSelect(stableid){
+$('#' + stableid).find('.selectinput').each(function(i, sel){
+
+  var val = $(sel).val();
+  $(sel).empty();
+  
+  var opt = '<option value=""';
+  if(val == $(sel).attr('name'))
+  opt += ' selected="selected" ';
+  opt += '>' + $(sel).attr('name') + '</option>';
+  var arr = $('#' + stableid).dataTable().fnGetColumnData(aColumnIndex[$(sel).attr('data-field')]);
+  $(arr).each(function(j, o){
+    opt = opt + '<option value="' + o + '"';
+    if(val == o)
+    opt += ' selected="selected" ';
+    opt += '>' + o + '</option>';
+  });
+  $(sel).append(opt);
+ 
+});
+  
+}
+
+
+function fnPrepFilters(stableid){
+$('#' + stableid).find('.textfilter').each(function(i, f){ $(f).html('<div style="width:105px;"><input data-field="'+ $(f).attr('data-field') +'" class="textinput" value="' + $(f).html() + '" name="' + $(f).html() + '" style="width:100px;"/></div>') });
+$('#' + stableid).find('.numberfilter').each(function(i, f){ $(f).html('<div class="numberinput" data-field="'+ $(f).attr('data-field') +'" style="width:105px;"><input data-field="'+ $(f).attr('data-field') +'" class="numberinputfrom" value="From ' + $(f).html() + '" name="From ' + $(f).html() + '" style="width:50px;"/><b>&nbsp;To&nbsp;</b><input class="numberinputto" value="To ' + $(f).html() + '" name="To ' + $(f).html() + '" style="width:50px;"/></div>') });
+$('#' + stableid).find('.datefilter').each(function(i, f){ $(f).html('<div class="dateinput" style="width:155px;" data-field="'+ $(f).attr('data-field') +'"><input class="dateinputfrom" name="From ' + $(f).html() + '" value="From ' + $(f).html() + '" style="width:75px;"/><b>&nbsp;To&nbsp;</b><input class="dateinputto" value="To ' + $(f).html() + '" name="To ' + $(f).html() + '" style="width:75px;"/></div>') });
+$('#' + stableid).find('.listfilter').each(function(i, f){ $(f).html('<div style="width:105px;"><select data-field="'+ $(f).attr('data-field') +'" class="selectinput" name="' + $(f).html() + '" style="width:100px;"><option selected="selected" value="' + $(f).html() + '">' + $(f).html() + '</option></select></div>') });
+$( ".dateinputfrom, .dateinputto" ).datepicker({changeMonth:true, changeYear:true, dateFormat: "{!dateFormat}"});
+fnUpdateFilterSelect(stableid);
+$('.selectinput').change(function(){
+   if($(this).val() == $(this).attr('name'))
+   {   $('#' + stableid).dataTable().fnFilter('', aColumnIndex[$(this).attr('data-field')] ); }
+   else
+   {   $('#' + stableid).dataTable().fnFilter( $(this).val(), aColumnIndex[$(this).attr('data-field')] );  }
+   fnUpdateFilterSelect(stableid);
+  });
+$(".textinput").keyup( function () { $('#' + stableid).dataTable().fnFilter( this.value, aColumnIndex[$(this).attr('data-field')] ); fnUpdateFilterSelect(stableid); });
+$(".textinput, .numberinputfrom, .numberinputto, .dateinputfrom, .dateinputto").focus( function () { if( $(this).val() == $(this).attr('name') ){ this.value = "";}});
+$(".textinput, .numberinputfrom, .numberinputto, .dateinputfrom, .dateinputto").blur( function (i) { if( $(this).val() == "" ){ this.value = $(this).attr('name'); }});
+$('.numberinputfrom, .numberinputto').keyup(function(){ $('#' + stableid).dataTable().fnDraw(); fnUpdateFilterSelect(stableid);});
+$('.dateinputfrom, .dateinputto').change(function(){ $('#' + stableid).dataTable().fnDraw(); fnUpdateFilterSelect(stableid); });
+$(".numberinput").each(function(i, ni){
+  $('#' + stableid).dataTable().dataTableExt.afnFiltering.push(
+    function (oSettings, aData, iDataIndex) {
+                    if ($('#' + stableid).dataTable().attr("id") != oSettings.sTableId){ return true; }
+                    var iMin = $(ni).find('.numberinputfrom').val();
+                    var iMax = $(ni).find('.numberinputto').val();
+                    var iValue = (isNaN(aData[aColumnIndex[$(ni).attr('data-field')]]) || aData[aColumnIndex[$(ni).attr('data-field')]] == null || aData[aColumnIndex[$(ni).attr('data-field')]] == "")? -1 : aData[aColumnIndex[$(ni).attr('data-field')]];
+                    if ((iMin == "" || isNaN(iMin)) && (iMax == "" || isNaN(iMax))) { return true;} 
+                    else if ((iMin == "" || isNaN(iMin)) && iValue <= iMax) { return true; }
+                    else if (iMin <= iValue && (iMax == "" || isNaN(iMax))) { return true; }
+                    else if (iMin <= iValue && iValue <= iMax) { return true; }
+                    return false;
+   });
+});
+$(".dateinput").each(function(i, di){
+  $('#' + stableid).dataTable().dataTableExt.afnFiltering.push(
+    function (oSettings, aData, iDataIndex) {
+                    if ($('#' + stableid).dataTable().attr("id") != oSettings.sTableId){ return true; }
+                    var iMin =  $(di).find('.dateinputfrom').val();
+                    if(iMin !=  $(di).find('.dateinputfrom').attr('name'))
+                      iMin = $(di).find('.dateinputfrom').datepicker( "getDate" );
+                    var iMax =  $(di).find('.dateinputto').val();
+                    if(iMax !=  $(di).find('.dateinputto').attr('name'))  
+                      iMax = $(di).find('.dateinputto').datepicker( "getDate" );
+                    
+                    var iValue = new Date( aData[aColumnIndex[$(di).attr('data-field')]]);
+                    if ((iMin == "" || iMin == null || iMin == $(di).find('.dateinputfrom').attr('name')) && (iMax == "" || iMax == null || iMax == $(di).find('.dateinputto').attr('name')) ) { return true;} 
+                    else if ((iMin == "" || iMin == null || iMin == $(di).find('.dateinputfrom').attr('name'))  && iValue <= iMax) { return true; }
+                    else if (iMin <= iValue && (iMax == "" || iMax == null || iMax == $(di).find('.dateinputto').attr('name'))) { return true; }
+                    else if (iMin <= iValue && iValue <= iMax) { return true; }
+                    return false;
+   });
+});
+
+}
+
+</script>
+    </apex:outputpanel>
+    <style>
+textarea {
+    padding: 5px;
+    width: 400px;
+}
+
+#ff label {
+    display: block;
+    width: 100px;
+}
+
+#button {
+    padding: .5em 1em;
+    text-decoration: none;
+}
+
+#effect {
+    padding: 0.4em;
+    position: relative;
+}
+
+.ui-menu {
+    position: absolute;
+}
+
+tbody tr.even:hover,tbody tr.even td.highlighted {
+    background-color: #ECFFB3;
+}
+
+tbody tr.odd:hover,tbody tr.odd td.highlighted {
+    background-color: #E6FF99;
+}
+
+tr.even:hover {
+    background-color: #ECFFB3;
+}
+
+tr.even:hover td.sorting_1 {
+    background-color: #DDFF75;
+}
+
+tr.even:hover td.sorting_2 {
+    background-color: #E7FF9E;
+}
+
+tr.even:hover td.sorting_3 {
+    background-color: #E2FF89;
+}
+
+tr.odd:hover {
+    background-color: #E6FF99;
+}
+
+tr.odd:hover td.sorting_1 {
+    background-color: #D6FF5C;
+}
+
+tr.odd:hover td.sorting_2 {
+    background-color: #E0FF84;
+}
+
+tr.odd:hover td.sorting_3 {
+    background-color: #DBFF70;
+}
+
+table.viewtable tr.even.row_selected td {
+    background-color: #B0BED9;
+}
+
+table.viewtable tr.odd.row_selected td {
+    background-color: #9FAFD1;
+}
+
+table.gridtable {
+    font-family: verdana, arial, sans-serif;
+    font-size: 11px;
+    color: #333333;
+    border-width: 1px;
+    border-color: #666666;
+    border-collapse: collapse;
+}
+
+table.gridtable th {
+    border-width: 1px;
+    padding: 8px;
+    border-style: solid;
+    border-color: #666666;
+    background-color: #dedede;
+}
+
+table.gridtable td {
+    border-width: 1px;
+    padding: 8px;
+    border-style: solid;
+    border-color: #666666;
+    background-color: #ffffff;
+}
+</style>
+    <input type="hidden" id="apprids" />
+    <apex:form id="actionform">
+        <apex:actionStatus id="EnhancedStatus">
+            <apex:facet name="start">
+                <c:EnhancedActionStatus BackColor="#efefef" borderColor="#336699"
+                    borderSize="3" height="20px" width="100px"
+                    ImageUrl="{!$Resource.spinner}" Message="Loading..."
+                    messageStyle="color:darkred;font-size:11pt;font-weight:bold;" />
+            </apex:facet>
+        </apex:actionStatus>
+    </apex:form>
+
+    <div id="toolbar" style="padding: 5px; width: 1400px;">
+        <a href="javascript:void(0)" id="sb1" class="easyui-splitbutton"
+            data-options="menu:'#mm1',iconCls:'icon-edit'">Menu</a> <span>
+            <b>View As:</b> <input id="UserLookup" name="user" class="UserLookup"
+            style="width: 250px;" /> </span>
+    </div>
+
+    <div id="mm1" style="width: 150px;">
+        <div id="approverejectChange">Approve/Reject Change</div>
+        <div id="ClearFilters">Clear Filters</div>
+        <div id="SelectAll">Select All</div>
+        <div id="Reset">Deselect All</div>
+    </div>
+
+    <div id="main" style="width: 1775px;">
+
+        <div id="pendingtab" title="Pending" style="padding: 10px;">
+            <table style="width: 1200px;" class="viewtable display" id="pending">
+                <thead>
+                    <tr>
+                        <th class="Open" rowspan="2">Open</th>
+                        <th class="Select" rowspan="2">Select</th>
+                        <th class="listfilter" data-field="Approval_Status__c">Status</th>
+                        <th class="listfilter" data-field="Approval_Level__c">Approval Level</th>
+                        <th class="textfilter" data-field="Approver__r.Name">Approver</th>
+                        <th class="listfilter" data-field="Type__c">Type</th>
+                        <th class="textfilter" data-field="SAP_SoldTo_Account__c">Sold To</th>
+                        <th class="textfilter" data-field="SAP_ShipTo_Account__c">Ship To</th>
+                        <th class="textfilter" data-field="SAP_Material__r.Name">Material</th>
+                        <th class="datefilter" data-field="Requested_Effective_Date__c">Eff Date (Y-M-D)</th>
+                        <th class="datefilter" data-field="Requested_Expiration_Date__c">Exp Date (Y-M-D)</th>
+                        <th class="numberfilter" data-field="Volume__c">Volume</th>
+                        <th class="listfilter" data-field="Requested_UoM__c">UoM</th>
+                        <th class="numberfilter" data-field="Price__c">Price</th>
+                        <th class="listfilter" data-field="Requested_Price_UoM__c">UoM</th>
+                        <th class="numberfilter" data-field="TPI__c">TPI</th>
+                        <th class="textfilter" data-field="Comments__c">Comments</th>
+                        <th class="textfilter" data-field="Approval_Rejection_Comments__c">Approval Comments</th>
+                        <th >Id</th>
+                        <th >Inner Table</th>
+                    </tr>
+                    <tr>
+                          <th class="Approval_Status">Status</th>
+                          <th class="Approval_Level">Approval Level</th>
+                          <th class="Approver">Approver</th>
+                          <th class="Type">Type</th>
+                          <th class="Sold_To">Sold To</th>
+                          <th class="Ship_To">Ship To</th>
+                          <th class="Material">Material</th>
+                          <th class="Eff_Date">Eff Date (Y-M-D)</th>
+                          <th class="Exp_Date">Exp Date (Y-M-D)</th>
+                          <th class="Volume">Volume</th>
+                          <th class="Requested_UoM">UoM</th>
+                          <th class="Price">Price</th>
+                          <th class="Requested_Price_UoM">UoM</th>
+                          <th class="TPI">TPI</th>
+                          <th class="Comments">Comments</th>
+                          <th class="Approval_Rejection_Comments">Approval Comments</th>
+                          <th class="Id">Id</th>
+                          <th class="Inner_Table">Inner Table</th>
+                    </tr>
+                </thead>
+                <tbody></tbody>
+            </table>
+        </div>
+
+        <div id="rejectalternatediv" title="Rejected with Alternate"
+            style="padding: 10px;">
+            <table style="width: 1200px;" class="viewtable display" id="rejectalternate">
+                <thead>
+                    <tr>
+                        <th class="Open" rowspan="2">Open</th>
+                        <th class="Select" rowspan="2">Select</th>
+                        <th class="listfilter" data-field="Approval_Status__c">Status</th>
+                        <th class="listfilter" data-field="Approval_Level__c">Approval Level</th>
+                        <th class="textfilter" data-field="Approver__r.Name">Approver</th>
+                        <th class="listfilter" data-field="Type__c">Type</th>
+                        <th class="textfilter" data-field="SAP_SoldTo_Account__c">Sold To</th>
+                        <th class="textfilter" data-field="SAP_ShipTo_Account__c">Ship To</th>
+                        <th class="textfilter" data-field="SAP_Material__r.Name">Material</th>
+                        <th class="datefilter" data-field="Requested_Effective_Date__c">Eff Date (Y-M-D)</th>
+                        <th class="datefilter" data-field="Requested_Expiration_Date__c">Exp Date (Y-M-D)</th>
+                        <th class="numberfilter" data-field="Volume__c">Volume</th>
+                        <th class="listfilter" data-field="Requested_UoM__c">UoM</th>
+                        <th class="numberfilter" data-field="Price__c">Price</th>
+                        <th class="listfilter" data-field="Requested_Price_UoM__c">UoM</th>
+                        <th class="numberfilter" data-field="TPI__c">TPI</th>
+                        <th class="textfilter" data-field="Comments__c">Comments</th>
+                        <th class="textfilter" data-field="Approval_Rejection_Comments__c">Approval Comments</th>
+                        <th >Id</th>
+                        <th >Inner Table</th>
+                    </tr>
+                    <tr>
+                          <th class="Approval_Status">Status</th>
+                          <th class="Approval_Level">Approval Level</th>
+                          <th class="Approver">Approver</th>
+                          <th class="Type">Type</th>
+                          <th class="Sold_To">Sold To</th>
+                          <th class="Ship_To">Ship To</th>
+                          <th class="Material">Material</th>
+                          <th class="Eff_Date">Eff Date (Y-M-D)</th>
+                          <th class="Exp_Date">Exp Date (Y-M-D)</th>
+                          <th class="Volume">Volume</th>
+                          <th class="Requested_UoM">UoM</th>
+                          <th class="Price">Price</th>
+                          <th class="Requested_Price_UoM">UoM</th>
+                          <th class="TPI">TPI</th>
+                          <th class="Comments">Comments</th>
+                          <th class="Approval_Rejection_Comments">Approval Comments</th>
+                          <th class="Id">Id</th>
+                          <th class="Inner_Table">Inner Table</th>
+                    </tr>
+                </thead>
+                <tbody></tbody>
+            </table>
+        </div>
+
+    </div>
+
+    <div id="dd" class="easyui-dialog">
+        <form>
+            <br />
+            <center>
+                <span><b>Comments</b><br />
+                <textarea id="approvalcomments" name="appcomments" rows="12"
+                        cols="150" />
+                </span>
+            </center>
+        </form>
+    </div>
+</apex:page>

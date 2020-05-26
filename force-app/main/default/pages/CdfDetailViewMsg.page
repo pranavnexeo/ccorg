@@ -1,0 +1,7 @@
+<apex:page standardcontroller="Contract" extensions="CdfDetailviewMsgController" >
+    <apex:pageMessage id="pageMessageId" summary="Purchasing Will review, Inside Lead Time" severity="info" strength="1" rendered="{!leadmessage}"/>
+    <apex:pageMessage id="pageMessageId1" summary="Existing Business Contract Does Not Cover the CDF Term, Please renew" severity="warning" strength="1" rendered="{!renewContract}"/>
+    <!--
+    <apex:detail subject="{!Business_Contract__c.Id}"/>
+    -->
+</apex:page>

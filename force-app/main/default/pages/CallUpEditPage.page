@@ -1,0 +1,33 @@
+<apex:page standardController="Call_Up__c" extensions="CallUpEditExtension" action="{!init}">
+
+ <apex:form >
+    <apex:pageBlock title="General Information">
+        
+        <apex:pageBlockButtons id="button">
+    
+         <apex:commandButton value="Save" action="{!save}"/>
+         <apex:commandButton value="Close Call Up" action="{!closeCallUp}" rendered="{!editFlag}"/>
+          <apex:commandButton value="Cancel" action="{!Cancel}" immediate="true"/>
+
+             
+        </apex:pageBlockButtons>
+        
+      <apex:pageBlockSection >  
+      
+        <!--<apex:inputField value="{!Call_Up__c.Fee_Property__c}"/>
+        <apex:inputField value="{!Call_Up__c.Lease_Property__c}"/>  -->
+        <apex:inputField value="{!Call_Up__c.File_Location__c}"/>
+        <apex:inputField value="{!Call_Up__c.Call_Up_Date__c}"/>
+        <apex:outputField value="{!Call_Up__c.Status__c}" />
+        <apex:inputField value="{!Call_Up__c.Description__c}"/>
+        <apex:inputField value="{!Call_Up__c.Entity_Name__c}"/>
+        <apex:inputField value="{!Call_Up__c.Call_Up_Type__c}" required="true"/>
+        <apex:inputField value="{!Call_Up__c.Reason__c}"/>
+        <apex:inputField value="{!Call_Up__c.Reviewed_By__c}" onfocus="blur();"/> 
+        
+    </apex:pageBlockSection>
+    
+    </apex:pageBlock>
+</apex:form>
+
+</apex:page>

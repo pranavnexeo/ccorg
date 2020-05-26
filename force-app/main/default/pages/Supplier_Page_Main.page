@@ -1,0 +1,619 @@
+<apex:page controller="Supplier_Page_Controller" id="thepage" sidebar="false" standardstylesheets="false">
+<meta http-equiv="X-UA-Compatible" content="chrome=1"/>
+
+<script src="{!URLFOR($Resource.JQuery_Pricing, '/JQuery_Pricing/js/jquery-1.8.3.min.js')}" type="text/javascript"/> 
+<script src="{!URLFOR($Resource.JQuery_Pricing, '/JQuery_Pricing/js/jquery-ui-1.9.2.custom.js')}" type="text/javascript"/>
+<script src="{!URLFOR($Resource.JQuery_Pricing, '/JQuery_Pricing/js/jquery.mobile.events.js')}" type="text/javascript"/>
+<script src="{!URLFOR($Resource.JQuery_Pricing, '/JQuery_Pricing/js/jquery.dataTables.js')}" type="text/javascript"/>
+<script src="{!URLFOR($Resource.JQuery_Pricing, '/JQuery_Pricing/js/jquery.dataTables.columnFilter.js')}" type="text/javascript"></script>
+<script src="{!URLFOR($Resource.JQuery_Pricing, '/JQuery_Pricing/js/jquery-ui.toggleSwitch.js')}" type="text/javascript"/>
+<script src="{!URLFOR($Resource.JQuery_Pricing, '/JQuery_Pricing/js/jquery.sortElements.js')}" type="text/javascript"></script>
+<script src="{!URLFOR($Resource.JQuery_Pricing, '/JQuery_Pricing/js/jquery.dataTables.extensions.js')}" type="text/javascript"></script>
+<script src="{!URLFOR($Resource.JQuery_Pricing, '/JQuery_Pricing/js/jquery.tooltip.js')}" type="text/javascript"></script>
+<script src="{!URLFOR($Resource.JQuery_Pricing, '/JQuery_Pricing/js/jquery.multiselect.min.js')}" type="text/javascript"/> 
+<script src="{!URLFOR($Resource.JQuery_Pricing, '/JQuery_Pricing/js/jquery.multiselect.filter.js')}" type="text/javascript"/>
+<script src="{!URLFOR($Resource.JQuery_Pricing, '/JQuery_Pricing/js/jquery.validate.js')}" type="text/javascript"/>
+<script src="{!URLFOR($Resource.JQuery_Pricing, '/JQuery_Pricing/js/jquery.form.js')}" type="text/javascript"/>
+<script src="{!URLFOR($Resource.JQuery_Pricing, '/JQuery_Pricing/js/jquery.bbq.js')}" type="text/javascript"/>
+<script src="{!URLFOR($Resource.JQuery_Pricing, '/JQuery_Pricing/js/jquery.form.wizard.js')}" type="text/javascript"/>
+<script src="{!URLFOR($Resource.JQuery_Pricing, '/JQuery_Pricing/js/jquery.easyui.min.js')}" type="text/javascript"></script>
+
+<apex:stylesheet value="{!URLFOR($Resource.JQuery_Pricing, '/JQuery_Pricing/themes/default/easyui.css')}"/>  
+<apex:stylesheet value="{!URLFOR($Resource.JQuery_Pricing, '/JQuery_Pricing/css/jquery.tooltip.css')}"/>
+<apex:stylesheet value="{!URLFOR($Resource.JQuery_Pricing, '/JQuery_Pricing/css/start/jquery-ui-1.10.1.custom.min.css')}"/>
+<apex:stylesheet value="{!URLFOR($Resource.JQuery_Pricing, '/JQuery_Pricing/css/demo_table.css')}"/> 
+<apex:stylesheet value="{!URLFOR($Resource.JQuery_Pricing, '/JQuery_Pricing/themes/default/easyui.css')}"/>    
+<apex:stylesheet value="{!URLFOR($Resource.JQuery_Pricing, '/JQuery_Pricing/themes/icon.css')}"/> 
+<apex:stylesheet value="{!URLFOR($Resource.JQuery_Pricing, '/JQuery_Pricing/themes/default/menu.css')}"/>
+<apex:stylesheet value="{!URLFOR($Resource.JQuery_Pricing, '/JQuery_Pricing/themes/default/menubutton.css')}"/>
+<apex:stylesheet value="{!URLFOR($Resource.JQuery_Pricing, '/JQuery_Pricing/themes/default/splitbutton.css')}"/>
+<apex:stylesheet value="{!URLFOR($Resource.JQuery_Pricing, '/JQuery_Pricing/themes/icon.css')}"/>
+<apex:stylesheet value="{!URLFOR($Resource.JQuery_Pricing, '/JQuery_Pricing/css/jquery-ui.toggleSwitch.css')}"/> 
+<apex:stylesheet value="{!URLFOR($Resource.JQuery_Pricing, '/JQuery_Pricing/css/jquery.multiselect.css')}"/> 
+<apex:stylesheet value="{!URLFOR($Resource.JQuery_Pricing, '/JQuery_Pricing/css/jquery.multiselect.filter.css')}"/> 
+<script  src="/soap/ajax/25.0/connection.js" type="text/javascript"></script>
+<script  src="/soap/ajax/25.0/apex.js" type="text/javascript"></script>
+
+
+<apex:outputpanel id="scriptpanel">
+<script type="text/javascript" charset="utf-8">
+var oTable;
+var timeout;
+var iLimit = 100;      
+var aColumnIndex = new Array();  
+    
+function fixEscapedHTML(html, fieldid) {
+        var value = $("<div />").html(html).text();
+        setTimeout(function(){ $('#' + fieldid).combogrid('textbox').val(value);}, 10)
+    }
+    
+    
+$(document).ready(function() { 
+
+     fnInitPage();
+     fnHideFog();
+     fnInitSupplierTable();
+});
+
+function fnInitSupplierTable(){        
+                 
+        oTable = $('#suppliertable').dataTable({
+                "aLengthMenu": [[100, 250, 500, 750], [100, 250, 500, 750]],
+                "iDisplayLength": 100,
+                "bDestroy": true,
+                "bSort": true,
+                "sPaginationType": "four_button",
+                "sErrMode": false,
+                "bAutoWidth": false,
+                "fnDrawCallback": function( oSettings ) {
+                   $('.row_selected').removeClass('row_selected');
+                   $('.row_error').removeClass('row_error');
+                },
+                "sAjaxDataProp": "data",
+                "sDom": 'lfrtip',
+                "bJQueryUI": true,
+                "aoColumnDefs":[
+                    { "aTargets":[ "Name" ], "mData": "Name", sClass:"Name",sWidth:"20px",
+                    "mRender": function ( data, type, full ) {
+                        return '<a href="/apex/Supplier_Page_Detail?supid='+ full.Id+'&supname='+ full.Name +'&supcode='+full.SupplierCode__c+'" target="_blank">' + full.Name+ '</a>'; }
+                    
+                    },
+                    /*{ "aTargets":[ "Supplies_To" ], "mData": "Supplies_To__c", sClass:"Supplies_To__c",sWidth:"20px"},*/
+                    { "aTargets":[ "Website" ], "mData": "Web_Site__c", sClass:"Web_Site__c",sWidth:"20px",
+                     "mRender": function ( data, type, full ) {
+                     if(full.Web_Site__c != '' && full.Web_Site__c != null)
+                        return '<a href="'+ full.Web_Site__c +'" target="_blank">' + full.Web_Site__c + '</a>'; 
+                     else 
+                        return '';   
+                     }
+                    },
+                    { "aTargets":[ "Product_Line_Manager" ], "mData": "Product_Line_Manager__r.Name", sClass:"Product_Line_Manager__r.Name",sWidth:"20px"},
+                    { "aTargets":[ "Product_Specialist" ], "mData": "Product_Specialist__r.Name", sClass:"Product_Specialist__r.Name",sWidth:"20px"},
+                    { "aTargets":[ "Technical_Service_Representative" ], "mData": "Technical_Service_Representative__r.Name", sClass:"Technical_Service_Representative__r.Name",sWidth:"20px"}
+                    
+                    
+                    
+                    
+                    
+                 ],
+                "fnInitComplete": function(oSettings) {
+                     aColumnIndex = fnGetColumnIndex(oSettings);
+                  },
+                "fnCreatedRow": function( nRow, aData, iDataIndex ) {
+                   fnEvaluateTable($('#suppliertable' ).dataTable());
+                 },
+              });
+              getSupplierList(); 
+              fnPrepFilters('suppliertable');  
+              
+}
+
+function getSupplierList(){
+
+    Supplier_Page_Controller.getAllRecords(function(result, event){ 
+    if(event.type == 'exception') {
+        
+    } else { 
+    if(result.length > 0){   
+      oTable = $('#suppliertable').dataTable();
+      oTable.fnAddData(result);
+     }
+    }
+    }, {buffer: true, escape: true, timeout:120000});
+    
+}
+
+function  fnInitPage(){
+
+$('#mimipanel').ajaxForm({  
+        dataType:  'json', 
+        beforeSubmit: startSearch 
+});
+
+$('#submitsearch, #clearsearch').button();
+
+
+$('.singleselect').each(function(i, oSel){
+         var m = $(oSel).multiselect({
+           multiple: false,
+           noneSelectedText: $(this).attr('data-name'), 
+           selectedText: $(this).attr('data-name') + ": # Selected"       
+           }).multiselectfilter();
+           
+           var sName = $(oSel).attr('data-name');
+           var oWidget = $(oSel).multiselect('widget');
+   
+            if(sName == 'Material')
+            {         
+
+              $(oWidget).find('.ui-widget-header').find('.ui-multiselect-filter').append('<img class="iClear" src="{!URLFOR($Resource.JQuery_Pricing, '/JQuery_Pricing/themes/icons/no.png')}"/>');  
+              $(oWidget).find('.ui-widget-header').find('.ui-multiselect-filter').append('<img class="iSearch" src="{!URLFOR($Resource.spinner)}"/>');    
+              
+              $(oWidget).find('.iSearch').hide();
+              $(oWidget).find('.iClear').click(function(){
+              $(oSel).empty();
+              $(oSel).multiselect('refresh');
+              $(oWidget).find('input').val('');
+              });
+              
+              $(oWidget).find('input').on('keydown', function(e){
+              clearTimeout(timeout);
+                  if($(this).val().length > 1)
+                     timeout = setTimeout(function(){fnMatSearchBox(oWidget, oSel, sName)},750);   
+               });
+            }
+            
+            if(sName == 'SupplierContact')
+            {         
+
+              $(oWidget).find('.ui-widget-header').find('.ui-multiselect-filter').append('<img class="iClear" src="{!URLFOR($Resource.JQuery_Pricing, '/JQuery_Pricing/themes/icons/no.png')}"/>');  
+              $(oWidget).find('.ui-widget-header').find('.ui-multiselect-filter').append('<img class="iSearch" src="{!URLFOR($Resource.spinner)}"/>');    
+              
+              $(oWidget).find('.iSearch').hide();
+              $(oWidget).find('.iClear').click(function(){
+              $(oSel).empty();
+              $(oSel).multiselect('refresh');
+              $(oWidget).find('input').val('');
+              });
+              
+              $(oWidget).find('input').on('keydown', function(e){
+              clearTimeout(timeout);
+                  if($(this).val().length > 1)
+                     timeout = setTimeout(function(){fnMatSearchBox(oWidget, oSel, sName)},750);   
+               });
+            }
+       });
+       
+$('#main').tabs({  
+    border:false,  
+    onSelect:function(title, index){
+      if(index == 0)
+      {   
+        
+      }
+                
+     }
+});
+
+$('#clearsearch').click(function(){ 
+    //$('#suppliertable').fnFilterClear();
+    $('#suppliertable').dataTable().fnClearTable();
+    
+    getSupplierList();
+
+});
+
+}
+
+function startSearch(formData, jqForm, options){
+
+  fnShowFog();
+  $('#suppliertable').dataTable();
+  var searchby = $('#searchby').val();
+  var supplier = $('#Supplier').val();
+  var suppliercontact = $('#SupplierContact').val();
+  var material = $('#mat').val();
+  
+    Supplier_Page_Controller.getData(formData, function(result, event){ 
+          if(event.type == 'exception') {
+            
+            fnHideFog();               
+            } else { 
+            
+                if(result.rows.length > 0){
+                    if(result.rows.length == 0)
+                      fnHideFog();
+                    else{
+                    $('#suppliertable').dataTable().fnClearTable();
+                    $('#suppliertable').dataTable().fnAddData(result.rows); 
+                    fnHideFog();
+                   
+                    //$('#submitsearch').find('.ui-button-text').html('Search'); 
+                    }
+                  }
+                  else
+                  { fnHideFog(); 
+                  }
+            }
+   }, {buffer: true, escape: true, timeout:120000});
+  
+  return false;
+}
+
+function fnShowFog(){
+  $('#loadingbanner').show();
+  $('#submitsearch, #clearsearch').button('disable');
+}
+
+function fnHideFog(){
+  $('#loadingbanner').hide();
+  if($('#submitsearch').attr('data-status') == 'enable')
+    $('#submitsearch').button('enable');
+  
+  $('#clearsearch').button('enable'); 
+  
+}
+     
+function fnMatSearchBox( oWidget, oSel, sName){
+    
+    var oInput = $(oWidget).find('input');
+    var aaSelected = new Array();
+    var aaExisting = new Array();
+    var showAll;
+
+    $(".singleselect").each(function(i, mselect){
+             aaSelected[$(mselect).attr('name')] = new Array();
+             aaExisting[$(mselect).attr('name')] = new Array();
+             $(mselect).multiselect("getChecked").each(function(){aaSelected[$(mselect).attr('name')].push(this.value); });     
+             $(mselect).find("option").each(function(){aaExisting[$(mselect).attr('name')].push($(this).attr('data-id')); });            
+             
+           });
+           
+           if(sName == 'Material')
+            { 
+                 var f = '(NOT NAME LIKE \'%DO NOT%\') and Marked_for_Deletion__c != \'true\' and Name LIKE \'%' + $(oInput).val() + '%\' and Division_Code__c LIKE \'31\'';
+                 //if(showAll == false)
+                     //f = f + 'and Material_General_Data__r.Ext_Material_Group_Code__c LIKE \'101\'';
+                
+                  $(oWidget).find('.iSearch').show();
+                  $(oWidget).find('.iClear').hide();
+                  
+                  if($(oSel).is('[data-searching]') == false)
+                  {
+                    $(oSel).attr('data-searching', 'searching');
+                  
+                    Supplier_Page_Controller.getSingleOptions(sName,[],$(oInput).val(), 'Material_Sales_Data2__c', 'Name, Material_Number__c,Sales_Org_Code__c, Division_Code__c', f, 'Name ASC', iLimit, function(result, event){
+                    $(oSel).removeAttr('data-searching'); 
+                    if(event.type == 'exception') {
+                       $(oWidget).find('.iSearch').hide();   
+                       $(oWidget).find('.iClear').show();  
+                    } else {            
+                       var sResult = '';
+                       $(result.rows).each(function(i, r){
+                      
+                          sResult += '<option value="' + r.Id + '" data-id="' + r.Id + '">' + r.Name + ' / ' + r.Sales_Org_Code__c + ' / ' + r.Division_Code__c + '</option>';
+                       }); 
+                       
+                       $(oSel).empty();
+                       $(oSel).append(sResult);
+                       $(oSel).multiselect('refresh');  
+                       $(oWidget).find('.iSearch').hide();   
+                       $(oWidget).find('.iClear').show();  
+                                        
+                    }
+                  }, {buffer: true, escape: true, timeout:120000});
+                 }
+            }
+            if(sName == 'SupplierContact')
+            { 
+                 var f = '( First_Name__c LIKE \'%' + $(oInput).val() + '%\' or Last_Name__c LIKE \'%' + $(oInput).val() + '%\')';
+                 
+                
+                  $(oWidget).find('.iSearch').show();
+                  $(oWidget).find('.iClear').hide();
+                  
+                  if($(oSel).is('[data-searching]') == false)
+                  {
+                    $(oSel).attr('data-searching', 'searching');
+                  
+                    Supplier_Page_Controller.getSingleOptions(sName,[],$(oInput).val(), 'Supplier_Contact__c', 'First_Name__c, Last_Name__c, Competitor_Supplier_or_OEM__r.Name', f, 'First_Name__c ASC', iLimit, function(result, event){
+                    $(oSel).removeAttr('data-searching'); 
+                    if(event.type == 'exception') {
+                       $(oWidget).find('.iSearch').hide();   
+                       $(oWidget).find('.iClear').show();  
+                    } else {            
+                       var sResult = '';
+                       $(result.rows).each(function(i, r){
+                      
+                          sResult += '<option value="' + r.Id + '" data-id="' + r.Id + '">' + r.Competitor_Supplier_or_OEM__r.Name + ' - ' + r.First_Name__c + ' ' + r.Last_Name__c + '</option>';
+                       }); 
+                       
+                       $(oSel).empty();
+                       $(oSel).append(sResult);
+                       $(oSel).multiselect('refresh');  
+                       $(oWidget).find('.iSearch').hide();   
+                       $(oWidget).find('.iClear').show();  
+                                        
+                    }
+                  }, {buffer: true, escape: true, timeout:120000});
+                 }
+            }
+
+}          
+           
+           
+     
+function fnGetColumnIndex(oSettings){
+    var aColumns = new Array();
+    $.each(oSettings.aoColumns, function(c){
+        var mData = oSettings.aoColumns[c].sClass;
+            aColumns[mData] = c;
+    });
+    return aColumns;
+}
+
+function fnPrepFilters(stableid){
+  
+        $('#' + stableid).find('.textfilter').each(function(i, f){ $(f).html('<div style="width:105px;"><input data-field="'+ $(f).attr('data-field') +'" class="textinput" value="' + $(f).html() + '" name="' + $(f).html() + '" style="width:100px;"/></div>') });
+        $('#' + stableid).find('.numberfilter').each(function(i, f){ $(f).html('<div class="numberinput" data-field="'+ $(f).attr('data-field') +'" style="width:105px;"><input data-field="'+ $(f).attr('data-field') +'" class="numberinputfrom" value="From ' + $(f).html() + '" name="From ' + $(f).html() + '" style="width:50px;"/><b>&nbsp;To&nbsp;</b><input class="numberinputto" value="To ' + $(f).html() + '" name="To ' + $(f).html() + '" style="width:50px;"/></div>') });
+        $('#' + stableid).find('.datefilter').each(function(i, f){ $(f).html('<div class="dateinput" style="width:155px;" data-field="'+ $(f).attr('data-field') +'"><input class="dateinputfrom" name="From ' + $(f).html() + '" value="From ' + $(f).html() + '" style="width:75px;"/><b>&nbsp;To&nbsp;</b><input class="dateinputto" value="To ' + $(f).html() + '" name="To ' + $(f).html() + '" style="width:75px;"/></div>') });
+        $('#' + stableid).find('.listfilter').each(function(i, f){ $(f).html('<div style="width:105px;"><select data-field="'+ $(f).attr('data-field') +'" class="selectinput" name="' + $(f).html() + '" style="width:100px;"><option selected="selected" value="' + $(f).html() + '">' + $(f).html() + '</option></select></div>') });
+        $( ".dateinputfrom, .dateinputto" ).datepicker({changeMonth:true, changeYear:true, dateFormat: "{!dateFormat}"});
+        fnUpdateFilterSelect(stableid);
+        $('.selectinput').change(function(){
+           if($(this).val() == $(this).attr('name'))
+           {   $('#' + stableid).dataTable().fnFilter('', aColumnIndex[$(this).attr('data-field')] ); }
+           else
+           {   $('#' + stableid).dataTable().fnFilter( $(this).val(), aColumnIndex[$(this).attr('data-field')] );  }
+           fnUpdateFilterSelect(stableid);
+          });
+        $(".textinput").keyup( function () { $('#' + stableid).dataTable().fnFilter( this.value, aColumnIndex[$(this).attr('data-field')] ); fnUpdateFilterSelect(stableid); });
+        $(".textinput, .numberinputfrom, .numberinputto, .dateinputfrom, .dateinputto").focus( function () { if( $(this).val() == $(this).attr('name') ){ this.value = "";}});
+        $(".textinput, .numberinputfrom, .numberinputto, .dateinputfrom, .dateinputto").blur( function (i) { if( $(this).val() == "" ){ this.value = $(this).attr('name'); }});
+        $('.numberinputfrom, .numberinputto').keyup(function(){ $('#' + stableid).dataTable().fnDraw(); fnUpdateFilterSelect(stableid);});
+        $('.dateinputfrom, .dateinputto').change(function(){ $('#' + stableid).dataTable().fnDraw(); fnUpdateFilterSelect(stableid); });
+        $(".numberinput").each(function(i, ni){
+          $('#' + stableid).dataTable().dataTableExt.afnFiltering.push(
+            function (oSettings, aData, iDataIndex) {
+                            if ($('#' + stableid).dataTable().attr("id") != oSettings.sTableId){ return true; }
+                            var iMin = $(ni).find('.numberinputfrom').val();
+                            var iMax = $(ni).find('.numberinputto').val();
+                            var iValue = (isNaN(aData[aColumnIndex[$(ni).attr('data-field')]]) || aData[aColumnIndex[$(ni).attr('data-field')]] == null || aData[aColumnIndex[$(ni).attr('data-field')]] == "")? -1 : aData[aColumnIndex[$(ni).attr('data-field')]];
+                            if ((iMin == "" || isNaN(iMin)) && (iMax == "" || isNaN(iMax))) { return true;} 
+                            else if ((iMin == "" || isNaN(iMin)) && iValue <= iMax) { return true; }
+                            else if (iMin <= iValue && (iMax == "" || isNaN(iMax))) { return true; }
+                            else if (iMin <= iValue && iValue <= iMax) { return true; }
+                            return false;
+           });
+        });
+        
+        $(".dateinput").each(function(i, di){
+          $('#' + stableid).dataTable().dataTableExt.afnFiltering.push(
+            function (oSettings, aData, iDataIndex) {
+                            if ($('#' + stableid).dataTable().attr("id") != oSettings.sTableId){ return true; }
+                            var iMin =  $(di).find('.dateinputfrom').val();
+                            if(iMin !=  $(di).find('.dateinputfrom').attr('name'))
+                              iMin = $(di).find('.dateinputfrom').datepicker( "getDate" );
+                            var iMax =  $(di).find('.dateinputto').val();
+                            if(iMax !=  $(di).find('.dateinputto').attr('name'))  
+                              iMax = $(di).find('.dateinputto').datepicker( "getDate" );
+                            
+                            var iValue = new Date( aData[aColumnIndex[$(di).attr('data-field')]]);
+                            if ((iMin == "" || iMin == null || iMin == $(di).find('.dateinputfrom').attr('name')) && (iMax == "" || iMax == null || iMax == $(di).find('.dateinputto').attr('name')) ) { return true;} 
+                            else if ((iMin == "" || iMin == null || iMin == $(di).find('.dateinputfrom').attr('name'))  && iValue <= iMax) { return true; }
+                            else if (iMin <= iValue && (iMax == "" || iMax == null || iMax == $(di).find('.dateinputto').attr('name'))) { return true; }
+                            else if (iMin <= iValue && iValue <= iMax) { return true; }
+                            return false;
+           });
+        });
+    }
+     
+function fnUpdateFilterSelect(stableid){
+    $('#' + stableid).find('.selectinput').each(function(i, sel){
+    
+      var val = $(sel).val();
+      $(sel).empty();
+      var aColumnIndex = new Array();
+      var opt = '<option value=""';
+      if(val == $(sel).attr('name'))
+      opt += ' selected="selected" ';
+      opt += '>' + $(sel).attr('name') + '</option>';
+      var arr = $('#' + stableid).dataTable().fnGetColumnData(aColumnIndex[$(sel).attr('data-field')]);
+      $(arr).each(function(j, o){
+        opt = opt + '<option value="' + o + '"';
+        if(val == o)
+        opt += ' selected="selected" ';
+        opt += '>' + o + '</option>';
+      });
+      $(sel).append(opt);
+     
+    });
+}   
+        
+
+
+function fnEvaluateTable(oTable){
+
+ 
+}
+</script>
+</apex:outputpanel>
+<style>
+label.error {
+    color: red;
+}
+div.error{
+border-style:solid;
+border-width:1.5px;
+border-color:red;
+}
+input.error{
+border-style:solid;
+border-color:red;
+}
+select.error{
+border-style:solid;
+border-color:red;
+}
+input:disabled{ background-color:LightGray}
+
+textarea { padding: 5px; width: 400px; }
+#ff label{
+     display:block;
+     width:100px;
+}
+#button { padding: .5em 1em; text-decoration: none; }
+#effect { padding: 0.4em; position: relative; }
+.ui-menu { position: absolute; }
+tbody tr.even:hover,  tbody tr.even td.highlighted {
+    background-color: #ECFFB3;
+}
+tbody tr.odd:hover,  tbody tr.odd td.highlighted {
+    background-color: #E6FF99;
+}
+tr.even:hover {
+    background-color: #ECFFB3;
+}
+tr.even:hover td.sorting_1 {
+    background-color: #DDFF75;
+}
+tr.even:hover td.sorting_2 {
+    background-color: #E7FF9E;
+}
+tr.even:hover td.sorting_3 {
+    background-color: #E2FF89;
+}
+tr.odd:hover {
+    background-color: #E6FF99;
+}
+tr.odd:hover td.sorting_1 {
+    background-color: #D6FF5C;
+}
+tr.odd:hover td.sorting_2 {
+    background-color: #E0FF84;
+}
+tr.odd:hover td.sorting_3 {
+    background-color: #DBFF70;
+}
+
+table.viewtable tr.even.row_selected td {
+    background-color: #B0BED9;
+}
+table.viewtable tr.odd.row_selected td {
+    background-color: #9FAFD1;
+}
+
+table.gridtable {
+    font-family: verdana,arial,sans-serif;
+    font-size:11px;
+    color:#333333;
+    border-width: 1px;
+    border-color: #666666;
+    border-collapse: collapse;
+}
+table.gridtable th {
+    border-width: 1px;
+    padding: 8px;
+    border-style: solid;
+    border-color: #666666;
+    background-color: #dedede;
+}
+table.gridtable td {
+    border-width: 1px;
+    padding: 8px;
+    border-style: solid;
+    border-color: #666666;
+    background-color: #ffffff;
+}
+label.error {
+    color: red;
+}
+input.error{
+border-style:solid;
+border-color:red;
+}
+input.error+span{
+border-style:solid;
+border-color:red;
+}
+select.error{
+border-style:solid;
+border-color:red;
+}
+</style>
+
+
+<div id="loadingbanner" style="position:relative;left:px">
+<c:EnhancedActionStatus BackColor="#efefef" borderColor="#336699" borderSize="3" height="20px" width="100px" ImageUrl="{!$Resource.spinner}" Message="Loading..." messageStyle="color:darkred;font-size:11pt;font-weight:bold;"/>
+</div>
+
+
+<form id="mimipanel" action="/apex/Account_Material_Ajax" method="post">  
+
+<table><tr>
+<td style="background-color:yellowgreen;color:white;"><select class="singleselect" style="width:220px;background: #fff;" data-label="Search By" name="SearchBy" data-acctfieldname="Search By" data-name="SearchBy" multiple="false" id="searchby">
+    <option value="Supplier">Supplier</option>
+    <option value="SupplierContact">Supplier Contact</option>
+    <option value="SAPMaterial">SAP Material</option>
+</select></td>
+<td><select class="singleselect" style="width:225px;" data-label="Name" name="SupplierName" data-acctfieldname="Name" data-name="Supplier" multiple="false" id="Supplier"><apex:outputtext value="{!suppOptions}" escape="false"/></select></td>
+<td><select class="singleselect" style="width:225px;" data-label="First_Name__c" name="SupplierContact" data-acctfieldname="First_Name__c" data-name="SupplierContact" multiple="false" id="SupplierContact"></select></td>
+<td><select class="singleselect" style="width:225px;" data-label="Material_Name__c" name="SAP_Material" data-matfieldname="SAPMaterial" data-name="Material" multiple="false" id="mat"></select></td>
+<td><button type="submit" id="submitsearch" data-status="enable" value="Search">Search</button></td>
+<td><button type="reset" id="clearsearch" value="Reset">Clear Search</button></td>
+
+</tr></table>
+</form>
+
+<div id="main" style="width:1000px;"> 
+<div id="SuppMainTab" title="Supplier Tab" style="padding:10px;width:10px;">
+<table style="width:100%;" class="viewtable display" id="suppliertable">
+<thead>
+<tr>
+    <th class="textfilter" data-field="Name">Supplier Name</th>    
+    <!-- <th class="textfilter" data-field="Supplies_To__c">Supplies To</th> -->
+    <th class="textfilter" data-field="Web_Site__c">Website</th>
+    <th class="textfilter" data-field="Product_Line_Manager__r.Name">Product Line Manager</th>    
+    <th class="textfilter" data-field="Product_Specialist__r.Name">Product Specialist</th>
+    <th class="textfilter" data-field="Technical_Service_Representative__r.Name">Technical Service Representative</th>    
+    
+</tr>
+
+<tr>
+    <th class="Name">Supplier Name</th>
+    <!-- <th class="Supplies_To">Supplies To</th> -->
+    <th class="Website">Website</th>
+    <th class="Product_Line_Manager">Product Line Manager</th>    
+    <th class="Product_Specialist">Product Specialist</th>
+    <th class="Technical_Service_Representative">Technical Service Representative</th>  
+    
+</tr>
+</thead>
+<tbody></tbody>
+</table>
+</div>
+
+<!--
+<div id="OpenOpptyTab" title="Open Opportunity" style="padding:10px;width:2700px;">
+
+
+</div>
+<div id="ClosedOpptyTab" title="Closed Opportunity" style="padding:10px;width:2700px;">
+
+
+</div>
+<div id="ProductsTab" title="Products" style="padding:10px;width:2700px;">
+
+
+</div>
+<div id="SampleRequestTab" title="Sample Request" style="padding:10px;width:2700px;">
+
+
+</div>
+<div id="DocumentsTab" title="Documents" style="padding:10px;width:2700px;">
+
+
+</div> -->
+
+</div> 
+</apex:page>

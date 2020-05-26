@@ -1,0 +1,163 @@
+<apex:page standardController="Consumption__c" sidebar="false" recordsetvar="unused" extensions="MassEditCreateConsumptionExtension">
+ 
+   <script>
+   
+        if(!{!selOneConFlag})
+        {               
+            alert('Please select at least one Consumption');
+            window.top.document.location = "{!url}";
+        }
+    
+        if(!{!selSameConsFlag})
+        {
+            alert('Please select Consumptions with the same Record Type');
+            window.top.document.location = "{!url}";
+        }
+            
+     </script>
+
+<apex:form >
+<apeX:outputlabel value="{!cindex}"/>
+<apex:pageBlock >
+
+<apex:pageBlockButtons >
+<apex:commandbutton value="Add Line" action="{!insertrow}"/>
+<apex:commandbutton value="Save" action="{!save}"/>
+<apex:commandbutton value="Save and Continue" action="{!saveandcontinue}"/>
+<apex:commandbutton value="Cancel" action="{!cancel}" immediate="true"/>
+</apex:pageBlockButtons>
+<apex:pageBlockTable value="{!wrapperlist}" var="cw" id="table">
+
+<apex:Column headervalue="Clone">
+<apex:commandbutton value="Clone" action="{!clonecon}" immediate="true" rerender="table">
+<apex:param assignTo="{!cindex}" value="{!cw.id}" name="cindex"/>
+</apex:commandbutton>
+</apex:column>
+
+<apex:Column headervalue="ID">
+<apex:outputtext value="{!cw.id}-{!cw.con.ID}"/>
+</apex:column>
+
+<apex:Column headervalue="Name">
+<apex:inputfield value="{!cw.con.Name}"/>
+</apex:column>
+
+<apex:Column headervalue="Account Name">
+<apex:inputfield value="{!cw.con.Account_Name__c}"/>
+</apex:column>
+
+<apex:Column headervalue="Status">
+<apex:inputfield value="{!cw.con.Status__c}"/>
+</apex:column>
+
+
+<apex:Column headervalue="Channel To Market" rendered="{!OR(ischemicals, iscomposites)}">
+<apex:inputfield value="{!cw.con.Channel_to_Market__c}"/>
+</apex:column>
+
+<apex:Column headervalue="SAP Material" rendered="{!OR(AND(NOT(isNorthAmerica), isplastics), ischemicals, iscomposites)}">
+<apex:inputfield value="{!cw.con.SAP_Material__c}"/>
+</apex:column>
+
+<apex:Column headervalue="SAP Product Group" rendered="{!AND(isnorthamerica, isplastics)}" >
+<apex:inputfield value="{!cw.con.SAP_Product_Group__c}"/>
+</apex:column>
+
+<apex:Column headervalue="Product Group" rendered="{!AND(NOT(isnorthamerica), isplastics)}" >
+<apex:inputfield value="{!cw.con.Product_Group__c}"/>
+</apex:column>
+
+<apex:Column headervalue="MFI" rendered="{!AND(NOT(isnorthamerica), isplastics)}">
+<apex:inputfield value="{!cw.con.MFI__c}"/>
+</apex:column>
+
+<apex:Column headervalue="Base Code Other" rendered="{!isnorthamerica}">
+<apex:inputfield value="{!cw.con.Base_Code_Other__c}"/>
+</apex:column>
+
+<apex:Column headervalue="Distribution Volume" rendered="{!and(isnorthamerica, OR(ischemicals, isplastics))}">
+<apex:inputfield value="{!cw.con.Distribution_Volume__c}"/>
+</apex:column>
+
+<apex:Column headervalue="Direct Volume" rendered="{!and(isnorthamerica, OR(ischemicals, isplastics))}">
+<apex:inputfield value="{!cw.con.Direct_Volume__c}"/>
+</apex:column>
+
+<apex:Column headervalue="Secondary Volume" rendered="{!and(isnorthamerica, isplastics)}">
+<apex:inputfield value="{!cw.con.Secondary_Volume__c}"/>
+</apex:column>
+
+<apex:Column headervalue="Annual Volume" rendered="{!and(isnorthamerica, iscomposites)}">
+<apex:inputfield value="{!cw.con.Annual_Volume__c}"/>
+</apex:column>
+
+<apex:Column headervalue="Unit of Measure" rendered="{!isnorthamerica}">
+<apex:inputfield value="{!cw.con.Unit_of_Measure__c}"/>
+</apex:column>
+
+
+<!--
+<apex:Column headervalue="Distributor">
+<apex:inputfield value="{!cw.con.Distributor__c}"/>
+</apex:column>
+-->
+
+<apex:Column headervalue="Distributor">
+<apex:inputfield value="{!cw.con.Nexeo_Competitor__c}"/>
+</apex:column>
+
+<apex:Column headervalue="Current Supplier/Producer">
+<apex:inputfield value="{!cw.con.Current_Supplier_Producer__c}"/>
+</apex:column>
+
+<apex:Column headervalue="Other Supplier/Producer" rendered="{!Not(isnorthamerica)}">
+<apex:inputfield value="{!cw.con.Current_Supplier_Producer_Other__c}"/>
+</apex:column>
+
+<apex:Column headervalue="% Distribution" rendered="{!Not(isnorthamerica)}">
+<apex:inputfield value="{!cw.con.Distribution__c}"/>
+</apex:column>
+
+<apex:Column headervalue="Market" rendered="{!Not(isnorthamerica)}">
+<apex:inputfield value="{!cw.con.Market__c}"/>
+</apex:column>
+
+<apex:Column headervalue="Technology / Activity" rendered="{!Not(isnorthamerica)}">
+<apex:inputfield value="{!cw.con.Technology_Activity__c}"/>
+</apex:column>
+
+<apex:Column headervalue="Product Description" rendered="{!Not(isnorthamerica)}">
+<apex:inputfield value="{!cw.con.Product_Description__c}"/>
+</apex:column>
+
+<apex:Column headervalue="Other Material" rendered="{!Not(isnorthamerica)}">
+<apex:inputfield value="{!cw.con.Other_Material_in_Use__c}"/>
+</apex:column>
+
+<apex:Column headervalue="Flexural Modulus" rendered="{!Not(isnorthamerica)}">
+<apex:inputfield value="{!cw.con.Flexural_Modulus__c}"/>
+</apex:column>
+
+<apex:Column headervalue="% of Filler Content" rendered="{!Not(isnorthamerica)}">
+<apex:inputfield value="{!cw.con.of_Filler_Content_or_Comonomer__c}"/>
+</apex:column>
+
+<apex:Column headervalue="Slip - Antiblocking" rendered="{!Not(isnorthamerica)}">
+<apex:inputfield value="{!cw.con.Slip_Antiblocking__c}"/>
+</apex:column>
+
+<apex:Column headervalue="Density" rendered="{!Not(isnorthamerica)}">
+<apex:inputfield value="{!cw.con.Density__c}"/>
+</apex:column>
+
+<apex:Column headervalue="Description">
+<apex:inputfield value="{!cw.con.Description__c}"/>
+</apex:column>
+
+</apex:pageBlockTable>
+</apex:pageBlock>
+
+
+</apex:form>
+
+</apex:page>

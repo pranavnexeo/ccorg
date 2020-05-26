@@ -1,0 +1,86 @@
+<apex:page renderAs="PDF" standardController="FAA_Request__c">
+<html>
+    <head>
+        <title></title>
+             
+    </head>
+    <body>
+        <p>
+            <apex:image url="{!$Resource.Nexeo_Logo}"  /><span style="color: rgb(0, 0, 205);"><span style="font-size: 22px;"><strong>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; &nbsp;&nbsp; FAA Request</strong></span></span>
+        </p>
+               
+        <hr />
+        
+        <table align="center"  style="width: 700px; font-size: 12px;">
+            <tbody>
+                <tr>
+                    <td style="width: 300px;">
+                        <span style="font-size: 20px;"><strong>General Information&nbsp; </strong></span>
+                    </td>   
+                </tr> 
+                <tr>               
+                    <td>
+                        <span style="color: rgb(0, 0, 205);"><span style="font-size: 20px;"><span style="font-size: 14px;">Agent Name:</span></span></span>{!FAA_Request__c.Agent_Name__r.FirstName + ' '+ FAA_Request__c.Agent_Name__r.LastName }</td> 
+                       
+                    <td>
+                        <span style="color: rgb(0, 0, 205);"><span style="font-size: 20px;"><span style="font-size: 14px;">Delegator Name:</span></span></span>{!FAA_Request__c.Delegator_Name__r.FirstName + ' '+ FAA_Request__c.Delegator_Name__r.LastName}
+                    </td>
+                </tr>
+                <tr>               
+                    <td>
+                        <span style="color: rgb(0, 0, 205);"><span style="font-size: 20px;"><span style="font-size: 14px;">Agent Emp Number:</span></span></span>{!FAA_Request__c.Agent_Name__r.EmployeeNumber }</td> 
+                       
+                    <td>
+                        <span style="color: rgb(0, 0, 205);"><span style="font-size: 20px;"><span style="font-size: 14px;">Delegator Emp Number:</span></span></span>{!FAA_Request__c.Delegator_Name__r.EmployeeNumber}
+                    </td>
+                </tr>
+                <tr>               
+                    
+                       
+                    <td>
+                        <span style="color: rgb(0, 0, 205);"><span style="font-size: 20px;"><span style="font-size: 14px;">Agent Redelegate:</span></span></span>{!FAA_Request__c.Agent_Redelegate__c}
+                    </td>
+                </tr>
+                   
+                <hr />
+                
+                <tr>
+                    <td style="width: 300px;">
+                        <span style="font-size: 20px;"><strong>Signature&nbsp; </strong></span>
+                    </td>   
+                </tr> 
+                <tr>               
+                    <td>
+                        <span style="color: rgb(0, 0, 205);"><span style="font-size: 20px;"><span style="font-size: 14px;">Agent's Signature:</span></span></span></td> 
+                       
+                    <td>
+                        <span style="color: rgb(0, 0, 205);"><span style="font-size: 20px;"><span style="font-size: 14px;">Agent's  Initials:</span></span></span>
+                    </td>
+                </tr>
+                
+                <tr>               
+                    <td>
+                        <span style="color: rgb(0, 0, 205);"><span style="font-size: 20px;"><span style="font-size: 14px;">Delegator's Signature and Date:</span></span></span></td> 
+                       
+                    <td></td>
+                </tr>
+                
+                <hr />    
+              
+                 
+                
+                
+                
+            </tbody>
+        </table>
+        <br/>
+        
+                 
+    </body>
+</html>
+
+
+<apex:relatedList list="Categories__r" title="Categories"/>
+
+
+</apex:page>

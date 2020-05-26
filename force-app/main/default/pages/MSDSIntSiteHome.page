@@ -1,0 +1,256 @@
+<apex:page showHeader="false" applyHtmlTag="false" standardStylesheets="false" controller="MSDSInternalSiteHomeController" >
+<html xmlns="http://www.w3.org/1999/xhtml" lang="en">
+<apex:stylesheet value="{!URLFOR($Resource.MSDSSiteCSS, '/bootstrap/css/bootstrap.css')}"/>
+<apex:stylesheet value="{!URLFOR($Resource.MSDSSiteCSS, 'styles.css')}"/>
+
+<style>
+
+    .table-bordered thead:first-child tr:first-child > th:first-child, .table-bordered tbody:first-child tr:first-child > td:first-child, .table-bordered tbody:first-child tr:first-child > th:first-child {
+        -webkit-border-top-left-radius: 4px;
+        -moz-border-radius-topleft: 4px;
+        border-top-left-radius: 4px;
+    }
+
+    .table-striped tbody > tr:nth-child(2n+1) > td, .table-striped tbody > tr:nth-child(2n+1) > th {
+        background-color: #f9f9f9;
+    }
+
+    .table .table {
+        background-color: #fffff;
+    }
+
+
+    .wpb_wrapper table tr:nth-child(even) {
+        background-color: #f8f8f8;
+    }
+    .wpb_wrapper table tr td {
+        line-height: 1.5;
+        padding: 6px;
+    }
+
+    .buttonMaterialSearch {
+        background-color: #f9f9f9;
+        border-color: #f9f9f9;
+        color: #222B70;
+    }
+
+    .buttonMaterialSearch active {
+        text-decoration: underline;
+    }
+
+.SDSContainer {
+    border: 1px solid green;
+    padding: 1px 87px;
+    margin: -14px;  
+}
+    
+a {
+    text-decoration: none;
+}
+</style>
+
+<body>
+<div class="container" style = "float: left;">
+    <div class="row">
+    	<div class="col-8">
+          	<img src="{!URLFOR($Resource.MSDSSiteCSS, 'logo.jpg')}" border="0" align="right"/> 
+        </div>
+    </div>
+    <div class="row">
+        <div class="col">
+            <img src="{!URLFOR($Resource.MSDSSiteCSS, 'heading.jpg')}" alt="" border="0" />
+        </div>
+    </div>
+    <apex:form >
+    <div class="row">
+        <div class="col-2">
+            <br/>
+            <div style="width: 109%" class="btn-group-vertical" role="group" aria-label="Button group with nested dropdown">
+                <button style="background-color: #00b259;border-color: #00b259;opacity: 1" type="button" class="btn btn-secondary" disabled="disabled">{!$Label.MSDSSDSTitleButtons}</button>
+                <apex:commandButton styleClass="btn btn-secondary buttonMaterialSearch" reRender="searchResultsPanel, errorMessagePanel" value="{!$Label.MSDSMaterialSearchButton}" action="{!goToMaterialSearch}">
+                </apex:commandButton>
+            </div>
+        </div>
+        <div class="col-6">
+            <apex:outputPanel id="errorMessagePanel">
+                <apex:outputPanel rendered="{!showErrorMessage}">
+                    <br/>
+                    <br/>
+                    <br/>
+                    <div class="alert alert-danger" role="alert">
+                        <apex:outputText escape="false" value="{!errorMessage}" />
+                    </div>
+                </apex:outputPanel>
+            </apex:outputPanel>
+
+            <apex:outputText value="{!$Label.MSDSMaterialSearchTitle}" style="font-size:24px"/>
+            <br/>
+            <br/>
+            <apex:outputText escape="false" value="{!$Label.MSDSMaterialIntroText}" />
+            <br/>
+            <br/>
+
+                <table cellpadding="0" cellspacing="0" class="table table-striped " style="font-size:8pt; background-color: #f9f9f9;">
+                <tbody>
+                <tr style = "color:#222B70; font-weight:bold; ">
+                    <td style="padding: 0.3rem; border: none">
+                        <apex:outputText escape="false" value="{!$Label.MSDSSearchBy}" />
+                    </td>
+                    <td style="padding: 0.3rem; border: none">&nbsp;
+                        <apex:selectList styleClass="searchMaterialOption" value="{!searchSelected}" size="1" >
+                            <apex:selectOptions value="{!SearchOptions}"/>
+                        </apex:selectList>
+                    </td>
+                </tr>
+                <tr style = "color:#222B70; font-weight:bold; ">
+                    <td style="padding: 0.3rem; border: none">
+                        <apex:outputText escape="false" value="{!$Label.MSDSSearchFor}" />
+                    </td>
+                    <td style="padding: 0.3rem; border: none">&nbsp;
+                        <apex:inputText styleClass="materialToSearch" id="materialToSearch" value="{!valueToSearch}" style="width: 200px; height: 19px" />
+                    </td>
+                </tr >
+                <!--
+                <tr style = "color:#222B70; font-weight:bold; ">
+                    <td style="padding: 0.3rem; border: none">
+                        <apex:outputText escape="false" value="{!$Label.MSDSFormat}" />
+                    </td>
+                    <td style="padding: 0.3rem; border: none">&nbsp;
+                        <apex:selectList value="{!formatSelected}" size="1" >
+                            <apex:selectOptions value="{!FormatOptions}"/>
+                        </apex:selectList>
+                    </td>
+                </tr>
+                <tr style = "color:#222B70; font-weight:bold; ">
+                    <td style="padding: 0.3rem; border: none">
+                        <apex:outputText escape="false" value="{!$Label.MSDSLanguage}"/>
+                    </td>
+                    <td style="padding: 0.3rem; border: none">&nbsp;
+                        <apex:selectList value="{!languageSelected}" size="1" >
+                            <apex:selectOptions value="{!LanguageOptions}"/>
+                        </apex:selectList>
+                    </td>
+                </tr>
+                -->
+                <tr>
+                    <td colspan="2" style="padding: 0.3rem; border: none">&nbsp;
+                        <apex:outputPanel >
+                            <apex:commandButton styleClass="searchButtonClass" action="{!searchMaterial}" value="{!$Label.MSDSSearchMaterials}" rerender="searchResultsPanel, errorMessagePanel" status="SearchIcon" />
+                        </apex:outputPanel>
+                        <apex:actionFunction name="searchActionFunction"   action="{!searchMaterial}" rerender="searchResultsPanel, errorMessagePanel"/>
+                        <!--
+                        <input id="ashsearch" type="submit" name="method.getTenantMaterials" title="{!$Label.MSDSSearchAshlandTenantInventoryMaterials}" alt="{!$Label.MSDSSearchAshlandTenantInventoryMaterials}" value="{!$Label.MSDSSearchAshlandTenantInventoryMaterials}"/>
+                        -->
+                    </td>
+                </tr>
+
+                </tbody>
+            </table>
+
+            <apex:outputPanel id="searchResultsPanel">
+                <apex:outputPanel rendered="{!showSearchResults}">
+
+                        <nav aria-label="Page navigation">
+                            <center>
+                            <apex:outputText value="{!pageNumber} of {0,number,} total pages" >
+                                <apex:param value="{!totalPages}"/>
+                            </apex:outputText> <br/><br/>
+                            </center>
+                            <ul class="pagination justify-content-center">
+                                <li class="page-item {!hasPrevious}">
+                                    <apex:commandLink styleClass="page-link" reRender="searchResultsPanel, errorMessagePanel" action="{!previous}" >
+                                        <span aria-hidden="true">&laquo;</span>
+                                        <span class="sr-only">Previous</span>
+                                    </apex:commandLink>
+                                </li>
+                                <apex:repeat value="{!availablePages}" var="map">
+                                    <li class="page-item {!IF((map == pageNumber),"active","")}">
+                                        <apex:commandLink styleClass="page-link" reRender="searchResultsPanel, errorMessagePanel" action="{!goToPage}" >
+                                            <apex:param name="pageNumber" value="{!map}" assignTo="{!pageNumber}"/>
+                                            <span aria-hidden="true">
+                                                    {!map}
+                                                </span>
+                                        </apex:commandLink>
+                                    </li>
+                                </apex:repeat>
+                                <li class="page-item {!hasNext}">
+                                    <apex:commandLink styleClass="page-link" reRender="searchResultsPanel, errorMessagePanel" action="{!next}" >
+                                        <span aria-hidden="true">&raquo;</span>
+                                        <span class="sr-only">Next</span>
+                                    </apex:commandLink>
+                                </li>
+                            </ul>
+                        </nav>
+
+                    <table cellpadding="0" cellspacing="0" class="table table-striped" style="font-size:8pt; width: 100%">
+                        <tbody>
+                        <tr style = "color:#222B70; font-weight:bold; ">
+                            <td style="padding: 8px 4px 8px; border-top:none">
+                                {!$Label.MSDSMaterialNumber}
+                            </td>
+                            <td style="padding: 8px 4px 8px; border-top:none">
+                                {!$Label.MSDSMaterialName}
+                            </td>
+                            <td style="padding: 8px 4px 8px; border-top:none">
+                                {!$Label.MSDSInternalName}
+                            </td>
+                        </tr>
+                        <apex:repeat value="{!materialResultListToShow}" var="searchResult" >
+                            <tr>
+                                <td  style="padding: 2px 4px 2px;">
+                                    <apex:commandLink reRender="searchResultsPanel, errorMessagePanel" value="{!VALUE(searchResult.material)}" action="{!goToMaterialDetail}">
+                                        <apex:param name="materialNumber" value="{!VALUE(searchResult.material)}" assignTo="{!materialNumber}"/>
+                                        <apex:param name="materialName" value="{!searchResult.product_name}" assignTo="{!materialName}"/>
+                                    </apex:commandLink>
+                                </td>
+                                <td  style="padding: 2px 4px 2px;">
+                                    <apex:commandLink reRender="searchResultsPanel, errorMessagePanel" value="{!searchResult.product_name}" action="{!goToMaterialDetail}">
+                                        <apex:param name="materialNumber" value="{!VALUE(searchResult.material)}" assignTo="{!materialNumber}"/>
+                                        <apex:param name="materialName" value="{!searchResult.product_name}" assignTo="{!materialName}"/>
+                                    </apex:commandLink>
+
+                                </td>
+                                <td  style="padding: 2px 4px 2px;">
+                                    {!searchResult.matl_desc}
+                                </td>
+                            </tr>
+                        </apex:repeat>
+                        </tbody>
+                    </table>
+                </apex:outputPanel>
+            </apex:outputPanel>
+
+        </div>
+    </div>
+    </apex:form>
+</div>    
+       
+  
+
+</body></html>
+<apex:includeScript value="{!URLFOR($Resource.MSDSSiteCSS, '/jquery/jquery-3.3.1.js')}"/>
+<apex:includeScript value="{!URLFOR($Resource.MSDSSiteCSS, '/popper/popper.js')}"/>
+<apex:includeScript value="{!URLFOR($Resource.MSDSSiteCSS, '/bootstrap/js/bootstrap.js')}"/>
+    
+<script>
+jQuery(function($) {
+   $(document).ready(function(){
+        $('.searchMaterialOption').on('change', function() {
+          $(".materialToSearch").val('');
+        });       
+   });
+});
+$(document).on('keypress',function(e) {
+    if(e.which == 13) {
+        searchActionFunction();
+    }
+});
+$('.materialToSearch').on('keypress',function(e) {
+    if(window.event && window.event.keyCode == 13||e.which == 13) {
+        searchActionFunction();
+        return false;
+    }
+});      
+</script>    
+
+</apex:page>

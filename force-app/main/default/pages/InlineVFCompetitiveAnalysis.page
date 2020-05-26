@@ -1,0 +1,13 @@
+<apex:page standardController="Competitive_Analysis_Report__c">
+  <center>
+  <h1><apex:image url="{!$Resource.Nexeo_Logo}" width="200" height="50" style="align:center;"/></h1><br></br>
+  <br></br><br></br>
+  <h6 style="text-align:center;color:black;">
+  Technical Services Laboratory
+</h6><br></br>
+
+<h1 style="text-align:center;color:black;">
+LABORATORY REPORT
+</h1>
+</center>
+</apex:page>

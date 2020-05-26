@@ -1,0 +1,6 @@
+<apex:page showHeader="false" sidebar="false" docType="html-5.0" standardStylesheets="false" cache="false" applyHtmlTag="false" applyBodyTag="false">
+    <c:cc_3d_MyAccountCountryFilter />
+    <c:cc_3d_MyAccountOrders />
+    <c:cc_3d_MyAccountUserInformation />
+
+</apex:page>

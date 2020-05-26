@@ -1,0 +1,143 @@
+<!-- 
+Description: Updating visualforce page to support OE projects
+Date: 9 / 26 / 2017
+Developer: Ignacio Gonzalez
+-->
+<apex:page standardController="ART_Project__c" extensions="ProjectController" tabStyle="ART_Project__c" lightningStylesheets="{!$User.UIThemeDisplayed == 'Theme4d'}">
+<script src="{!URLFOR($Resource.JQuery_Pricing, 'JQuery_Pricing/js/jquery-1.8.3.min.js')}" type="text/javascript"/> 
+<script src="{!URLFOR($Resource.JQuery_Pricing, 'JQuery_Pricing/js/jquery-ui-1.9.2.custom.js')}" type="text/javascript"/>
+
+<apex:stylesheet value="{!URLFOR($Resource.JQuery_Pricing, 'JQuery_Pricing/themes/default/easyui.css')}"/>
+<apex:stylesheet value="{!URLFOR($Resource.JQuery_Pricing, 'JQuery_Pricing/css/start/jquery-ui-1.10.1.custom.min.css')}"/>
+<style>
+.sfdcBody div.autoCompleteBoxScrolling {
+	width: 28% !important;
+}
+    
+body .detailList .dataCol input[type="text"] {
+	min-width: 14rem !important;
+}
+    
+</style>    
+<script>
+
+  
+    /*
+$("[id$='autocomplete']").autocomplete({
+        source: function( request, response ) {
+          ProjectController.autocomplete_name(request.term, function(result, event){
+                    if(event.type == 'exception') {
+                      console.log(event.message);        
+                    } else {      
+                      response(result);
+                    }
+          });
+        },
+         select: function( event, ui ) {
+            
+            $("[id$='autocomplete_lkid']").val(ui.item.value);
+            $("[id$='autocomplete']").val(ui.item.label);
+            return false;
+        },
+        minLength: 2
+        });
+       });  */
+</script>        
+<apex:form id="proform">
+<apex:pageMessages ></apex:pageMessages>
+ <apex:sectionHeader title="{!IF((ART_Project__c.RecordTypeId = OECustomSettings['Project_Record_Type_Id_18__c'] || ART_Project__c.RecordTypeId = OECustomSettings['Project_Record_Type_Id_15__c']),'Project', 'Workstream')}" subtitle="{!IF((ART_Project__c.RecordTypeId = '012E0000000LG99IAG' || ART_Project__c.RecordTypeId = '012E0000000LG99'),'New Project', 'New Workstream')}"/>
+<apex:pageBlock title="{!IF((ART_Project__c.RecordTypeId = OECustomSettings['Project_Record_Type_Id_18__c'] || ART_Project__c.RecordTypeId = OECustomSettings['Project_Record_Type_Id_15__c'] ),'Project Detail', 'Workstream Detail')}" mode="edit" id="proid">
+<apex:pageBlockButtons id="buttons" location="top">
+<apex:commandButton action="{!save}" value="Save"/>
+<apex:commandButton action="{!cancel}" value="Cancel"/>
+
+</apex:pageBlockButtons>
+
+<apex:pageBlockSection showHeader="true" title="Information" columns="2"
+                id="Information">
+                
+               <apex:inputField value="{!ART_Project__c.OwnerId}" />
+               <!-- Only show project number for projects-->
+               <apex:inputField value="{!ART_Project__c.Project_Number__c}" rendered="{!IF((ART_Project__c.RecordTypeId = OECustomSettings['Project_Record_Type_Id_18__c'] || ART_Project__c.RecordTypeId = OECustomSettings['Project_Record_Type_Id_15__c'] ), true, false)}"/>
+               <apex:inputField value="{!ART_Project__c.Workstream_Number__c}" rendered="{!IF((ART_Project__c.RecordTypeId = OECustomSettings['Project_Record_Type_Id_18__c'] || ART_Project__c.RecordTypeId = OECustomSettings['Project_Record_Type_Id_15__c']),  false, true)}"/>
+    			<!-- Only Parent project for work streams-->
+               <apex:inputField id="parentProjectId" value="{!ART_Project__c.Parent_Project__c}" rendered="{!IF((ART_Project__c.RecordTypeId = OECustomSettings['Project_Record_Type_Id_18__c']|| ART_Project__c.RecordTypeId = OECustomSettings['Project_Record_Type_Id_15__c']),  false, true)}" required="{!IF((ART_Project__c.RecordTypeId = OECustomSettings['Project_Record_Type_Id_18__c'] || ART_Project__c.RecordTypeId = OECustomSettings['Project_Record_Type_Id_15__c']), false, true)}"/>
+
+    		   <apex:inputtextarea value="{!ART_Project__c.Name}" id="autocomplete" label="{!IF((ART_Project__c.RecordTypeId = OECustomSettings['Project_Record_Type_Id_18__c'] || ART_Project__c.RecordTypeId = OECustomSettings['Project_Record_Type_Id_15__c']), 'Project Name', 'Workstream Name')}" cols="70" rows="1" />
+               <!-- <apex:inputField value="{!ART_Project__c.Sub_Type__c}" /> -->
+               <!-- <apex:inputField value="{!ART_Project__c.Track__c}" /> --> 
+               <apex:inputField value="{!ART_Project__c.Tier__c}" required="true"/>
+               <apex:inputField value="{!ART_Project__c.Line_of_Business__c}" required="true"/>
+               <apex:inputField value="{!ART_Project__c.Project_Status__c}" required="true"/>
+               <!-- <apex:inputField value="{!ART_Project__c.Strategic_Imperatives__c}" /> -->
+               <!-- <apex:inputField value="{!ART_Project__c.Project_Value__c}" /> -->
+               <!-- <apex:inputField value="{!ART_Project__c.Business_Sponsor__c}" /> -->
+               <!-- <apex:inputField value="{!ART_Project__c.Budget__c}" /> -->
+               <!-- <apex:inputField value="{!ART_Project__c.User_Contact__c}" required="true"/> -->
+    		   <apex:inputField value="{!ART_Project__c.Primary_Business_Contact__c}" required="true"/>
+               <!-- <apex:inputField value="{!ART_Project__c.Estimate_Dollars__c}" /> -->
+               <apex:inputField value="{!ART_Project__c.IT_Sponsor__c}" />
+               <apex:inputField value="{!ART_Project__c.Value_Proposition__c}" required="true"/>
+               <!-- <apex:inputField value="{!ART_Project__c.CAPEX__c}" /> -->
+               <apex:inputField value="{!ART_Project__c.SG_A_Reduction_Annualized__c}" />
+               <apex:inputField value="{!ART_Project__c.SG_A_Required__c}" />    
+               <apex:inputField value="{!ART_Project__c.AFE_Approved__c}" />
+               <!-- <apex:inputField value="{!ART_Project__c.X3rd_Party_SOW_Signed__c}" />  -->
+          <!-- <apex:inputField value="{!ART_Project__c.Budget_RYG__c}" /> -->
+            </apex:pageBlockSection>
+            
+<apex:pageBlockSection showHeader="true" title="Details" columns="2"
+                id="Details">
+    <apex:pageblocksection columns="1">
+               <apex:pageblockSectionItem >
+                <apex:outputLabel >Start Date</apex:outputLabel>
+                <apex:actionRegion >
+                <apex:inputfield value="{!ART_Project__c.Start_Date__c}"  required="true" >
+                <apex:actionSupport event="onchange" reRender="Details" action="{!stagechanged}"/>
+                </apex:inputfield>
+                </apex:actionRegion>
+                </apex:pageblockSectionItem>
+        		<apex:inputField value="{!ART_Project__c.Project_Manager__c}" required="true"/>
+        		<apex:inputField value="{!ART_Project__c.Link_to_Sharepoint__c}" html-placeholder="nexeo.sharepoint.com/Project"/>
+               <apex:inputField value="{!ART_Project__c.Display_this_text_for_Link_to_Sharepoint__c}" html-placeholder="easyProject"/>
+      </apex:pageblocksection>
+    
+    <apex:pageblocksection columns="1">
+                
+                <apex:pageblockSectionItem >
+                <apex:outputLabel >End Date</apex:outputLabel>
+                <apex:actionRegion >
+                <apex:inputfield value="{!ART_Project__c.Target_Date_for_Completion__c}" required="true" >
+                <apex:actionSupport event="onchange" reRender="Details" action="{!stagechanged}"/>
+                </apex:inputfield>
+                </apex:actionRegion>
+                </apex:pageblockSectionItem>
+                
+               
+               <!-- <apex:inputField value="{!ART_Project__c.Remedy_Ticket__c}" /> -->              
+               <!-- <apex:inputField value="{!ART_Project__c.Application_Module__c}"/> -->                                  
+          
+         </apex:pageblocksection>      
+    
+    </apex:pageBlockSection>
+                           
+               
+<apex:pageBlockSection showHeader="true" title="IT Group" columns="2"
+                id="IT_Group">
+                <apex:inputField value="{!ART_Project__c.IT_Group__c}"/>
+
+                
+                </apex:pageBlockSection>  
+                
+<apex:pageBlockSection showHeader="true" title="Description" columns="2"
+                id="Description">                
+                <apex:inputField value="{!ART_Project__c.Requirements__c}"/>
+                <apex:inputField value="{!ART_Project__c.Overview__c}"/>
+                <apex:inputField value="{!ART_Project__c.Impact__c}"/>
+            
+                </apex:pageBlockSection> 
+
+                </apex:pageBlock>
+                </apex:form>
+            
+</apex:page>

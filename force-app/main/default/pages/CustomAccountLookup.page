@@ -1,0 +1,142 @@
+<apex:page controller="AccountLookupController"
+  title="Search" 
+  showHeader="false" 
+  sideBar="false" 
+  tabStyle="Account" 
+  id="pg">
+ 
+  <apex:form >
+  <apex:outputPanel id="page" layout="block" style="margin:5px;padding:10px;padding-top:2px;">
+    <apex:tabPanel switchType="client" selectedTab="name1" id="tabbedPanel">
+ 
+      <!-- SEARCH TAB -->
+      <apex:tab label="Search" name="tab1" id="tabOne">
+ 
+        <apex:actionRegion >  
+          <apex:outputPanel id="top" layout="block" style="margin:5px;padding:10px;padding-top:2px;">
+            <apex:outputLabel value="Account Owner" style="font-weight:Bold;padding-right:10px;" for="owner"/>
+            <apex:selectradio value="{!owner}" id="owner">
+            <apex:selectoption itemlabel="My Accounts" itemValue="My Accounts"/>
+            <apex:selectoption itemlabel="All Accounts" itemValue="All Accounts"/>
+            </apex:selectradio>
+            <apex:outputLabel value="Division" style="font-weight:Bold;padding-right:10px;" for="Division"/>
+            <apex:selectradio value="{!division}" id="Division">
+            <apex:selectoption itemlabel="Chemicals" itemValue="Chemicals"/>
+            <apex:selectoption itemlabel="Composites" itemValue="Composites"/>
+            <apex:selectoption itemlabel="Env Services" itemValue="Env Services"/>
+            <apex:selectoption itemlabel="Plastics" itemValue="Plastics"/>
+            <apex:selectoption itemlabel="Nexeo Small Package " itemValue="Nexeo Small Package "/>            
+            </apex:selectradio>
+            <apex:outputLabel value="Account Type" style="font-weight:Bold;padding-right:10px;" for="AccType"/>
+            <apex:selectradio value="{!type}" id="AccType">
+            <apex:selectoption itemlabel="Customer" itemValue="Customer"/>
+            <apex:selectoption itemlabel="Prospect" itemValue="Prospect"/>
+            </apex:selectradio>
+            <apex:outputLabel value="Search By" style="font-weight:Bold;padding-right:10px;" for="SearchBy"/>
+            <apex:selectradio value="{!NameOrNumber}" id="SearchBy">
+            <apex:selectoption itemlabel="Account Name" itemValue="name"/>
+            <apex:selectoption itemlabel="Account Number" itemValue="accountnumber"/>
+            <apex:selectoption itemlabel="Account Nickname" itemValue="Account_Search_Phrase__c"/>
+            </apex:selectradio>
+            
+            <apex:outputLabel value="Search" style="font-weight:Bold;padding-right:10px;" for="txtSearch"/><br/>
+            <apex:inputText id="txtSearch" value="{!searchString}" />
+            <span style="padding-left:5px"><apex:commandButton id="btnGo" value="Go" action="{!Search}" rerender="searchResults" status="btnstatus"/></span>
+          </apex:outputPanel>
+          <apex:actionStatus id="btnstatus">
+          <apex:facet name="start">
+          <c:EnhancedActionStatus BackColor="#efefef" borderColor="#336699" borderSize="3" height="20px" width="100px" ImageUrl="{!$Resource.spinner}" Message="Loading..." messageStyle="color:darkred;font-size:11pt;font-weight:bold;"/>
+          </apex:facet>
+          </apex:actionStatus>
+ 
+          <apex:outputPanel id="pnlSearchResults" style="margin:10px;height:350px;overflow-Y:auto;" layout="block">
+            <apex:pageBlock id="searchResults"> 
+              <apex:pageBlockTable value="{!results}" var="a" id="tblResults">
+                <apex:column >
+                <apex:facet name="header">
+                <apex:commandLink action="{!sortResults}" >Owner <apex:image value="{!sortArrow}" rendered="{!IF(sortField = 'Owner_Name__c', true, false)}"/>
+                <apex:param assignTo="{!sortField}" value="Owner_Name__c"/>
+                </apex:commandlink>                
+                </apex:facet>
+                <apex:outputfield value="{!a.Owner_Name__c}"/>
+                </apex:column>
+                <apex:column >
+                <apex:facet name="header">
+                <apex:commandLink action="{!sortResults}" >Name <apex:image value="{!sortArrow}" rendered="{!IF(sortField = 'Name', true, false)}"/>
+                <apex:param assignTo="{!sortField}" value="Name"/>
+                </apex:commandlink>                
+                </apex:facet>
+                <apex:outputLink value="javascript:top.window.opener.lookupPick2('{!FormTag}','{!TextBox}_lkid','{!TextBox}','{!a.Id}','{!a.Account_name_new__c}', false)" rendered="{!NOT(ISNULL(a.Id))}">{!a.Name}</apex:outputLink>     
+                </apex:column>
+                <apex:column >
+                <apex:facet name="header">
+                <apex:commandLink action="{!sortResults}" >Account Number <apex:image value="{!sortArrow}" rendered="{!IF(sortField = 'accountnumber', true, false)}"/>
+                <apex:param assignTo="{!sortField}" value="accountnumber"/>
+                </apex:commandlink>                
+                </apex:facet>
+                <apex:outputfield value="{!a.accountnumber}"/>
+                </apex:column>
+                <apex:column >
+                <apex:facet name="header">
+                <apex:commandLink action="{!sortResults}" >Full Address <apex:image value="{!sortArrow}" rendered="{!IF(sortField = 'Full_Address__c', true, false)}"/>
+                <apex:param assignTo="{!sortField}" value="Full_Address__c"/>
+                </apex:commandlink>                
+                </apex:facet>
+                <apex:outputfield value="{!a.Full_Address__c}"/>
+                </apex:column>
+                <apex:column >
+                <apex:facet name="header">
+                <apex:commandLink action="{!sortResults}" >Sales Area <apex:image value="{!sortArrow}" rendered="{!IF(sortField = 'Sales_Area__c', true, false)}"/>
+                <apex:param assignTo="{!sortField}" value="Sales_Area__c"/>
+                </apex:commandlink>                
+                </apex:facet>
+                <apex:outputfield value="{!a.sales_area__c}"/>
+                </apex:column>
+                <apex:column >
+                <apex:facet name="header">
+                <apex:commandLink action="{!sortResults}" >Sales Office <apex:image value="{!sortArrow}" rendered="{!IF(sortField = 'SAP_Sales_Office_Desc__c', true, false)}"/>
+                <apex:param assignTo="{!sortField}" value="SAP_Sales_Office_Desc__c"/>
+                </apex:commandlink>                
+                </apex:facet>
+                <apex:outputfield value="{!a.SAP_Sales_Office_Desc__c}"/>
+                </apex:column>
+                <apex:column >
+                <apex:facet name="header">
+                <apex:commandLink action="{!sortResults}" >Sales Group <apex:image value="{!sortArrow}" rendered="{!IF(sortField = 'SAP_Sales_Group_Desc__c', true, false)}"/>
+                <apex:param assignTo="{!sortField}" value="SAP_Sales_Group_Desc__c"/>
+                </apex:commandlink>                
+                </apex:facet>
+                <apex:outputfield value="{!a.SAP_Sales_Group_Desc__c}"/>
+                </apex:column>
+              </apex:pageBlockTable>
+            </apex:pageBlock>
+          </apex:outputPanel>
+        </apex:actionRegion>
+ 
+      </apex:tab>
+
+      <!-- NEW ACCOUNT TAB -->
+<!--
+      <apex:tab label="New Account" name="tab2" id="tabTwo">
+ 
+        <apex:pageBlock id="newAccount" title="New Account" >
+ 
+          <apex:pageBlockButtons >
+            <apex:commandButton action="{!saveAccount}" value="Save"/>
+          </apex:pageBlockButtons>
+          <apex:pageMessages />
+ 
+          <apex:pageBlockSection columns="2">
+            <apex:repeat value="{!$ObjectType.Account.FieldSets.CustomAccountLookup}" var="f">
+              <apex:inputField value="{!Account[f]}"/>
+            </apex:repeat>
+          </apex:pageBlockSection> 
+        </apex:pageBlock>
+ 
+      </apex:tab>
+-->
+    </apex:tabPanel>
+
+  </apex:outputPanel>
+  </apex:form>
+</apex:page>

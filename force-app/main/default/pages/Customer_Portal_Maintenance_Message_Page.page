@@ -1,0 +1,7 @@
+<apex:page sidebar="false">
+  <style type="text/css">
+        p { font-weight: bold; color: Green; font-weight: bold; font-size:25px}
+  </style>
+   <!-- <p> We apologize for the inconvenience as we are implementing system changes at this time. Access to the portal will become available again Sunday March 3rd at 12:00pm Eastern Standard Time.</p> -->
+        <p> We apologize for the inconvenience as we are implementing system changes at this time. Access to the portal will become available again as soon as possible.</p> 
+</apex:page>

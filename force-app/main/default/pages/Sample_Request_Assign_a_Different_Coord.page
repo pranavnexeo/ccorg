@@ -1,0 +1,21 @@
+<apex:page controller="Sample_Request_Controller" tabStyle="Sample_Request__c" action="{!init_Assign_a_Different_Coordinator}">
+<apex:stylesheet value="{!$Resource.SampleRequestStyles}"></apex:stylesheet>
+
+        <apex:sectionHeader title="{!$Label.Assign_Different_Coordinator} {!Sample_Request_Link}"/>
+        <apex:form >
+                <apex:pageBlock title="{!$Label.Sample_Coordinator_Info}">
+                        <apex:facet name="footer">
+                                <apex:outputPanel >
+                                        <center>
+                                        <apex:commandButton action="{!Assign_a_Different_Coordinator}" value="{!$Label.Save}" styleClass="btn"/>
+                                        <apex:commandButton action="{!Cancel_Save}" value="{!$Label.Cancel}" styleClass="btn"/> 
+                                        </center>
+                                </apex:outputPanel>
+                                </apex:facet>
+                                <apex:pageBlockSection title="{!$Label.Choose_Coordinator}:" columns="1" collapsible="false">
+                                        <apex:InputField value="{!sampleRequest.Sample_Coordinator__c}" required="true"/>
+                                </apex:pageBlockSection>
+                    </apex:pageBlock> 
+                </apex:form>
+
+</apex:page>

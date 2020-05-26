@@ -1,0 +1,3 @@
+<apex:page >
+<iframe src="/apex/profit_calc?nooverride=1" height="1000px" width="100%"/>
+</apex:page>

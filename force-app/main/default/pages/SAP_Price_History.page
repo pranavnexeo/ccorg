@@ -1,0 +1,293 @@
+<apex:page controller="SAP_Price_History" id="thepage" sidebar="false" standardstylesheets="false">
+<meta http-equiv="X-UA-Compatible" content="chrome=1"/>
+
+<script src="{!URLFOR($Resource.JQuery_Pricing, '/JQuery_Pricing/js/jquery-1.8.3.min.js')}" type="text/javascript"/> 
+<script src="{!URLFOR($Resource.JQuery_Pricing, '/JQuery_Pricing/js/jquery-ui-1.9.2.custom.js')}" type="text/javascript"/>
+<script src="{!URLFOR($Resource.JQuery_Pricing, '/JQuery_Pricing/js/jquery.mobile.events.js')}" type="text/javascript"/>
+<script src="{!URLFOR($Resource.JQuery_Pricing, '/JQuery_Pricing/js/jquery.dataTables.js')}" type="text/javascript"/>
+<script src="{!URLFOR($Resource.JQuery_Pricing, '/JQuery_Pricing/js/jquery.dataTables.columnFilter.js')}" type="text/javascript"></script>
+<script src="{!URLFOR($Resource.JQuery_Pricing, '/JQuery_Pricing/js/jquery-ui.toggleSwitch.js')}" type="text/javascript"/>
+<script src="{!URLFOR($Resource.JQuery_Pricing, '/JQuery_Pricing/js/jquery.sortElements.js')}" type="text/javascript"></script>
+<script src="{!URLFOR($Resource.JQuery_Pricing, '/JQuery_Pricing/js/jquery.dataTables.extensions.js')}" type="text/javascript"></script>
+<script src="{!URLFOR($Resource.JQuery_Pricing, '/JQuery_Pricing/js/jquery.tooltip.js')}" type="text/javascript"></script>
+<script src="{!URLFOR($Resource.JQuery_Pricing, '/JQuery_Pricing/js/jquery.multiselect.min.js')}" type="text/javascript"/> 
+<script src="{!URLFOR($Resource.JQuery_Pricing, '/JQuery_Pricing/js/jquery.multiselect.filter.js')}" type="text/javascript"/>
+<script src="{!URLFOR($Resource.JQuery_Pricing, '/JQuery_Pricing/js/jquery.validate.js')}" type="text/javascript"/>
+<script src="{!URLFOR($Resource.JQuery_Pricing, '/JQuery_Pricing/js/jquery.form.js')}" type="text/javascript"/>
+<script src="{!URLFOR($Resource.JQuery_Pricing, '/JQuery_Pricing/js/jquery.bbq.js')}" type="text/javascript"/>
+<script src="{!URLFOR($Resource.JQuery_Pricing, '/JQuery_Pricing/js/jquery.form.wizard.js')}" type="text/javascript"/>
+<script src="{!URLFOR($Resource.JQuery_Pricing, '/JQuery_Pricing/js/jquery.easyui.min.js')}" type="text/javascript"></script>
+
+<apex:stylesheet value="{!URLFOR($Resource.JQuery_Pricing, '/JQuery_Pricing/themes/default/easyui.css')}"/>  
+<apex:stylesheet value="{!URLFOR($Resource.JQuery_Pricing, '/JQuery_Pricing/css/jquery.tooltip.css')}"/>
+<apex:stylesheet value="{!URLFOR($Resource.JQuery_Pricing, '/JQuery_Pricing/css/start/jquery-ui-1.10.1.custom.min.css')}"/>
+<apex:stylesheet value="{!URLFOR($Resource.JQuery_Pricing, '/JQuery_Pricing/css/demo_table.css')}"/> 
+<apex:stylesheet value="{!URLFOR($Resource.JQuery_Pricing, '/JQuery_Pricing/themes/default/easyui.css')}"/>    
+<apex:stylesheet value="{!URLFOR($Resource.JQuery_Pricing, '/JQuery_Pricing/themes/icon.css')}"/> 
+<apex:stylesheet value="{!URLFOR($Resource.JQuery_Pricing, '/JQuery_Pricing/themes/default/menu.css')}"/>
+<apex:stylesheet value="{!URLFOR($Resource.JQuery_Pricing, '/JQuery_Pricing/themes/default/menubutton.css')}"/>
+<apex:stylesheet value="{!URLFOR($Resource.JQuery_Pricing, '/JQuery_Pricing/themes/default/splitbutton.css')}"/>
+<apex:stylesheet value="{!URLFOR($Resource.JQuery_Pricing, '/JQuery_Pricing/themes/icon.css')}"/>
+<apex:stylesheet value="{!URLFOR($Resource.JQuery_Pricing, '/JQuery_Pricing/css/jquery-ui.toggleSwitch.css')}"/> 
+<apex:stylesheet value="{!URLFOR($Resource.JQuery_Pricing, '/JQuery_Pricing/css/jquery.multiselect.css')}"/> 
+<apex:stylesheet value="{!URLFOR($Resource.JQuery_Pricing, '/JQuery_Pricing/css/jquery.multiselect.filter.css')}"/> 
+<script  src="/soap/ajax/25.0/connection.js" type="text/javascript"></script>
+<script  src="/soap/ajax/25.0/apex.js" type="text/javascript"></script>
+
+
+<script type="text/javascript" charset="utf-8">
+var oTable;
+var aColumnIndex = new Array();
+var aRow = new Array();
+var asInitVals = new Array();
+var sPrevAccount = '';
+var iProcessing = 0;
+var iLimit = 750;
+var iLength = 0;
+        
+           
+
+
+    $(document).ready(function() {          
+         
+         oTable = $('#approvalstable').dataTable({
+                "iDisplayLength": 100,
+                "bDestroy": true,
+                "fnDrawCallback": function( oSettings ) {
+                   $('.row_selected').removeClass('row_selected');
+                   $('.row_error').removeClass('row_error');
+                },
+                "bSort": true,
+                "sAjaxDataProp": "accounts",
+                "sDom": 'lfrtip',
+                "bJQueryUI": true,
+                "aoColumnDefs":[
+                    
+                    { "aTargets":[ "Ship_To" ], "mData": "ams.Account_Name__c", sClass:"Account_Name__c",sWidth:"2px", "bAutoWidth": false },
+                    { "aTargets":[ "Sold_To" ], "mData": "ams.Account_Sold_To__c", sClass:"Account_Sold_To__c",sWidth:"2px", "bAutoWidth": false },
+                    { "aTargets":[ "Corporate" ], "mData": "ams.Account__r.SAP_Corporate_Account__c", sClass:"Account__r.SAP_Corporate_Account__c",sWidth:"2px", "bAutoWidth": false },
+                    { "aTargets":[ "Account_Number" ], "mData": "ams.Account_Number__c", sClass:"Account_Number__c",sWidth:"2px", "bAutoWidth": false },
+                    { "aTargets":[ "Account_City" ], "mData": "ams.Account_City__c", sClass:"Account_City__c",sWidth:"2px", "bAutoWidth": false },
+                    { "aTargets":[ "Account_State" ], "mData": "ams.Account__r.SAP_State__c", sClass:"Account__r.SAP_State__c",sWidth:"2px", "bAutoWidth": false },
+                    { "aTargets":[ "Material" ], "mData": "ams.Material__c", sClass:"Material__c",sWidth:"2px", "bAutoWidth": false },
+                    { "aTargets":[ "Base_Code" ], "mData": "ams.Material_Base_Code__c", sClass:"Material_Base_Code__c",sWidth:"2px", "bAutoWidth": false },
+                    { "aTargets":[ "csp_effective_date" ], "mData": "csp_effective_date", sClass:"csp_effective_date",sWidth:"2px", "bAutoWidth": false }, 
+                    { "aTargets":[ "csp_expiration_date" ], "mData": "csp_expiration_date", sClass:"csp_expiration_date",sWidth:"2px", "bAutoWidth": false }, 
+                    { "aTargets":[ "csp_volume" ], "mData": "csp_volume", sClass:"csp_volume",sWidth:"2px", "bAutoWidth": false }, 
+                    { "aTargets":[ "csp_scale_uom" ], "mData": "csp_scale_uom", sClass:"csp_scale_uom",sWidth:"2px", "bAutoWidth": false }, 
+                    { "aTargets":[ "csp_price" ], "mData": "csp_price", sClass:"csp_price",sWidth:"2px", "bAutoWidth": false }, 
+                    { "aTargets":[ "csp_uom" ], "mData": "csp_uom", sClass:"csp_uom",sWidth:"2px", "bAutoWidth": false }, 
+                    { "aTargets":[ "Drum_Dep" ],"mData": "ams.Drum_Deposit__c", sClass:"Drum_Deposit__c",sWidth:"2px", "bAutoWidth": false },
+                    { "aTargets":[ "Price_Protection" ], "mData": "csp_price_protection_code", sClass:"Price_Protection__c",sWidth:"2px", "bAutoWidth": false },
+                    
+                 
+                  ],
+                    
+              });//end of 'approvalstable'
+       
+                       
+      FetchApprovalTable();
+   
+        
+      }); 
+      
+      function FetchApprovalTable(){
+      var paramid = '{!$CurrentPage.parameters.ids}';
+     
+             SAP_Price_History.getRecordsToDisplay(paramid , function(result, event){ 
+              if(event.type == 'exception') {
+                    
+              } else { 
+                if(result.length > 0){
+
+                  oTable = $('#approvalstable').dataTable();
+                  oTable.fnAddData(result);
+                  
+                 // fnUpdateFilterSelect('approvalstable'); 
+                  }
+               }
+             }, {buffer: true, escape: true, timeout:120000});
+        }
+    
+        
+             
+</script>
+<style>
+label.error {
+    color: red;
+}
+div.error{
+border-style:solid;
+border-width:1.5px;
+border-color:red;
+}
+input.error{
+border-style:solid;
+border-color:red;
+}
+select.error{
+border-style:solid;
+border-color:red;
+}
+input:disabled{ background-color:LightGray}
+
+textarea { padding: 5px; width: 400px; }
+#ff label{
+     display:block;
+     width:100px;
+}
+#button { padding: .5em 1em; text-decoration: none; }
+#effect { padding: 0.4em; position: relative; }
+.ui-menu { position: absolute; }
+tbody tr.even:hover,  tbody tr.even td.highlighted {
+    background-color: #ECFFB3;
+}
+tbody tr.odd:hover,  tbody tr.odd td.highlighted {
+    background-color: #E6FF99;
+}
+tr.even:hover {
+    background-color: #ECFFB3;
+}
+tr.even:hover td.sorting_1 {
+    background-color: #DDFF75;
+}
+tr.even:hover td.sorting_2 {
+    background-color: #E7FF9E;
+}
+tr.even:hover td.sorting_3 {
+    background-color: #E2FF89;
+}
+tr.odd:hover {
+    background-color: #E6FF99;
+}
+tr.odd:hover td.sorting_1 {
+    background-color: #D6FF5C;
+}
+tr.odd:hover td.sorting_2 {
+    background-color: #E0FF84;
+}
+tr.odd:hover td.sorting_3 {
+    background-color: #DBFF70;
+}
+
+table.viewtable tr.even.row_selected td {
+    background-color: #B0BED9;
+}
+table.viewtable tr.odd.row_selected td {
+    background-color: #9FAFD1;
+}
+
+table.gridtable {
+    font-family: verdana,arial,sans-serif;
+    font-size:11px;
+    color:#333333;
+    border-width: 1px;
+    border-color: #666666;
+    border-collapse: collapse;
+}
+table.gridtable th {
+    border-width: 1px;
+    padding: 8px;
+    border-style: solid;
+    border-color: #666666;
+    background-color: #dedede;
+}
+table.gridtable td {
+    border-width: 1px;
+    padding: 8px;
+    border-style: solid;
+    border-color: #666666;
+    background-color: #ffffff;
+}
+label.error {
+    color: red;
+}
+input.error{
+border-style:solid;
+border-color:red;
+}
+input.error+span{
+border-style:solid;
+border-color:red;
+}
+select.error{
+border-style:solid;
+border-color:red;
+}
+</style>
+<input type="hidden" id="apprids"/>
+<apex:form id="actionform">
+<apex:actionStatus id="EnhancedStatus">
+<apex:facet name="start">
+<c:EnhancedActionStatus BackColor="#efefef" borderColor="#336699" borderSize="3" height="20px" width="100px" ImageUrl="{!$Resource.spinner}" Message="Loading..." messageStyle="color:darkred;font-size:11pt;font-weight:bold;"/>
+</apex:facet>
+</apex:actionStatus>
+</apex:form>
+
+  
+<table>
+<tr><td>
+<table style="width:100%;" class="viewtable display" id="approvalstable">
+<thead>
+<!--
+<tr>
+
+    <th class="textfilter" data-field="Account_Sold_To__c">Sold To</th>
+    <th class="textfilter" data-field="Account_Name__c">Ship To</th>
+    <th class="textfilter" data-field="Account_Number__c">Account Number</th>
+    <th class="textfilter" data-field="Account_City__c">City</th>
+    <th class="textfilter" data-field="Material__c">Material</th>
+    <th class="textfilter" data-field="Material_Base_Code__c">Base Code</th>
+    <th class="textfilter" data-field="CSP_Effective_Date__c">Start Date</th>
+    <th class="textfilter" data-field="CSP_Expiration_Date__c">End Date</th>
+    <th class="numberfilter" data-field="Avg_Order__c">Avg Order</th>
+    <th class="numberfilter" data-field="Estimated_Order_Quantity__c">Est Order</th>
+    <th class="listfilter" data-field="CSP_Tier__c">CSP Tier</th>
+    <th class="textfilter" data-field="CSP__c">CSP</th>
+    <th class="numberfilter" data-field="TPI__c">TPI %</th>
+    <th class="listfilter" data-field="Target_Tier__c">Target Tier</th>
+    <th class="numberfilter" data-field="Target__c">Target</th>
+    <th class="listfilter" data-field="Drum_Deposit__c">Drum Dep</th>
+    <th class="listfilter" data-field="Price_Protection__c">Price Protection</th>
+    <th class="textfilter" data-field="csp_effective_date">Start Date</th>
+    <th class="textfilter" data-field="csp_expiration_date">Expiration Date</th>
+    <th class="numberfilter" data-field="csp_volume">Volume</th>
+    <th class="textfilter" data-field="csp_scale_uom">UoM</th>
+    <th class="numberfilter" data-field="csp_price">Price</th>
+    <th class="textfilter" data-field="csp_uom">UoM</th>
+    <th class="textfilter" data-field="csp_sfdc_pricereq_nbr">Transaction</th>
+    
+    
+    </tr>
+-->
+    <tr>
+   
+    <th class="Ship_To">Ship To</th>
+    <th class="Sold_To">Sold To</th>
+    <th class="Corporate">Corporate</th>
+    <th class="Account_Number">Account Number</th>
+    <th class="Account_City">City</th>
+    <th class="Account_State">State</th>
+    <th class="Material">Material</th>
+    <th class="Base_Code">Base Code</th>
+    <th class="csp_effective_date">Start Date</th>
+    <th class="csp_expiration_date">Expiration Date</th>
+    <th class="csp_volume">Volume</th>
+    <th class="csp_scale_uom">UoM</th>
+    <th class="csp_price">Price</th>
+    <th class="csp_uom">UoM</th>
+    <th class="Drum_Dep">Drum Dep</th>
+    <th class="Price_Protection">Price Protection</th>
+   
+    </tr>
+    </thead>
+    <tbody></tbody>
+    </table>
+    </td></tr>
+</table>
+
+
+
+
+
+</apex:page>

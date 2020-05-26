@@ -1,0 +1,462 @@
+<apex:page controller="Expire_CSP" id="thepage" sidebar="false" standardstylesheets="false">
+<meta http-equiv="X-UA-Compatible" content="chrome=1"/>
+
+<script src="{!URLFOR($Resource.JQuery_Pricing, '/JQuery_Pricing/js/jquery-1.8.3.min.js')}" type="text/javascript"/> 
+<script src="{!URLFOR($Resource.JQuery_Pricing, '/JQuery_Pricing/js/jquery-ui-1.9.2.custom.js')}" type="text/javascript"/>
+<script src="{!URLFOR($Resource.JQuery_Pricing, '/JQuery_Pricing/js/jquery.mobile.events.js')}" type="text/javascript"/>
+<script src="{!URLFOR($Resource.JQuery_Pricing, '/JQuery_Pricing/js/jquery.dataTables.js')}" type="text/javascript"/>
+<script src="{!URLFOR($Resource.JQuery_Pricing, '/JQuery_Pricing/js/jquery.dataTables.columnFilter.js')}" type="text/javascript"></script>
+<script src="{!URLFOR($Resource.JQuery_Pricing, '/JQuery_Pricing/js/jquery-ui.toggleSwitch.js')}" type="text/javascript"/>
+<script src="{!URLFOR($Resource.JQuery_Pricing, '/JQuery_Pricing/js/jquery.sortElements.js')}" type="text/javascript"></script>
+<script src="{!URLFOR($Resource.JQuery_Pricing, '/JQuery_Pricing/js/jquery.dataTables.extensions.js')}" type="text/javascript"></script>
+<script src="{!URLFOR($Resource.JQuery_Pricing, '/JQuery_Pricing/js/jquery.tooltip.js')}" type="text/javascript"></script>
+<script src="{!URLFOR($Resource.JQuery_Pricing, '/JQuery_Pricing/js/jquery.multiselect.min.js')}" type="text/javascript"/> 
+<script src="{!URLFOR($Resource.JQuery_Pricing, '/JQuery_Pricing/js/jquery.multiselect.filter.js')}" type="text/javascript"/>
+<script src="{!URLFOR($Resource.JQuery_Pricing, '/JQuery_Pricing/js/jquery.validate.js')}" type="text/javascript"/>
+<script src="{!URLFOR($Resource.JQuery_Pricing, '/JQuery_Pricing/js/jquery.form.js')}" type="text/javascript"/>
+<script src="{!URLFOR($Resource.JQuery_Pricing, '/JQuery_Pricing/js/jquery.bbq.js')}" type="text/javascript"/>
+<script src="{!URLFOR($Resource.JQuery_Pricing, '/JQuery_Pricing/js/jquery.form.wizard.js')}" type="text/javascript"/>
+<script src="{!URLFOR($Resource.JQuery_Pricing, '/JQuery_Pricing/js/jquery.easyui.min.js')}" type="text/javascript"></script>
+
+<apex:stylesheet value="{!URLFOR($Resource.JQuery_Pricing, '/JQuery_Pricing/themes/default/easyui.css')}"/>  
+<apex:stylesheet value="{!URLFOR($Resource.JQuery_Pricing, '/JQuery_Pricing/css/jquery.tooltip.css')}"/>
+<apex:stylesheet value="{!URLFOR($Resource.JQuery_Pricing, '/JQuery_Pricing/css/start/jquery-ui-1.10.1.custom.min.css')}"/>
+<apex:stylesheet value="{!URLFOR($Resource.JQuery_Pricing, '/JQuery_Pricing/css/demo_table.css')}"/> 
+<apex:stylesheet value="{!URLFOR($Resource.JQuery_Pricing, '/JQuery_Pricing/themes/default/easyui.css')}"/>    
+<apex:stylesheet value="{!URLFOR($Resource.JQuery_Pricing, '/JQuery_Pricing/themes/icon.css')}"/> 
+<apex:stylesheet value="{!URLFOR($Resource.JQuery_Pricing, '/JQuery_Pricing/themes/default/menu.css')}"/>
+<apex:stylesheet value="{!URLFOR($Resource.JQuery_Pricing, '/JQuery_Pricing/themes/default/menubutton.css')}"/>
+<apex:stylesheet value="{!URLFOR($Resource.JQuery_Pricing, '/JQuery_Pricing/themes/default/splitbutton.css')}"/>
+<apex:stylesheet value="{!URLFOR($Resource.JQuery_Pricing, '/JQuery_Pricing/themes/icon.css')}"/>
+<apex:stylesheet value="{!URLFOR($Resource.JQuery_Pricing, '/JQuery_Pricing/css/jquery-ui.toggleSwitch.css')}"/> 
+<apex:stylesheet value="{!URLFOR($Resource.JQuery_Pricing, '/JQuery_Pricing/css/jquery.multiselect.css')}"/> 
+<apex:stylesheet value="{!URLFOR($Resource.JQuery_Pricing, '/JQuery_Pricing/css/jquery.multiselect.filter.css')}"/> 
+<script  src="/soap/ajax/25.0/connection.js" type="text/javascript"></script>
+<script  src="/soap/ajax/25.0/apex.js" type="text/javascript"></script>
+
+
+<script type="text/javascript" charset="utf-8">
+var oTable;
+var aColumnIndex = new Array();
+var aRecordIds = new Array();
+var aRow = new Array();
+var asInitVals = new Array();
+var sPrevAccount = '';
+var iProcessing = 0;
+var iLimit = 750;
+var iLength = 0;
+var paramid = '{!$CurrentPage.parameters.ids}';  
+
+
+    $(document).ready(function() { 
+         fnInitTable(); 
+         fnInitPage();
+        
+    }); 
+         
+function FetchAccountMaterial(){
+     
+     
+             Expire_CSP.getRecordsToDisplay(paramid , function(result, event){ 
+              if(event.type == 'exception') {
+                    
+              } else { 
+                if(result.length > 0){
+               
+                  oTable = $('#accntmaterialtable').dataTable();
+                  oTable.fnAddData(result);
+                 
+                  }
+               }
+             }, {buffer: true, escape: true, timeout:120000});
+}
+
+        
+function fnInitTable(){
+         oTable = $('#accntmaterialtable').dataTable({
+                "iDisplayLength": 100,
+                "bDestroy": true,
+                "fnDrawCallback": function( oSettings ) {
+                   $('.row_selected').removeClass('row_selected');
+                   $('.row_error').removeClass('row_error');
+                },
+                "bSort": true,
+                "sAjaxDataProp": "accounts",
+                "sDom": 'lfrtip',
+                "bJQueryUI": true,
+                "aoColumnDefs":[
+                    { "aTargets":[ "Open"], bSortable:"false", sClass:"Open" ,sWidth:"2px", "bAutoWidth": false},
+                    { "aTargets":[ "Ship_To" ], "mData": "Account_Name__c", sClass:"Account_Name__c",sWidth:"2px", "bAutoWidth": false },
+                    { "aTargets":[ "Sold_To" ], "mData": "Account_Sold_To__c", sClass:"Account_Sold_To__c",sWidth:"2px", "bAutoWidth": false },
+                    { "aTargets":[ "Account_Number" ], "mData": "Account_Number__c", sClass:"Account_Number__c",sWidth:"2px", "bAutoWidth": false },
+                    { "aTargets":[ "Material" ], "mData": "Material__c", sClass:"Material__c",sWidth:"2px", "bAutoWidth": false },
+                    { "aTargets":[ "Drum_Dep" ],"mData": "Drum_Deposit__c", sClass:"Drum_Deposit__c",sWidth:"2px", "bAutoWidth": false },
+                    { "aTargets":[ "Price_Protection" ], "mData": "Price_Protection__c", sClass:"Price_Protection__c",sWidth:"2px", "bAutoWidth": false },
+                    { "aTargets":[ "Expiration_Date" ], sWidth:"2px", sClass:"Expiration_Date", "bAutoWidth": false, 
+                        "mRender": function ( data, type, full ) {
+                        return '<input name="expirydate" type = "text" data-id="' + full.Id + '" class="expireDates" style="height:20px;"></input>';
+                        } },
+                    { "aTargets":[ "Id" ],"mData": "Id", sClass:"Id", bVisible: false,sWidth:"2px", "bAutoWidth": false}
+                    
+                  ],
+                  "fnInitComplete": function(oSettings) { 
+                     aColumnIndex = fnGetColumnIndex(oSettings);
+                   },
+                  "fnCreatedRow": function( nRow, aData, iDataIndex ) {
+                    
+                    
+                    $('td:eq(' + aColumnIndex['Open'] + ')', nRow).html( '<img class="details_img" src="{!URLFOR($Resource.JQuery_Pricing, '/JQuery_Pricing/images/details_open.png')}">' );
+                    fnSetImgListener(nRow, 'accntmaterialtable');                   
+                     
+                      
+                 } ,
+                 "fnDrawCallback":function(){
+                      $('.expireDates').datepicker({ minDate: 0, required:true, editable:false, dateFormat: "{!dateFormat}"  });
+                  }
+              });      
+      FetchAccountMaterial();
+      $( "#exdate" ).datepicker({ minDate: 0, required:true, editable:false, dateFormat: "{!dateFormat}"  });
+       
+     }
+
+function fnSetImgListener(nRow, type){
+$('.details_img', nRow).click(function(){
+       
+        if ( this.src.match('details_close') )
+        {
+           this.src = "{!URLFOR($Resource.JQuery_Pricing, '/JQuery_Pricing/images/details_open.png')}";
+           $('#' + type).dataTable().fnClose( nRow );
+        }else{
+           this.src = "{!URLFOR($Resource.JQuery_Pricing, '/JQuery_Pricing/images/details_close.png')}";
+           $('#' + type).dataTable().fnOpen( nRow, fnFormatDetails(nRow, type ), 'details' ); 
+           $('.innerTable').dataTable({
+                 "bDestroy": true,
+                 "bPaginate": false,
+                 "bLengthChange": false,
+                 "bFilter": false,
+                 "bSort": false,
+                 "bInfo": false
+            });
+            
+         }
+  });
+}
+
+function fnFormatDetails( nTr, type )
+{
+   var aData = $('#' + type).dataTable().fnGetData( nTr);
+   var toreturn = '';
+   
+   toreturn = $("<div />").html(aData.Inner_Table__c).text();
+  
+   return toreturn;
+}
+
+function fnGetColumnIndex(oSettings){
+    var aColumns = new Array();
+    $.each(oSettings.aoColumns, function(c){
+        var mData = oSettings.aoColumns[c].sClass;
+            aColumns[mData] = c;
+    });
+    
+    return aColumns;
+}
+
+function fnhighlightRow(InvalidIds){
+     var aData = new Array();
+     var rows = oTable.fnGetNodes(); 
+    
+     for(var i=0;i<rows.length;i++){
+         aData = oTable.fnGetData( i );
+         if(jQuery.inArray(aData.Id, InvalidIds) != -1)
+             $(rows[i]).css('background','yellow');
+         else
+             $(rows[i]).css('background','');
+     }
+}       
+
+
+
+function fnInitPage(){
+
+        
+
+   $('#savesubmit').click(function(){
+     var datenull = false; 
+     var oTable = $('#accntmaterialtable').dataTable();     
+     var a = {};
+     var aData = new Array();
+    
+         var today = new Date();
+         today.setHours(0,0,0,0);
+         var date;
+         var expdate;
+         
+         if($('#exdate').datepicker('getDate') != null){
+             expdate =$('#exdate').datepicker('getDate');
+             expdate.setHours(0,0,0,0);
+             
+             if(expdate < today){
+                alert('Expiry Date can not be less than today');
+                //datenull = true;
+             }
+             //else 
+               //  datenull = false;
+         
+         }
+          
+         if(datenull == false){ 
+         $('.expireDates').each(function(i, e){
+             date = new Date($(e).datepicker('getDate'));
+             date.setHours(0,0,0,0);
+             if(datenull == false)
+                 if( $(e).datepicker('getDate')== null )
+                 {    alert('Expiry date is required for all records.');
+                      datenull = true;
+                 }
+                 else if(date < today)
+                 {    alert('Expiry Date can not be less than today.');
+                      datenull = true;
+                 }
+         });
+     
+      if(datenull == false){
+         $('.expireDates').each(function(i, e){
+           a[$(e).attr('data-id')] = $(e).datepicker('getDate').valueOf();
+           
+         });
+             
+         var expdate = Date.parse($('#exdate').datepicker('getDate'));
+         var InvalidIds = new Array();
+             Expire_CSP.validateDate(a, function(result, event){ 
+                  if(event.type == 'exception') {
+                       alert(event.message);  
+                  } else { 
+                 
+                    $(result.rows).each(function(i, r){
+                    
+                          InvalidIds.push(r.Id);
+                      
+                     });
+                     
+                     
+                     if(InvalidIds != null && InvalidIds != '')
+                     {    
+                         
+                         fnhighlightRow(InvalidIds);
+                     }
+                     else{
+                         
+                         Expire_CSP.expirePRT(a, function(result, event){ 
+                         if(event.type == 'exception') {
+                            alert(event.message);
+                          } else {
+                          
+                            //alert(result);
+                            close();
+                          }
+                           });
+                         
+                         }      
+                   }
+                   
+                 }, {buffer: true, escape: true, timeout:120000});
+             }}    
+     });
+     
+     
+     $('#cancel').click(function(){ close(); });
+     
+     $('#applytoall').click(function(){ 
+         if( $(this).is(':checked') ){
+             $('.expireDates').val($('#exdate').val());}
+     });
+     
+     
+      
+}  
+ 
+      
+             
+</script>
+<style>
+label.error {
+    color: red;
+}
+div.error{
+border-style:solid;
+border-width:1.5px;
+border-color:red;
+}
+input.error{
+border-style:solid;
+border-color:red;
+}
+select.error{
+border-style:solid;
+border-color:red;
+}
+input:disabled{ background-color:LightGray}
+
+textarea { padding: 5px; width: 400px; }
+#ff label{
+     display:block;
+     width:100px;
+}
+#button { padding: .5em 1em; text-decoration: none; }
+#effect { padding: 0.4em; position: relative; }
+.ui-menu { position: absolute; }
+tbody tr.even:hover,  tbody tr.even td.highlighted {
+    background-color: #ECFFB3;
+}
+tbody tr.odd:hover,  tbody tr.odd td.highlighted {
+    background-color: #E6FF99;
+}
+tr.even:hover {
+    background-color: #ECFFB3;
+}
+tr.even:hover td.sorting_1 {
+    background-color: #DDFF75;
+}
+tr.even:hover td.sorting_2 {
+    background-color: #E7FF9E;
+}
+tr.even:hover td.sorting_3 {
+    background-color: #E2FF89;
+}
+tr.odd:hover {
+    background-color: #E6FF99;
+}
+tr.odd:hover td.sorting_1 {
+    background-color: #D6FF5C;
+}
+tr.odd:hover td.sorting_2 {
+    background-color: #E0FF84;
+}
+tr.odd:hover td.sorting_3 {
+    background-color: #DBFF70;
+}
+
+table.viewtable tr.even.row_selected td {
+    background-color: #B0BED9;
+}
+table.viewtable tr.odd.row_selected td {
+    background-color: #9FAFD1;
+}
+
+table.gridtable {
+    font-family: verdana,arial,sans-serif;
+    font-size:11px;
+    color:#333333;
+    border-width: 1px;
+    border-color: #666666;
+    border-collapse: collapse;
+}
+table.gridtable th {
+    border-width: 1px;
+    padding: 8px;
+    border-style: solid;
+    border-color: #666666;
+    background-color: #dedede;
+}
+table.gridtable td {
+    border-width: 1px;
+    padding: 8px;
+    border-style: solid;
+    border-color: #666666;
+    background-color: #ffffff;
+}
+label.error {
+    color: red;
+}
+input.error{
+border-style:solid;
+border-color:red;
+}
+input.error+span{
+border-style:solid;
+border-color:red;
+}
+select.error{
+border-style:solid;
+border-color:red;
+}
+</style>
+
+ 
+
+<table>
+<td style="vertical-align:top;padding-right:1px;">
+<b>Expiration Date</b>
+<input id="exdate" name="exdate" value="{!Date_Today}" class="combo required" style="height:20px;"></input>
+</td>
+<td><b>Apply To All</b></td>
+    <td>
+    <input class="chkbox" type="checkbox" id="applytoall" /> 
+</td>
+<td><button type="submit" id="savesubmit" data-status="enable" value="savesubmit" data-options="iconCls:'icon-savesubmit'">Save and Submit</button></td>
+<td><button type="cancel" id="cancel" value="cancel" class="easyui-linkbutton" data-options="iconCls:'icon-cancel'" >Cancel</button></td>
+</table>
+
+
+<table>
+<tr>
+<td>
+<table style="width:100%;" class="viewtable display" id="accntmaterialtable">
+<thead>
+<!--
+<tr>
+
+    <th class="textfilter" data-field="Account_Sold_To__c">Sold To</th>
+    <th class="textfilter" data-field="Account_Name__c">Ship To</th>
+    <th class="textfilter" data-field="Account_Number__c">Account Number</th>
+    <th class="textfilter" data-field="Account_City__c">City</th>
+    <th class="textfilter" data-field="Material__c">Material</th>
+    <th class="textfilter" data-field="Material_Base_Code__c">Base Code</th>
+    <th class="textfilter" data-field="CSP_Effective_Date__c">Start Date</th>
+    <th class="textfilter" data-field="CSP_Expiration_Date__c">End Date</th>
+    <th class="numberfilter" data-field="Avg_Order__c">Avg Order</th>
+    <th class="numberfilter" data-field="Estimated_Order_Quantity__c">Est Order</th>
+    <th class="listfilter" data-field="CSP_Tier__c">CSP Tier</th>
+    <th class="textfilter" data-field="CSP__c">CSP</th>
+    <th class="numberfilter" data-field="TPI__c">TPI %</th>
+    <th class="listfilter" data-field="Target_Tier__c">Target Tier</th>
+    <th class="numberfilter" data-field="Target__c">Target</th>
+    <th class="listfilter" data-field="Drum_Deposit__c">Drum Dep</th>
+    <th class="listfilter" data-field="Price_Protection__c">Price Protection</th>
+    <th class="textfilter" data-field="csp_effective_date">Start Date</th>
+    <th class="textfilter" data-field="csp_expiration_date">Expiration Date</th>
+    <th class="numberfilter" data-field="csp_volume">Volume</th>
+    <th class="textfilter" data-field="csp_scale_uom">UoM</th>
+    <th class="numberfilter" data-field="csp_price">Price</th>
+    <th class="textfilter" data-field="csp_uom">UoM</th>
+    <th class="textfilter" data-field="csp_sfdc_pricereq_nbr">Transaction</th>
+    
+    
+    </tr>
+-->
+    <tr>
+    <th class="Open">Open</th>
+    <th class="Ship_To">Ship To</th>
+    <th class="Sold_To">Sold To</th>
+    <th class="Account_Number">Account Number</th>
+    <th class="Material">Material</th>
+    <th class="Drum_Dep">Drum Dep</th>
+    <th class="Price_Protection">Price Protection</th>
+    <th class="Expiration_Date">Expiration Date</th>
+    <th class="Id">Id</th>
+    
+    
+   
+    </tr>
+    </thead>
+    <tbody></tbody>
+    </table>
+    </td></tr>
+</table>
+
+
+
+
+
+</apex:page>

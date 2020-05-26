@@ -1,0 +1,3 @@
+<apex:page standardcontroller="Opportunity" showHeader="false" sidebar="false" standardstylesheets="false">
+<iframe src="/apex/TPC_Opportunity?nooverride=1&id={!Opportunity.Id}" height="449px" width="100%"/>
+</apex:page>

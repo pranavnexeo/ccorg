@@ -1,0 +1,118 @@
+<apex:component >
+        
+<div id="nexeo-splash"></div>
+    
+<script id="Nexeo-Splash" type="text/template">
+    {{#if {!(ISPICKVAL($User.UserType,'Guest'))} }}
+        {{#if this.guestPromoUrl}}
+            {{#if this.guestExternalLink}}
+            <input type="hidden"  value="{{guestExternalLink}}" id="urlHidden"/>
+            <a id="mynexeo_guest_link" href=""><img alt="" class="" src="{{this.guestPromoUrl}}" /></a>
+            {{else}}
+            <img alt="" class="" src="{{this.guestPromoUrl}}" />
+            {{/if}}
+        {{/if}}
+    {{else}}
+        {{#if this.promoUrl}}
+            {{#if this.externalLink}}
+            <a href="{{externalLink}}"><img alt="" class="" src="{{this.promoUrl}}" /></a>
+            {{else}}
+            <img alt="" class="" src="{{this.promoUrl}}" />
+            {{/if}}
+        {{/if}}
+    {{/if}}
+</script>
+
+<script type="text/javascript">
+
+
+    jQuery(function($) {
+
+        CCRZ.views.NexeoSplash = CCRZ.CloudCrazeView.extend({
+            template: CCRZ.util.template('Nexeo-Splash'),
+            viewName : "NexeoSplash",
+            initialize: function() {
+                this.data = {};
+            },
+            render: function() {
+                console.log('render');
+                console.log(this.data);
+                var v = this;
+                v.setElement($("#nexeo-splash"));
+                v.$el.html(v.template(v.data));
+                CCRZ.pubSub.trigger("view:"+this.viewName+":refresh", this);
+            }
+        });
+
+        CCRZ.pubSub.once("view:PromoDisp:refresh", function(view) {
+            console.log(view);
+            var splashView = new CCRZ.views.NexeoSplash();
+            var splash = view.model.attributes.Splash;
+            if (splash) {
+                for (var i = 0; i < splash.length; i++) {
+                    if (splash[i].name.indexOf('Guest', splash[i].name.length - 5) !== -1) {
+                        if (!splashView.data.guestPromoUrl) {
+                            splashView.data.guestPromoUrl = splash[i].fullImageURL;
+                            splashView.data.guestExternalLink = splash[i].externalLink;
+                        }
+                    }
+                    else {
+                        if (!splashView.data.promoUrl) {
+                            splashView.data.promoUrl = splash[i].fullImageURL;
+                            splashView.data.externalLink = splash[i].externalLink;
+                        }
+                    }
+                }
+                if (!splashView.data.guestPromoUrl) {
+                    splashView.data.guestPromoUrl = splashView.data.promoUrl;
+                }
+            }
+            splashView.render();
+        });
+    });
+
+</script>
+    
+        <script type="text/javascript">
+    	//In order to get the current URL in order to verify if there is a language parameter
+ 			jQuery(document).ready(function() {
+                jQuery( window ).load(function() {
+                    var isGuest = {!ISPICKVAL($User.UserType,"Guest")};
+                    if (isGuest){
+                      
+                        var url = window.location.href;
+                        var locale = "";
+                        
+                        if (url.includes("?") && url.includes("cclcl")) {
+                            
+                              var arguments = url.split("?")[1].split("&");
+
+                              for (i = 0; i < arguments.length; i++) {
+
+                                   var sParameterName = arguments[i].split("=");
+                                    if (sParameterName[0] == "cclcl") {
+                                        if (sParameterName[1] != undefined) {
+                                        	locale = sParameterName[1];
+                                        }   
+										
+                                        
+                                        setTimeout(function(){
+                                        var urlHidden = document.getElementById("urlHidden").value;
+                                        var newUrl = document.getElementById("mynexeo_guest_link");
+                                        newUrl.href = urlHidden + "?cclcl=" + locale;
+                                        }, 3000);
+
+                                    }
+                              }
+                        } else {
+                            setTimeout(function(){
+                            document.getElementById("mynexeo_guest_link").href = document.getElementById("urlHidden").value;
+                            }, 3000);
+                             
+                          }
+                     }
+    
+                });   	
+            });
+    </script>
+</apex:component>

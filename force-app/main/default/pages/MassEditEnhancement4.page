@@ -1,0 +1,76 @@
+<apex:page standardController="Enhancement__c" recordSetVar="unused" sidebar="false">
+    
+    
+    <apex:includeScript value="{!$Resource.UtilJS}" />
+    <apex:form >
+        <apex:pageBlock >
+            <apex:pageMessages />
+            <apex:pageBlock >
+                Note: All modifications made on the page will be lost if Return button is clicked without clicking the Save button first. 
+            </apex:pageBlock>
+            <apex:pageBlockButtons >
+                <apex:commandButton value="Save" action="{!save}"/>
+                <apex:commandButton value="Return" action="{!cancel}"/>
+            </apex:pageBlockButtons>
+            <apex:pageBlockTable value="{!selected}" var="a" id="table">
+                
+                <apex:column headerValue="Requirement Complete">
+                    <apex:inputField value="{!a.Requirement_Complete__c}"/>
+                </apex:column>
+                
+                <apex:column headerValue="Design Complete">
+                    <apex:inputField value="{!a.Design_Complete__c}"/>
+                </apex:column>
+                
+                <apex:column headerValue="Development Complete">
+                    <apex:inputField value="{!a.Development_Complete__c}"/>
+                </apex:column>
+                
+                <apex:column headerValue="UAT Complete">
+                    <apex:inputField value="{!a.UAT_Complete__c}"/>
+                </apex:column>
+                
+                <apex:column headerValue="Requirements Completion Date">
+                    <apex:inputField value="{!a.Requirements_Gathered_Date__c}"/>
+                </apex:column>    
+                
+                <apex:column headerValue="Design Completion Date">
+                    <apex:inputField value="{!a.Functional_Design_Date__c}"/>
+                </apex:column>
+                
+                <apex:column headerValue="Development Completion Date">
+                    <apex:inputField value="{!a.Functional_Design_Approved_Date__c}"/>
+                </apex:column>
+                
+                <apex:column headerValue="UAT Completion Date">
+                    <apex:outputField value="{!a.UAT_Completion_Date__c}"/>
+                </apex:column>
+                
+                <apex:column headerValue="Target Go-live Date">
+                    <apex:inputField value="{!a.Target_Date_for_Completion__c}"/>
+                </apex:column>    
+                
+                <apex:column headerValue="Actual Go-Live Date">
+                    <apex:inputField value="{!a.Actual_Completion_Date__c}"/>
+                </apex:column>  
+      
+                <apex:column headerValue="Work Stream">
+                    <apex:inputField value="{!a.Group_Enhancement_Name__c}"/>
+                </apex:column>
+                
+                <apex:column headerValue="InScope">
+                    <apex:inputField value="{!a.Approved__c}"/>
+                </apex:column>
+                
+                <apex:column headerValue="Enhancement #">
+                    <apex:inputField value="{!a.Enhancement_Number__c}"/>
+                </apex:column>
+                
+                <apex:column headerValue="Enhancement Name">
+                    <apex:inputField value="{!a.name}"/>
+                </apex:column>
+                
+            </apex:pageBlockTable>
+        </apex:pageBlock>
+    </apex:form>
+</apex:page>

@@ -1,0 +1,78 @@
+<apex:page standardcontroller="Contract" extensions="CdfController" id="page1">
+    <apex:form id="cdfinfo">
+    <apex:actionFunction name="orderFrequency" action="{!changeOrderFrequency}" rerender="cdfinfo,page1.cdf.msgs"/>
+        <apex:pageblock title="CDF" id="pb1" rendered="{!showContractCreateMessage}">
+            <apex:pageMessages id="msgs1" escape="false" />
+            	{!$Label.CDF_OptOut_Contract_Question}
+            <apex:pageblockbuttons location="bottom">
+                <apex:commandbutton action="{!optOutBusinessContract}" value="Yes"/>
+                <apex:commandbutton action="{!createBusinessContract}" value="No"/>
+            </apex:pageblockbuttons>
+        </apex:pageblock>
+        <apex:pageblock title="CDF" id="pb2" rendered="{!lockedrecord}">
+            <apex:pageMessages id="msgs1" escape="false" />
+            	{!$Label.CDF_Record_Locked_For_Approval}
+        </apex:pageblock>
+        <apex:pageblock title="CDF" id="pb" rendered="{! IF(AND(!showContractCreateMessage,!lockedrecord),true,false)}">
+
+            <apex:pageMessages id="msgs" escape="false" />
+            <apex:pageblockbuttons >
+                <apex:commandbutton action="{!saveContract}" value="Save"/>
+                <apex:commandbutton action="{!cancel}" value="Cancel"/>
+            </apex:pageblockbuttons>
+            <apex:pageBlockSection title="{!$Label.CDF_Information}" id="pbs1">
+                <apex:inputfield value="{!Contract.Name}" required="true"/>
+                <apex:inputfield value="{!Contract.Status}" onchange="orderFrequency()" rendered="{!statusPermission}"/>
+                <apex:outputfield value="{!Contract.Status}" rendered="{! !statusPermission }"/>
+                <apex:inputfield value="{!Contract.AccountId}" />
+                
+                <apex:inputfield value="{!Contract.ContractTerm}" rendered="{!IF(OR(userProfileName == 'Nx-Buyer',isApprover),true,false)}"/>
+            </apex:pageBlockSection>
+            <apex:pageBlockSection title="{!$Label.CDF_Demand_Information}" id="pbs2">
+            <apex:pageblocksectionitem >
+            <apex:outputLabel for="material" value="{!$ObjectType.Contract.fields.SAP_Material__c.label}" />
+            <apex:actionRegion >
+                <apex:inputfield value="{!Contract.SAP_Material__c}" id="material" required="true">
+                <apex:actionSupport event="onchange" rerender="stockingunit" />
+                </apex:inputfield>
+            </apex:actionRegion>
+            </apex:pageblocksectionitem>
+                <apex:inputfield value="{!Contract.Ashland_Supplier__c}"  onchange="orderFrequency()" required="true" />
+                <apex:inputfield value="{!Contract.Default_Shipping_Plant__c}" rendered="{!IF(OR(userProfileName == 'Nx-Buyer',isApprover),true,false)}"/>
+                <apex:outputfield value="{!Contract.Default_Shipping_Plant__c}" rendered="{!IF(OR(userProfileName == 'Nx-Buyer',isApprover),false,true)}"/>
+                
+                
+                <apex:inputfield value="{!Contract.Customer_Preferred_Supplier__c}" />
+                
+                <apex:inputfield value="{!Contract.Preferred_Shipping_Plant__c}" required="true"/>
+            </apex:pageBlockSection>
+            <apex:pageBlockSection title="{!$Label.CDF_Order_Frecuency_Infor}" id="pbs3">
+                <apex:inputfield value="{!Contract.StartDate}" required="true"/>
+                <apex:outputLabel ></apex:outputLabel>
+                <apex:inputfield value="{!Contract.Order_Frequency__c}" onchange="orderFrequency()" required="true"/>
+                <apex:pageblocksectionitem id="pbsi1" >
+                    <apex:outputLabel for="stockingunit" value="{!$ObjectType.Contract.fields.Stocking_Unit__c.label}" />
+                     <apex:outputPanel styleClass="requiredInput" layout="block">
+                    <apex:outputPanel styleClass="requiredBlock" layout="block"/>
+                    <apex:actionRegion >
+                    <apex:selectList value="{!Contract.Stocking_Unit__c}" id="stockingunit" size="1" required="true">
+                        <apex:selectOptions value="{!StockingUnits}" />
+                        <apex:actionSupport event="onchange" rerender="units" />
+                    </apex:selectList>
+                    </apex:actionRegion>
+                    </apex:outputPanel>
+                </apex:pageblocksectionitem>
+                
+                <apex:inputfield value="{!Contract.Quantity_1__c}" rendered="{!IF(OR(Contract.Order_Frequency__c == 'Monthly Ongoing',Contract.Order_Frequency__c == 'Every Other Month – Ongoing',Contract.Order_Frequency__c == 'Once Per Quarter – Ongoing',Contract.Order_Frequency__c == 'Campaign'),true,false)}" />
+                <apex:inputfield value="{!Contract.Quantity_2__c}" rendered="{!IF(OR(Contract.Order_Frequency__c == 'Monthly Ongoing',Contract.Order_Frequency__c == 'Campaign'),true,false)}" />
+                <apex:inputfield value="{!Contract.Quantity_3__c}" rendered="{!IF(OR(Contract.Order_Frequency__c == 'Monthly Ongoing',Contract.Order_Frequency__c == 'Every Other Month – Ongoing',Contract.Order_Frequency__c == 'Campaign'),true,false)}" />
+                <apex:inputfield value="{!Contract.Quantity_4__c}" rendered="{!IF(OR(Contract.Order_Frequency__c == 'Monthly Ongoing',Contract.Order_Frequency__c == 'Campaign'),true,false)}" />
+            </apex:pageBlockSection>
+            <apex:pageBlockSection title="{!$Label.CDF_Description_Information}" columns="1">
+                <apex:inputfield value="{!Contract.Seller_Comments__c}" style="width:500px; height: 50px"/>
+                <apex:inputfield value="{!Contract.Buyer_Comments__c}" style="width:500px; height: 50px"/>
+                <apex:inputfield value="{!Contract.SpecialTerms}" style="width:500px; height: 50px"/>
+            </apex:pageBlockSection>
+        </apex:pageblock>
+      </apex:form>
+</apex:page>

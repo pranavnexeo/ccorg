@@ -1,0 +1,22 @@
+function addLoadEvent(func) {
+  var oldonload = window.onload;
+  if (typeof window.onload != 'function') {
+    window.onload = func;
+  } else {
+    window.onload = function() {
+      if (oldonload) {
+        oldonload();
+      }
+      func;
+    }
+  }
+}
+
+function collapsePageBlockSection(el) {
+    if(typeof twistSection === 'function') {
+        var theTwist = document.getElementById(el);
+        if(theTwist) {
+            twistSection(theTwist.childNodes[0].childNodes[0]);
+        }
+    }
+}

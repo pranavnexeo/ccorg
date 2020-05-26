@@ -1,0 +1,52 @@
+<apex:page standardcontroller="Opportunity" extensions="OpportunityExtension" >
+
+<style> body { background: #F3F3EC; } </style>
+<apex:datatable var="dd" value="{!dc}" >
+<apex:column >
+<apex:facet name="header">Plant Name</apex:facet>
+<apex:outputtext value="{!dd.Account__r.name}"/>
+</apex:column>
+<apex:column >
+<apex:facet name="header">&nbsp; Plant Number &nbsp; </apex:facet>
+<center>
+<apex:outputfield value="{!dd.Account__r.site}"/>
+</center>
+</apex:column>
+<apex:column >
+<apex:facet name="header">&nbsp; Mon &nbsp; </apex:facet>
+<center>
+<apex:outputfield value="{!dd.Mon__c}"/>
+</center>
+</apex:column>
+<apex:column >
+<apex:facet name="header">&nbsp; Tues &nbsp; </apex:facet>
+<center>
+<apex:outputfield value="{!dd.Tues__c}"/>
+</center>
+</apex:column>
+<apex:column >
+<apex:facet name="header">&nbsp; Wed &nbsp;</apex:facet>
+<center>
+<apex:outputfield value="{!dd.Wed__c}"/>
+</center>
+</apex:column>
+<apex:column >
+<apex:facet name="header">&nbsp; Thurs &nbsp;</apex:facet>
+<center>
+<apex:outputfield value="{!dd.Thur__c}"/>
+</center>
+</apex:column>
+<apex:column >
+<apex:facet name="header">&nbsp; Fri &nbsp;</apex:facet>
+<center>
+<apex:outputfield value="{!dd.Fri__c}"/>
+</center>
+</apex:column>
+<apex:column >
+<apex:facet name="header">&nbsp; Ship &nbsp;</apex:facet>
+<center>
+<apex:outputfield value="{!dd.Ship__c}"/>
+</center>
+</apex:column>
+</apex:datatable>  
+</apex:page>

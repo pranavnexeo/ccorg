@@ -1,0 +1,14 @@
+<apex:page controller="MSDSSiteDocumentController" sidebar="false" showHeader="false" action="{!ViewMSDSDoc}">
+    <apex:iframe height="1000" width="100%" src="/sdsexternal/servlet/servlet.FileDownload?file={!docId}" ></apex:iframe> 
+    
+     <script>
+     
+        var doc = '{!docId}';
+       
+        if(doc == '') {
+            alert('{!$Label.MSDSNoDocAvailable}');
+            window.close();
+        }
+
+      </script>    
+</apex:page>

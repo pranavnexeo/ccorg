@@ -1,0 +1,4 @@
+<apex:page docType="html-5.0" sidebar="false" showHeader="false" standardStylesheets="false" applyHtmlTag="false">
+	<c:cc_mn_shortCheckoutBIE />
+    <c:cc_mn_CheckoutReview />    
+</apex:page>

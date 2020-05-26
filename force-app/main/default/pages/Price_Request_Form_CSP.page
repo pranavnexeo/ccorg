@@ -1,0 +1,478 @@
+<apex:page controller="Price_Request_Form" showheader="false" sidebar="false" standardStylesheets="false">
+<div class="ui-widget-content ui-corner-all">
+<form id="createform" action="#" method="POST">
+<div id="formbuttons" >
+<a href="javascript:void(0)" onclick="flagUncheck();fnSimulate();" id="Simulate" class="easyui-linkbutton" data-options="iconCls:'icon-reload'" >Simulate</a>  
+<a href="javascript:void(0)" onclick="fnSave();" id="SaveSubmit" class="easyui-linkbutton" data-options="iconCls:'icon-savesubmit'" >Save and Submit</a>
+<a href="javascript:void(0)" onclick="fnCancel('price_maintenance');" id="CancelForm" class="easyui-linkbutton" data-options="iconCls:'icon-cancel'" >Cancel</a>  
+<a href="javascript:void(0)" onclick="fnSimulateCM();" id="SimulateCM" class="easyui-linkbutton" data-options="iconCls:'icon-reload'" >Simulate with CM</a>  
+</div>
+<input type="hidden" id="formtype" name="formtype" value="create"/>
+<input type="hidden" id="datatable" name="datatable" value="price_maintenance"/>
+<input type="hidden" id="operation" name="operation" value=""/>
+<input type="hidden" name="ids" value="{!$CurrentPage.parameters.ids}"/>
+<input type="hidden" id="opt" name="opt" value="{!$CurrentPage.parameters.opt}"/>
+<input type="hidden" id="freightMatch" name="freightMatch" value="{!freightMatch}"/>
+<input type="hidden" id="freightval" name="freightval"/>
+    <table  >
+     <!--    <tr> -->
+            <td style="vertical-align:top;padding-right:1px;">
+            <table  >
+                <tr>
+                    <td>
+                    <table>
+                        <tr style="height:10px;vertical-align:top;">
+                            <td>
+                                <b>Start Date</b>
+                            </td>
+                        </tr>
+                        <tr style="height:10px;">
+                            <td style="vertical-align:top;">
+                                <input id="edate" name="effdate" value="{!Date_Today}" class="combo required"  style="height:20px;"></input>
+                                <br/><div class="error_container"/>
+                            </td>
+                        </tr>
+                        <tr style="height:10px;vertical-align:top;">
+                            <td>
+                                <b>Expiration Date</b>
+                            </td>
+                        </tr>
+                        <tr style="height:10px;">
+                            <td style="vertical-align:top;">
+                                <input id="exdate" name="exdate" value="{!Date_One_Year}" class="combo required"  style="height:20px;" ></input>
+                                <br/><div class="error_container"/>
+    
+                            </td>
+                        </tr>
+                    </table>
+                    </td>
+                     <td style="vertical-align:top;padding-right:1px;">
+                    <table id="brackettable">
+                    <tr style="height:10px;">
+                        <td style="vertical-align:top;padding-right:1px;">
+                            <b>Bracket Volume</b>
+                        </td>
+                        <td style="vertical-align:top;padding-right:1px;">
+                            <b>Volume UoM</b>
+                        </td>
+                        <td style="vertical-align:top;padding-right:1px;">
+                            <b>Price</b>
+                        </td>
+                        <td style="vertical-align:top;padding-right:1px;">
+                            <b>Price UoM</b>
+                        </td>
+                        <td></td>
+                    </tr>
+                    <tr class="bracketcontainer" style="height:10px;">
+                        <td style="vertical-align:top;padding-right:1px;">
+                            <input class="bracketvolume combo required number" name="bracketvolume_0"  style="width:100px;height:20px;" value="{!toptier}" />
+                            <br/><div class="error_container"/>
+                        </td>
+                        <td style="vertical-align:top;">
+                            <select class="easyui-combo uom" id="brvoluom" name="brvoluom" style="width:80px;"  data-value="{!volumeuom}">
+                                <apex:outputtext value="{!uomoptions}" escape="false" />
+                            </select>
+                        </td>
+                        <td style="vertical-align:top;padding-right:1px;">
+                            <input class="bracketprice combo required currency"  name="bracketprice_0" style="height:20px;"/>
+                            <br/><div class="error_container"/>
+                        </td>
+                        <td style="vertical-align:top;">
+                            <select id="brpriceuom" class="easyui-combo uom" name="brpriceuom" style="width:80px;"  data-value="{!priceuom}">
+                                <apex:outputtext value="{!uomoptions}" escape="false" />
+                            </select>
+                        </td>
+                        <td><img class="addRowCSP" src="{!URLFOR($Resource.JQuery_Pricing, '/JQuery_Pricing/images/details_open.png')}"/><b>&nbsp;Add</b></td>
+                    </tr>
+                    <apex:variable value="{!1}" var="rowNum"/>
+                    <apex:repeat value="{!tiers}" var="v">
+                        <tr class="bracketcontainer" style="height:10px;">
+                            <td style="vertical-align:top;padding-right:1px;">
+                                <input class="bracketvolume combo required number" name="bracketvolume_{!rowNum}" value="{!v}" style="width:100px;hieght:20px;" />
+                                <br/><div class="error_container"/>
+                            </td>
+                            <td></td>
+                            <td style="vertical-align:top;padding-right:1px;">
+                                <input class="bracketprice combo required currency" id="bracketprice_{!rowNum}" name="bracketprice_{!rowNum}" style="height:20px;"/>
+                                <br/><div class="error_container"/>
+                            </td>
+                            <td></td><td><img class="removeRowMultiple" id="removeRow_{!rowNum}" src="{!URLFOR($Resource.JQuery_Pricing, '/JQuery_Pricing/images/details_close.png')}"/><b>&nbsp;Remove</b></td>
+                        </tr>
+                    <apex:variable var="rowNum" value="{!rowNum + 1}"/>
+                    </apex:repeat>
+                </table>
+                    </td>
+                </tr>
+                <tr>
+                <td>
+                    <table>
+                        <tr style="height:10px;vertical-align:top;">
+                            <td>
+                                <b>Start Date</b>
+                            </td>
+                        </tr>
+                        <tr style="height:10px;">
+                            <td style="vertical-align:top;">
+                                <input id="edatenext" name="effdatenext" value="{!Date_Todaynext}" class="combo required"  style="height:20px;" ></input>
+                                
+                                <br/><div class="error_container"/>
+                            </td>
+                        </tr>
+                        <tr style="height:10px;">
+                            <td>
+                                <b>Expiration Date</b>
+                            </td>
+                        </tr>
+                        <tr style="height:10px;">
+                            <td style="vertical-align:top;">
+                                <input id="exdatenext" name="exdatenext" value="{!Date_One_Yearnext}" class="combo required"  style="height:20px;"></input>
+                                <br/><div class="error_container"/>
+    
+                            </td>
+                        </tr>
+                    </table>
+                    </td>
+                     <td style="vertical-align:top;padding-right:1px;">
+                    <table id="brackettablenext">
+                    <tr style="height:10px;">
+                        <td style="vertical-align:top;padding-right:1px;">
+                            <b>Bracket Volume</b>
+                        </td>
+                        <td style="vertical-align:top;padding-right:80px;">
+                          <!--  <b>Volume UoM</b> -->
+                        </td>
+                        <td style="vertical-align:top;padding-right:1px;">
+                            <b>Price</b>
+                        </td>
+                        <td style="vertical-align:top;padding-right:1px;">
+                         <!--   <b>Price UoM</b> -->
+                        </td>
+                        <td></td>
+                    </tr>
+                    <tr class="bracketcontainernext" id="bracketcontainernextid_0" style="height:10px;">
+                        <td style="vertical-align:top;padding-right:1px;">
+                            <input class="bracketvolume combo required number" name="bracketvolumenext_0"  style="width:100px;height:20px;" value="{!toptier}" />
+                            <br/><div class="error_container"/>
+                        </td>
+                        <td style="vertical-align:top;">
+                          <!--  <select class="easyui-combo uom" id="brvoluomnext" name="brvoluomnext" style="width:80px;"  data-value="{!volumeuom}">
+                                <apex:outputtext value="{!uomoptions}" escape="false" />
+                            </select> -->
+                        </td>
+                        <td style="vertical-align:top;padding-right:1px;">
+                            <input class="bracketprice combo required currency"  name="bracketpricenext_0" style="height:20px;"/>
+                            <br/><div class="error_container"/>
+                        </td>
+                        
+                        <td style="vertical-align:top;">
+                        <!--    <select id="brpriceuomnext" class="easyui-combo uom" name="brpriceuomnext" style="width:80px;"  data-value="{!priceuom}">
+                                <apex:outputtext value="{!uomoptions}" escape="false" />
+                            </select> -->
+                        </td>
+                       
+                    </tr>
+                    <apex:variable value="{!1}" var="rowNum"/>
+                    <apex:repeat value="{!tiers}" var="v">
+                        <tr class="bracketcontainernext" id="bracketcontainernextid_{!rowNum}" style="height:10px;">
+                        <td style="vertical-align:top;padding-right:1px;">
+                            <input class="bracketvolume combo required number" name="bracketvolumenext_{!rowNum}" value="{!v}" style="width:100px;height:20px;" />
+                            <br/><div class="error_container"/>
+                        </td>
+                        <td></td>
+                        <td style="vertical-align:top;padding-right:1px;">
+                            <input class="bracketprice combo required currency" name="bracketpricenext_{!rowNum}" style="height:20px;"/>
+                            <br/><div class="error_container"/>
+                        </td>
+                        </tr>
+                    <apex:variable var="rowNum" value="{!rowNum + 1}"/>
+                    </apex:repeat>
+                </table>
+                    </td>
+                </tr>
+            <tr style="height:10px;">
+            
+                 <td style="vertical-align:top;">
+                            &nbsp;<b>Currency</b>
+                        </td>
+                    </tr>
+                    <tr style="height:10px;">
+                        <td style="vertical-align:top;">
+                            &nbsp;<select id="currencies" class="easyui-combo" name="currency" data-value="{!CSP_Currency}" >
+                            <option value="USD">USD - US Dollar</option>
+                            <option value="CAD">CAD - Candian Dollar</option>
+                            <option value="USD4">USD4 - US Dollar</option>
+                            <option value="CAD4">CAD4 - Candian Dollar</option>
+                            </select>
+                        </td>
+                    </tr>
+                    <tr style="height:10px;">
+                        <td style="vertical-align:top;">
+                            &nbsp;<b> Type</b>
+                        </td>
+                    </tr>
+                    <tr style="height:10px;">
+                        <td>
+                            &nbsp;<select id="pricetype" class="easyui-combo" name="pricetype" style="width:80px;">
+                                <option value="CSP" label="CSP">CSP</option> 
+                            </select>
+                        </td>
+                    </tr>
+                    <tr style="height:10px;">
+                        <td style="vertical-align:top;">
+                            &nbsp;<b>Drum Deposit</b>
+                        </td>
+                    </tr>
+                    <tr style="height:10px;">
+                        <td style="vertical-align:top;">
+                            &nbsp;<select id="drumdep" class="easyui-combo" name="drdep">
+                                <option value="Default" label="Default">Default Drum Deposit</option>
+                                <option value="No" label="No">No</option>
+                                <option value="Yes" label="Yes">Yes</option>
+                            </select>
+                        </td>
+                    </tr>
+            </table>   
+                 
+            </td>
+            <td style="vertical-align:top;padding-right:1px;">
+                <table>
+                    <tr style="height:10px;">
+                        <td style="vertical-align:top;padding-right:1px;">
+                            <b>Estimated Order Quantity</b>
+                        </td>
+                    </tr>
+                    <tr style="height:10px;">
+                        <td style="vertical-align:top;padding-right:1px;">
+                            <input id="ordervol" name="ordervol" class="combo required number" style="height:20px;" value="{!eoq}"/>
+                            <select id="ordervoluom" class="easyui-combo uom" name="ordervoluom" style="width:80px;padding-right:3px;"  data-value="{!eoquom}">
+                                <apex:outputtext value="{!uomoptions}" escape="false" />
+                            </select>
+                            <br/><div class="error_container"/>
+                        </td>
+                    </tr>
+                    <tr style="height:10px;">
+                        <td style="vertical-align:top;padding-right:1px;">
+                            <b>Competitor</b>
+                        </td>
+                    </tr>
+                    <tr style="height:10px;">
+                        <td style="vertical-align:top;padding-right:1px;">
+                            <div id="CompetitorsFrame" class="frame"><input id="Competitors" name="competitorid" data-compid="{!CompetitorId}" data-compname="{!Competitor}" style="height:20px;"/></div>
+                            <div style="color:red;" id="CompetitorsError" class="error_container"/>
+                        </td>
+                    </tr>
+                    <tr style="height:10px;">
+                        <td style="vertical-align:top;padding-right:1px;">
+                            <b>Obtained From</b>
+                        </td>
+                    </tr>
+                    <tr style="height:10px;">
+                        <td style="vertical-align:top;padding-right:1px;">
+                                <select id="obtainedfrom" class="easyui-combo" name="obtainedfrom" style="width:200px;">
+                                    <option value="Customer - Verbal" label="Customer - Verbal">Customer - Verbal</option>
+                                    <option value="Customer - Written" label="Customer - Written">Customer - Written</option>
+                                    <option value="Observed at Other Customers" label="Observed at Other Customers">Observed at Other Customers</option>
+                                </select>
+                        </td>
+                    </tr>
+                    <tr style="height:10px;">
+                        <td style="vertical-align:top;padding-right:1px;">
+                            <b>Competitors Price</b>
+                        </td>
+                    </tr>
+                    <tr style="height:10px;">
+                        <td style="vertical-align:top;padding-right:1px;">
+                            <input id="compprice" class="competitorprice combo required currency" name="compprice" style="height:20px;"/>
+                            <select id="compuom" class="easyui-combo uom" name="compuom" style="width:80px;padding-right:3px;"  data-value="{!compuom}">
+                            <apex:outputtext value="{!uomoptions}" escape="false"/>
+                            </select>
+                            <br/><div class="error_container"/>
+
+                        </td>
+                    </tr>
+                    <tr style="height:10px;">
+                        <td style="vertical-align:top;padding-right:1px;">
+                            <b>Price Protection</b>
+                        </td>
+                    </tr>
+                    <tr style="height:10px;">
+                        <td style="vertical-align:top;padding-right:1px;">
+                            <select id="priceprot" name="priceprot" style="width:200px;">
+                                <apeX:outputtext value="{!priceprotectionoptions}" escape="false" />
+                            </select>
+                        </td>
+                    </tr>
+                    <tr style="height:10px;">
+                        <td id="freightlbl" style="display:none;vertical-align:top;padding-right:1px;">
+                            <b>Incoterms</b>
+                        </td>
+                    </tr>
+                    <tr style="height:10px;">
+                        <td id="freightoptions" style="display:none;vertical-align:top;padding-right:1px;">
+                            <select id="freight" name="freight" style="width:200px;" data-value="{!Freight}">
+                                <apeX:outputtext value="{!FreightTermOptions}" escape="false" />
+                            </select>
+                        </td>
+                   </tr>
+                </table>
+            </td>
+            <td style="vertical-align:top;padding-right:1px;">
+                <table>
+                    <tr style="height:10px;">
+                        <td style="vertical-align:top;padding-right:1px;">
+                            <b>Comments</b>
+                        </td>
+                    </tr>
+                    <tr style="height:10px;">
+                        <td style="vertical-align:top;padding-right:1px;">
+                            <textarea id="comments"  name="comments" style="height:200px;width:250px;"></textarea>
+                        </td>
+                    </tr>
+                </table>
+            </td>
+       <!-- </tr> -->
+        
+    <td id = "rfqattr" style="display:none;vertical-align:top;padding-right:1px;">
+                <table>
+                    <tr style="height:10px;">
+                        <td style="vertical-align:top;padding-right:1px;">
+                            <b>Market/Submarket</b>
+                        </td>
+                    </tr>
+                   <tr style="height:10px;">
+                        <td style="vertical-align:top;padding-right:1px;">
+                           <select id="pacCode" name="pacCode" style="width:200px;">
+                           <apeX:outputtext value="{!pacCode}" escape="false" />
+                            </select>
+                             
+                        </td>
+                   </tr>
+                   
+                   <tr style="height:10px;">
+                        <td style="vertical-align:top;padding-right:1px;">
+                            <b>Application</b>
+                        </td>
+                   </tr>
+                   <tr style="height:10px;">
+                        <td style="vertical-align:top;padding-right:1px;">
+                            <input type="text" id="application" name="application" style="height:20px;width:120px;"></input>
+                            <br/><div class="error_container"/>
+                        </td>
+                   </tr>
+                    
+                   <tr style="height:10px;">
+                       <td style="vertical-align:top;padding-right:1px;">
+                            <b>OEM</b>
+                        </td>
+                   </tr>
+                   <tr style="height:10px;">
+                        <td style="vertical-align:top;padding-right:1px;">
+                            <input type="text" id="oem" name="oem" style="height:20px;width:120px;"></input>
+                            <br/><div class="error_container"/>
+                        </td>
+                   </tr>
+                  
+                  <tr style="height:10px;">
+                        <td style="vertical-align:top;padding-right:1px;">
+                            <b>Specified Material</b>
+                        </td>
+                  </tr>
+                  <tr style="height:10px;">
+                        <td style="vertical-align:top;padding-right:1px;">
+                            <select id="SpecifiedMaterial" name="SpecifiedMaterial" style="width:100px;">
+                                    <option value="Yes" label="Yes">Yes</option>
+                                    <option value="No" label="No">No</option>
+                            </select>
+                            <br/><div class="error_container"/>
+                        </td>
+                  </tr>
+                   </table>
+    </td>  
+   
+    <td id="rfqattr2" style="display:none;vertical-align:top;padding-right:1px;">
+                <table>
+                  <tr style="height:10px;">
+                      <td style="vertical-align:top;padding-right:1px;">
+                            <b>Existing Business for Customer</b>
+                      </td>
+                  </tr>
+                  <tr style="height:10px;">
+                       <td style="vertical-align:top;padding-right:1px;">
+                            <select id="ExistingBusiness" name="ExistingBusiness" style="width:100px;">
+                                    <option value="Yes" label="Yes">Yes</option>
+                                    <option value="No" label="No">No</option>
+                                    <option value="Other" label="Other">Other</option>
+                            </select>
+                       </td>
+                  </tr>
+                  <tr style="height:10px;">
+                       <td style="vertical-align:top;padding-right:1px;">
+                            <b>Competitive Producer</b>
+                       </td>
+                  </tr>
+                  <tr style="height:10px;">
+                       <td style="vertical-align:top;padding-right:1px;">
+                           <input type="text" id="CompetitiveProducer" name="CompetitiveProducer" style="height:20px;width:120px;"></input>
+                       </td>
+                  </tr>
+                   <tr style="height:10px;">
+                       <td style="vertical-align:top;padding-right:1px;">
+                            <b>Competitive Grade</b>
+                       </td>
+                  </tr>
+                  <tr style="height:10px;">
+                       <td style="vertical-align:top;padding-right:1px;">
+                            <input type="text" name="competitivegrade" id="competitivegrade" style="height:20px;width:120px;"></input>
+                       </td>
+                  </tr>
+                  <tr style="height:10px;">
+                       <td style="vertical-align:top;padding-right:1px;">
+                            <b>Estimated Annual Volume</b>
+                       </td>
+                  </tr>
+                 
+                  <tr style="height:10px;">
+                        <td style="vertical-align:top;padding-right:1px;">
+                            <input type="text" id="estanualVol" name="estanualVol" style="height:20px;width:100px;"></input>
+                            <select id="estanualUom" class="easyui-combo uom" name="estanualUom" style="height:20px;width:40px;"> 
+                                <option value="LB" label="LB">LB</option>
+                                <option value="KG" label="KG">KG</option>
+                            </select>
+                            <br/><div class="error_container"/>
+                         </td>
+                   </tr>
+          </table>                 
+     </td>
+        
+    </table>
+    <br/>
+    <div id="displaymsg"/>
+    </form>
+    <div style="width:1100px;">
+    <table id="formtable" class="display">
+    <thead>
+    <th class="details">Details</th>
+    <th class="level">Approval Level</th>
+    <th class="appr">Approver</th>
+    <th class="type">Type</th>
+    <th class="CM">CM %</th>
+    <th class="Unit_CM">Unit CM</th>
+    <th class="sold">Sold To</th>
+    <th class="ship">Ship To</th>
+    <th class="mat">Material</th>
+    <th class="start">Start Date</th>
+    <th class="end">Expiration Date</th>
+    <th class="vol">Volume</th>
+    <th class="voluom">UoM</th>
+    <th class="price">Price</th>
+    <th class="priceuom">UoM</th>
+    <th class="freight">Incoterms</th>
+    <th class="TPI">TPI</th>
+    </thead>
+    <tbody>
+
+    </tbody>
+    </table>
+    </div>
+    </div>
+    </apex:page>

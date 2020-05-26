@@ -1,0 +1,235 @@
+<apex:page standardcontroller="Price_Letter__c" extensions="Letter_Price_Controller" showheader="false" sidebar="false" renderas="PDF">
+<html>
+<head>
+<style>
+@page {
+size:landscape;
+}
+
+
+.title {
+    font-size:28px;
+    font-weight:bold;
+    display:block;
+}
+
+.subtitle {
+    font-weight:bold;
+    font-size:14px;
+}
+
+.subtitleWithGrayBackground {
+    font-weight:bold;
+    font-size:18px;
+    background-color: #DDDDDD;
+}
+
+.cellHeader {
+/*  background-color: #DDDDDD; */
+    text-align: right;
+    font-weight:bold;
+    font-size:14px;
+}
+
+.subtitle2 {
+    margin-left:2em;
+    font-weight:bold;
+    font-size:12px;
+}
+
+.dataTable {
+    margin-bottom: 2em;
+
+    border-color: #000000;
+    border-width: 0 0 1px 1px;
+    border-style: solid;
+
+     /* Stop Email Addresses from being underlined */
+     text-decoration:none;
+
+
+    /* Specify preference to not break a page at
+        any element with this style. */
+    page-break-before: auto;
+}
+.odd {background-color: White; font-size:80%}
+
+.even {background-color: LightSteelBlue; font-size:80%}
+
+.dataTableHeader {
+    font-weight:bold;
+    font-size:14px;
+
+    border-color: #000000;
+    border-width: 1px 1px 0 0;
+    border-style: solid;
+    margin: 0;
+    padding: 4px;
+    background-color: #DDDDDD;
+    text-wrap: unrestricted;
+    table-layout: fixed;
+    overflow: hidden;
+    word-break:break-all;
+    
+    
+
+}
+
+.dataTableHeader_fontsize10 {
+    font-weight:bold;
+    font-size:10px;
+
+    border-color: #000000;
+    border-width: 1px 1px 1px 1px;
+    border-style: solid;
+    margin: 0;
+    padding: 1px;
+    
+    text-wrap: unrestricted;
+    table-layout: fixed;
+    overflow: hidden;
+    word-break:break-all;
+}
+.lineitems {
+    border-color: #000000;
+    border-width: 1px 1px 0 0;
+    border-style: solid;
+    margin: 0;
+    padding: 4px;
+    background-color: #FFFFFF;
+     /* Stop Email Addresses from being underlined */
+     text-decoration:none;
+    text-wrap: unrestricted;
+    table-layout: fixed;
+    overflow: hidden;
+    word-wrap: break-word;
+    vertical-align: top;
+
+}
+
+.item {
+     text-decoration:none;
+     text-wrap: unrestricted;
+     word-break:break-all;
+     
+}
+
+thead { display: table-header-group; }
+tfoot { 
+display: table-footer-group;
+font-size:65% 
+} 
+</style> 
+</head> 
+<body>
+ <apex:variable value="{!1}" var="num"/>  
+ <apex:repeat value="{!Locations}" var="loc">
+
+ <table>
+    <thead>
+     <tr>
+      <th width="100%">
+       <table>
+        <tr><td style="width:75%;">
+         <p>
+          <apex:image url="{!$Resource.Nexeo_Logo}" /><span style="font-size: 15px;"><strong>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; {!HeaderDetailLineFrench} </strong></span></p>
+        </td></tr>
+       </table>
+      <hr/>
+     </th></tr>
+    </thead>
+  <tbody>
+   <tr><td>
+     <apex:dataTable value="{!loc.CorpSoldShip}" var="a" styleClass="tableClass"  id="AcconutGrid" width="100%" style="font-size: 13px">
+       <apex:column style="width:200px">
+         <apex:outputtext value="{!a.a.name}" style="font-size: 13px;"/>&nbsp;
+       </apex:column>
+      
+       <apex:column style="width:250px">
+         <apex:outputfield value="{!a.a.Full_Address__c}" style="font-size: 13px;"/>
+      </apex:column>
+      
+      <apex:column >
+        Compte: <apex:outputtext value="{!a.anumber}" style="font-size: 13px;"/>
+      </apex:column>
+    </apex:dataTable>
+
+ <br/><br/>
+      <apex:panelGrid >
+       <apex:datatable value="{!loc.tierList}" var="i" id="PricingGrid" styleClass="dataTable" columnclasses="lineitems"  headerClass="dataTableHeader_fontsize10" width="100%" style="font-size: 13px">
+         <apex:column headervalue="Product Description / Code" value="{!i.materialname}" style="font-size: 13px;width: 200px"/>
+         <apex:column headervalue="Approx Pkg Weight" value="{!i.approxweight} {!i.volUOM}" style="width: 50px"/>
+         <apex:column headervalue="Cust #"  value="{!i.custmatNum}" style="width: 50px"/>
+         <apex:column headervalue="Min Qty" value="{!CEILING(i.minQTY)} {!i.volUOM}" style="width: 50px"/>
+         <apex:column headervalue="Current Price" value=" {!i.currentPrice}" style="width: 100px"/> 
+         <apex:column headervalue="New Price" value=" {!i.newPrice}" style="width: 85px"/>
+         <apex:column headervalue="Effective Date" value="{!i.effDate}" style="width: 50px"/>
+         <apex:column headervalue="Freight Terms" value="{!i.freightterms}" style="width: 50px"/>
+         <apex:column headervalue="Account Team" value="{!i.accountTeam}" style="width: 50px"/>
+          
+       
+       
+    </apex:datatable>
+
+    </apex:panelGrid>
+   
+
+</td></tr></tbody>
+
+ <tfoot>
+ <tr>
+ <td width="100%">
+ <hr/>
+<center><b>Veuillez noter:</b> les conditions de transport sont sujet à changement en fonction de la livraison des produits à l'extérieur de l'usine Nexeo.
+La surcharge de carburant s'applique en fonction du prix moyen du diesel.
+<br/><b> Pour les Clients Chimiques seulement: </b> Les commandes seront chargés des frais de logistique et d'opérations (0,015 $ / lb pour le camion et $ 0,005 / LB pour les expéditions ferroviaires.
+<br/> Commandes Canadiennes: $ 0,035 CDN / KG pour les commandes en vrac et colis par camion et $ 0,012 CDN / KG pour les expéditions ferroviaires )
+<br/>Les prix mentionnés sur cet avis pourrait être sujet à changement en fonction de la date à laquelle le produit est expédié. Les modalités et conditions de toutes les ventes sont exposées sur le site <u> www.nexeosolutions.com/sales-terms</u>. 
+<br/> Pour toutes questions, veuillez s'il vous plait, contacter votre représentant aux ventes.
+<br/> <b>  Nous vous remercions de votre confiance.</b></center>
+<!-- Changed URL from http://www.nexeosolutions.com/salesterms to http://www.nexeosolutions.com/sales-terms
+ on 27Aug2013 as per INC000001517816 by Abhishek -->
+
+<br/><br/>
+<hr/>
+<table>
+<tr>
+<td style="vertical-align:top;padding-right:1px;"><b>siège social:</b><br/>Nexeo Solutions Canada Corp,<br/>2450 Bristol Circle<br/>Oakville, Ontario L6H 6P6<br/><br/><br/></td> 
+<td style="vertical-align:top;padding-right:1px;">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<b>Tél.:</b>289.835.7000 &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;https://www.nexeosolutions.com </td>
+<td></td>
+
+</tr>
+</table>
+
+
+<!--
+<table>
+<tr>
+<td style="vertical-align:top;padding-right:1px;">Pour placer vos commandes svp contactez service à la clientèle chimique Nexeo Solutions Canada Corp.<br/>2620 Royal Windsor Drive<br/>Mississauga, Ontario L5J 4E7</td>
+<td style="vertical-align:top;padding-right:1px;"><b>Montreal</b><br/>Tél.:(514) 650-3800<br/>(800) 363-5947<br/></td><td style="vertical-align:top;padding-right:1px;"></td>
+<td style="vertical-align:top;padding-right:1px;"><b>Mississauga</b><br/>Tél.:(905) 823-1800</td>
+<td></td>
+</tr>
+</table> 
+<table><tr>
+
+<td style="width:40%;"></td>
+<td style="width:40%;">Veuillez communiquer avec nous pour toutes demandes de renseignement <br/>
+concernant le prix des produits qui ne figurent pas sur votre lettre.</td><td style="width:8%;"></td>
+<td style="width:40%;"><div class="right"><b>Commande minimum de 750  
+$CAN avant taxes</b></div></td>
+</tr>
+</table>
+-->
+</td>
+</tr>
+</tfoot>
+</table>
+<apex:outputpanel rendered="{!IF(AND(size > 1, num < size), true, false)}" style="page-break-before: always;" layout="block"/>
+<apex:variable value="{!num+1}" var="num"/>
+
+</apex:repeat>
+</body>
+</html>
+
+</apex:page>

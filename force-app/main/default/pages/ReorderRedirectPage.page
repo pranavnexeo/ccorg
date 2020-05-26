@@ -1,0 +1,100 @@
+<apex:page standardController="Reorder__c" extensions="ReorderController" id="myPage">
+
+<script language="javascript">
+function oO_checkAll(frm, acb, id) {
+
+    for (var i = 0; i < frm.elements.length; i++) {
+        var e = frm.elements[i];
+        if (e.id.indexOf(id) != -1 && 
+            e.disabled == false) {
+            e.checked = acb.checked;
+        }
+    }
+}
+</script>
+    <apex:pageMessages />
+    <apex:form id="myform">
+
+        <apex:pageblock id="myblock">
+            <apex:pageBlockTable id="mytable" value="{!orderMasterList}" var="order">
+                <apex:column >
+                    <apex:facet name="header">
+                        <apex:inputCheckbox id="selectAll" value="{!allOrderSelected}" onclick="oO_checkAll(this.form, this, 'selectDateRow')"/>
+                    </apex:facet>
+                    <apex:inputCheckbox id="selectDateRow" value="{!order.isSelected}"/>
+                </apex:column>      
+                <apex:column >
+                    <apex:facet name="header">{!$Label.Open_Order_ID}</apex:facet>
+                    <apex:outputField value="{!order.openOrder.Name}"/>
+                </apex:column>
+                <apex:column >
+                    <apex:facet name="header">
+                    <apex:CommandLink action="{!SortMasterList}">{!$Label.Sales_Order_Number}
+                    <apex:param assignTo="{!sortField}" value="Sales_Order_Number__c" />
+                    <apex:image value="{!sortImage}" rendered="{!IF(sortField = 'Sales_Order_Number__c', true, false)}"/>
+                    </apex:commandlink>
+                    </apex:facet>
+                <apex:outputField value="{!order.openOrder.Sales_Order_Number__c}"/>
+                </apex:column> 
+                <apex:column >
+                    <apex:facet name="header">
+                    <apex:CommandLink action="{!SortMasterList}">{!$Label.Line_Item_Number}
+                    <apex:param assignTo="{!sortField}" value="Line_Item_Number__c" />
+                    <apex:image value="{!sortImage}" rendered="{!IF(sortField = 'Line_Item_Number__c', true, false)}"/>
+                    </apex:commandlink>
+                    </apex:facet>
+                <apex:outputField value="{!order.openOrder.Line_Item_Number__c}"/>
+                </apex:column>
+                <apex:column >
+                    <apex:facet name="header">
+                    <apex:CommandLink action="{!SortMasterList}">{!$Label.Material_Desc}
+                    <apex:param assignTo="{!sortField}" value="Material_Desc__c" />
+                    <apex:image value="{!sortImage}" rendered="{!IF(sortField = 'Material_Desc__c', true, false)}"/>
+                    </apex:commandlink>
+                    </apex:facet>
+                <apex:outputField value="{!order.openOrder.Material_Desc__c}"/>               
+                </apex:column>
+                <apex:column >             
+                    <apex:facet name="header">
+                    <apex:CommandLink action="{!SortMasterList}">{!$Label.Ordered_Qty}
+                    <apex:param assignTo="{!sortField}" value="Ordered_Qty__c" />
+                    <apex:image value="{!sortImage}" rendered="{!IF(sortField = 'Ordered_Qty__c', true, false)}"/>
+                    </apex:commandlink>
+                    </apex:facet>
+                <apex:outputField value="{!order.openOrder.Ordered_Qty__c}"/>
+                </apex:column>
+                <apex:column >
+                    <apex:facet name="header">
+                    <apex:CommandLink action="{!SortMasterList}">{!$Label.Ordered_Qty} {!$Label.UOM}
+                    <apex:param assignTo="{!sortField}" value="Ordered_Qty_UOM__c" />
+                    <apex:image value="{!sortImage}" rendered="{!IF(sortField = 'Ordered_Qty_UOM__c', true, false)}"/>
+                    </apex:commandlink>
+                    </apex:facet>
+                    <apex:outputField value="{!order.openOrder.Ordered_Qty_UOM__c}"/>
+                </apex:column>
+                <apex:column >
+                    <apex:facet name="header">
+                    <apex:CommandLink action="{!SortMasterList}">{!$Label.Plant_Desc}
+                    <apex:param assignTo="{!sortField}" value="Plant_Desc__c" />
+                    <apex:image value="{!sortImage}" rendered="{!IF(sortField = 'Plant_Desc__c', true, false)}"/>
+                    </apex:commandlink>
+                    </apex:facet>              
+                    <apex:outputField value="{!order.openOrder.Plant_Desc__c}"/>
+                </apex:column>
+                <apex:column >
+                    <apex:facet name="header">
+                    <apex:CommandLink action="{!SortMasterList}">{!$Label.Agreed_Ship_Date}
+                    <apex:param assignTo="{!sortField}" value="Agreed_Ship_Date2__c" />
+                    <apex:image value="{!sortImage}" rendered="{!IF(sortField = 'Agreed_Ship_Date2__c', true, false)}"/>
+                    </apex:commandlink>
+                    </apex:facet>
+                    <apex:outputField value="{!order.openOrder.Agreed_Ship_Date2__c}"/>
+                </apex:column>
+            </apex:pageBlockTable>
+            <apex:pageblockButtons >
+                <apex:commandButton id="mybutton" action="{!callReorderPage}" value="{!$Label.Next}"/>
+                <apex:commandButton id="mybutton2" action="/{!accountId}" value="{!$Label.Cancel}"/>
+            </apex:pageblockButtons>
+        </apex:pageblock>    
+    </apex:form>
+</apex:page>

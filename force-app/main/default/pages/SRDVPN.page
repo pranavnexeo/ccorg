@@ -1,0 +1,18 @@
+<apex:page >
+<apex:form >
+<!--<apex:pagemessage severity="info" strength="3" Summary="You must be on the network or VPN to use this page"/>-->
+<apex:pageblock >
+<apex:pageblockbuttons >
+<!--<apex:outputlink value="{!$Page.SRDVPNChem}" styleclass="btn">Chemicals</apex:outputlink>
+<apex:outputlink value="{!$Page.SRDVPNComp}" styleclass="btn">Composites</apex:outputlink>
+<apex:outputlink value="{!$Page.SRDVPNPlas}" styleclass="btn">Plastics</apex:outputlink>-->
+<apex:outputlink value="https://nexeo.sharepoint.com/ics/SitePages/Home.aspx" styleclass="btn" target="_blank">Chemicals</apex:outputlink>
+<apex:outputlink value="https://nexeo.sharepoint.com/surfacta/SitePages/Home.aspx" styleclass="btn" target="_blank">Chemicals Cross Reference</apex:outputlink>
+<!--<apex:outputlink value="https://nexeo.sharepoint.com/frp/SitePages/Home.aspx" styleclass="btn" target="_blank">Composites</apex:outputlink>-->
+<apex:outputlink value="https://nexeo.sharepoint.com/sites/srd/plastics" styleclass="btn" target="_blank">Plastics</apex:outputlink>
+</apex:pageblockbuttons>
+
+
+</apex:pageblock>
+</apex:form>
+</apex:page>

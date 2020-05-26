@@ -1,0 +1,3 @@
+<apex:page >
+ <apex:iframe src="/apex/Point_of_Fill?id={!$CurrentPage.parameters.id}&isdtp=mn" frameborder="false" height="1000px" width="100%" />
+</apex:page>

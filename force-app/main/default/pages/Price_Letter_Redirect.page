@@ -1,0 +1,2 @@
+<apex:page standardcontroller="Price_Letter__c" extensions="Price_Letter_Extension" action="{!redirectme}">
+</apex:page>

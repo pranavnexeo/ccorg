@@ -1,0 +1,123 @@
+.TableCaptionClass {
+		background:#319431;
+		font-size:140%;
+		border:1px solid #000;
+		border-bottom:none;
+		padding:5px;
+		text-align:center;
+		color:white;
+		font-weight:bold;
+	}
+
+.TableColumnClasses {}
+
+.TableFooterClass {text-align:right;
+		font-weight:bold;
+		background:#369;
+		}
+
+.TableFooterClass_Gold {text-align:left;
+		font-weight:bold;
+		background:#eeecd1;
+		border-top:1px solid #000;
+                    border-bottom:1px solid #000;
+                    border-right:0px solid #000;
+                    border-left:0px solid #000;
+		}
+
+
+.TableHeaderClass {
+		border:1px solid #000;
+		border-collapse:collapse;
+		padding:5px;
+		background:#319431;
+		text-align:center;
+		font-size:105%;
+		vertical-align: bottom;
+		color:white;
+	}
+
+.TableRowClasses_odd {background:#f3f3ec;}
+.TableRowClasses_even {background:#eeecd1;}
+
+.MessageBoxStyling {
+			border:1px solid #000;
+			border-collapse:collapse;
+			background:#eeecd1;
+			font-family: 'Verdana', 'Geneva', sans-serif;		    
+			font-size:120%;
+			text-align:left;
+			padding:3px;	
+}
+
+.TableStyleClass {
+			border:1px solid #000;
+			border-collapse:collapse;
+		    /* font-family: 'Arial', 'Helvetica', sans-serif; */
+			font-family: 'Verdana', 'Geneva', sans-serif;		    
+			font-size:100%;
+			text-align:left;
+			background:#999;
+			padding:3px;	
+			}
+
+.GeneralInfo_Label_ColumnFormat {font-weight:bold;text-align:right;}
+.GeneralInfo_Label_CenterText_ColumnFormat {font-weight:bold;text-align:center;}
+.GeneralInfo_Label_LeftAlign_ColumnFormat {font-weight:bold;text-align:center;}
+.GeneralInfo_Data_ColumnFormat {text-align:left;}	
+
+.CreateNewGrid_ColumnFormat {text-align:center;padding:3px;border-top:0px solid #000;
+                    border-bottom:0px solid #000;
+                    border-right:1px solid #000;
+                    border-left:1px solid #000;}
+
+
+.ServiceProviderProfileQuestions_QuestionNumberFormat {text-align:center;font-weight:bold;width:60px}
+.ServiceProviderProfileQuestions_ColumnFormat {font-weight:bold}
+.ServiceProviderProfilePrefix_ColumnFormat {text-align:right;font-weight:bold;vertical-align: bottom;}
+.ServiceProviderProfileAnswers_ColumnFormat {text-align:center;width:150px}	
+.ServiceProviderProfileSuffix_ColumnFormat {text-align:left;font-weight:bold;vertical-align: bottom;}
+
+.GQ_Question_ColumnFormat {text-align:left;width:200px}
+.Buying_Valvoline_Value_ColumnFormat {text-align:center;font-style: italic;width:90px} 
+.Average_Daily_Service_Volume_Value_ColumnFormat {text-align:center;width:75px}
+.Retail_Price_Value_ColumnFormat {text-align:center;width:75px;white-space:nowrap;}
+.Current_Installer_Product_Cost_Value_ColumnFormat {text-align:center;width:75px}
+.Include_Labor_Rate_Value_ColumnFormat {text-align:center;font-style: italic;width:75px}
+.Percent_of_Hours_to_Complete_Value_ColumnFormat {text-align:center;width:100px}
+.Total_Labor_Costs_Value_ColumnFormat {text-align:center;width:75px}
+
+.Quart_Cost_Label_Value_ColumnFormat {text-align:left;}
+.Quart_Costs_Value_ColumnFormat {text-align:center;}
+
+.Comments_Format {text-align:left;width:920px}
+
+.OCVV_Col1 {text-align:right;width:65%}
+.OCVV_Col2 {text-align:center;width:35%}
+.VerificationFooterLine {font-weight:bold;border:2px solid #000;background:#e8e8e8;}
+
+.formatBlankLine {font-size:50%;
+				  }
+				
+.formatHeaderLine {font-size:100%;
+				   font-weight:bold;
+				   text-align:left;
+				   color:black;
+				  }
+
+.formatBlankColumn {border-top:1px solid #000;
+                    border-bottom:1px solid #000;
+                    border-right:0px solid #000;
+                    border-left:0px solid #000;
+					background:#d9d9d9;	
+					}
+
+.formatHeaderColumn {border-top:1px solid #000;
+                    border-bottom:1px solid #000;
+                    border-right:0px solid #000;
+                    border-left:0px solid #000;
+					background:#eeecc1;	
+					}
+	
+}
+		

@@ -1,0 +1,99 @@
+<apex:page standardcontroller="Opportunity" extensions="Opportunity_RecordType_Selection">
+<script src="{!URLFOR($Resource.JQuery_Pricing, '/JQuery_Pricing/js/jquery-1.8.3.min.js')}" type="text/javascript"/> 
+<script> 
+      if({!autoRedirect})
+        redirectme('{!autoRedirectId}');
+        
+
+
+function redirectme(rectypeid){
+
+      var churnid = '';
+      if('{!$CurrentPage.parameters.churnid}' != '')
+        churnid = '&churnid={!$CurrentPage.parameters.churnid}';
+      
+      var accid = '';
+      if('{!$CurrentPage.parameters.aid}' != '')
+        accid = '&aid={!$CurrentPage.parameters.aid}';
+      
+      var contactid = '';
+      if('{!$CurrentPage.parameters.conid}' != '')
+        contactid = '&cid={!$CurrentPage.parameters.conid}';
+        
+      var returl = '';
+      if('{!$CurrentPage.parameters.retURL}' != '')
+        returl = '&returl={!$CurrentPage.parameters.returl}';
+        
+      var cancelurl = '';
+      if('{!$CurrentPage.parameters.cancelURL}' != '')
+        cancelurl = '&returl={!$CurrentPage.parameters.cancelurl}';
+        
+      var conftoken = '';
+      if('{!$CurrentPage.parameters._CONFIRMATIONTOKEN}' != '')
+        conftoken = '&returl={!$CurrentPage.parameters._CONFIRMATIONTOKEN}';
+      
+        Opportunity_RecordType_Selection.getURL(rectypeid,
+                                              accid,
+                                              contactid, 
+                                              churnid,
+                                              returl,
+                                              cancelurl,
+                                              conftoken,     
+                                              function(result, event){   
+             if(event.type == 'exception') {
+                alert(event.message);
+             }
+             else{
+                if(typeof sforce == 'undefined')
+                   window.location = $('<div/>').html(result).text();
+                else
+                   sforce.one.navigateToURL($('<div/>').html(result).text());
+              }
+          });
+}
+</script>
+<apex:form >
+<apeX:actionfunction name="cancelthis" action="{!cancel}" />
+</apex:form>
+<apeX:outputpanel rendered="{!NOT(AutoRedirect)}">
+<apex:sectionheader title="New Opportunity" subtitle="Select Opportunity Record Type"/>
+<apex:outputtext value="Select a record type for the new opportunity. To Skip this page in the future, change your record type settings on your personal setup page."/><br/><br/>
+<apex:pageblock title="Select Opportunity Record Type">
+<apex:pageblockbuttons location="bottom">
+<button type="button" value="Continue" onclick="redirectme($('#rtylelist').val())">Continue</button>
+<button value="Cancel" onclick="cancelthis();">Cancel</button>
+</apex:pageblockbuttons>
+<apex:pageblocksection >
+
+<apex:pageblocksectionitem >
+<apex:outputlabel value="Record Type of new record"/>
+<apex:outputPanel >
+<select id="rtylelist">
+<apex:outputtext value="{!recordtypelist}" escape="false"/>
+</select>
+</apeX:outputpanel>
+</apex:pageblocksectionitem>
+
+</apex:pageblocksection>
+</apex:pageblock>
+
+<table class="recordTypeInfo infoTable" cellspacing="0" cellpadding="0" border="0">
+<tbody>
+  <tr class="headerRow">
+    <th class="recordTypeName" scope="col">Record Type Name</th>
+    <th class="recordTypeDescription" scope="col">Description</th>
+  </tr>
+<apex:repeat value="{!recordtypes}" var="r">
+<tr>
+<th class="recordTypeName" scope="row">
+<apex:outputtext value="{!r.name}"/>
+</th>
+<td class="recordTypeDescription">
+<apex:outputtext value="{!r.description}"/>
+</td>
+</tr>
+</apex:repeat>
+</tbody>
+</table>
+</apeX:outputpanel>
+</apex:page>

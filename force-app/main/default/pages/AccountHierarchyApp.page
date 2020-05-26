@@ -1,0 +1,26 @@
+<apex:page standardController="Account" 
+           tabStyle="Account" 
+           sidebar="false" 
+           title="Account Hierarchy">
+
+  <apex:includeScript value="{!$Resource.FlexAppJavascriptFunctions}" />
+
+  <script language="javascript">
+      function gotoAccount(url) {
+          parent.frames.location.replace(url);
+      }
+  </script>
+
+  <div id='flexAppDiv' style="width: 100%; height: 440px;">
+    <c:SWFObject id="AccountHierarchy"
+                 src="{!$Resource.AccountHierarchyApp}"
+                 flashvars="session_id={!$Api.Session_Id}&server_url={!$Api.Partner_Server_URL_210}&accountId={!id}" 
+                 height="100%" width="100%" 
+                 codebase="https://fpdownload.macromedia.com/get/flashplayer/current/swflash.cab" 
+                 />
+  </div>
+
+  <script language="javascript">
+    hookEvent('flexAppDiv', 'mousewheel', cancelEvent);
+  </script>
+</apex:page>

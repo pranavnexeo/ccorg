@@ -1,0 +1,485 @@
+<apex:page standardController="Price_Support__c" extensions="PriceSupportExtension" id="priceSuppPage">
+    <script src="{!URLFOR($Resource.JQueryUI, 'js/jquery-1.7.2.min.js')}"/> 
+    <script src="{!URLFOR($Resource.JQueryUI, 'js/jquery-ui-1.8.21.custom.min.js')}"/> 
+    <apex:stylesheet value="{!URLFOR($Resource.JQueryUI, 'css/ui-lightness/jquery-ui-1.8.7.custom.css')}"/> 
+    <script src="/soap/ajax/24.0/connection.js" type="text/javascript"></script>
+    
+    <script> 
+       var j$ = jQuery.noConflict();
+       function sticky_relocate() {
+             var window_top = j$(window).scrollTop();
+             var div_top = j$('#sticky-anchor').offset().top;
+             if (window_top > div_top)
+               j$('#sticky').addClass('stick')
+             else
+               j$('#sticky').removeClass('stick');
+            }
+
+             j$(function() {
+               j$(window).scroll(sticky_relocate);
+               sticky_relocate();
+             });
+             
+             
+    </script>
+    <apex:PageMessages id="error"/>
+    <apex:form >
+    
+        
+        <apex:sectionHeader title="{!$ObjectType.Price_Support__c.label}" subtitle="{!Price_Support__c.name}"/>
+        <div id="sticky-anchor"></div>
+        <div id="sticky"> 
+        <apex:pageblock >
+                <center> 
+                     <apex:commandButton value="Save" action="{!customSave}"/>
+                     <apex:commandButton action="{!cancel}" value="Cancel" />
+                </center>
+            </apex:pageblock>
+            </div>
+            <apex:pageBlock id="pricePageBlock">  
+             
+                <BR/>
+                <B><apex:outputLabel value=" ID# :   " for="supportId"/><apex:outputField value="{!Price_Support__c.Support_ID__c}" id="supportId"/></B>
+                <BR/>
+                <BR/>
+                
+                <apex:pageBlockSection showHeader="true" title="Status" columns="2" id="status">
+                        <apex:outputField value="{!Price_Support__c.Status__c}"  id="priceSuppStatus"/>
+                        <apex:outputField value="{!Price_Support__c.SAP_Transfer__c}"/>
+                </apex:pageBlockSection>
+                <apex:pageBlockSection showHeader="True"  title="General Information"  columns="2"  id="generlInfoView">
+                        <apex:outputField value="{!Price_Support__c.Name}"/>
+                        <apex:pageBlockSectionItem />
+                        <apex:outputField value="{!Price_Support__c.New_or_Changed__c}"/>
+                        <apex:outputField value="{!Price_Support__c.Support_Type__c}"/>
+                        <apex:outputField value="{!Price_Support__c.Order_Type__c}"/>
+                        <apex:outputField value="{!Price_Support__c.Flat_or_Purchased__c}" rendered="{!IF(Price_Support__c.Support_Type__c == 'Rebate',TRUE,FALSE)}"/>
+                        <apex:outputField value="{!Price_Support__c.Mode__c}"/>
+                        <apex:inputField value="{!Price_Support__c.Auto_Email_To_Pricing_Group__c}" rendered="{!Price_Support__c.Support_Type__c ='Upfront'}"/>
+                        <apex:pageBlockSectionItem />
+                </apex:pageBlockSection>
+                
+                <apex:pageBlockSection showHeader="true" title="Comments" columns="1"  id="commentsView">
+                    <apex:inputTextArea value="{!Price_Support__c.Comments__c}" rows="5" cols="150" />
+                    <apex:inputTextArea value="{!Price_Support__c.Nexeo_Only_Comments__c}" rows="5" cols="150" />
+                </apex:pageBlockSection>
+                
+                <apex:pageBlockSection showHeader="true" title="Nexeo Information" columns="2"  id="nexeoInfoView">
+                        <apex:outputField value="{!Price_Support__c.Division_Number__c}"/>
+                        <apex:outputField value="{!Price_Support__c.Division_Name__c}"/>
+                        <apex:outputField value="{!Price_Support__c.Sales_Organisation__c}"/>
+                        <apex:outputField value="{!Price_Support__c.Distribution_Channel__c}"/>
+                        <apex:outputField value="{!Price_Support__c.Nexeo_Group__c}"/>
+                        <apex:outputField value="{!Price_Support__c.Nexeo_Group_Name__c}"/>
+                        <apex:outputField value="{!Price_Support__c.Nexeo_Main_Approver_Name__c}" />
+                </apex:pageBlockSection>
+                
+                <apex:pageBlockSection showHeader="true" title="Supplier Information" columns="2"  id="supplierInfoView">
+                        <apex:outputField value="{!Price_Support__c.Purchasing_Organization__c}"/>
+                        <apex:outputField value="{!Price_Support__c.Debit_Memo_Contact1__c}"/>
+                        <apex:outputField value="{!Price_Support__c.Supplier_Profile_ID__c}" />
+                        <apex:outputField value="{!Price_Support__c.Street_Address__c}" rendered="{!IF(Price_Support__c.Support_Type__c == 'Upfront',TRUE,FALSE)}"/>
+                        <apex:outputField value="{!Price_Support__c.Supplier_Number__c}"/>
+                        <apex:outputField value="{!Price_Support__c.City__c}" rendered="{!IF(Price_Support__c.Support_Type__c == 'Upfront',TRUE,FALSE)}"/>
+                        <apex:outputField value="{!Price_Support__c.Supplier_Name__c}"/>
+                        <apex:outputField value="{!Price_Support__c.State_Province__c}" rendered="{!IF(Price_Support__c.Support_Type__c == 'Upfront',TRUE,FALSE)}"/>
+                        <apex:outputField value="{!Price_Support__c.Supplier_PI_Number__c}"/> 
+                        <apex:inputField value="{!Price_Support__c.Supplier_Reference__c}"/>  
+                        <apex:outputField value="{!Price_Support__c.Supplier_Group__c}"/>
+                        <apex:outputField value="{!Price_Support__c.Supplier_Group_Name__c}"/>
+                        <apex:outputField value="{!Price_Support__c.Supplier_Main_Approver1__c}"/>
+                        <apex:outputField value="{!Price_Support__c.Override_Email__c}" id="overRide" />
+                        <apex:outputField value="{!Price_Support__c.Match_to_PO_Required__c}"/>
+                        <apex:pageBlocksectionItem >
+                            <apex:outputLabel value="Supplier Sales Contact" />
+                            <apex:panelgroup id="salesContact">
+                                <apex:outputPanel rendered="{!Supplier_Sales_Contact_Req}">
+                                  <div class="requiredInput">
+                                  <div class="requiredBlock"></div>
+                                    <apex:inputField value="{!Price_Support__c.Supplier_Sales_Contact__c}"/>
+                                  </div>
+                                 </apex:outputPanel>
+                                 <apex:outputPanel rendered="{!NOT(Supplier_Sales_Contact_Req)}">
+                                    <apex:inputField value="{!Price_Support__c.Supplier_Sales_Contact__c}"/>
+                                 </apex:outputPanel>
+                            </apex:panelgroup>
+                        </apex:pageBlocksectionItem>  
+                        <apex:outputField value="{!Price_Support__c.Adjust_for_PO_Difference__c}"/>
+                        <apex:inputField value="{!Price_Support__c.Primary_Supplier__c}"/>
+                        <apex:outputField value="{!Price_Support__c.Supplier_Info_comments__c}"/>
+                        <apex:outputField value="{!Price_Support__c.Currency__c}"/>
+                </apex:pageBlockSection>
+                
+                <apex:pageBlockSection showHeader="true" title="Customer Information" columns="2"  id="customerInfoView">
+                        <apex:outputField value="{!Price_Support__c.National_Account__c}"/>
+                        <apex:outputField value="{!Price_Support__c.Territory__c}"/>
+                        <apex:outputField value="{!Price_Support__c.Entire_Sales_Group__c}"/>
+                        <apex:outputField value="{!Price_Support__c.Seller__c}"/>
+                        <apex:outputField value="{!Price_Support__c.Customer_Type__c}"/>
+                        <apex:outputField value="{!Price_Support__c.Seller_Phone_Number__c}"/>
+                        <apex:pageBlockSectionItem />
+                        <apex:outputField value="{!Price_Support__c.Seller_FAX_Number__c}"/>
+                        <apex:outputField value="{!Price_Support__c.Customer_Name__c}"/>
+                        <apex:outputField value="{!Price_Support__c.Customer_City__c}"/>
+                        <apex:outputField value="{!Price_Support__c.Customer_Number__c}"/>
+                        <apex:outputField value="{!Price_Support__c.Customer_State_Province__c}"/>
+                        <apex:outputField value="{!Price_Support__c.Region_Code__c}"/>
+                        <apex:outputField value="{!Price_Support__c.All_Regions__c}"/>
+                        <apex:outputField value="{!Price_Support__c.Sales_Group_Desc__c}"/>
+                        
+                        
+                        <apex:pageBlockSectionItem />
+                        <apex:outputField value="{!Price_Support__c.Pricing_Agreement__c}"/>
+                        <apex:pageBlockSectionItem />
+                        <apex:outputField value="{!Price_Support__c.Price_Protection_Length__c}" rendered="{!Price_Support__c.Pricing_Agreement__c='Price Protection'}"/>
+                        <apex:outputField value="{!Price_Support__c.Protection_Units__c}" rendered="{!Price_Support__c.Pricing_Agreement__c='Price Protection'}"/>
+                    </apex:pageBlockSection>
+                    
+               
+                
+               <apex:pageBlockSection showHeader="true" title="Competitive Information" columns="2"  id="competitiveInfoView">
+                        <apex:outputField value="{!Price_Support__c.Competitor_Name__c}"/>
+                        <apex:outputField value="{!Price_Support__c.Potential_Annual_Volume__c}"/>
+                        <apex:outputField value="{!Price_Support__c.Competitor_Manufacturer__c}"/>
+                        <apex:outputField value="{!Price_Support__c.Application__c}"/> 
+                        <apex:outputField value="{!Price_Support__c.Market_Segment__c}"/>
+                        <apex:outputField value="{!Price_Support__c.Competitive_Product__c}"/>
+                        <apex:outputField value="{!Price_Support__c.Actual_Annual_Volume__c}"/>
+                        <apex:outputField value="{!Price_Support__c.OEM__c}"/>
+                        <apex:pageBlockSectionItem />
+              </apex:pageBlockSection> 
+              <apex:pageBlockSection showHeader="false" columns="1">
+                 <apex:inputTextArea value="{!Price_Support__c.Competitive_Comments__c}" cols="150"
+                    rows="5" />
+               </apex:pageBlockSection>
+                
+                <apex:pageBlockSection showHeader="true" title="Support Information" columns="2" id="supportInfoView" rendered="{!IF(Price_Support__c.Support_Type__c == 'Rebate',TRUE,FALSE)}">
+                        <apex:outputField value="{!Price_Support__c.Material_Selling__c}"/>
+                        <apex:outputField value="{!Price_Support__c.UOM__c}"/>  
+                        <apex:outputField value="{!Price_Support__c.Material_Code_Selling__c}"/>
+                        <apex:pageBlockSectionItem />
+                        <apex:outputField value="{!Price_Support__c.Material_Description_Selling__c}"/>
+                        <apex:pageBlockSectionItem />
+                        <apex:outputField value="{!Price_Support__c.Base_Material_Code_Selling__c}"/>  
+                        <apex:outputField value="{!Price_Support__c.Packaging_Allowance__c}"/>
+                        <apex:outputField value="{!Price_Support__c.Container_Type__c}"/> 
+                        <apex:outputField value="{!Price_Support__c.Freight_Allowance_Selling__c}"/>
+                        <apex:outputField value="{!Price_Support__c.All_Conatiners__c}"/>
+                        <apex:outputField value="{!Price_Support__c.Other_Allowances__c}"/>
+                        <apex:outputField value="{!Price_Support__c.Release_Quantity_Selling__c}"/>
+                        <apex:outputField value="{!Price_Support__c.Freight_Terms_Selling__c}"/>
+                        <apex:outputField value="{!Price_Support__c.Supplier_Supported_Price__c}"/>
+                        <apex:pageBlockSectionItem />
+                        <apex:outputField value="{!Price_Support__c.X1st_Discount_Sell__c}"/>
+                        <apex:outputField value="{!Price_Support__c.X1st_Discount_Type_Sell__c}"/>
+                        <apex:outputField value="{!Price_Support__c.X2nd_Discount_Sell__c}"/>
+                        <apex:outputField value="{!Price_Support__c.X2nd_Discount_Type_Sell__c}"/>
+                        <apex:outputField value="{!Price_Support__c.Adjust_Rebate_based_on_Selling_Price__c}"/>
+                        <apex:outputField value="{!Price_Support__c.Net_Support_Cost__c}"/>
+                </apex:pageBlockSection> 
+                
+                 <apex:pageBlockSection showHeader="true" title="Cost Information" columns="2" id="costInfoView">
+                        <apex:outputField value="{!Price_Support__c.Material_Buying__c}" id="materialBuying"/>
+                        <apex:outputField value="{!Price_Support__c.UOM__c}" rendered="{!Price_Support__c.Support_Type__c ='Upfront'}"/> 
+                        <apex:pageBlockSectionItem rendered="{!Price_Support__c.Support_Type__c =='Rebate'}"/>
+                        <apex:outputField value="{!Price_Support__c.Material_Code_Buying__c}"/>  
+                        <apex:pageBlockSectionItem />
+                        <apex:outputField value="{!Price_Support__c.Material_Description_Buying__c}"/>
+                        <apex:outputField value="{!Price_Support__c.Freight_Allowance_Buying__c}" rendered="{!Price_Support__c.Support_Type__c =='Rebate'}"/>
+                        <apex:pageBlockSectionItem rendered="{!Price_Support__c.Support_Type__c ='Upfront'}"/>
+                        <apex:outputField value="{!Price_Support__c.Base_Material_Code_Buying__c}"/>  
+                        <apex:pageBlockSectionItem />
+                        <apex:outputField value="{!Price_Support__c.Minimum_Qty_Buying__c}" rendered="{!Price_Support__c.Support_Type__c =='Rebate'}"/>
+                        <apex:outputField value="{!Price_Support__c.Other__c}" rendered="{!Price_Support__c.Support_Type__c =='Rebate'}"/>
+                        <apex:outputField value="{!Price_Support__c.Container_Type_Buying__c}"/> 
+                        <apex:outputField value="{!Price_Support__c.Freight_Terms_Buying__c}"/>
+                        <apex:outputField value="{!Price_Support__c.Material_Group_2_Buying__c}"/>
+                        <apex:pageBlockSectionItem />
+                        <apex:outputField value="{!Price_Support__c.All_Conatiners_Buying__c}"/>
+                        <apex:outputField value="{!Price_Support__c.Hub__c}"/>
+                        <apex:outputField value="{!Price_Support__c.Purchase_Cost__c}" rendered="{!Price_Support__c.Support_Type__c =='Rebate'}"/>
+                        <apex:pageBlockSectionItem rendered="{!Price_Support__c.Support_Type__c =='Upfront'}"/>
+                        <apex:outputField value="{!Price_Support__c.Hub_Name__c}"/>
+                        <apex:outputField value="{!Price_Support__c.X1st_Discount_Buy__c}" rendered="{!Price_Support__c.Support_Type__c =='Rebate'}"/>
+                        <apex:outputField value="{!Price_Support__c.X1st_Discount_Type_Buy__c}" rendered="{!Price_Support__c.Support_Type__c =='Rebate'}"/>
+                        <apex:outputField value="{!Price_Support__c.X2nd_Discount_Buy__c}" rendered="{!Price_Support__c.Support_Type__c =='Rebate'}"/>
+                        <apex:outputField value="{!Price_Support__c.X2nd_Discount_Type_Buy__c}" rendered="{!Price_Support__c.Support_Type__c =='Rebate'}"/>
+                        <apex:pageBlockSectionItem />
+                        <apex:outputField value="{!Price_Support__c.Net_Purchase_Cost__c}" rendered="{!Price_Support__c.Support_Type__c =='Rebate'}"/>
+                        <apex:outputField value="{!Price_Support__c.Rebate_Editable__c}" rendered="{!Price_Support__c.Support_Type__c =='Rebate'}"/>
+                        <apex:pageBlockSectionItem />
+                        <apex:outputField value="{!Price_Support__c.Requested_Rebate_Amount__c}" rendered="{!Price_Support__c.Support_Type__c =='Rebate'}"/>
+                        <apex:outputField value="{!Price_Support__c.Expiration_Date__c}"/>
+                        <apex:outputField value="{!Price_Support__c.Effective_Date__c}"/>
+                        <apex:outputField value="{!Price_Support__c.Review_Date__c}"/>
+                        <apex:pageBlockSectionItem />
+                        <apex:pageBlockSectionItem />
+                        
+                </apex:pageBlockSection>
+                <br/>
+                        <apex:outputPanel rendered="{!IF(Price_Support__c.Support_Type__c == 'Rebate',False,True)}">
+                            <table border="1" width="100%"> 
+                                <tr><td>Product Min Qty</td><td>Price</td><td>1st Discount</td><td>1st Discount Type</td><td>2nd Discount</td><td>2nd Discount Type</td><td>Net Price</td></tr>
+        
+                                <apex:repeat value="{!pricingList}" var="pricingObj">
+                                 <tr>
+                                    <td><apex:outputfield value="{!pricingObj.Product_Min_Qty__c}"/></td>
+                                    <td><apex:outputfield value="{!pricingObj.Price__c}"/></td>
+                    
+                                    <td><apex:outputfield value="{!pricingObj.X1st_Discount__c}"/></td>
+                                    <td><apex:outputfield value="{!pricingObj.X1st_Discount_Type__c}"/></td>
+                                    <td><apex:outputfield value="{!pricingObj.X2nd_Discount__c}"/></td>
+                                    <td><apex:outputfield value="{!pricingObj.X2nd_Discount_Type__c}"/></td>
+                                    
+                                    <td><apex:outputfield value="{!pricingObj.Net_Price__c}"/></td> 
+                    
+                                  </tr>              
+                                </apex:repeat>
+         
+                         </table>
+                    </apex:outputPanel>  
+                
+                <apex:pageBlockSection showHeader="true" title="Debit Memo Comments" columns="1" id="debitMemoView" rendered="{!IF(Price_Support__c.Support_Type__c == 'Upfront',TRUE,FALSE)}">
+                        <apex:outputField value="{!Price_Support__c.Comment_Line_1__c}"/>
+                        <apex:outputField value="{!Price_Support__c.Comment_Line_2__c}"/>
+                        <apex:outputField value="{!Price_Support__c.Comment_Line_3__c}"/>
+                </apex:pageBlockSection>
+                
+                <apex:pageBlockSection showHeader="true" title="Final Request" columns="2" id="finalRequestView">
+                        <apex:outputField label="Location Name" value="{!Price_Support__c.Sales_Group_Desc__c}"/>  
+                        <apex:outputField label="Product Description" value="{!Price_Support__c.Material_Description_Selling__c}" rendered="{!Price_Support__c.Support_Type__c =='Rebate'}"/>
+                        <apex:outputField label="Product Description" value="{!Price_Support__c.Material_Description_Buying__c}" rendered="{!Price_Support__c.Support_Type__c =='Upfront'}"/>
+                        <apex:outputField label="Nexeo Seller" value="{!Price_Support__c.Seller__c}"/>
+                        <apex:outputField value="{!Price_Support__c.Customer_Name__c}"/>
+                        <apex:outputField value="{!Price_Support__c.Supplier_Sales_Contact__c}"/>
+                        <apex:pageBlockSectionItem />
+                        <apex:outputField value="{!Price_Support__c.Competitor_Name__c}"/>
+                        <apex:outputField label="Annual Volume" value="{!Price_Support__c.Potential_Annual_Volume__c}"/>
+                        <apex:outputField value="{!Price_Support__c.Competitor_Manufacturer__c}"/>
+                        <apex:outputField value="{!Price_Support__c.Application__c}" /> 
+                        <apex:outputField value="{!Price_Support__c.OEM__c}"/>
+                        <apex:outputField value="{!Price_Support__c.Currency__c}"/>
+                        <apex:outputField value="{!Price_Support__c.Market_Segment__c}"/>
+                        <apex:outputField value="{!Price_Support__c.UOM__c}"/>  
+                   </apex:pageBlockSection>      
+                        <br/>
+                        <apex:outputPanel rendered="{!Price_Support__c.Support_Type__c =='Upfront'}">
+                            <table border="1" width="100%"> 
+                                <tr><td>Product Min Qty</td><td>Price</td><td>1st Discount</td><td>1st Discount Type</td><td>2nd Discount</td><td>2nd Discount Type</td><td>Net Price</td></tr>
+        
+                                <apex:repeat value="{!pricingList}" var="pricingObj">
+                                 <tr>
+                                    <td><apex:outputfield value="{!pricingObj.Product_Min_Qty__c}"/></td>
+                                    <td><apex:outputfield value="{!pricingObj.Price__c}"/></td>
+                    
+                                    <td><apex:outputfield value="{!pricingObj.X1st_Discount__c}"/></td>
+                                    <td><apex:outputfield value="{!pricingObj.X1st_Discount_Type__c}"/></td>
+                                    <td><apex:outputfield value="{!pricingObj.X2nd_Discount__c}"/></td>
+                                    <td><apex:outputfield value="{!pricingObj.X2nd_Discount_Type__c}"/></td>
+                                    
+                                    <td><apex:outputfield value="{!pricingObj.Net_Price__c}"/></td> 
+                    
+                                  </tr>              
+                                </apex:repeat>
+         
+                         </table>
+                    </apex:outputPanel> 
+                    <apex:pageBlockSection columns="2" id="finalRequestView1">
+                    
+                        <apex:outputField value="{!Price_Support__c.Supplier_Supported_Price__c}" rendered="{!Price_Support__c.Support_Type__c =='Rebate'}"/>
+                        <apex:outputField value="{!Price_Support__c.Packaging_Allowance__c}" rendered="{!Price_Support__c.Support_Type__c =='Rebate'}"/>
+                
+                        <apex:outputField value="{!Price_Support__c.X1st_Discount_Sell__c}" rendered="{!Price_Support__c.Support_Type__c =='Rebate'}"/>
+                        <apex:outputField value="{!Price_Support__c.X1st_Discount_Type_Sell__c}" rendered="{!Price_Support__c.Support_Type__c =='Rebate'}"/>
+                        <apex:outputField value="{!Price_Support__c.X2nd_Discount_Sell__c}" rendered="{!Price_Support__c.Support_Type__c =='Rebate'}"/>
+                        <apex:outputField value="{!Price_Support__c.X2nd_Discount_Type_Sell__c}" rendered="{!Price_Support__c.Support_Type__c =='Rebate'}"/>
+                        <apex:outputField value="{!Price_Support__c.Freight_Allowance_Selling__c}" rendered="{!Price_Support__c.Support_Type__c =='Rebate'}"/>
+                        <apex:outputField value="{!Price_Support__c.Other_Allowances__c}" rendered="{!Price_Support__c.Support_Type__c =='Rebate'}"/>
+                        <apex:pageBlockSectionItem rendered="{!Price_Support__c.Support_Type__c =='Rebate'}"/>
+                        <apex:outputField value="{!Price_Support__c.Net_Support_Cost__c}" rendered="{!Price_Support__c.Support_Type__c =='Rebate'}"/>
+                        <apex:outputField value="{!Price_Support__c.Minimum_Qty_Buying__c}" rendered="{!Price_Support__c.Support_Type__c =='Rebate'}"/>
+                        
+                        <apex:outputField value="{!Price_Support__c.Freight_Allowance_Buying__c}" rendered="{!Price_Support__c.Support_Type__c =='Upfront'}"/>
+                        <apex:pageBlockSectionItem rendered="{!Price_Support__c.Support_Type__c =='Upfront'}"/>
+                        
+                        <apex:outputField value="{!Price_Support__c.Freight_Terms_Selling__c}" rendered="{!Price_Support__c.Support_Type__c =='Rebate'}"/>
+                        <apex:outputField value="{!Price_Support__c.Container_Type_Buying__c}" rendered="{!NOT(Price_Support__c.All_Conatiners_Buying__c)}"/>  
+                        <apex:pageBlockSectionItem rendered="{!Price_Support__c.All_Conatiners_Buying__c}"/> 
+                        <apex:outputField value="{!Price_Support__c.Freight_Terms_Buying__c}" />
+                        
+                        
+                        
+                        <apex:outputField value="{!Price_Support__c.All_Conatiners_Buying__c}"/>
+                        <apex:outputField value="{!Price_Support__c.Hub_Name__c}" />
+                        <apex:outputField value="{!Price_Support__c.Purchase_Cost__c}" rendered="{!Price_Support__c.Support_Type__c =='Rebate'}"/>
+                        <apex:outputField value="{!Price_Support__c.Other__c}" rendered="{!Price_Support__c.Support_Type__c =='Rebate'}"/>
+                        <apex:pageBlockSectionItem rendered="{!Price_Support__c.Support_Type__c =='Upfront'}"/>
+                        <apex:outputField value="{!Price_Support__c.X1st_Discount_Buy__c}" rendered="{!Price_Support__c.Support_Type__c =='Rebate'}"/>
+                        <apex:outputField value="{!Price_Support__c.X1st_Discount_Type_Buy__c}" rendered="{!Price_Support__c.Support_Type__c =='Rebate'}"/>
+                        <apex:outputField value="{!Price_Support__c.X2nd_Discount_Buy__c}" rendered="{!Price_Support__c.Support_Type__c =='Rebate'}"/>
+                        <apex:outputField value="{!Price_Support__c.X2nd_Discount_Type_Buy__c}" rendered="{!Price_Support__c.Support_Type__c =='Rebate'}"/>
+                        <apex:pageBlockSectionItem rendered="{!Price_Support__c.Support_Type__c =='Rebate'}"/>
+                        <apex:outputField value="{!Price_Support__c.Net_Purchase_Cost__c}" rendered="{!Price_Support__c.Support_Type__c =='Rebate'}"/>
+                        <apex:outputField value="{!Price_Support__c.Requested_Rebate_Amount__c}" rendered="{!Price_Support__c.Support_Type__c =='Rebate'}"/>
+                         <apex:outputField value="{!Price_Support__c.Expiration_Date__c}"/>
+                         <apex:pageBlockSectionItem rendered="{!Price_Support__c.Support_Type__c =='Upfront'}"/>
+                        <apex:outputField value="{!Price_Support__c.Effective_Date__c}"/>
+                        <apex:outputField value="{!Price_Support__c.Supplier_Reference__c}"/>
+                       
+                        </apex:pageBlockSection>
+                   <apex:pageBlockSection columns="1">       
+                        <apex:outputText label="Note" value="Pricing to customer is subject to modification due to changes in quantity, packaging, or shipment requirements."/>
+                         <apex:outputField value="{!Price_Support__c.Previous_Comments__c}"/>
+                         <apex:outputField value="{!Price_Support__c.Additional_Comments__c}"/>
+                </apex:pageBlockSection>
+                 
+                <apex:pageBlockSection title="Document Audit" showHeader="True" columns="2">
+                        <apex:outputField value="{!Price_Support__c.Initial_Submitter__c}"/>
+                        <apex:outputField value="{!Price_Support__c.Initial_Submitter_Date__c}"/>
+                        <apex:outputField value="{!Price_Support__c.Submitted_to_Supplier_by__c}"/>
+                        <apex:outputField value="{!Price_Support__c.Submitted_to_Supplier_Date__c}"/>
+                        <apex:outputField value="{!Price_Support__c.Supplier_1st_Action_by__c}"/>  
+                        <apex:outputField value="{!Price_Support__c.Supplier_1st_Action_Date__c}"/>
+                        <apex:outputField value="{!Price_Support__c.Final_Action_by__c}"/>
+                        <apex:outputField value="{!Price_Support__c.Final_Action_by_Date__c}"/>
+                        <apex:outputField value="{!Price_Support__c.Birth_Date__c}"/>
+                        
+                </apex:pageBlockSection>       
+                
+                <apex:pageBlockSection title="Audit Trial" showHeader="True" columns="2">
+                        <apex:outputField value="{!Price_Support__c.CreatedById}"/>
+                        <apex:outputField value="{!Price_Support__c.CreatedDate}"/>
+                        <apex:outputField value="{!Price_Support__c.LastModifiedById}"/>
+                        <apex:outputField value="{!Price_Support__c.LastModifiedDate}"/>
+                        <apex:outputField value="{!Price_Support__c.ownerId}"/>
+                </apex:pageBlockSection>
+                
+               
+        </apex:pageBlock>
+        
+        <!-- Expire Pop Up Block -->
+        
+        <apex:outputPanel id="ExpiryPopUp">
+          <apex:outputPanel styleClass="popupBackground" layout="block" rendered="{!displayPopUp}"/>
+              <apex:outputPanel styleClass="custPopup" layout="block" rendered="{!displayPopUp}">
+              <div>
+              <center><b><apex:outputlabel value="Enter Expiration Date" rendered="{!exiprationFlag}"/>
+                        <apex:outputlabel value="Enter Review Date" rendered="{!reviewFlag}"/>
+              </b></center>
+              <br></br>
+                <apex:outputLabel value="Price Support ID : "></apex:outputLabel>
+                &nbsp; <apex:outputField value="{!Price_Support__c.Name}"/>
+                <br></br>
+                <apex:outputLabel value="Expiration Date: " rendered="{!exiprationFlag}"></apex:outputLabel>
+                
+                <apex:inputfield value="{!Price_Support__c.Expiration_Date__c}" rendered="{!exiprationFlag}"/> 
+                <apex:outputLabel value="Review Date: " rendered="{!reviewFlag}"></apex:outputLabel>
+                
+                <apex:inputfield value="{!Price_Support__c.Review_Date__c}" rendered="{!reviewFlag}"/>
+                <br></br>
+                <center>
+                <apex:commandButton value="Expire" action="{!updateExpiryDate}" rendered="{!exiprationFlag}" rerender="ExpiryPopUp,costInfoView,error,finalRequestView1,status"/>
+                <apex:commandButton value="Review Date" action="{!updateReviewDate}" rendered="{!reviewFlag}" rerender="ExpiryPopUp,costInfoView"/>
+                <apex:commandButton value="Cancel" action="{!hidePopUp}" rerender="ExpiryPopUp" immediate="true"/>
+                </center>
+              </div>
+            </apex:outputPanel> 
+        </apex:outputPanel>
+        
+        <!-- Conditionally Approve Pop Up Block -->
+        
+        <apex:outputPanel id="conditionallyApprove">
+          <apex:outputPanel styleClass="popupBackground" layout="block" rendered="{!conditionalPopUp}"/>
+            <apex:outputPanel styleClass="custPopup" layout="block" rendered="{!conditionalPopUp}">
+            <apex:pageBlock >
+                <apex:pageBlockSection >
+                    
+                    <apex:inputField required="true" value="{!Price_Support__c.Additional_Comments__c}"/>
+               </apex:pageBlockSection>
+            </apex:pageBlock>
+               <apex:pageBlock >
+               <center>
+               
+               <apex:commandButton value="Save" action="{!cancelPriceSupport}" rerender="conditionallyApprove" rendered="{!cancelFlag}"/>
+               <apex:commandButton value="Save" action="{!decline}" rerender="conditionallyApprove" rendered="{!declineFlag}"/>
+                             
+               
+               <apex:commandButton value="Cancel" action="{!hidePopUp}"  rerender="conditionallyApprove" immediate="true"/>
+               </center>
+               </apex:pageBlock>
+            </apex:outputPanel>
+         </apex:outputPanel>  
+    
+        <!-- @Author: Hani M on 07-25-2012 to show field history -->
+        <apex:pageBlock title="Field Value History">
+            <apex:pageBlockTable value="{!priceHistories}" var="pHistory" >
+                <apex:column headerValue="Changed Field" value="{!pHistory.fieldName}" />
+                <apex:column headerValue="Old Value" value="{!pHistory.OldValue}" />
+                <apex:column headerValue="New Value" value="{!pHistory.NewValue}" />
+                <apex:column headerValue="Changed Date" value="{!pHistory.changedDate}" />
+            </apex:pageBlockTable>
+        </apex:pageBlock>         
+
+     </apex:form>
+
+     <!-- <apex:relatedList list="ActivityHistories"/>  -->
+       
+     <!-- <apex:relatedList list="NotesAndAttachments"/>  -->
+     
+    
+     <style type="text/css">
+        .custPopup{
+            background-color: white;
+            border-width: 2px;
+            border-style: solid;
+            z-index: 9999;
+            left: 50%;
+            padding:10px;
+            position: absolute;
+            /* These are the 3 css properties you will need to change so the popup 
+            displays in the center of the screen. First set the width. Then set 
+            margin-left to negative half of what the width is. You can add 
+            the height property for a fixed size pop up if you want.*/
+            width: 500px;
+            margin-left: -250px;
+            top:100px;
+        }
+        .popupBackground{
+            background-color:black;
+            opacity: 0.20;
+            filter: alpha(opacity = 20);
+            position: absolute;
+            width: 100%;
+            height: 100%;
+            top: 0;
+            left: 0;
+            z-index: 9998;
+        }
+        
+        .datePicker {
+        z-index: 9999;/*Changed this css property which was 100 prior*/
+        position: absolute;
+        display: none;
+        top: 0;
+        left: 0;
+        width: 17em;
+        background-color: #b7c6b2;
+        border-bottom: 1px solid #000;
+        border-right: 1px solid #000;
+        margin: 0;
+        padding: 1px 1px 2px 2px;
+    }
+
+        #sticky {
+             width: 100%;
+        }
+        #sticky.stick {
+             position: fixed;
+             top: 0;
+             left: 10px;
+             
+        }
+ 
+    </style>
+    
+</apex:page>

@@ -1,0 +1,116 @@
+<apex:page standardController="Procurement_Contract__c" renderAs="PDF">
+  <html>
+    <head>
+        <title>HTML Generator Sample Page</title>
+    </head>
+    <body>
+        <p align="center">
+            <apex:image url="{!$Resource.Nexeo_Logo}" width="450" height="50" /></p>
+        <p align="center">
+            <strong>Nexeo Solutions, LLC&nbsp; </strong>-&nbsp;P. O.&nbsp; BOX 2219&nbsp; -&nbsp; COLUMBUS,&nbsp; OHIO&nbsp; 43216&nbsp; -&nbsp; PHONE&nbsp; (614) 790-3333</p>
+        <p align="center">
+            PURCHASING DEPARTMENT</p>
+        <p>
+            &nbsp;</p>
+        <p>
+            Date :</p>
+        <p>
+            &nbsp;</p>
+        <p>
+            &nbsp;</p>
+        <p>
+            <apex:outputText value="{!Procurement_Contract__c.Vendor__r.Name}" /></p>
+        <p>
+            <apex:outputText value="{!Procurement_Contract__c.Vendor_Contacts__r.name}" /></p>
+        <p>
+            <apex:outputText value="{!Procurement_Contract__c.Vendor_Address__c}" /></p>
+        <p>
+            <apex:outputText value=" {!Procurement_Contract__c.Vendor__r.SAP_City__c}" />&nbsp;&nbsp;&nbsp;<apex:outputText value="{!Procurement_Contract__c.Vendor__r.SAP_State__c}" />&nbsp;&nbsp;&nbsp;<apex:outputText value="{!Procurement_Contract__c.Vendor__r.SAP_Zip_Code__c}" /></p>
+        <p>
+            <apex:outputText value="{!Procurement_Contract__c.Vendor__r.SAP_Country__c}" /></p>
+        <p>
+            Fax: <apex:outputText value="{!Procurement_Contract__c.Vendor__r.FAX}" /></p>
+        <p>
+            &nbsp;</p>
+        <p>
+            &nbsp;</p>  
+        <p>
+            RE:&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; Amendment to &nbsp;<apex:outputText value="{!Procurement_Contract__c.Contract_Type__c}" />&nbsp; dated&nbsp; <apex:outputText value="{!Procurement_Contract__c.Effective_Date__c}" />.</p>
+        <p>
+            &nbsp;</p>
+        <p>
+            &nbsp;</p>
+        <p>
+            This letter will confirm to extend our&nbsp; <apex:outputText value="{!Procurement_Contract__c.Contract_Type__c}" />&nbsp; to the following term.</p>
+        <p>
+            &nbsp;</p>
+        <p>
+            The Agreement shall continue for a period of two (2) years (the &quot;Initial Term&quot;) unless sooner terminated as provided herein.&nbsp; Thereafter, the Agreement shall automatically renew for successive one (1) year periods (the &quot;Renewal Term&quot;) unless either party gives the other party at least ninety (90) days prior written notice of termination prior to the expiration of the Initial Term or any Renewal Term.</p>
+        <p>
+            &nbsp;</p>
+        <p>
+            All other terms and conditions of the Agreement shall remain as originally written.</p>
+        <p>
+            &nbsp;</p>
+        <p>
+            Please indicate your acceptance of the foregoing by signing, dating and returning one copy of this letter to:</p>
+        <p>
+            Nexeo Solutions, LLC, PO Box 2219, Columbus, Ohio&nbsp; 43216 Attn: Katrina Parsons</p>
+        <p>
+            &nbsp;</p>
+        <p>
+            Update any changes to address, phone and fax and include e-mail.&nbsp; Also a current certificate of insurance will need to be faxed to fax number 614-790-3784.</p>
+        <p>
+            &nbsp;</p>
+        <p>
+            Sincerely,</p>
+        <p>
+            &nbsp;</p>
+        <p>
+            &nbsp;</p>
+        <p>
+            &nbsp;</p>
+        <p>
+            Katrina Parsons</p>
+        <p>
+            Purchasing Coordinator</p>
+        <p>
+            614-790-4588</p>
+        <p>
+            &nbsp;</p>
+        <p>
+            &nbsp;</p>
+        <p>
+            &nbsp;</p>
+        <p>
+            Accepted and agreed to this _________________ day of ________________, Year:_____.</p>
+        <p>
+            &nbsp;</p>
+        <p>
+            &nbsp;</p>
+        <p>
+            Company:&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; __________________________________</p>
+        <p>
+            &nbsp;</p>
+        <p>
+            By:&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; __________________________________</p>
+        <p>
+            &nbsp;</p>
+        <p>
+            Title:&nbsp;&nbsp; _______________________________________</p>
+        <p>
+            &nbsp;</p>
+        <p>
+            Telephone Number:&nbsp; ___________________________</p>
+        <p>
+            &nbsp;</p>
+        <p>
+            Fax Number:_________________________________</p>
+        <p>
+            &nbsp;</p>
+        <p>
+            Email address: _______________________________</p>
+    </body>
+</html>
+
+</apex:page>

@@ -1,0 +1,51 @@
+<apex:page showHeader="false" sidebar="false" docType="html-5.0" standardStylesheets="false" cache="false" applyHtmlTag="false" applyBodyTag="false">
+
+   <script type="text/javascript">
+    jQuery(function($)
+    {
+        CCRZ.pubSub.once('view:Menu:refresh', function(menuView)
+        {
+            //Replaced the navigateTo function from CC4.8 with that from CC4.7
+            // This was done to ensure the menu item
+            Object.getPrototypeOf(menuView).defaultNavigateTo = Object.getPrototypeOf(menuView).navigateTo;
+
+                  _.extend(Object.getPrototypeOf(menuView), 
+                 {
+                    navigateTo: function(linkObj, linkHref) 
+                     {
+						if (linkHref)
+						{
+						
+							if (linkHref.indexOf('?') === -1) 
+							{
+								linkHref += '?mnu=true';
+							}
+
+							linkHref += getCSRQueryString();
+
+								if(CCRZ.pagevars.currentCartID) 
+								{
+									linkHref += (linkHref.indexOf('?') === -1) ? '?' : '&';
+									linkHref += 'cartID=' + CCRZ.pagevars.currentCartID;
+								}
+
+							var target = linkObj.attr('target');
+							
+							if(target === '_blank') 
+							{
+								window.open(linkHref);
+							} 
+							else
+							{
+								window.location = linkHref;
+							}
+						}
+			        }
+                 });
+                 
+            menuView.delegateEvents();
+        });
+    });
+</script>
+
+</apex:page>

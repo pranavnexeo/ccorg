@@ -1,0 +1,181 @@
+<apex:component controller="cc_3d_ctrl_ContactUs">
+    
+    <style>
+    div.left {
+    	float: left;
+
+    }
+    
+    div.right {
+        float: right;
+    }
+    
+    @media only screen and (max-width: 480px) {
+        .left, .right {
+            float: none;
+            width: 100%;
+        }
+    }
+    </style>    
+    <script id="ContactForm3D-Template" type="text/template">
+        <div class="acctmainSection">
+            	<h2 class="title">{{pageLabelMap 'ContactUs3d_ContactUsTitle'}}</h2>
+        </div>
+        <div class='messaging_block' style="display: none">
+    		<div class='dynamic_page_message dynamic_page_message_info'></div>
+		</div>        
+        <div class="alert alert-error messagingSection-Error" style="display: none"></div>
+        <form class="horizontal_form">
+
+          <fieldset>
+            
+            <legend>{{pageLabelMap 'ContactUs3d_ContactUsInformation'}}</legend>
+            <div style="width: 310px; float: left; padding: 0 18px;">
+                <label for="userName">{{pageLabelMap 'ContactUs3d_Name'}}</label>
+                <input type="userName" size="35" class="form-control input-lg" id="userName" aria-describedby="Account" value="">                                
+                
+                <label for="userEmail">{{pageLabelMap 'ContactUs3d_Email'}}</label>
+                <input type="email" size="50" class="form-control"  id="userEmail" aria-describedby="emailHelp" value="">     
+    
+                <label for="userPhone">{{pageLabelMap 'ContactUs3d_Telephone'}}</label>
+                <input type="text" size="35" class="form-control input-lg" id="userPhone" aria-describedby="Account" value="">                  
+                          
+                <label for="userCountry">{{pageLabelMap 'ContactUs3d_Country'}}</label>
+                <input type="text" size="35" class="form-control input-lg" id="userCountry" aria-describedby="Account" value="">  
+    
+                <label for="userComment">{{pageLabelMap 'ContactUs3d_Comment'}}</label>
+                <textarea style="width: 300px; padding: 10px;" cols="5"  class="form-control input-lg" id="userComment" aria-describedby="Account" > </textarea>                
+                    
+    
+                <span class="help-block">{{pageLabelMap 'ContactUs3d_HelpText'}}</span>
+                <input style="float: left !important" class="button disabled submitButton" align="left" type="button" disabled value="{{pageLabelMap 'ContactUs3d_Submit'}}" alt="{{pageLabelMap 'ContactUs3d_Submit'}}" />
+
+          
+              </div>
+              <div style="width: 470px; float: left; padding-left: 25px;">
+                    <br/>
+                    <div class="left">
+                    	{{pageLabelMap 'ContactUs3d_EMEA'}}
+                    </div>
+                    <br/><br/>
+                    <div class="right">
+                        {{pageLabelMap 'ContactUs3d_US'}}
+                    </div>
+              </div>
+
+          </fieldset>
+        </form> 
+            
+       <div id="contactUsModal" class="modal hide fade in" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
+           <div class="modal-header">
+                <button type="button" class="close finishButton" onclick="closePopup()">×</button>
+                <h3 id="myModalLabel">{{pageLabelMap 'ContactUs3d_ContactUsInformationTitle'}}</h3>
+           </div>
+    
+           <div class="modal-body">
+                <div class="alert alert-error messagingSection-maContactUsModal-Error" style="display: none"></div>
+                    <form id="">
+                     <p id="reportGeneratedMessage"></p>
+                    </form>
+           </div>
+           <div class="modal-footer">
+            	<input type="button" class="finishButton" data-id="" onclick="closePopup()" value="{{pageLabelMap 'ContactUs3d_Ok'}}" id="finishButton" />
+           </div>
+  		</div>        
+
+  <input type="hidden" id="ContactUs3d_SendingEmailSuccess" value="{{pageLabelMap 'ContactUs3d_SendingEmailSuccess'}}">
+  <input type="hidden" id="ContactUs3d_ErrorSendingEmail" value="{{pageLabelMap 'ContactUs3d_ErrorSendingEmail'}}">                    
+    </script>
+    <script>
+        jQuery(function($){
+            CCRZ.util.createView({
+                desktop: {target:'ContactForm3DDskTarget', template:'ContactForm3D-Template'},
+                phone: {target:'phone_center_column', template:'ContactForm3D-Template'},
+                
+                events : {
+                    "click .submitButton" : "processSendContactUs"
+                },            
+                
+                processSendContactUs: function() {
+                	cc_3d_ctrl_ContactUs.sendEmail($("#userName").val(), $("#userEmail").val(), $("#userPhone").val(), $("#userCountry").val(), $("#userComment").val(),function(result, event){
+                    	if(event.status && result) { 
+                            $("#reportGeneratedMessage").append($('#ContactUs3d_SendingEmailSuccess').val());
+                            $("#contactUsModal").modal("show");                       
+                        } else if (event.status && !result) { 
+                        	$("#reportGeneratedMessage").append($('#ContactUs3d_ErrorSendingEmail').val());
+                            $("#contactUsModal").modal("show");
+                        } else {
+                            
+                            CCRZ.pubSub.trigger('pageMessage',{
+                            		messages :      [{
+                            		type:          'CUSTOM',
+                            		severity:      'ERROR',
+                            		classToAppend: 'messagingSection-Error',
+                            		labelId:       'ContactUs3d_ErrorSendingEmail'}]
+                            	});
+                        
+                        }
+                });
+                
+                },
+                    
+                postRender: function() { 
+                 	var userName = $("#userName");
+                    var userEmail = $("#userEmail");
+                    var userComment = $("#userComment");
+                    
+                    userName.on('keyup keypress keydown focusout focus', function(e) {
+ 						verifyDataToActivateProceed();
+                    });
+                    
+                    userEmail.on('keyup keypress keydown focusout focus', function(e) {
+						verifyDataToActivateProceed();
+                    });
+                    
+                    userComment.on('keyup keypress keydown focusout focus', function(e) {
+						verifyDataToActivateProceed();
+                    });                    
+
+                }
+            });
+            
+            $("a").each(function() {
+                //validate if empty class, this means is the href that we need to build tel
+                if ($(this).attr("href") == "" && (typeof $(this).attr("class") === "undefined") ) {
+                    //remove everything but numbers
+                  	var valueToCreateTel = '+' + $(this).html().replace(/[^0-9\.]/g, '').replace(/\./g, '');
+                    $(this).attr("href", 'tel:' + valueToCreateTel);
+                }
+             });           
+        });
+    
+        function verifyDataToActivateProceed() {
+             var submitButton = $('[type=button].submitButton');
+                  if (submitButton && !submitButton.hasClass('blocked')) {
+                             
+                  if ($('#userName').val() && isValidEmailAddress($('#userEmail').val()) && $.trim($('#userComment').val()) ) {
+                        submitButton.removeAttr('disabled').removeClass('disabled');
+                  } else {
+                        submitButton.attr('disabled','disabled').addClass('disabled');
+                  }
+            }
+        }
+
+        function isValidEmailAddress(emailAddress) {
+            var pattern = /^([a-z\d!#$%&'*+\-\/=?^_`{|}~\u00A0-\uD7FF\uF900-\uFDCF\uFDF0-\uFFEF]+(\.[a-z\d!#$%&'*+\-\/=?^_`{|}~\u00A0-\uD7FF\uF900-\uFDCF\uFDF0-\uFFEF]+)*|"((([ \t]*\r\n)?[ \t]+)?([\x01-\x08\x0b\x0c\x0e-\x1f\x7f\x21\x23-\x5b\x5d-\x7e\u00A0-\uD7FF\uF900-\uFDCF\uFDF0-\uFFEF]|\\[\x01-\x09\x0b\x0c\x0d-\x7f\u00A0-\uD7FF\uF900-\uFDCF\uFDF0-\uFFEF]))*(([ \t]*\r\n)?[ \t]+)?")@(([a-z\d\u00A0-\uD7FF\uF900-\uFDCF\uFDF0-\uFFEF]|[a-z\d\u00A0-\uD7FF\uF900-\uFDCF\uFDF0-\uFFEF][a-z\d\-._~\u00A0-\uD7FF\uF900-\uFDCF\uFDF0-\uFFEF]*[a-z\d\u00A0-\uD7FF\uF900-\uFDCF\uFDF0-\uFFEF])\.)+([a-z\u00A0-\uD7FF\uF900-\uFDCF\uFDF0-\uFFEF]|[a-z\u00A0-\uD7FF\uF900-\uFDCF\uFDF0-\uFFEF][a-z\d\-._~\u00A0-\uD7FF\uF900-\uFDCF\uFDF0-\uFFEF]*[a-z\u00A0-\uD7FF\uF900-\uFDCF\uFDF0-\uFFEF])\.?$/i;
+            return pattern.test(emailAddress);
+        }
+    	
+    	function closePopup(){
+            $('[type=button].submitButton').attr('disabled','disabled').addClass('disabled');
+            $("#userName").val("");
+            $("#userEmail").val("");
+            $("#userPhone").val("");
+            $("#userCountry").val("");
+            $("#userComment").val("");     
+            $("#reportGeneratedMessage").html("");
+            $("#contactUsModal").modal("hide");
+		}    
+    </script>
+	<div class="ContactForm3DDskTarget"></div>
+</apex:component>

@@ -1,0 +1,173 @@
+<apex:page standardController="Price_Support_Request__c" extensions="PriceSupportExtensionRequest" id="priceSuppPage" action="{!supplierCheck}">
+    <script src="{!URLFOR($Resource.JQueryUI, 'js/jquery-1.7.2.min.js')}"/> 
+    <script src="{!URLFOR($Resource.JQueryUI, 'js/jquery-ui-1.8.21.custom.min.js')}"/> 
+    <apex:stylesheet value="{!URLFOR($Resource.JQueryUI, 'css/ui-lightness/jquery-ui-1.8.7.custom.css')}"/> 
+    <script src="/soap/ajax/24.0/connection.js" type="text/javascript"></script>
+    
+    <script>
+       var j$ = jQuery.noConflict();
+       function sticky_relocate() {
+             var window_top = j$(window).scrollTop();
+             var div_top = j$('#sticky-anchor').offset().top;
+             if (window_top > div_top)
+               j$('#sticky').addClass('stick')
+             else
+               j$('#sticky').removeClass('stick');
+            }
+
+             j$(function() {
+               j$(window).scroll(sticky_relocate);
+               sticky_relocate();
+             });
+             
+        
+    
+     <style type="text/css">
+        .custPopup{
+            background-color: white;
+            border-width: 2px;
+            border-style: solid;
+            z-index: 9999;
+            left: 50%;
+            padding:10px;
+            position: absolute;
+            /* These are the 3 css properties you will need to change so the popup 
+            displays in the center of the screen. First set the width. Then set 
+            margin-left to negative half of what the width is. You can add 
+            the height property for a fixed size pop up if you want.*/
+            width: 500px;
+            margin-left: -250px;
+            top:100px;
+        }
+        .popupBackground{
+            background-color:black;
+            opacity: 0.20;
+            filter: alpha(opacity = 20);
+            position: absolute;
+            width: 100%;
+            height: 100%;
+            top: 0;
+            left: 0;
+            z-index: 9998;
+        }
+        
+        .datePicker {
+        z-index: 9999;/*Changed this css property which was 100 prior*/
+        position: absolute;
+        display: none;
+        top: 0;
+        left: 0;
+        width: 17em;
+        background-color: #b7c6b2;
+        border-bottom: 1px solid #000;
+        border-right: 1px solid #000;
+        margin: 0;
+        padding: 1px 1px 2px 2px;
+    }
+
+        #sticky {
+             width: 100%;
+        }
+        #sticky.stick {
+             position: fixed;
+             top: 0;
+             left: 10px;
+             
+        }
+ 
+    </style>
+    </script>
+    <apex:form >
+    <apex:sectionHeader title="Price Support Request View" subtitle="{!Price_Support_Request__c.Name}"/>
+        <div id="sticky-anchor"></div>
+        <div id="sticky"> 
+        <apex:pageblock rendered="{!$Profile.Name!='Price Support External'}">
+                <center>
+                <apex:commandButton value="Edit" action="{!customEdit}" /> 
+                
+                <apex:commandButton value="Delete" action="{!delete}"/>
+                </center>
+                </apex:pageblock>
+                </div>
+       <apex:pageBlock id="pricePageBlock">  
+             
+              <!--  <BR/>
+                <B><apex:outputLabel value=" ID# :   " for="supportId"/><apex:outputField value="{!Price_Support_Request__c.Agreement_Number__c}" id="supportId"/></B>
+                <BR/>
+                <BR/>-->
+        <apex:pageBlockSection showHeader="true" title="Status" columns="2" id="status">
+           <apex:outputField value="{!Price_Support_Request__c.Status__c}"  id="priceSuppStatus"/>
+           <!-- <apex:outputField value="{!Price_Support_Request__c.SAP_Transfer__c}"/>-->
+            </apex:pageBlockSection>
+            
+        <apex:pageBlockSection showHeader="True"  title="General Information"  columns="2"  id="generlInfoView">
+                        <apex:outputField value="{!Price_Support_Request__c.New_Or_Changed__c}"/>
+                        <apex:outputField value="{!Price_Support_Request__c.Support_Type1__c}"/>
+                        <apex:outputField value="{!Price_Support_Request__c.Order_Type__c}"/>
+                        <apex:outputField value="{!Price_Support_Request__c.Flat_or_Purchased__c}"/>
+                        
+                        
+        </apex:pageBlockSection>
+        <apex:pageBlockSection showHeader="true" title="Comments" columns="1"  id="commentsView">
+                        <apex:outputField value="{!Price_Support_Request__c.Comments__c}"/>
+                        
+                </apex:pageBlockSection>    
+         
+         <apex:pageBlockSection showHeader="true" title="Nexeo Information" columns="2"  id="nexeoInfoView">
+                        <apex:outputField value="{!Price_Support_Request__c.Division_Number__c}"/>
+                        <apex:outputField value="{!Price_Support_Request__c.Division_Name__c}"/>
+                        <apex:outputField value="{!Price_Support_Request__c.Sales_Organization__c}"/>
+                </apex:pageBlockSection>   
+           <apex:pageBlockSection showHeader="true" title="Supplier Information" columns="2"  id="supplierInfoView">
+           <apex:outputField value="{!Price_Support_Request__c.Supplier_Number__c}"/>
+           <apex:outputField value="{!Price_Support_Request__c.Supplier_Name__c}"/>
+           </apex:pageblocksection>         
+       <apex:pageBlockSection showHeader="true" title="Customer Information" columns="2"  id="customerInfoView">
+       <apex:outputField value="{!Price_Support_Request__c.Customer_Type__c}"/>
+       <apex:outputField value="{!Price_Support_Request__c.Customer_Name__c}"/>
+       <apex:outputField value="{!Price_Support_Request__c.Customer_Number__c}"/>
+       <apex:outputField value="{!Price_Support_Request__c.Region_Code__c}"/>
+       <apex:outputField value="{!Price_Support_Request__c.All_Regions__c}"/>
+       </apex:pageBlockSection>
+       
+       <apex:pageBlockSection showHeader="true" title="Competitive Information" columns="2"  id="competitiveInfoView">
+                        <apex:outputField value="{!Price_Support_Request__c.Competitor_Name__c}"/>
+                        <apex:outputField value="{!Price_Support_Request__c.Potential_Annual_Volume__c}"/>
+                        <apex:outputField value="{!Price_Support_Request__c.Competitor_Manufacturer__c}"/>
+                        <apex:outputField value="{!Price_Support_Request__c.Application__c}"/> 
+                        <apex:outputField value="{!Price_Support_Request__c.Competitive_Product__c}"/>
+                        <apex:outputField value="{!Price_Support_Request__c.Market_Segment__c}"/>
+                        <apex:outputField value="{!Price_Support_Request__c.OEM__c}"/>
+                        <apex:outputField value="{!Price_Support_Request__c.Actual_Annual_Volume__c}"/>
+                        
+                        <apex:outputField value="{!Price_Support_Request__c.Competitive_Comments__c}" style="width:95%" />
+                        <apex:pageBlockSectionItem />
+                </apex:pageBlockSection>
+       
+       <apex:pageBlockSection showHeader="true" title="Cost Information" columns="2" id="supportInfoView">
+                        <apex:outputField value="{!Price_Support_Request__c.Material_Selling__c}"/>
+                        <apex:outputField value="{!Price_Support_Request__c.UOM__c}"/>
+                        <apex:outputField value="{!Price_Support_Request__c.Material_Code_Selling__c}"/>
+                        <apex:outputField value="{!Price_Support_Request__c.Material_Description_Selling__c}"/>
+                        <apex:outputField value="{!Price_Support_Request__c.All_Containers_Selling__c}"/>
+                        <apex:outputField value="{!Price_Support_Request__c.Packaging_Allowance__c}"/>
+                        <apex:outputField value="{!Price_Support_Request__c.Freight_Allowance_Selling__c}"/>
+                        <apex:outputField value="{!Price_Support_Request__c.Other_Allowances__c}"/>
+                        <apex:outputField value="{!Price_Support_Request__c.Supplier_Supported_Price__c}"/>
+                        <apex:outputField value="{!Price_Support_Request__c.X1st_Discount_Sell__c}"/>
+                        <apex:outputField value="{!Price_Support_Request__c.X2nd_Discount_Sell__c}"/>
+                        <apex:outputField value="{!Price_Support_Request__c.Expiration_Date__c}"/>
+                        <apex:outputField value="{!Price_Support_Request__c.Effective_Date__c}"/>
+       </apex:pageBlockSection>
+       <apex:pageBlockSection title="Audit Trial" showHeader="True" columns="2">
+                        <apex:outputField value="{!Price_Support_Request__c.CreatedById}"/>
+                        <apex:outputField value="{!Price_Support_Request__c.CreatedDate}"/>
+                        <apex:outputField value="{!Price_Support_Request__c.LastModifiedById}"/>
+                        <apex:outputField value="{!Price_Support_Request__c.LastModifiedDate}"/>
+                        <apex:outputField value="{!Price_Support_Request__c.ownerId}"/>
+                        <apex:outputField value="{!Price_Support_Request__c.Closed_Date__c}"/>
+                </apex:pageBlockSection>
+       
+       </apex:pageblock>                  
+    </apex:form>
+</apex:page>

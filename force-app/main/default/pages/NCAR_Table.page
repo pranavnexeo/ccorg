@@ -1,0 +1,332 @@
+<apex:page controller="NCAR_JQuery_Viewer" sidebar="false">
+<script src="{!URLFOR($Resource.JQuery_Pricing, '/JQuery_Pricing/js/jquery-1.8.3.min.js')}" type="text/javascript"/> 
+<script src="{!URLFOR($Resource.JQuery_Pricing, '/JQuery_Pricing/js/jquery-ui-1.9.2.custom.js')}" type="text/javascript"/>
+<script src="{!URLFOR($Resource.JQuery_Pricing, '/JQuery_Pricing/js/jquery.dataTables.js')}" type="text/javascript"/>
+<script src="{!URLFOR($Resource.JQuery_Pricing, '/JQuery_Pricing/js/ZeroClipboard.js')}" type="text/javascript"/>
+<script src="{!URLFOR($Resource.JQuery_Pricing, '/JQuery_Pricing/js/TableTools.js')}" type="text/javascript"/>
+<script src="{!URLFOR($Resource.JQuery_Pricing, '/JQuery_Pricing/js/jquery.dataTables.columnFilter.js')}" type="text/javascript"></script>
+<script src="{!URLFOR($Resource.JQuery_Pricing, '/JQuery_Pricing/js/jquery.dataTables.extensions.js')}" type="text/javascript"></script>
+<apex:stylesheet value="{!URLFOR($Resource.JQuery_Pricing, '/JQuery_Pricing/css/start/jquery-ui-1.10.1.custom.min.css')}"/>
+<apex:stylesheet value="{!URLFOR($Resource.JQuery_Pricing, '/JQuery_Pricing/css/demo_table.css')}"/> 
+
+<script type="text/javascript" charset="utf-8">
+        function showNewData(){
+        var selectVal = document.getElementById("approverDropdown").value;
+        
+        if(selectVal == '-1')
+          selectVal = 'All';
+        NCAR_JQuery_Viewer.getNewNCARs(selectVal,function(result, event){
+    
+                      if(event.type == 'exception') 
+                        alert(event.message);
+                      else{
+                          var oTable = $('#ncartable').dataTable();
+                          oTable.fnClearTable();
+                          oTable.fnAddData(result);
+                          fnUpdateFilterSelect('ncartable');
+                      }
+                      
+                    });
+        
+        }
+        
+
+var aColumnIndex = new Array();
+ $(document).ready(function() { 
+        
+        
+         $('#ClearFilters').click(function(){ 
+           $('#ncartable').find('.textinput, .selectinput').each(function(i, ti){ $(this).val($(this).attr('name')); 
+              $('#ncartable').dataTable().fnFilter('', aColumnIndex[$(this).attr('data-field')]);
+           });
+           $('#ncartable').find('.dateinputfrom, .dateinputto, .numberinputfrom, .numberinputto').each(function(){
+            $(this).val($(this).attr('name')); 
+           }); 
+           $('#ncartable').dataTable().fnDraw();
+           fnUpdateFilterSelect('ncartable');
+           
+         });
+         
+        
+        $('#ncartable').dataTable({
+                "aLengthMenu": [[100, 250, 500, 750, 1000], [100, 250, 500, 750, 1000]],
+                "iDisplayLength": 100,
+                "bDestroy": true,
+                "sPaginationType": "four_button",
+                "bJQueryUI": true,
+                "bSort": true,
+                "sErrMode": false,
+                "sDom": 'Tlprtip',
+                "bAutoWidth": false,
+                "oTableTools": {
+                        "sSwfPath": "{!URLFOR($Resource.JQuery_Pricing, '/JQuery_Pricing/swf/copy_csv_xls_pdf.swf')}",
+                        "aButtons": ["xls"]
+                        
+                    },
+                
+                "aoColumnDefs": [
+                    { "aTargets":[ "case"], "mData": "Name", sClass:"caselink", 
+                    "mRender": function ( data, type, full ) {
+                        return '<a href="/'+ full.Id +'" target="_blank">' + full.Name + '</a>'; }},
+                    { "aTargets":[ "account" ], "mData": "Account__r.Name", sClass:"account"},
+                    { "aTargets":[ "plant" ], "mData": "Nexeo_Plant__r.Name", sClass:"plant"},
+                    { "aTargets":[ "shiptowarehouse" ], "mData": "Ship_To_Warehouse__r.Name", sClass:"shiptowarehouse"},
+                    { "aTargets":[ "css" ], "mData": "Customer_ServiceSupervisor__c", sClass:"css"},
+                    { "aTargets":[ "salesorg" ], "mData": function ( source, type, val ) { return source.Account__r.SAP_Sales_Org__c + " - " +  source.Account__r.SAP_Sales_Org_Desc__c} , sClass:"salesorg"},
+                    { "aTargets":[ "status" ], "mData": "Status__c", sClass:"status"},
+                    { "aTargets":[ "subject" ], "mData": "subject__c", sClass:"subject"},
+                    { "aTargets":[ "rectype" ], "mData": "RecordType.Name", sClass:"rectype"},
+                    { "aTargets":[ "type" ], "mData": "Type__c", sClass:"type"},
+                    { "aTargets":[ "importexport" ], "mData": "Import_Export__c", sClass:"importexport"},
+                    { "aTargets":[ "division" ], "mData": "Account__r.SAP_Division_Desc__c", sClass:"division"},                
+                    { "aTargets":[ "salesgroup" ], "mData": "Account__r.SAP_Sales_Group_Desc__c", sClass:"salesgroup"},
+                    { "aTargets":[ "createdby" ], "mData": "CreatedBy.Name", sClass:"createdby"},
+                    { "aTargets":[ "createddate" ], sClass:"CreatedDate", sWidth:"400px",
+                      "mData": function ( source, type, val ) {
+                          if (type === 'set') {
+                              return;
+                          }
+                          else if (type === 'display' || type == 'filter') { 
+                                 var CreatedDate = new Date(source.CreatedDate);
+                                    return (CreatedDate.getUTCMonth()+1) + "/" + CreatedDate.getUTCDate() + "/" + CreatedDate.getUTCFullYear();
+                          }                                
+                          else if (type === 'sort') { 
+                             return source.CreatedDate;
+                          }
+                          return source.CreatedDate;
+                      }
+                    },
+                    { "aTargets":[ "lineitems" ], sClass:"lineitems", sWidth:"400px", "mData": function(source, type, val){
+                         
+                        
+                         var s = '';
+                         if(typeof source.NCAR_Line_Items__r != 'undefined')
+                         {
+                         s += '<table class="innertable"><thead><th>Sales Order</th><th>Material</th><th>Supplier</th></thead><tbody>';
+                         for(var i=0; i<source.NCAR_Line_Items__r.length; i++)
+                        { 
+                          s += '<tr><td style="width:100px;max-width:100px;">' + source.NCAR_Line_Items__r[i].Open_Orders__r.Sales_Order_Number__c + '</td>';
+                          s += '<td style="width:150px;max-width:150px;">' + source.NCAR_Line_Items__r[i].Open_Orders__r.Material__r.Name + '</td>';
+                          s += '<td style="width:100px;max-width:100px;">' + source.NCAR_Line_Items__r[i].Open_Orders__r.PH4_Supplier__c + '</td></tr>';
+                        }
+                         s += '</table>';
+                        }
+                         return s;
+                    
+                    }},
+                    { "aTargets":[ "memocsr" ], "mData": "Memo_CSR__c", sClass:"memocsr"},
+                    { "aTargets":[ "memoplant" ], "mData": "Memo_Plant__c", sClass:"memoplant"},
+                    { "aTargets":[ "memopurchasing" ], "mData": "Memo_Purchasing__c", sClass:"memopurchasing"},
+                    { "aTargets":[ "goBtn" ], "mData": "Id", sClass:"goBtn",sWidth:"2px", "bAutoWidth": false,
+                      "mRender": function ( data, type, full ) {
+                        var ids = full.Id;
+                        
+                        return '<input class="historyButton" type="button" onclick="popup(\''+ids+'\');" name="historyButton" value="Go" ></input>';
+                        }                                  
+                    }
+                    
+
+                 ],
+                  
+                 "fnInitComplete": function(oSettings) {
+                    aColumnIndex = fnGetColumnIndex(oSettings);
+                    fnPrepFilters('ncartable');
+                    NCAR_JQuery_Viewer.getNewNCARs('All', function(result, event){
+         
+                      if(event.type == 'exception') 
+                        alert(event.message);
+                      else
+                      $('#ncartable').dataTable().fnAddData(result);
+                      fnUpdateFilterSelect('ncartable');
+                    });
+                    
+                    
+                  },
+                  
+                 "fnCreatedRow": function( nRow, aData, iDataIndex ) {
+          
+                 }    
+              });
+              
+              
+
+        
+});
+function fnGetColumnIndex(oSettings){
+            var aColumns = new Array();
+            $.each(oSettings.aoColumns, function(c){
+                var mData = oSettings.aoColumns[c].sClass;
+                    aColumns[mData] = c;
+            });
+            return aColumns;
+        }
+function fnUpdateFilterSelect(stableid){
+            $('#' + stableid).find('.selectinput').each(function(i, sel){
+            
+              var val = $(sel).val();
+              $(sel).empty();
+              
+              var opt = '<option value=""';
+              if(val == $(sel).attr('name'))
+              opt += ' selected="selected" ';
+              opt += '>' + $(sel).attr('name') + '</option>';
+              var arr = $('#' + stableid).dataTable().fnGetColumnData(aColumnIndex[$(sel).attr('data-field')]);
+              $(arr).each(function(j, o){
+                opt = opt + '<option value="' + o + '"';
+                if(val == o)
+                opt += ' selected="selected" ';
+                opt += '>' + o + '</option>';
+              });
+              $(sel).append(opt);
+             
+            });
+        }
+        
+        function popup(Id){
+         NCAR_JQuery_Viewer.getRecType(Id,function(result, event){
+                     if(event.type == 'exception') 
+                        alert(event.message);
+                      else{
+   
+                      if(result == 'Nexeo Standard Incident')
+                      window.open('/apex/NCAR2?id='+Id);
+                      if(result == 'Nexeo Return')
+                      {
+                      window.open('/apex/NCAR_Return2?id='+Id);
+        
+                      }
+                      if(result == 'Nexeo Credit Debit Claim')
+                      window.open('/apex/NCAR_CDC2?id='+Id); 
+                      }
+                      
+                    });
+         
+}
+        
+function fnPrepFilters(stableid){
+      
+            $('#' + stableid).find('.textfilter').each(function(i, f){ $(f).html('<div style="width:105px;"><input data-field="'+ $(f).attr('data-field') +'" class="textinput" value="' + $(f).html() + '" name="' + $(f).html() + '" style="width:100px;"/></div>') });
+            $('#' + stableid).find('.numberfilter').each(function(i, f){ $(f).html('<div class="numberinput" data-field="'+ $(f).attr('data-field') +'" style="width:105px;"><input data-field="'+ $(f).attr('data-field') +'" class="numberinputfrom" value="From ' + $(f).html() + '" name="From ' + $(f).html() + '" style="width:50px;"/><b>&nbsp;To&nbsp;</b><input class="numberinputto" value="To ' + $(f).html() + '" name="To ' + $(f).html() + '" style="width:50px;"/></div>') });
+            $('#' + stableid).find('.datefilter').each(function(i, f){ $(f).html('<div class="dateinput" style="width:155px;" data-field="'+ $(f).attr('data-field') +'"><input class="dateinputfrom" name="From ' + $(f).html() + '" value="From ' + $(f).html() + '" style="width:75px;"/><b>&nbsp;To&nbsp;</b><input class="dateinputto" value="To ' + $(f).html() + '" name="To ' + $(f).html() + '" style="width:75px;"/></div>') });
+            $('#' + stableid).find('.listfilter').each(function(i, f){ $(f).html('<div style="width:105px;"><select data-field="'+ $(f).attr('data-field') +'" class="selectinput" name="' + $(f).html() + '" style="width:100px;"><option selected="selected" value="' + $(f).html() + '">' + $(f).html() + '</option></select></div>') });
+            $( ".dateinputfrom, .dateinputto" ).datepicker({changeMonth:true, changeYear:true});
+            fnUpdateFilterSelect(stableid);
+            $('.selectinput').change(function(){
+               if($(this).val() == $(this).attr('name'))
+               {   $('#' + stableid).dataTable().fnFilter('', aColumnIndex[$(this).attr('data-field')] ); }
+               else
+               {   $('#' + stableid).dataTable().fnFilter( $(this).val(), aColumnIndex[$(this).attr('data-field')] );  }
+               fnUpdateFilterSelect(stableid);
+              });
+            $(".textinput").keyup( function () { $('#' + stableid).dataTable().fnFilter( this.value, aColumnIndex[$(this).attr('data-field')] ); fnUpdateFilterSelect(stableid); });
+            $(".textinput, .numberinputfrom, .numberinputto, .dateinputfrom, .dateinputto").focus( function () { if( $(this).val() == $(this).attr('name') ){ this.value = "";}});
+            $(".textinput, .numberinputfrom, .numberinputto, .dateinputfrom, .dateinputto").blur( function (i) { if( $(this).val() == "" ){ this.value = $(this).attr('name'); }});
+            $('.numberinputfrom, .numberinputto').keyup(function(){ $('#' + stableid).dataTable().fnDraw(); fnUpdateFilterSelect(stableid);});
+            $('.dateinputfrom, .dateinputto').change(function(){ $('#' + stableid).dataTable().fnDraw(); fnUpdateFilterSelect(stableid); });
+            $(".numberinput").each(function(i, ni){
+              $('#' + stableid).dataTable().dataTableExt.afnFiltering.push(
+                function (oSettings, aData, iDataIndex) {
+                                if ($('#' + stableid).dataTable().attr("id") != oSettings.sTableId){ return true; }
+                                var iMin = $(ni).find('.numberinputfrom').val();
+                                var iMax = $(ni).find('.numberinputto').val();
+                                var iValue = (isNaN(aData[aColumnIndex[$(ni).attr('data-field')]]) || aData[aColumnIndex[$(ni).attr('data-field')]] == null || aData[aColumnIndex[$(ni).attr('data-field')]] == "")? -1 : aData[aColumnIndex[$(ni).attr('data-field')]];
+                                if ((iMin == "" || isNaN(iMin)) && (iMax == "" || isNaN(iMax))) { return true;} 
+                                else if ((iMin == "" || isNaN(iMin)) && iValue <= iMax) { return true; }
+                                else if (iMin <= iValue && (iMax == "" || isNaN(iMax))) { return true; }
+                                else if (iMin <= iValue && iValue <= iMax) { return true; }
+                                return false;
+               });
+            });
+            
+            $(".dateinput").each(function(i, di){
+              $('#' + stableid).dataTable().dataTableExt.afnFiltering.push(
+                function (oSettings, aData, iDataIndex) {
+                                if ($('#' + stableid).dataTable().attr("id") != oSettings.sTableId){ return true; }
+                                var iMin =  $(di).find('.dateinputfrom').val();
+                                if(iMin !=  $(di).find('.dateinputfrom').attr('name'))
+                                  iMin = $(di).find('.dateinputfrom').datepicker( "getDate" );
+                                var iMax =  $(di).find('.dateinputto').val();
+                                if(iMax !=  $(di).find('.dateinputto').attr('name'))  
+                                  iMax = $(di).find('.dateinputto').datepicker( "getDate" );
+                                
+                                var iValue = new Date( aData[aColumnIndex[$(di).attr('data-field')]]);
+                                if ((iMin == "" || iMin == null || iMin == $(di).find('.dateinputfrom').attr('name')) && (iMax == "" || iMax == null || iMax == $(di).find('.dateinputto').attr('name')) ) { return true;} 
+                                else if ((iMin == "" || iMin == null || iMin == $(di).find('.dateinputfrom').attr('name'))  && iValue <= iMax) { return true; }
+                                else if (iMin <= iValue && (iMax == "" || iMax == null || iMax == $(di).find('.dateinputto').attr('name'))) { return true; }
+                                else if (iMin <= iValue && iValue <= iMax) { return true; }
+                                return false;
+               });
+            });
+        }
+
+</script>
+ <apex:form >
+<table >
+<tr>
+<td> 
+<input type="button" id="ClearFilters" value="Clear Filters"></input>
+<input type="button" id="Refresh" value="Refresh" onclick="showNewData()"></input>
+ </td>
+<td>
+<apex:outputlabel value="Approver: "/>
+<select id="approverDropdown" onchange="showNewData()">
+<apex:repeat value="{!options}" var="opt" id="theRepeat">
+  <option value="{!opt.value}">{!opt.label}</option>
+</apex:repeat>  
+</select> 
+</td>
+</tr>
+</table>
+</apex:form>
+<table id="ncartable">
+<thead>
+<tr>
+<th></th>
+<th class="textfilter" data-field="case">Case</th>
+<th class="textfilter" data-field="account">Account</th>
+<th class="listfilter" data-field="plant">Nexeo Plant</th>
+<th class="listfilter" data-field="shiptowarehouse">Return Plant</th>
+<th class="listfilter" data-field="css">CSS</th>
+<th class="listfilter" data-field="salesorg">Sales Org</th>
+<th class="listfilter" data-field="status">Status</th>
+<th class="textfilter" data-field="subject">Subject</th>
+<th class="listfilter" data-field="rectype">Record Type</th>
+<th class="listfilter" data-field="type">Type</th>
+<th class="listfilter" data-field="importexport">Import / Export</th>
+<th class="listfilter" data-field="division">Division</th>
+<th class="listfilter" data-field="salesgroup">Sales Group</th>
+<th class="listfilter" data-field="createdby">Created By</th>
+<th class="datefilter" data-field="createddate">Created Date</th>
+<th class="textfilter" data-field="lineitems">Line Items</th>
+<th class="textfilter" data-field="memocsr">Memo - CSR</th>
+<th class="textfilter" data-field="memoplant">Memo - Plant</th>
+<th class="textfilter" data-field="memopurchasing">Memo - Purchasing</th>
+</tr>
+<tr>
+<th class="goBtn">Approve/Reject</th>
+<th class="case">Case</th>
+<th class="account">Account</th>
+<th class="plant">Nexeo Plant</th>
+<th class="shiptowarehouse">Return Plant</th>
+<th class="css" >CSS</th>
+<th class="salesorg">Sales Org</th>
+<th class="status">Status</th>
+<th class="subject">Subject</th>
+<th class="rectype">Record Type</th>
+<th class="type">Type</th>
+<th class="importexport">Import / Export</th>
+<th class="division">Division</th>
+<th class="salesgroup">Sales Group</th>
+<th class="createdby">Created By</th>
+<th class="createddate">Created Date</th>
+<th class="lineitems">Line Items</th>
+<th class="memocsr">Memo - CSR</th>
+<th class="memoplant">Memo - Plant</th>
+<th class="memopurchasing">Memo - Purchasing</th>
+
+</tr>
+</thead>
+<tbody></tbody>
+</table>
+
+</apex:page>

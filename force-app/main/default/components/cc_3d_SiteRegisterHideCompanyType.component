@@ -1,0 +1,24 @@
+<apex:component >
+
+<script>
+$(function(){
+
+
+	CCRZ.pubSub.on('view:newCustomerView:refresh',function(){
+		console.log('Tried to hide companyType');
+
+		var form = $("#newCustomerForm");
+
+		var select = form.find('select[name="companyType"]');
+		select.parent().hide();
+		select.hide();
+		
+		$("#newCustomerForm").find('input[name="taxExemptFlag"]').parent().hide();
+		$("#newCustomerForm").find('input[name="taxExemptFlag"]').hide();
+		console.log('Tried to hide taxExemptFlag');
+	});
+
+});
+</script>
+
+</apex:component>

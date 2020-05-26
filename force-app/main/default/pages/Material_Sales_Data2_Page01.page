@@ -1,0 +1,171 @@
+<apex:page standardController="Material_Sales_Data2__c"
+                           id="thePage" 
+                   extensions="Material_Sales_Data2_Controller"
+                        title="Material: {!Material_Sales_Data2__c.Material_Desc__c} - {!materialNumber}">
+
+    <apex:form id="theForm">
+ 
+        <apex:outputText value="{!Material_Sales_Data2__c.Material_Number__c}" rendered="false"/>
+        <apex:pageBlock >         
+            
+            
+            <apex:pageBlockSection title="{!$Label.SAP_Material_Details}" id="block1">
+                <apex:pageBlockSectionItem >                
+                    <apex:outputLabel value="{!$Label.Material_Number}"/>
+                    <apex:outputText value="{!materialNumber}"/>
+                    <!-- 
+                    <apex:outputLink value="/{!Material_Sales_Data2__c.Material_General_Data__r.id}">
+                        {!materialNumber}
+                    </apex:outputLink>
+                    -->
+                </apex:pageBlockSectionItem>
+                <apex:outputField value="{!Material_Sales_Data2__c.Material_Desc__c}"/>
+                <apex:pageBlockSectionItem helpText="{!$Label.Sales_Org_Name_and_Code}">
+                    <apex:outputLabel value="{!$Label.Sales_Org_and_Code}"/>
+                    <apex:outputText value="{!Material_Sales_Data2__c.SalesOrg_Desc__c} - {!Material_Sales_Data2__c.Sales_Org_Code__c}"/>
+                </apex:pageBlockSectionItem>
+                <apex:pageBlockSectionItem helpText="{!$Label.Dist_Channel_Name_and_Code}">
+                    <apex:outputLabel value="{!$Label.Distribution_Channel}"/>
+                    <apex:outputText value="{!Material_Sales_Data2__c.DistChannel_Desc__c} - {!Material_Sales_Data2__c.Dist_Channel_Code__c}"/>
+                </apex:pageBlockSectionItem>
+                <apex:outputField value="{!Material_Sales_Data2__c.Sales_UOM_Desc__c}"/>
+                <apex:outputField value="{!Material_Sales_Data2__c.Gross_Weight__c}"/>
+                <!--<apex:outputField value="{!Material_Sales_Data2__c.Minimum_Order_Qty__c}"/>-->
+                <apex:outputField value="{!Material_Sales_Data2__c.Net_Weight__c}"/>
+                <apex:outputField value="{!Material_Sales_Data2__c.Material_General_Data__r.Base_UOM_Desc__c}"/>
+                <apex:outputField value="{!Material_Sales_Data2__c.Material_General_Data__r.Weight_UOM_Desc__c}"/>
+                <apex:outputField rendered="{!showBaseCode}"
+                                  value="{!Material_Sales_Data2__c.Material_General_Data__r.Material_Base_Code_Desc__c}"/>
+                <apex:outputField value="{!Material_Sales_Data2__c.Gross_Weight_in_LBs__c}"/>
+                <apex:outputField value="{!Material_Sales_Data2__c.Material_General_Data__r.Material_Container_Desc__c}"/>
+                <apex:outputField value="{!Material_Sales_Data2__c.Net_Weight_in_LBs__c}"/>
+                <apex:outputField value="{!Material_Sales_Data2__c.Material_General_Data__r.Material_Group_Desc__c}"/>
+                <apex:outputField value="{!Material_Sales_Data2__c.Material_General_Data__r.Material_Type_Desc__c}"/>
+                <apex:outputField value="{!Material_Sales_Data2__c.Material_Group1_Desc__c}"/>
+                <apex:pageblocksectionitem helptext="{!$Label.Material_Marked_for_Deletion}">
+                <apex:outputlabel value="{!$Label.Material_Deleted}?"/>
+                 <apex:outputtext value="{!Material_Sales_Data2__c.Material_General_Data__r.Marked_for_deletion__c}"/>
+                </apex:pageblocksectionitem>
+                <apex:outputField value="{!Material_Sales_Data2__c.Material_Group2_Desc__c}"/>
+                <apex:pageblocksectionitem helptext="{!$Label.Marked_for_Deletion_at_Sales_Area}">
+                 <apex:outputlabel value="{!$Label.SalesArea_Deleted}"/>
+                 <apex:outputtext value="{!Material_Sales_Data2__c.Deletion_Flag__c}"/>
+                </apex:pageblocksectionitem>
+                <apex:outputField value="{!Material_Sales_Data2__c.Material_Group3_Desc__c}"/>
+                <apex:outputField value="{!Material_Sales_Data2__c.Material_General_Data__r.Ext_Material_Group_Code__c}"/>
+                <apex:outputField value="{!Material_Sales_Data2__c.Material_Group4_Desc__c}"/>
+                <apex:pageBlockSectionItem helpText="{!$Label.Division_Name_and_Code}">
+                    <apex:outputLabel value="{!$Label.Material_Owning_Division}"/>
+                    <apex:outputText value="{!Material_Sales_Data2__c.Material_General_Data__r.Division_Desc__c} - {!Material_Sales_Data2__c.Division_Code__c}"/>
+                </apex:pageBlockSectionItem>
+            </apex:pageBlockSection>
+
+            <apex:pageBlockSection title="{!$Label.Product_Hierarchy}" id="block2" columns="1">
+                <apex:pageBlockSectionItem >
+                    <apex:outputLabel value="{!$Label.Product_Division}"/>
+                    <apex:outputText value="{!Material_Sales_Data2__c.Product_Hierarchy__r.PH1_Division__c} - {!Material_Sales_Data2__c.Product_Hierarchy__r.PH1__c}"/>
+                </apex:pageBlockSectionItem>
+                <apex:pageBlockSectionItem >
+                    <apex:outputLabel value="{!$Label.Product_Line}"/>
+                    <apex:outputText value="{!Material_Sales_Data2__c.Product_Hierarchy__r.PH2_Line__c} - {!Material_Sales_Data2__c.Product_Hierarchy__r.PH2__c}"/>
+                </apex:pageBlockSectionItem>
+                <apex:pageBlockSectionItem >
+                    <apex:outputLabel value="{!$Label.Product_Group}"/>
+                    <apex:outputText value="{!Material_Sales_Data2__c.Product_Hierarchy__r.PH3_Group__c} - {!Material_Sales_Data2__c.Product_Hierarchy__r.PH3__c}"/>
+                </apex:pageBlockSectionItem>
+                <apex:pageBlockSectionItem >
+                    <apex:outputLabel value="{!$Label.Product_Supplier}"/>
+                    <apex:outputText value="{!Material_Sales_Data2__c.Product_Hierarchy__r.PH4_Supplier__c} - {!Material_Sales_Data2__c.Product_Hierarchy__r.PH4__c}"/>
+                </apex:pageBlockSectionItem>
+                <apex:pageBlockSectionItem >
+                    <apex:outputLabel value="{!$Label.Product_Family}"/>
+                    <apex:outputText value="{!Material_Sales_Data2__c.Product_Hierarchy__r.PH5_Family__c} - {!Material_Sales_Data2__c.Product_Hierarchy__r.PH5__c}"/>
+                </apex:pageBlockSectionItem>
+                <apex:pageBlockSectionItem >
+                    <apex:outputLabel value="{!$Label.Product_Segment}"/>
+                    <apex:outputText value="{!Material_Sales_Data2__c.Product_Hierarchy__r.PH6_Segment__c} - {!Material_Sales_Data2__c.Product_Hierarchy__r.PH6__c}"/>
+                </apex:pageBlockSectionItem>
+                <apex:pageBlockSectionItem >
+                    <apex:outputLabel value="{!$Label.Product_SubSegment}"/>
+                    <apex:outputText value="{!Material_Sales_Data2__c.Product_Hierarchy__r.PH7_SubSegment__c} - {!Material_Sales_Data2__c.Product_Hierarchy__r.PH7__c}"/>
+                </apex:pageBlockSectionItem>
+            </apex:pageBlockSection>
+            
+            <apex:pageBlockSection title="{!$Label.Alternative_UOMs}" id="block3" columns="1">
+                <apex:pageBlockTable value="{!altUOMs}" var="uom">
+                    <apex:column value="{!uom.Alternative_UOM_Desc__c}" headerValue="{!$Label.Alt_UoM}"/>
+                    <apex:column value="{!uom.Gross_Weight_in_LBs__c}" headerValue="{!$Label.Gross_Weight_in_LBs}"/>
+                    <apex:column value="{!uom.Net_Weight_in_LBs__c}" headerValue="{!$Label.Net_Weight_in_LBs}"/>
+                    <apex:column value="{!uom.Alt_Gross_Weight__c}" headerValue="{!$Label.Gross_Weight}"/>
+                    <apex:column value="{!uom.Alt_Net_Weight__c}" headerValue="{!$Label.Net_Weight}"/>
+                    <apex:column value="{!uom.Base_UOM_Desc__c}" headerValue="{!$Label.Base_UoM}"/>
+                </apex:pageBlockTable>
+            </apex:pageBlockSection>
+
+            <apex:pageBlockSection title="{!$Label.Plants}" id="block4" columns="1">
+                <apex:pageBlockTable value="{!plants}" var="plant">
+                    <apex:column value="{!plant.Plant_Name__c} - {!plant.Plant_Code__c}"
+                                 headerValue="{!$Label.Plant_Name_and_Code}"/>
+                    <apex:column value="{!plant.Planned_Delivery_Time__c}"
+                                 headerValue="Planned Delivery Time"/>
+                    <apex:column value="{!plant.Minimum_Order_Quantity__c}"
+                                 headerValue="Minimum Order Quantity"/>
+                    <apex:column value="{!plant.Plant_Address__c}"
+                                 headerValue="{!$Label.City_State_Zip}"/>
+                  <!--  <apex:column value="{!plant.COGS_String__c}"
+                                 styleClass="textAlignRight"
+                                 headerClass="textAlignRight"
+                                 headerValue="{!$Label.COGS}"/> -->
+                    <apex:column value="{!plant.Deletion_Flag__c}"
+                                 styleClass="textAlignCenter"
+                                 headerClass="textAlignCenter"
+                                 headerValue="{!$Label.Deleted}?"/>
+                    <apex:column value="{!plant.SAP_Purchasing_Analyst__c}"
+                                 headerValue="Purchasing Analyst"/>  
+                    <apex:column value="{!plant.SAP_Purchasing_Group__c}"
+                                 headerValue="Purchasing Group"/>
+<!--                                  
+                    <apex:column value="{!plant.SalesOrg_Desc__c} - {!plant.SalesOrg_Code__c}"
+                                 headerValue="SalesOrg Name & Code"/>
+-->                                 
+                </apex:pageBlockTable>
+            </apex:pageBlockSection>
+            
+   <!--         <apex:pageBlockSection title="Order History" id="block5" columns="1" rendered="{!if(Material_Sales_Data2__c.Material_Group3_Desc__c = 'SPECIALTY',true,false)}">
+                <apex:pageBlockTable value="{!AllOpenOrders}" var="AllOpenOrder">
+                   
+                    <apex:column value="{!AllOpenOrder.name}"
+                                 headerValue="name"/>
+                               
+                    <apex:column value="{!AllOpenOrder.Ordered_Qty_in_LB__c}"
+                                 headerValue="Volume"/>
+                    <apex:column value="{!AllOpenOrder.Unit_Price_per_LB__c}"
+                                 headerValue="Price"/>
+                    <apex:column value="{!AllOpenOrder.Plant_Desc__c}"
+                                 headerValue="Shipped From"/>
+                    <apex:column value="{!AllOpenOrder.Goods_Issue_Date2__c}"
+                                 headerValue="Delivery Date Goods"/>
+                    <apex:column value="{!AllOpenOrder.Agreed_Ship_Date2__c}"
+                                 headerValue="Delivery Date Agreed"/>              
+                                                                
+                </apex:pageBlockTable>
+            </apex:pageBlockSection> -->
+            
+            
+
+            <apex:includescript value="{!$Resource.PageBlockSupplementScript}" />
+           <!--   <script>
+                addLoadEvent(collapsePageBlockSection('{!$Component.block3}'));
+            </script> -->
+
+        </apex:pageBlock>
+    </apex:form>
+    
+    <style>
+        table {border-collapse: collapse;}
+        .textAlignCenter {text-align: center;}
+        .textAlignRight {text-align: right;}
+    </style>    
+ <apex:relatedList list="NotesAndAttachments" title="Notes And Attachments"/>
+
+</apex:page>

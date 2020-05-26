@@ -1,0 +1,469 @@
+<apex:component controller="cc_imp_ctrl_FileUpload">
+
+<script>
+    CCRZ.uiProperties.CartOrderReviewView.desktop.tmpl = 'MyNexeo-Review-Cart-Desktop';
+    CCRZ.uiProperties.CartOrderReviewView.phone.tmpl = 'MyNexeo-Review-Cart-Mobile'
+    CCRZ.uiProperties.OrderReviewView.desktop.tmpl = 'MyNexeo-Review-Desktop';
+    CCRZ.uiProperties.OrderReviewView.partial.totalsSection = "#NexeoTotalSection";
+</script>
+
+<script id="MyNexeo-Review-Cart-Desktop" type="text/template">
+  <div id="cart_items_container reviewSection" class="">
+   <div class="cart_item_list">
+    {{#each this.cartItems}}
+     <div class="cart_item">
+      <div class="price">
+       {{#ifNotEquals this.cartItemType 'Coupon'}}
+        <p>{{pageLabelMap 'CartInc_Qty'}}: {{this.quantity}}</p>
+       {{/ifNotEquals}}
+       <p class="price">
+        {{#ifNotEquals this.cartItemType 'Coupon'}}
+         {{#if this.price}}
+         <!--//Commented by FGG requested by Philip Bivens. {{pageLabelMap 'CartInc_Price'}}: {{{price this.price}}}--><br/>
+         {{pageLabelMap 'PricePerUnit'}}: {{this.cartCurrency}} $ {{{this.priceperunit}}}<br/>
+         {{/if}}
+         {{#if this.absoluteDiscount}}
+          {{#ifGreater this.absoluteDiscount 0}}
+           <span>{{pageLabelMap 'Checkout_YouSave'}}: {{{price this.absoluteDiscount}}}</span><br/>
+          {{/ifGreater}}
+          {{#ifLessThan this.absoluteDiscount 0}} 
+           <span>{{pageLabelMap 'CartInc_Surcharge'}}: {{{priceAbs this.absoluteDiscount}}}</span><br/>
+          {{/ifLessThan}}
+         {{/if}}
+        {{/ifNotEquals}}
+        <strong>{{pageLabelMap 'CartInc_Total'}}: {{this.cartCurrency}} $ {{{this.itemTotal}}}</strong>
+       </p>
+      </div>
+      {{#ifNotEquals this.cartItemType 'Coupon'}}
+       <div class="cart_item_viewport">
+       <!-- {{{displayImage this.mediaWrapper 'orderReview'}}}-->
+       </div>
+       <p class="item_title">
+        {{displayProductName 'Aggregate_Display' displayProductBean.name mockProduct.name }}
+       </p>
+       <!--<p><span><strong>{{pageLabelMap 'Checkout_SKU'}}:</strong> {{this.mockProduct.sku}}</span></p>-->
+       <p><span><strong>{{pageLabelMap 'Checkout_SKU'}}:</strong> {{this.productNumber}}</span></p>
+       
+       <p><span><strong>{{pageLabelMap 'CustomerMaterialNumber'}}:</strong> {{this.customerMaterialNumber}}</span></p>
+                            {{#if this.showSubProdTerm}}
+                                <p class="subscriptionSummary">
+                                 <span>
+                                  {{insertTokens this.orderDisplayName this.displayName (price this.price) (price this.SubAmount) (price this.recurringPrice) (price this.recurringPriceSubAmount) (pageLabelPrefixMap 'Subscriptions_Frequency_' this.orderFrequencyUOM) (pageLabelPrefixMap 'Subscriptions_Frequency_' this.installmentFrequencyUOM) this.orderFrequency this.installmentFrequency this.installmentCount this.orderCount}}
+                                 </span>
+                                </p>
+                            {{else}}
+                                {{#if this.isSubscription}}
+                                    <p class="subscriptionSummary">{{subscriptionSummary 'Cart_Subscription_' this.subscriptionFrequency mockProduct.sku itemTotal}}</p>
+                                {{/if}}
+                            {{/if}}
+       {{#each minorLines}}
+        {{#if this.showSubProdTerm}}
+                                    <p class="subscriptionSummary">{{insertTokens this.orderDisplayName this.displayName (price this.price) (price this.SubAmount) (price this.price) (price this.SubAmount) (price this.recurringPrice) (price this.recurringPriceSubAmount) (pageLabelPrefixMap 'Subscriptions_Frequency_' this.orderFrequencyUOM) (pageLabelPrefixMap 'Subscriptions_Frequency_' this.installmentFrequencyUOM) this.orderFrequency this.installmentFrequency this.installmentCount this.orderCount}}</p>
+                                {{else}}
+                                    {{#if this.isSubscription}}
+                                        <p class="subscriptionSummary">{{subscriptionSummary 'Cart_Subscription_' this.subscriptionFrequency mockProduct.sku itemTotal}}</p>
+                                    {{/if}}
+                                {{/if}}
+       {{/each}}
+       {{#if this.minorLines }}
+        <p><a href="#included_items{{this.itemID}}" id="includedItemsLink" data-toggle="modal" data-id="{{this.itemID}}">{{pageLabelMap 'IncludedItems'}}</a></p>
+        {{> includedDisplay}}
+       {{/if}}
+      {{/ifNotEquals}}
+      {{#ifEquals this.cartItemType 'Coupon'}}
+       <p class="item_title coupon_title" data-id="{{this.mockProduct.sku}}">
+        <span class="couponReviewLabel">{{pageLabelMap 'CartInc_AppliedCoupon'}}</span> {{this.mockProduct.name}}
+       </p>
+      {{/ifEquals}}
+     </div>
+    {{/each}}
+   </div>
+  </div>
+  <div class="clear"></div>
+  {{> totalsSection}}
+</script>
+
+<script id="MyNexeo-Review-Cart-Mobile" type="text/template">
+  {{#each this.cartItems}}
+   <div class="cart_review_1_row">
+    <div class="cart_review_1_row_item">
+     {{#ifNotEquals this.cartItemType 'Coupon'}}      
+     <p>{{displayProductName 'Aggregate_Display' displayProductBean.name mockProduct.name }}</p>
+     <p>{{pageLabelMap 'CartInc_SKU'}} {{this.mockProduct.sku}}</p>
+     <p>{{pageLabelMap 'CustomerMaterialNumber'}} {{this.customerMaterialNumber}}</p>
+                    {{#if this.showSubProdTerm}}
+                        <p class="subscriptionSummary">{{insertTokens this.orderDisplayName this.displayName (price this.price) (price this.SubAmount) (price this.recurringPrice) (price this.recurringPriceSubAmount) (pageLabelPrefixMap 'Subscriptions_Frequency_' this.orderFrequencyUOM) (pageLabelPrefixMap 'Subscriptions_Frequency_' this.installmentFrequencyUOM) this.orderFrequency this.installmentFrequency this.installmentCount this.orderCount}}</p>
+                    {{else}}
+                        {{#if this.isSubscription}}
+                            <p class="subscriptionSummary">{{subscriptionSummary 'Cart_Subscription_' this.subscriptionFrequency mockProduct.sku itemTotal}}</p>
+                        {{/if}}
+                    {{/if}}
+     {{#each minorLines}}
+      {{#if this.showSubProdTerm}}
+                            <p class="subscriptionSummary">{{insertTokens this.orderDisplayName this.displayName (price this.price) (price this.SubAmount) (price this.recurringPrice) (price this.recurringPriceSubAmount) (pageLabelPrefixMap 'Subscriptions_Frequency_' this.orderFrequencyUOM) (pageLabelPrefixMap 'Subscriptions_Frequency_' this.installmentFrequencyUOM) this.orderFrequency this.installmentFrequency this.installmentCount this.orderCount}}</p>
+                        {{else}}
+                            {{#if this.isSubscription}}
+                                <p class="subscriptionSummary">{{subscriptionSummary 'Cart_Subscription_' this.subscriptionFrequency mockProduct.sku itemTotal}}</p>
+                            {{/if}}
+                        {{/if}}
+     {{/each}}
+     <p class="included_items">
+      {{#if this.minorLines }}
+       <a href="#included_items{{this.itemID}}" id="includedItemsLink" data-toggle="modal" data-id="{{this.itemID}}">{{pageLabelMap 'CheckOut_IncludedItems'}}</a>
+       {{> includedDisplay}}
+      {{/if}}
+      {{#if this.miscMessage }}
+       <a href="#additional_info{{this.itemID}}" id="additionalInfoLink" data-toggle="modal" data-id="{{this.itemID}}">{{pageLabelMap 'CheckOut_AdditionalInfo'}}</a>
+       <div id="additional_info{{this.itemID}}" class="modal hide fade in" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
+        <div class="modal-header">
+         <button type="button" class="close" data-dismiss="modal" aria-hidden="true">×</button>
+         <h3 id="myModalLabel">
+          {{displayProductName 'Aggregate_Display' displayProductBean.name mockProduct.name }} {{pageLabelMap 'CheckOut_AdditionalInfo'}}
+         </h3>
+        </div>
+        <div class="modal-body">
+         {{this.miscMessage}}
+        </div>
+       </div>
+      {{/if}}
+     </p>
+     {{/ifNotEquals}}
+     {{#ifEquals this.cartItemType 'Coupon'}}
+      <p>{{this.mockProduct.name}}</p>
+     {{/ifEquals}}
+     <div class="cart_figures">
+      <div class="section1">
+       {{#ifNotEquals this.cartItemType 'Coupon'}}{{pageLabelMap 'CartInc_Price'}}:{{/ifNotEquals}}
+       {{#ifEquals this.cartItemType 'Coupon'}}&#160;{{/ifEquals}}
+      </div>
+      <div class="section2">
+       {{#ifNotEquals this.cartItemType 'Coupon'}}{{pageLabelMap 'Qty'}}:{{/ifNotEquals}}
+       {{#ifEquals this.cartItemType 'Coupon'}}&#160;{{/ifEquals}}
+      </div>
+      <div class="section3">{{pageLabelMap 'CartInc_Total'}}:</div>
+      <div class="section1">
+       {{#ifNotEquals this.cartItemType 'Coupon'}}{{price this.price}}{{/ifNotEquals}}
+       {{#ifEquals this.cartItemType 'Coupon'}}&#160;{{/ifEquals}}
+      </div>
+      <div class="section2">
+       {{#ifNotEquals this.cartItemType 'Coupon'}}{{this.quantity}}{{/ifNotEquals}}
+       {{#ifEquals this.cartItemType 'Coupon'}}&#160;{{/ifEquals}}
+      </div>
+      <div class="section3 totalAmount">
+       <strong class="price">{{price this.itemTotal}}</strong>
+      </div>
+      <div class="clear"></div>
+     </div>
+    </div>
+   </div>
+  {{/each}}
+  {{> totalsSection}}
+ </script> 
+
+<script id="MyNexeo-Review-Desktop" type="text/template">
+  <form enctype="multipart/form-data" class="margin_form cc_OrderReview_new">
+   <div class="alert alert-error messagingSection-Error" style="display: none"></div>
+   <div class="alert alert-info messagingSection-Info" style="display: none"></div>
+   <div class="alert alert-warning messagingSection-Warning" style="display: none"></div>
+   <fieldset class="grey">
+     <legend>{{pageLabelMap 'LLICheckOut_Review_BillingShipping'}}</legend>
+
+    
+      <label>
+      	<ul class="order_review defaultCursor">
+        	<li>
+               <p>                   
+                 <strong>{{pageLabelMap 'LLICheckOut_BillTo'}}</strong> <br/>
+                 {{this.currentShipToBillTo.billToName}} <br/>
+				 {{this.currentShipToBillTo.billToStreet}} <br/>
+                 {{this.currentShipToBillTo.billToCity}}, {{this.currentShipToBillTo.billToState}} {{currentShipToBillTo.billToPostalCode}}<br/>                        
+
+                       
+               </p>
+             </li>
+         </ul>        
+       </label>     
+      <label>
+      	<ul class="order_review defaultCursor">
+        	<li>
+               <p>                   
+                 <strong>{{pageLabelMap 'LLICheckOut_ShipTo'}}</strong> <br/>
+                 {{currentShipToBillTo.shipToName}} <br/>
+                 {{currentShipToBillTo.shipToStreet}} <br/>
+                 {{currentShipToBillTo.shipToCity}}, {{currentShipToBillTo.shipToState}} {{currentShipToBillTo.shipToPostalCode}}<br/>                        
+               </p>
+             </li>
+         </ul>        
+       </label>   
+                
+      <label >
+          <ul class="order_review defaultCursor">
+          	<li>
+              <p>
+               <strong>{{pageLabelMap 'CheckOut_BuyerInformation'}}</strong>
+               <!-- <a id="edit_UserInfo" href="#edit_UserInfo" class="editAddressInfo">{{pageLabelMap 'CheckOut_edit'}}</a> --><br/>
+                {{this.buyerFirstName}} {{this.buyerLastName}}<br/>
+               {{this.buyerPhone}}<br/>
+               {{this.buyerEmail}}
+              </p>
+            </li>
+           </ul>
+      </label> 
+      <label>
+      	<ul class="order_review defaultCursor">
+        	<li>
+               <p>                   
+               <strong>{{pageLabelMap 'PMTPO_PONum'}}</strong> <br/>
+               {{this.accountNumber}}
+               </p>
+             </li>
+         </ul>        
+       </label>  
+      <label>
+      	<ul class="order_review defaultCursor">
+        	<li>
+               <p>                   
+               <strong>{{pageLabelMap 'CheckOut_ShipmentInformation'}}</strong>
+               <!-- <a id="edit_Shipping" href="#edit_Shipping" class="editShippingInfo">{{pageLabelMap 'CheckOut_edit'}}</a> --><br/>
+               {{#if this.shippingMethod}}
+                {{pageLabelMap 'CheckOut_ShippingMethod'}}: {{this.shippingMethod}}<br/>
+               {{/if}}
+               {{#if this.requestedDateStr}}
+                {{pageLabelMap 'Checkout_RequestedDeliveryDt'}}: {{this.requestedDateStr}}<br/>
+               {{/if}}
+               {{#if this.shippingInst}}
+               <strong>{{pageLabelMap 'CheckOut_ShippingNotes'}}</strong>: {{this.shippingInst}}<br/>
+               {{/if}}
+               </p>
+             </li>
+         </ul>        
+      </label>    
+      <label style="display:none"> 
+       <ul class="order_review defaultCursor">          
+        	<li>
+               <p>
+                <!--<p>
+               <strong>{{pageLabelMap 'CheckOut_BillingAddress'}}</strong>
+               <a id="edit_UserInfo" href="#edit_UserInfo" class="editAddressInfo">{{pageLabelMap 'CheckOut_edit'}}</a><br/>
+               {{> addressDisplay this.billingAddress}}
+              </p>-->
+                  {{#if this.hasCoupon}}
+                   <p class="coupon_section"><strong>{{pageLabelMap 'CartInc_AppliedCoupon'}}</strong><br/>{{this.couponName}}</p>
+                  {{/if}}
+
+                  <!--
+              <p>
+               <strong>{{pageLabelMap 'CheckOut_OrderReviewShippingAddress'}}</strong>
+               <a id="edit_UserInfo" href="#edit_UserInfo" class="editAddressInfo">{{pageLabelMap 'CheckOut_edit'}}</a><br/>
+               {{> addressDisplay this.shippingAddress}}
+              </p>-->
+               </p>
+             </li>
+         </ul>        
+      </label>
+   </fieldset>
+   <div class="reviewCartSection"></div>
+   <div class="clear"></div>
+   <div class="reviewPaymentSection"></div>
+   <div>
+    <p>{{pageLabelMap 'cc_imp_Checkout_ReviewTotalText'}}</p>
+   </div>
+   <p class="link_button">
+    <input class="button processBack" type="button" value="{{pageLabelMap 'Back'}}" alt="{{pageLabelMap 'Back'}}" />
+    <input class="button uploadFile" type="button" value="{{pageLabelMap 'cc_imp_MyAccount_UploadFilesButton'}}" alt="{{pageLabelMap 'cc_imp_MyAccount_UploadFilesButton'}}" />
+    <input class="button right proceed processReview" type="button" value="{{pageLabelMap 'CheckOut_MobileGotoPayment'}}" alt="{{pageLabelMap 'CheckOut_AcceptAndProceed'}}" />
+    <br/>
+   </p>
+  </form>
+  <div id="modalSec">
+</script>  
+
+<script id="Checkout-UploadFiles-UploadDialog" type="text/template">
+<a class="modalLauncher" style="display:none" href="#uploadFilesMod" data-toggle="modal">&#160;</a>&#160;
+<div id="uploadFilesMod" class="modal hide fade in" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
+   <div class="modal-header">
+    <button type="button" class="close" data-dismiss="modal" aria-hidden="true">×</button>
+     <h3 id="myModalLabel">{{pageLabelMap 'cc_imp_MyAccount_UploadFilesModalTitle'}}</h3>
+   </div>
+   <div id="fileFormDiv">
+   <form id="uploadFileForm" class="modal-body">
+     <select name="fileBean.fileType">
+      <option value="Tax Exemption Form">{{pageLabelMap 'cc_imp_UploadFiles_TaxExemption'}}</option>
+      <option value="DEA Registration Form">{{pageLabelMap 'cc_imp_UploadFiles_DEA'}}</option>
+      <option value="Other">{{pageLabelMap 'cc_imp_UploadFiles_Other'}}</option>
+     </select>
+     <input type="file" name="fileBean.filePath" id="thefile">
+     <input type="text" placeholder="{{pageLabelMap 'cc_imp_MyAccount_UploadFilesCommentsHint'}}" value="" name="fileBean.comments">
+
+   </form>
+   </div><!-- fileFormDiv -->
+   <div class="modal-footer">
+    <input type="button" class="cancelFile btn-warning" data-id="" value="{{pageLabelMap 'cc_imp_MyAccount_UploadFilesCancelButton'}}" id="cancelButton" />
+    <input type="button" class="saveFile" data-id="" value="{{pageLabelMap 'cc_imp_MyAccount_UploadFilesButton'}}" id="saveButton" />
+   </div>
+  </div>
+</script>
+
+<script id="Checkout-UploadFiles-Confirmation" type="text/template">
+  <div class="modal-header">
+    <button type="button" class="close" data-dismiss="modal" aria-hidden="true">×</button>
+     <h3 id="myModalLabel">{{pageLabelMap 'cc_imp_MyAccount_UploadFilesModalTitle'}}</h3>
+   </div>
+   <div id="fileFormDiv">
+   <form id="uploadFileForm" class="modal-body">
+   {{pageLabelMap 'cc_imp_MyAccount_UploadFilesModalConfirm'}}
+   </form>
+   </div><!-- fileFormDiv -->
+   <div class="modal-footer">
+    <input type="button" class="cancelFile" data-id="" value="{{pageLabelMap 'cc_imp_MyAccount_UploadFilesFinishButton'}}" id="finishButton" />
+   </div>
+</script>
+
+<script id="NexeoTotalSection" type="text/template">
+
+  <div class="total">
+   <p class="totals_subTotal_line">{{pageLabelMap 'CartInc_Subtotal'}} : {!nexeoCurrency} $ {{formatPriceNexeo this.subTotal}}</p>
+   <!-- Moving paragraphs totals_surcharge_line and  totals_total_line to the top of total div in order to remove 
+   		spaces betwen the subtotal and Grand Total, at this moment tax calculation and shipping calcultaion is off,
+        if you update to true those settings please move this paragraphs after shipping calculation--> 
+   {{#ifDisplay 'OR.ShowTotalSurcharge' }}
+    {{#if this.surchargeAmount }}
+     <p class="totals_surcharge_line">{{pageLabelMap 'CartInc_Surcharge'}}: {{price this.surchargeAmount this.cartCurrency}}</p>
+    {{/if}}
+   {{/ifDisplay}}
+   <p  class="totals_total_line"><strong>{{pageLabelMap 'CartInc_GrandTotal'}} :{!nexeoCurrency} $ {{formatPriceNexeo this.subTotal}}</strong></p>
+       <!--<p  class="totals_total_line"><strong>{{pageLabelMap 'CartInc_GrandTotal'}} :{!nexeoCurrency} $ {{sum this.subTotal this.tax this.shippingCharge this.adjustment this.surchargeAmount this.cartCurrency}}</strong></p>-->
+      
+   {{#ifStoreSetting 'Skip_Tax_Calculation__c'}}
+    &#160;
+   {{else}}
+    
+    {{#if this.tax includeZero=true}}
+     <p class="totals_tax_line">{{pageLabelMap 'CheckOut_EstimatedTax'}}: {{price this.tax this.nexeoCurrency}}</p>
+    {{/if}}
+   {{/ifStoreSetting}}
+   {{#ifStoreSetting 'Skip_Shipping_Calculation__c'}}
+    &#160;
+   {{else}}
+    <p class="totals_shipping_line">{{pageLabelMap 'CartInc_Shipping'}}: {{price this.shippingCharge this.cartCurrency}}</p>
+   {{/ifStoreSetting}}
+   
+  </div>
+</script>
+
+<script>
+Handlebars.registerHelper('formatPriceNexeo', function(value) {
+	return parseFloat(value).toFixed(2).replace(/(\d)(?=(\d{3})+\.)/g, '$1,'); 
+});
+
+    
+jQuery(function($) {
+
+
+    CCRZ.views.UploadFilesModal = CCRZ.CloudCrazeView.extend({
+        templateBoth : CCRZ.util.template("Checkout-UploadFiles-UploadDialog"),
+        viewName : "uploadFilesModal",
+        events: {
+            "click .cancelFile" : "cancelEdit",
+            "click .saveFile" : "saveUploadFile"
+        },
+        
+        initialize: function(){
+        },
+        render : function(modelData) {
+            console.log('in uploadFilesModel render');
+            this.dataSet = modelData;
+            this.setElement($("#modalSec")); // where to insert the modal
+            var v = this;
+            v.$el.html(v.templateBoth());
+            CCRZ.handleModalDisplay();
+            CCRZ.pubSub.trigger("view:"+this.viewName+":refresh", this);
+
+        },
+        cancelEdit: function(event){
+            var objLink = $(event.target);
+            var id = objLink.data("id");
+            this.closeModal(id);
+        },
+        saveUploadFile: function(event){
+            console.log('in saveUploadFile');
+            $("#saveButton").attr("disabled","disabled");
+            $("#cancelButton").attr("disabled","disabled");
+
+            var formData = form2js('uploadFileForm', '.', false, function(node){}, false);
+            console.log('Form Data: %o', formData);
+
+            // Read the file
+            var inputFile = $("#thefile");
+            console.log('Inputfile: %o', inputFile);
+            var theFile = inputFile[0].files[0];//.files[0];
+            console.log('theFile: %o', theFile);
+            var reader = new FileReader();
+            var fileContent;
+
+
+            reader.onloadend = function(event){
+                console.log('Finished reading file');
+                if(reader.result) fileContent = reader.result;
+                // fileContent = reader.result;
+
+                Visualforce.remoting.Manager.invokeAction(
+                    '{!$RemoteAction.cc_imp_ctrl_FileUpload.uploadFile}',
+                    CCRZ.pagevars.remoteContext,
+                    theFile.name,
+                    theFile.type,
+                    formData.fileBean.fileType,
+                    //reader.result,
+                    // window.btoa(reader.result),
+                    window.btoa(fileContent),
+                    formData.fileBean.comments,
+                    function(response ){
+                        theResponse = response;
+                        console.log('Upload file response: %o', theResponse);
+                        // close the modal
+                        //$("#uploadFilesMod").modal("hide");
+
+
+                        $("#uploadFilesMod").html(Handlebars.compile($("#Checkout-UploadFiles-Confirmation").html()));
+
+
+                    }
+                );
+            }
+
+            if (!FileReader.prototype.readAsBinaryString) {
+                console.log('Overriding the filereader readAsBinaryString');
+                FileReader.prototype.readAsBinaryString = function (fileData) {
+                var binary = "";
+                var pt = this;
+                var reader = new FileReader();      
+                reader.onload = function (e) {
+                    var bytes = new Uint8Array(reader.result);
+                    var length = bytes.byteLength;
+                    for (var i = 0; i < length; i++) {
+                        binary += String.fromCharCode(bytes[i]);
+                    }
+                    //pt.result  - readonly so assign binary
+                    pt.content = binary;
+                    fileContent = binary;
+                    $(pt).trigger('onloadend');
+                }
+                reader.readAsArrayBuffer(fileData);
+                }
+            }
+
+            reader.readAsBinaryString(theFile);
+
+            console.log('call remote action to save file');
+        },
+        openModal : function() {
+            $("#uploadFilesMod").modal("show");
+        },
+        closeModal: function(idVal){
+            $("#uploadFilesMod").modal("hide");
+        }
+    });
+});
+</script>
+
+</apex:component>

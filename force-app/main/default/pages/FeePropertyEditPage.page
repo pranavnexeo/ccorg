@@ -1,0 +1,204 @@
+<apex:page standardController="Fee_Property__c" extensions="FeePropertyExtension" id="feeView" >
+ 
+ <script> 
+ 
+ var arrData = [];
+   
+ </script>
+
+ <script>
+        function showData(comp,id,xref){
+          if(comp.checked==true){
+                //alert('checkbox is checked');
+                arrData.push(id);
+            }else if(comp.checked==false){
+                //alert('checkbox is unchecked');
+                var indx=arrData.indexOf(id);
+                //alert('index is'+indx);
+                if(indx!=-1){
+                    arrData.splice(indx,1)
+                }
+            }
+            //alert(arrData);
+            //alert('xref'+xref);
+            document.getElementById(xref).value=arrData;
+                      
+        }
+        
+        function getCounty(){
+          
+          //fileNumberChange();
+          //alert(document.getElementById('{!$Component.feeForm.page.section1.county}').value);
+          document.getElementById('{!$Component.feeForm.page.section1.county}').value="";
+          var state = document.getElementById('{!$Component.feeForm.page.section1.state}').value;
+          //alert(state);
+          //document.body.style.cursor = "wait";
+          fetchCounty(state); 
+        }
+        
+        function fileNumberChange(){
+        
+            alert('This operation will modify the file number associated with this property and file number of records associated with this property');
+        }
+        
+  </script>
+
+  <script>
+    //This prototype is provided by the Mozilla foundation and
+    //is distributed under the MIT license.
+    //http://www.ibiblio.org/pub/Linux/LICENSES/mit.license
+    
+    if (!Array.prototype.indexOf)
+    {
+        Array.prototype.indexOf = function(elt /*, from*/)
+    {
+        var len = this.length;
+    
+        var from = Number(arguments[1]) || 0;
+        from = (from < 0)
+        ? Math.ceil(from)
+        : Math.floor(from);
+    if (from < 0)
+        from += len;
+    
+    for (; from < len; from++)
+    {
+        if (from in this &&
+        this[from] === elt)
+        return from;
+    }
+        return -1;
+    };
+    }
+    
+  </script>
+
+   
+    
+ 
+ 
+  <apex:form id="feeForm">
+  
+    <apex:ActionStatus id="busyStatus" >
+        <apex:facet name="start" >
+            <c:BusyStatusComp height="300px" width="300px" Message="Pleas Wait..." />
+        </apex:facet>
+    </apex:ActionStatus>
+  
+    <apex:actionfunction name="fetchCounty" action="{!getCounties}" rerender="county" immediate="true" status="busyStatus">
+        <apex:param name="selectedState"  value="" />
+    </apex:actionfunction>
+     
+    <apex:pageBlock id="page">
+    
+        <apex:pageBlockButtons id="button">
+    
+         <apex:commandButton value="Save" action="{!save}"/>
+         <apex:commandButton value="Cancel" action="{!cancel}" />
+             
+        </apex:pageBlockButtons>
+
+          <apex:pageBlockSection title="General information" id="section1">
+            <apex:outputField id="file" value="{!Fee_Property__c.File__c}" ></apex:outputField>
+            <apex:outputText />
+            <!-- <apex:inputfield value="{!Fee_Property__c.Count__c}" id="recordCount"/>  -->
+            
+            <apex:inputField value="{!Fee_Property__c.File_Type__c}" required="true" />
+            <apex:inputField value="{!Fee_Property__c.File_Status__c}" required="true"/>
+            <apex:inputField value="{!Fee_Property__c.Master_File__c}"/><apex:outputText ></apex:outputText>
+            
+            <apex:inputField value="{!Fee_Property__c.Property_Address__c}" required="true"/><apex:outputText ></apex:outputText>
+            <apex:inputField value="{!Fee_Property__c.City__c}" required="true"/><apex:outputText ></apex:outputText>
+            <apex:inputField id="state" value="{!Fee_Property__c.State__c}" onchange="getCounty();" required="true"/><apex:outputText ></apex:outputText>
+        
+            <apex:selectList value="{!Fee_Property__c.County__c}" multiselect="false" id="county" size="1" required="true">
+                <!-- <apex:selectOption ItemValue="" ItemLabel="--Select--"/>  -->
+                <apex:selectOptions value="{!allCounties}"/>
+            </apex:selectList> <apex:outputText ></apex:outputText>
+        
+            <apex:inputField value="{!Fee_Property__c.Country__c}"/><apex:outputText ></apex:outputText>
+            <apex:inputField value="{!Fee_Property__c.Zip_Code__c}"/><apex:outputText ></apex:outputText>
+            
+            <apex:inputField value="{!Fee_Property__c.Business_User__c}"/>
+            
+            <apex:inputField value="{!Fee_Property__c.Use__c}" required="true"/>
+            <!--<apex:inputField value="{!Fee_Property__c.Master_File_Number__c}"/>-->
+            <apex:inputField value="{!Fee_Property__c.Location_Store__c}"/>
+            <apex:inputField value="{!Fee_Property__c.CurrencyIsoCode}" />
+
+
+
+
+         </apex:pageBlockSection>  
+         
+         <apex:pageBlockSection title="Grantor/Grantee Information">
+         
+             <apex:inputField value="{!Fee_Property__c.Grantor__c}" />
+             <apex:inputField value="{!Fee_Property__c.Grantee__c}" required="true"/>
+                                       
+         </apex:pageBlockSection> 
+         
+         <apex:pageBlockSection title="Closing Information">
+         
+             <apex:inputField value="{!Fee_Property__c.Acquisition_Price__c}"/>
+             <apex:inputField value="{!Fee_Property__c.Closing_Date__c}"/>
+             <apex:inputField value="{!Fee_Property__c.AFE__c}"/>
+             <apex:inputField value="{!Fee_Property__c.Recording_Date__c}"/>
+           </apex:pageBlockSection>
+          <apex:pageBlockSection >
+                            
+                <apex:outputLabel style="font:bold" value=" Assign Deed/Lease Cross Reference"></apex:outputLabel><br/>
+                 <apex:pageBlockTable value="{!crossReferenceList}" var="cross" rendered="{!NOT(emptyFlag)}">
+                         <apex:column headerValue="Select" ><apex:inputCheckbox onclick="showData(this,'{!cross.fileNumber}','{!$Component.crossReference}')"/></apex:column>
+                          <apex:column headerValue="Name" value="{!cross.name}"/>
+                          <apex:column headerValue="File" value="{!cross.fileNumber}"/>
+                              
+                  </apex:pageBlockTable>
+                   <apex:outputLabel style="font:bold" value=" No cross reference Deed/Lease available" rendered="{!emptyFlag}"></apex:outputLabel>            
+                 <apex:inputField value="{!Fee_Property__c.Deed_Lease_Xref__c}" id="crossReference" />
+                            
+           </apex:pageBlockSection>
+            <apex:pageBlockSection >
+
+             <apex:inputField value="{!Fee_Property__c.Type_Of_Deed__c}"/>
+             <apex:inputField value="{!Fee_Property__c.Document__c}"/>
+             <apex:inputField value="{!Fee_Property__c.Book__c}"/>
+             <apex:inputField value="{!Fee_Property__c.Page__c}"/>
+             <apex:inputField value="{!Fee_Property__c.Certificate__c}"/>
+             <apex:inputField value="{!Fee_Property__c.Commitmet__c}"/>
+             <apex:inputField value="{!Fee_Property__c.Property_Abstract__c}"/>
+             <apex:inputField value="{!Fee_Property__c.Title_Insurance_Company__c}"/>
+            <apex:inputField value="{!Fee_Property__c.Title_Policy_Number__c}"/>
+            <apex:inputField value="{!Fee_Property__c.Title_Policy_Amount__c}"/>
+            
+         </apex:pageBlockSection>
+         
+         <apex:pageBlockSection title="Legal Description">
+         
+             <apex:inputField value="{!Fee_Property__c.Date_Surveyed__c}"/>
+             <apex:inputField value="{!Fee_Property__c.Surveyor__c}"/>
+             <apex:inputField value="{!Fee_Property__c.Sub_Division__c}"/>
+             <apex:inputField value="{!Fee_Property__c.Town_Ship__c}"/>
+             <apex:inputField value="{!Fee_Property__c.Lot_Number__c}"/>
+            <apex:inputField value="{!Fee_Property__c.Block__c}"/>
+             <apex:inputField value="{!Fee_Property__c.Forntage__c}"/>
+             <apex:inputField value="{!Fee_Property__c.Depth__c}"/>
+             <apex:inputField value="{!Fee_Property__c.Acres__c}"/>
+             <apex:inputField value="{!Fee_Property__c.Section_Township_Range__c}"/>
+
+             <!--<apex:inputField value="{!Fee_Property__c.Zoning__c}"/>-->
+
+         </apex:pageBlockSection>
+         
+            <apex:pageBlockSection title="Additional Comments">      
+             
+                 <apex:inputTextArea value="{!Fee_Property__c.Additional_Comments__c}" cols="175" rows="10"/>
+                    
+             </apex:pageBlockSection>
+    </apex:pageBlock>
+
+    
+    
+  </apex:form>
+  <apex:relatedList list="NotesAndAttachments"/>
+</apex:page>

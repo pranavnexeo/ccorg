@@ -1,0 +1,722 @@
+<apex:component controller="cc_mn_ctrl_shortCheckoutBIE">
+    <style>
+        .home_slider {
+        	display: none;
+        }
+        .innerDivView {
+       		margin-top: -19px;
+        }
+        .innerDivViewShipping {
+       		 margin-top: -6px;        
+        }
+        .defaultCursor {
+        	cursor: default !important;
+        }
+
+    </style>
+    <script id="Short-Checkout-Desktop" type="text/template">
+    <! -- Contact Information -->
+<form id="mainform" class="horizontal_form cc_userInfo_new" style="display: none">
+   <div class="alert alert-error main-messagingSection-Error" style="display: none"></div>
+   <fieldset>
+    <legend>{{pageLabelMap 'CheckOut_ContactInformation'}}</legend>
+    <label>{{pageLabelMap 'CheckOut_FirstName'}}
+     <input id="firstNameField" class="contactInput wide" name="buyerFirstName" maxlength=40 value="{!currentShipToBillTo.buyerFirstName}" readonly/>
+    </label>
+    <label>{{pageLabelMap 'CheckOut_LastName'}}
+     <input id="lastNameField" class="contactInput wide" name="buyerLastName" maxlength=40 value="{!currentShipToBillTo.buyerLastName}" readonly/>
+    </label>
+    <div class="clear"></div>
+    <label>{{pageLabelMap 'CheckOut_PrimaryPhone'}}
+     <input id="homePhoneField" class="contactInput wide" name="buyerPhone" maxlength=40 value="{!currentShipToBillTo.buyerPhone}" readonly/>
+    </label>
+    <label>{{pageLabelMap 'CheckOut_Email'}}
+     <input id="emailField" class="contactInput wide" name="buyerEmail" maxlength=80 value="{!currentShipToBillTo.buyerEmail}" readonly/>
+    </label>
+    <div class="clear"></div>
+   </fieldset>
+  </form>
+
+  {{#ifDisplay 'Dspl.CCEmail'}}
+  <form id="ccEmailForm" class="horizontal_form cc_ccemail_new">
+   <div class="alert alert-error ccemail-messagingSection-Error" style="display: none"></div>
+   <fieldset>
+    <legend>{{pageLabelMap 'CheckOut_ccEmailAddress'}}</legend>
+    <p>{{{pageLabelMap 'CheckOut_ccEmailAddressHelpText'}}}</p>
+    <label>{{pageLabelMap 'CheckOut_ccEmailAddress'}}
+     <input id="ccEmailAddress" class="contactInput wide ccemail" name="ccEmailAddresses" maxlength=80 value="{{this.ccEmailAddresses}}" readonly/>
+    </label>
+   </fieldset>
+  </form>
+  {{/ifDisplay}}
+  
+  <!-- Shipping and Billing Information -->
+         <div class='messaging_block' style="display: none">
+            <div class='dynamic_page_message dynamic_page_message_info'></div>
+        </div>
+        <div class="alert alert-error shipbill-messagingSection-Error" style="display: none"></div>
+       <form id="formShippingBillToInfo" class="margin_form cc_OrderReview_new " novalidate="novalidate" >
+			
+                           <fieldset class="grey">
+                           	<legend>{{pageLabelMap 'LLICheckOut_BillingShipping'}}</legend>
+                            <div class="innerDivView ">
+                            <label>
+                                <ul class="order_review defaultCursor">
+     								<li>
+                                		<p>
+                                			<strong>{{pageLabelMap 'LLICheckOut_BillTo'}}</strong> <br/>
+                                            {!currentShipToBillTo.billToName} <br/>
+											{!currentShipToBillTo.billToStreet} <br/>
+                                            {!currentShipToBillTo.billToCity}, {!currentShipToBillTo.billToState} {!currentShipToBillTo.billToPostalCode}<br/>
+                                 		</p>
+                                     </li>
+   								 </ul>
+                             </label>                     		 
+                             <label>
+                                <ul class="order_review defaultCursor">
+     								<li>
+                                		<p>                                                
+                                 	<strong>{{pageLabelMap 'LLICheckOut_ShipTo'}}</strong> <br/>
+                                    {!currentShipToBillTo.shipToName} <br/>
+                                    {!currentShipToBillTo.shipToStreet} <br/>
+                                    {!currentShipToBillTo.shipToCity}, {!currentShipToBillTo.shipToState} {!currentShipToBillTo.shipToPostalCode}<br/>
+                                 		</p>
+                                     </li>
+   								 </ul>                                    
+    					     </label> 
+                             <label class="defaultCursor">
+                                  <strong>{{pageLabelMap 'CheckOut_ContactInformation'}}</strong> <br/>
+                                      {!currentShipToBillTo.buyerFirstName} {!currentShipToBillTo.buyerLastName} <br/>
+									  {!currentShipToBillTo.buyerPhone}  <br/>
+    								  {!currentShipToBillTo.buyerEmail}<br/>                         
+                             </label>
+                                   </div>   
+                           </fieldset>            
+                                      
+                            </form>
+  
+  <!-- Shipment Information -->
+      
+      <form id="shipForm" class="margin_form shipForm">
+    <div class="alert alert-error ship-messagingSection-Error" style="display: none"></div>
+    <div class="alert alert-info messagingSection-Info" style="display: none"></div>
+    <div class="alert alert-warning messagingSection-Warning" style="display: none"></div>
+    <fieldset>
+     <legend>{{pageLabelMap 'CheckOut_ShipmentInformation'}}</legend>
+     <div class="shipping_payment innerDivViewShipping">
+      <div class="row coso_ship_guide_text">{{pageLabelMap 'CheckOut_ShippingGuidingText'}}</div>
+      {{#ifDisplay 'SO.DsplShipOptions'}}
+       {{#if this.shippingMethods}}
+        <div class="row coso_ship_method">
+         <label>{{pageLabelMap 'CheckOut_ShippingMethod'}}</label>
+         <select class="shippingOptions" name="shippingMethod">
+          {{#each this.shippingMethods}}
+           <option value="{{this.uniqueId}}" {{#ifEquals ../shippingMethod this.uniqueId}} selected {{/ifEquals}}>
+            {{this.provider}} - {{pageLabelMap this.serviceName}}
+           </option>
+          {{/each}}
+         </select>
+        </div>
+        <div class="row coso_est_shipping">
+         <label>{{pageLabelMap 'CheckOut_EstimatedShipping'}}</label><span class="shippingCost"></span>
+        </div>
+       {{/if}}
+      {{/ifDisplay}}
+      {{#ifDisplay 'SO.DsplShipComplete'}}
+       <div class="row coso_ship_complete">
+        <label>{{pageLabelMap 'CheckOut_ShipComplete'}}</label>
+        <input type="checkbox" name="shipComplete" class="boxes" value="true" {{#if this.shipComplete}} checked {{/if}} />
+       </div>
+      {{/ifDisplay}}
+      {{#ifDisplay 'SO.DsplShipNotes'}}
+       <div class="row coso_ship_notes">
+        <label>{{pageLabelMap 'CheckOut_ShippingNotes'}}</label>
+        <textarea style = "height: 50px!important" name="shippingInst" id="shippingInst" rows="3" class="shipnotes">{{this.shippingInst}}</textarea>
+       </div>
+      {{/ifDisplay}}
+      {{#ifDisplay 'SO.ShowReqDate'}}
+       <div class="row deliveryDateMessages" id="deliveryDateMessages"></div>
+       {{#unless this.requestedDateData.ApiError}}
+       <div class="row coso_ship_delivery_date" style="margin-bottom: 0px !important;">
+        <label>{{pageLabelMap 'Checkout_RequestedDeliveryDt'}}</label>
+        <input id="requestedDateStr" name="requestedDateStr" value="{{this.requestedDateStr}}" class="requestedDate">
+       </div>
+       {{/unless}}
+      {{/ifDisplay}}
+
+      <div style="display:none" class="row">{{pageLabelMap 'Checkout_Shipping_Conditions' }}</div>
+     </div>
+    </fieldset>
+    {{#if this.terms}}
+     <fieldset>
+      <legend class="coso_footer_tc">{{pageLabelMap 'Footer_TermsAndConditions'}}</legend>
+      <div class="shipping_payment">
+       {{#each this.terms}}
+        <div class="row shiping_payment_term">
+         <input type="checkbox" name="#" class="boxes terms"/>
+         <span>
+          <strong>{{this.title}}:</strong>
+          <p>{{unescape this.description}}</p>
+         </span>
+        </div>
+       {{/each}}
+      </div>
+     </fieldset>
+    {{/if}}
+   </form>   
+      
+      
+  <!--PO -->    
+    
+    <form id="newWalletForm" name = "newWalletForm" action="" class="margin_form shipForm" forceSSL="true">
+         <div class="alert alert-error poPayment-messagingSection-Error" style="display: none"></div>
+    <fieldset>
+     <legend>{{pageLabelMap 'PMTPO_NewPO'}}</legend>
+     <div class="payment_po_instructions">{{pageLabelMap 'PMTPO_Instr'}}</div>
+     <div class="payment_po_information">
+      <div class="row accountNumber">
+       <label><span class="poLabel Number fieldLabel">{{pageLabelMap 'PMTPO_PONum'}}</span>
+        <input type="text" name="accountNumber" id="accountNumber" maxlength="50" value="{{this.accountNumber}}"/>
+       </label>
+      </div>
+      {{#if true }}
+      {{#ifDisplay 'WLT.Enabled'}}
+       <div class="row actionButtons">
+        <label><span class="poLabel SavePayment fieldLabel">{{pageLabelMap 'MyWallet_SavePayment'}}</span>
+         <input type="checkbox" name="saveAsStoredPayment" id="saveAsStoredPayment" value="true" />
+        </label>
+       </div>
+       <div class="row displayName">
+        <label><span class="poLabel Name fieldLabel">{{pageLabelMap 'MyWallet_NameOpt'}}</span>
+         <input type="text" name="displayName" id="displayName" maxlength="50" />
+        </label>
+       </div>
+      {{/ifDisplay}}
+      {{/if}}
+     </div>
+    </fieldset>
+    </form>
+
+    
+   <!--Terms and cons -->
+     
+      <form id="shipFormTsAndCs" class="margin_form shipForm">
+     <!--{{#if this.terms}}-->
+     <fieldset>
+      <legend class="coso_footer_tc">{{pageLabelMap 'Footer_TermsAndConditions'}}</legend>
+      <div class="shipping_payment">
+      <!-- {{#each this.terms}}-->
+        <div style = "margin-bottom: 0px !important; margin-top: -11px !important;" class="row shiping_payment_term">
+          <div class="shipping_payment_checkbox"><input type="checkbox" name="#" class="boxes terms"/></div>
+          <div class="shipping_payment_desc"><strong>{{pageLabelMap 'cc_imp_SiteRegister_TermsDescription'}} </strong></div>
+       </div>
+
+        </div>
+       <!--{{/each}}-->
+      </div>
+     </fieldset>
+    <!--{{/if}}-->
+    </form>
+    
+
+  <form class="margin_form buttonForm userInformation">
+   <p>{{{pageLabelMap 'Required_Fields'}}}</p>
+ 
+    <p class="link_button coso_proceed shippingDetails">
+     <input class="button processBack" type="button" value="{{pageLabelMap 'Back'}}" alt="{{pageLabelMap 'Back'}}" />
+     <input class="button right processReviewNew  disabled" type="button" disabled value="{{pageLabelMap 'CheckOut_AcceptAndProceed'}}" alt="{{pageLabelMap 'CheckOut_AcceptAndProceed'}}" />
+     <br/>
+    </p>
+     
+  </form>
+    </script>
+    <script>
+
+  
+  jQuery.validator.addMethod(
+      "multiemail",
+       function(value, element) {
+           if (this.optional(element)) // return true on optional element
+               return true;
+           var emails = value.split(/[\s,]+/);
+           valid = true;
+
+           for (var i=0;i<emails.length;i++){
+     var v = emails[i];
+               valid = valid &&
+                       jQuery.validator.methods.email.call(this, v, element);
+    }
+           return valid;
+       },
+
+      jQuery.validator.messages.multiemail
+  );
+    
+    jQuery(function($) {
+            
+        CCRZ.pubSub.on('view:cartCheckoutView:awaitingSubViewInit',function(theView){
+
+ 		CCRZ.views.SubscOrderReviewViewNew = CCRZ.CloudCrazeView.extend({
+            templatePhone : CCRZ.util.template('Short-Checkout-Desktop'),
+            templateDesktop : CCRZ.util.template('Short-Checkout-Desktop'),
+            viewName : "SubscOrderReviewViewNew",
+            managedSubView : true,
+            events : {
+                "click .processReviewNew" : "processReviewNew",
+                "click .terms" : "handleTerms"
+            },
+            init: function() {
+               
+                this.shippingData = new CCRZ.collections.ShippingOptionList();
+            	this.requestDateData = new CCRZ.models.RequestedDate();
+                var v = this;
+                CCRZ.pubSub.on("action:processPayment", function(formData) {
+                 	v.model.processPayment(formData);
+                });
+            },  
+  
+            initSetup: function(callback) {
+                var v = this;
+                this.requestDateData.fetch(function () {
+                  v.shippingData.fetch(function() {
+                   CCRZ.cartCheckoutModel.set('shippingMethods', v.shippingData.toJSON());
+                   
+                   if(CCRZ.cartCheckoutModel.attributes.shippingMethod && v.shippingData.length>0){//We have a selected method and selectable methods
+                                       //CCRZ-1847 Begin- this is done to fix this issue
+                    var selMethod = v.shippingData.get(CCRZ.cartCheckoutModel.attributes.shippingMethod);
+                    CCRZ.cartCheckoutModel.set('shippingCharge',selMethod.attributes.price);
+                    //CCRZ-1847 End- this is done to fix this issue
+            
+                   }else 
+                   if(v.shippingData.length>0){//No selected method but selectable methods
+                                            var selShip = v.shippingData.at(0);
+                                            CCRZ.cartCheckoutModel.set('shippingMethod',selShip.attributes.uniqueId);
+                                            CCRZ.cartCheckoutModel.set('shippingCharge',selShip.attributes.price);
+                   }else{//No selectable methods
+                                            CCRZ.cartCheckoutModel.set('shippingCharge',0.00);
+                   }
+                   callback();
+                  });
+                 });
+            },
+            renderPhone : function() {
+                this.renderView(this.templatePhone);
+            },
+            renderDesktop : function() {
+                this.renderView(this.templateDesktop);
+            },
+            renderView: function(currTemplate) {
+                var v = this;
+                this.$el.html(currTemplate(this));
+                if (CCRZ.pagevars.pageConfig.isTrue('SO.ShowReqDate')) {
+                      v.updateRequestedDate();
+                }
+                v.handleTerms();
+            },
+            
+            postRender : function() {
+            	var v = this;
+                v.setupUserValidation();
+                v.setBillToShipToData();
+                var accountNumber = $("#accountNumber");
+                accountNumber.keydown(function (event) {
+                    verifyDataToActivateProceed();
+                });
+                
+                accountNumber.keypress(function (event) {
+                    verifyDataToActivateProceed();
+                });
+               
+                accountNumber.keyup(function (event) {
+                    verifyDataToActivateProceed();
+                });
+                
+                accountNumber.focusout(function (event) {
+                    verifyDataToActivateProceed();
+                });
+                
+                accountNumber.focus(function (event) {
+                    verifyDataToActivateProceed();
+                });
+                
+                if(CCRZ.cartCheckoutModel.attributes.accountNumbe) {
+                    jQuery("#accountNumber").val(CCRZ.cartCheckoutModel.attributes.accountNumber);
+                    jQuery("#shippingInst").val(CCRZ.cartCheckoutModel.attributes.shippingInst);
+                    jQuery("#requestedDateStr").val(CCRZ.cartCheckoutModel.attributes.requestedDateStr);
+                }
+            },
+            
+            setBillToShipToData : function() {
+                var currentShipToBillTo = {!extendedJSON};
+                CCRZ.cartCheckoutModel.set('currentShipToBillTo' , currentShipToBillTo);
+            },
+            
+            setupUserValidation: function() {
+             $("#mainform").validate({
+              invalidHandler: function(event, validator) {
+
+                  showErrorMessage('main-messagingSection-Error',validator);
+                  // CCRZ.handleValidationErrors(event, validator, 'main-messagingSection-Error', false);
+              },
+              rules: {
+               buyerFirstName: {
+                required: CCRZ.getPageConfig('Info.ReqFirstName', true)
+               },
+               buyerLastName: {
+                required: CCRZ.getPageConfig('Info.ReqLastName', true)
+               },
+               buyerEmail: {
+                required: CCRZ.getPageConfig('Info.ReqEmail', true),
+                email: true
+               },
+               buyerPhone: {
+                required: CCRZ.getPageConfig('Info.ReqPhone', false)
+               }
+              },
+              messages: {
+               buyerFirstName: {
+                required: "MISSING_FIRST_NAME"
+               },
+               buyerLastName: {
+                required: "MISSING_LAST_NAME"
+               },
+               buyerEmail: {
+                required: "MISSING_EMAIL_ADDRESS",
+                email: "FORMATTING_EMAIL"
+               },
+               buyerPhone: {
+                required: "MISSING_PHONE"
+               }
+              },
+              errorPlacement: function(error, element) { }
+             });
+             $("#ccEmailForm").validate({
+              invalidHandler: function(event, validator) {
+               CCRZ.handleValidationErrors(event, validator, 'ccemail-messagingSection-Error', false);
+              },
+              rules: {
+               ccEmailAddresses: {
+                multiemail: true
+               }
+              },
+              messages: {
+               ccEmailAddresses: {
+                multiemail: "FORMATTING_EMAIL"
+               }
+              },
+              errorPlacement: function(error, element) { }
+             });
+             
+            },
+            validateUserInfo: function() {
+             var isValid = false;
+             $('.alert-error').hide();
+             isValid = $("#mainform").valid();
+        
+             if($("#ccEmailForm").length>0){
+              isValid = $("#ccEmailForm").valid();
+             }
+                
+             return isValid;
+            },
+                       
+            validateShippingInfo: function() {
+            $("#shipForm").validate({
+                  invalidHandler: function(event, validator) {
+                		showErrorMessage('ship-messagingSection-Error',validator);
+                  },
+                  rules: {
+                   requestedDateStr: {
+                    required: true
+                   }
+                  },
+                  messages: {
+                   requestedDateStr: {
+                    required: "MISSING_DELIVERY_DATE"
+                   }
+                  },
+                  errorPlacement: function(error, element) {
+                  }
+                 });
+                 CCRZ.console.log($("#shipForm").valid());
+                 return $("#shipForm").valid();
+            },
+            
+            validatePaymentInfo: function() {
+               $("#newWalletForm").validate({
+                invalidHandler: function(event, validator) {
+                  showErrorMessage('main-messagingSection-Error',validator);
+                },
+                rules: {
+                 accountNumber : { required : CCRZ.getPageConfig('Pmt_PO.ReqNum', true) }
+                },
+                messages: {
+                 accountNumber : { required : CCRZ.pagevars.pageLabels['PMTPO_POReq']}
+                },
+                errorPlacement: function(error, element) {
+                }
+               });
+               return $("#newWalletForm").valid();
+            },
+            
+            processUserInfo: function() {
+             populateMissingBillingAndShippingData();
+             var isValid = this.validateUserInfo();
+             if (isValid) {
+              var formData = form2js('mainform', '.', false, function(node) {}, false);
+              CCRZ.cartCheckoutModel.set(formData);
+              if($("#ccEmailForm").length>0){
+               var ccFormData = form2js('ccEmailForm', '.', false, function(node) {}, false);
+               CCRZ.cartCheckoutModel.set(ccFormData);
+              }
+	            }else{
+              window.scrollTo(0,0);
+             }
+             return isValid;
+            },
+            
+            processShippingInfo: function() {
+				var isValid = this.validateShippingInfo(); 
+             	if (this.validateShippingInfo()) {
+                     var formData = form2js('shipForm', '.', false, function(node) {}, false);
+                     CCRZ.cartCheckoutModel.set(formData);
+                } else{
+                   window.scrollTo(0,0);
+                 }
+                return isValid;
+            },
+            
+            processPaymenet: function() {
+                var isValid = this.validatePaymentInfo();
+             	if (this.validatePaymentInfo()) {
+                     var formData = form2js('newWalletForm', '.', false, function(node) {}, false);
+              		 CCRZ.cartCheckoutModel.set(formData);
+                } else{
+                   window.scrollTo(0,0);
+                } 
+                
+                return isValid;
+            },
+                                                                   
+            processReviewNew: function() {
+            	if (this.processUserInfo() && this.processShippingInfo() && this.processPaymenet()){
+                	       CCRZ.pubSub.once('view:OrderReviewView:refresh', function(OrderReviewView) {
+
+          var myCartItems =  CCRZ.cartCheckoutModel.attributes.cartItems;
+
+          var extendedDataMap = {!extendedCheckoutCartJSON};
+          for (var i = 0; i < myCartItems.length; i++) {
+            var cartItemId = myCartItems[i].itemID;
+              extendedDataMap[cartItemId].priceperunit = parseFloat(extendedDataMap[cartItemId].priceperunit).toFixed(2);
+			  myCartItems[i].SubAmount = parseFloat(myCartItems[i].SubAmount).toFixed(2).replace(/(\d)(?=(\d{3})+\.)/g, '$1,');
+              myCartItems[i].itemTotal = parseFloat(myCartItems[i].itemTotal).toFixed(2).replace(/(\d)(?=(\d{3})+\.)/g, '$1,');
+              myCartItems[i] = _.extend(myCartItems[i], extendedDataMap[cartItemId]);
+              console.log(this.model);
+          }
+
+          OrderReviewView.render();
+       });
+                    CCRZ.cartCheckoutView.slideRight();
+                }
+            },
+            
+            handleTerms: function() {
+				verifyDataToActivateProceed();
+    		},
+                 
+            updateRequestedDate: function() {
+             var daysArray = CCRZ.pagevars.pageLabels['DaysOfWeek'].split(",");
+             var monthsArray = CCRZ.pagevars.pageLabels['MonthsOfYear'].split(",");
+             var dateFormat = CCRZ.pagevars.pageLabels['Date_Format'];
+
+                
+            
+             $(".requestedDate").Zebra_DatePicker({ 
+              disabled_dates: ['* * * 0,6'],
+              show_other_months: false,
+              readonly_element: true,
+              show_select_today: false,
+              days: daysArray,
+              months: monthsArray,
+              onSelect: function() {
+             	 verifyDataToActivateProceed();
+              },
+              
+              format: dateFormat
+             });
+       
+                
+                
+             if(this.requestDateData.attributes.messages){
+              CCRZ.pubSub.trigger("pageMessage",this.requestDateData.attributes);
+             }
+        
+             if( (this.requestDateData.attributes.ApiError) && CCRZ.pagevars.pageConfig.isTrue('SO.gateDDErr')){
+              var proceedButton = $('[type=button].proceed');
+              if (proceedButton) {
+               proceedButton.addClass('blocked');
+               proceedButton.attr('disabled','disabled').addClass('disabled');
+              }
+             }
+        
+             if(!this.requestDateData.attributes.ApiError){
+              var datepicker = $('.requestedDate').data('Zebra_DatePicker');
+              if (this.requestDateData.attributes.Offset) {
+               if (this.requestDateData.attributes.Duration) {
+                datepicker.update({
+                 direction: [this.requestDateData.attributes.Offset,this.requestDateData.attributes.Duration]
+                });
+               }
+               else {
+                datepicker.update({
+                 direction: this.requestDateData.attributes.Offset
+                });
+               }
+              }
+              else if (this.requestDateData.attributes.Duration) {
+               datepicker.update({
+                direction: [true,this.requestDateData.attributes.Duration]
+               });
+              }
+              if (this.requestDateData.attributes.Exclusions && this.requestDateData.attributes.Exclusions.length > 0) {
+               datepicker.update({
+                disabled_dates: this.requestDateData.attributes.Exclusions
+               });
+              }
+              else if (this.requestDateData.attributes.Inclusions && this.requestDateData.attributes.Inclusions.length > 0) {
+               datepicker.update({
+                disabled_dates: ['* * * *'],
+                enabled_dates: this.requestDateData.attributes.Inclusions
+               });
+              }
+             }
+            },
+                        
+        });
+        
+        //add call to view here
+        CCRZ.views.NexeoOrderReviewView = CCRZ.views.OrderReviewView.extend({
+                modalView: null,
+                events: {
+                    "click .editUserInfo" : "editUserInfo",
+                    "click .editAddressInfo" : "editAddressInfo",
+                    "click .editShippingInfo" : "editShippingInfo",
+                    "click .placeOrder" : "placeOrder",
+                    "click .processReview" : "processReview",
+                    "click .uploadFile" : "displayUploadFileModal"
+                },
+            
+            	processReview: function() {
+                	 var formName = 'newWalletForm'; //'myWallet';
+                     var formData = {accountNumber: CCRZ.cartCheckoutModel.attributes.accountNumber, accountType : 'po'};
+                     CCRZ.pubSub.trigger('action:processPayment', formData);
+
+                },
+            
+                renderView: function(currTemplate) {
+                    var v = this;
+                    v.$el.html(currTemplate(CCRZ.cartCheckoutModel.toJSON()));
+                    var tax = CCRZ.cartCheckoutModel.get('tax');
+                    if (tax == null) {
+                        var message = CCRZ.processPageLabelMap('cc_imp_Checkout_InvalidTaxLabel');
+                        CCRZ.pubSub.trigger('pageMessage', CCRZ.createPageMessage('ERROR', 'messagingSection-Error', message)); 
+                        $(".processReview").prop("disabled", true);                                               
+                    }
+                    if (!v.modalView) {
+                        	v.modalView = new CCRZ.views.UploadFilesModal();
+                    }
+                },
+                displayUploadFileModal : function(){
+                    this.modalView.render();
+                    this.modalView.openModal();
+                }
+            });
+            
+           
+          theView.registerView(0, CCRZ.pagevars.pageLabels['CheckOut_InfoStep'], new CCRZ.views.SubscOrderReviewViewNew({
+    							model : new CCRZ.models.PaymentModel()}), 'images/your_information_header.png');  
+          theView.registerView(1, CCRZ.pagevars.pageLabels['CheckOut_ReviewStep'], new CCRZ.views.NexeoOrderReviewView(), 'images/order_review_header.png');
+          CCRZ.pubSub.trigger('view:cartCheckoutView:subViewInit'); 
+                   
+        });
+        
+       
+        
+    });
+    
+    function showErrorMessage(className, validator) {
+                 var errContext = new Object();
+                 var errorMessages = '';
+                 errContext.messages=new Array();
+                 errContext=CCRZ.createPageMessage('ERROR','ship-messagingSection-Error','FIELD_VALIDATION_ERRORS');
+                 for(var x=0;x<validator.errorList.length;x++) {
+					errContext.messages[x+1]=CCRZ.createPageMessageBean('ERROR',className,validator.errorList[x].message);
+                 }
+                  
+                  for (var x=0; x  <errContext.messages.length; x++) {
+						errorMessages += errContext.messages[x].message + '</br>';                  
+                  }
+                  $("." + className).html(errorMessages);
+                  $("." + className).show();
+    }
+    
+    function verifyDataToActivateProceed() {
+         var proceedButton = $('[type=button].processReviewNew');
+              if (proceedButton && !proceedButton.hasClass('blocked')) {
+                         
+              var proceedButton = $('[type=button].processReviewNew');
+              if ($('.requestedDate').val() && $('#accountNumber').val() && $('.terms').length == $('.terms:checked').length ) {
+                    proceedButton.removeAttr('disabled').removeClass('disabled');
+              } else {
+                    proceedButton.attr('disabled','disabled').addClass('disabled');
+              }
+    	}
+    }
+    function populateMissingBillingAndShippingData() {
+        if (!CCRZ.cartCheckoutModel.attributes.shippingAddress.countryCode) {
+            var code = findCountryCode(CCRZ.cartCheckoutModel.attributes.shippingAddress.country);
+            if (code) {
+                CCRZ.cartCheckoutModel.attributes.shippingAddress.countryCode = code.value;
+            }
+        }
+        if (!CCRZ.cartCheckoutModel.attributes.shippingAddress.stateCode) {
+            var code = findStateCode(CCRZ.cartCheckoutModel.attributes.shippingAddress.state);
+            if (code) {
+                CCRZ.cartCheckoutModel.attributes.shippingAddress.stateCode = code.value;
+            }
+        }
+        if (!CCRZ.cartCheckoutModel.attributes.shippingAddress.firstName || !CCRZ.cartCheckoutModel.attributes.shippingAddress.lastName) {
+            CCRZ.cartCheckoutModel.attributes.shippingAddress.firstName = CCRZ.cartCheckoutModel.attributes.buyerFirstName;
+            CCRZ.cartCheckoutModel.attributes.shippingAddress.lastName = CCRZ.cartCheckoutModel.attributes.buyerLastName;
+        }
+        if (!CCRZ.cartCheckoutModel.attributes.billingAddress.countryCode) {
+            var code = findCountryCode(CCRZ.cartCheckoutModel.attributes.billingAddress.country);
+            if (code) {
+                CCRZ.cartCheckoutModel.attributes.billingAddress.countryCode = code.value;
+            }
+        }
+        if (!CCRZ.cartCheckoutModel.attributes.billingAddress.stateCode) {
+            var code = findStateCode(CCRZ.cartCheckoutModel.attributes.billingAddress.state);
+            if (code) {
+                CCRZ.cartCheckoutModel.attributes.billingAddress.stateCode = code.value;
+            }
+        }
+        if (!CCRZ.cartCheckoutModel.attributes.billingAddress.firstName || !CCRZ.cartCheckoutModel.attributes.billingAddress.lastName) {
+            CCRZ.cartCheckoutModel.attributes.billingAddress.firstName = CCRZ.cartCheckoutModel.attributes.buyerFirstName;
+            CCRZ.cartCheckoutModel.attributes.billingAddress.lastName = CCRZ.cartCheckoutModel.attributes.buyerLastName;
+        }
+    }
+    function findCountryCode(country) {
+        var code = _.find(CCRZ.geoCodes.countryList.toJSON(), function(geo) {
+            return (geo.label == country || geo.value == country); 
+        });
+        return code;
+    }
+    function findStateCode(countryCode, state) {
+        var code = _.find(CCRZ.geoCodes.stateList.toJSON(), function(geo) {
+            return (geo.countryCode == countryCode && (geo.label == state || geo.value == state)); 
+        });
+        return code;
+    }    
+    </script>    
+</apex:component>

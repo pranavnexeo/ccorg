@@ -1,0 +1,46 @@
+<apex:component controller="Price_Request_Email_Template"  access="global">
+
+<apex:attribute name="recordid" description="The Price Request Transaction Id"  type="Id" required="required" assignto="{!recordid}"/>
+
+
+<style type="text/css">
+table#thetable, tr.thetr, td.thetd
+{
+border:1px solid green;
+border-collapse:collapse;
+}
+th.theth
+{
+background-color:green;
+color:white;
+}
+</style>
+<table id="thetable">
+<tr class="thetr">
+<th class="theth" colspan="6">Current CSPs</th>
+</tr>
+<tr class="thetr">
+<th class="theth">Start Date</th>
+<th class="theth">Expiration Date</th>
+<th class="theth">Bracket</th>
+<th class="theth">UoM</th>
+<th class="theth">Price</th>
+<th class="theth">UoM</th>
+
+</tr>
+<apeX:repeat value="{!CSP_Tiers}" var="t">
+<tr class="thetr">
+<td class="thetd"><apex:outputField value="{!t.Effective_Date__c}"/></td>
+<td class="thetd"><apex:outputField value="{!t.Expiration_Date__c}"/></td>
+<td class="thetd"><apex:outputfield value="{!t.Volume__c}"/></td>
+<td class="thetd"><apex:outputfield value="{!t.Volume_UoM__c}"/></td>
+<td class="thetd"><apex:outputfield value="{!t.Price__c}"/></td>
+<td class="thetd"><apex:outputfield value="{!t.Price_UoM__c}"/></td>
+
+
+</tr>
+</apex:repeat>
+</table>
+
+
+</apex:component>

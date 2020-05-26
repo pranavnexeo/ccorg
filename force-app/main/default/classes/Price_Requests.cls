@@ -1,0 +1,1 @@
+Public with Sharing Class Price_Requests{}

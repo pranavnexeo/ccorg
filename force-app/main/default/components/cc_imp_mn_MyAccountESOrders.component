@@ -1,0 +1,737 @@
+<apex:component layout="none" controller="cc_imp_ctrl_MyAccountESOrders">
+    
+    <script type="text/javascript">
+    var isEs = {!isES};
+    if(isEs){
+      CCRZ.uiProperties.myOrdersView.desktop.tmpl = 'MyorderES-NewMyAccountSection';
+      CCRZ.uiProperties.myOrdersView.phone.tmpl   = 'MyorderES-NewMyAccountSection';
+             if ($('#searchBoxCC')) {
+                 	$('#searchBoxCC').css("display","none");
+             }
+     
+             if ($('#searchBoxCCPH')) {
+                 	$('#searchBoxCCPH').css("display","none");
+             }         
+                   
+
+     }
+    </script>
+    
+<script id="MyorderES-NewMyAccountSection" type="text/template">
+   
+        <h2 class="title">{{pageLabelMap 'MyAccount_MyOrdersES'}}</h2>
+        <div class="alert alert-error messagingSection-orderhistory-Error" style="display: none"></div>
+        <div class="alert alert-info messagingSection-orderhistory-Info" style="display: none"></div>
+        <!--<div>{{pageLabelMap 'MyAccount_MyOrdersES'}}</div> -->
+        <div class="main_content_large_solo_container">
+            {{#ifDisplay 'srch.ord'}}
+            <form id="searchOrderForm" class="searchOrderForm">
+                <input type="text"  name="searchOrderInput" value="{{searchOrder}}" class="searchOrderInput input-text" placeholder="{{pageLabelMap 'MyOrdersInc_SearchOrders'}}"/>
+                <select name="searchOrderStatus" value="{{searchOrderStatus}}">
+                    <option value="">{{pageLabelMap 'MyOrdersInc_AllOrderStatus'}}</option>                 
+                    {{#each this.orderStatusOpts}}
+                        <option value="{{this.value}}" {{#ifEquals ../searchOrderStatus this.value}} selected {{/ifEquals}}>{{this.label}}</option>
+                    {{/each}}
+                </select>
+                {{pageLabelMap 'MyOrdersInc_SearchFrom'}}
+                <input name="fromDateStr" value="{{this.fromDateStr}}" class="requestedDate fromDate">
+                {{pageLabelMap 'MyOrdersInc_SearchTo'}}
+                <input name="toDateStr" value="{{this.toDateStr}}" class="requestedDate toDate">
+                
+                <input type="button" class="searchOrder" value="{{pageLabelMap 'MyOrdersButton_SearchOrders'}}"/>
+                <input type="button" class="resetOrder" value="{{pageLabelMap 'MyOrdersButton_ResetOrders'}}"/>
+            </form>
+            {{/ifDisplay}}
+            <div class="orderPaginationSec" />
+            <table id="orderTable" class="shopping_cart">
+                <tr class="even">
+                    <td class="right_align headerSort ordername" data-sortcriteria="ordername">{{pageLabelMap 'MyOrdersInc_OrderNumber'}}
+                    </td>
+                    <td class="right_align headerSort externalOrderId" data-sortcriteria="externalOrderId">{{pageLabelMap 'ExternalOrderID'}}
+                       <a href="javascript:void(0);" class="descSort orderSortControl {{#ifEqualsIgnoreCase this.searchFormData.sortCriteria 'ExternalOrderId'}}{{#ifEqualsIgnoreCase this.searchFormData.sortDir 'Desc'}}active{{/ifEqualsIgnoreCase}}{{/ifEqualsIgnoreCase}}" data-sortcriteria="ExternalOrderId" data-sortdir="Desc">{{pageLabelMap 'CommonElements_DownArrow'}}</a>
+                        <a href="javascript:void(0);" class="ascSort orderSortControl  {{#ifEqualsIgnoreCase this.searchFormData.sortCriteria 'ExternalOrderId'}}{{#ifEqualsIgnoreCase this.searchFormData.sortDir 'Asc'}}active{{/ifEqualsIgnoreCase}}{{/ifEqualsIgnoreCase}}" data-sortcriteria="ExternalOrderId" data-sortdir="Asc">{{pageLabelMap 'CommonElements_UpArrow'}}</a>
+                        </td>
+                        
+                    <td class="right_align headerSort poNumber" data-sortcriteria="poNumber">{{pageLabelMap 'MyNexeoESOrders_PO_Number'}}
+                       <a href="javascript:void(0);" class="descSort orderSortControl {{#ifEqualsIgnoreCase this.searchFormData.sortCriteria 'PONumber'}}{{#ifEqualsIgnoreCase this.searchFormData.sortDir 'Desc'}}active{{/ifEqualsIgnoreCase}}{{/ifEqualsIgnoreCase}}" data-sortcriteria="PONumber" data-sortdir="Desc">{{pageLabelMap 'CommonElements_DownArrow'}}</a>
+                        <a href="javascript:void(0);" class="ascSort orderSortControl  {{#ifEqualsIgnoreCase this.searchFormData.sortCriteria 'PONumber'}}{{#ifEqualsIgnoreCase this.searchFormData.sortDir 'Asc'}}active{{/ifEqualsIgnoreCase}}{{/ifEqualsIgnoreCase}}" data-sortcriteria="PONumber" data-sortdir="Asc">{{pageLabelMap 'CommonElements_UpArrow'}}</a>
+                        </td>
+                  
+                    <td class="right_align headerSort orderDate" data-sortcriteria="orderDate">{{pageLabelMap 'MyNexeoESOrders_Pickup_Date'}}
+                    <a href="javascript:void(0);" class="descSort orderSortControl {{#ifEqualsIgnoreCase this.searchFormData.sortCriteria 'OrderDate'}}{{#ifEqualsIgnoreCase this.searchFormData.sortDir 'Desc'}}active{{/ifEqualsIgnoreCase}}{{/ifEqualsIgnoreCase}}" data-sortcriteria="OrderDate" data-sortdir="Desc">{{pageLabelMap 'CommonElements_DownArrow'}}</a>
+                    <a href="javascript:void(0);" class="ascSort orderSortControl  {{#ifEqualsIgnoreCase this.searchFormData.sortCriteria 'OrderDate'}}{{#ifEqualsIgnoreCase this.searchFormData.sortDir 'Asc'}}active{{/ifEqualsIgnoreCase}}{{/ifEqualsIgnoreCase}}" data-sortcriteria="OrderDate" data-sortdir="Asc">{{pageLabelMap 'CommonElements_UpArrow'}}</a>
+                    </td>
+                    <td class="right_align headerSort orderAmount" data-sortcriteria="orderAmount">{{pageLabelMap 'Amount'}}
+                    <a href="javascript:void(0);" class="descSort orderSortControl {{#ifEqualsIgnoreCase this.searchFormData.sortCriteria 'Amount'}}{{#ifEqualsIgnoreCase this.searchFormData.sortDir 'Desc'}}active{{/ifEqualsIgnoreCase}}{{/ifEqualsIgnoreCase}}" data-sortcriteria="OrderAmount" data-sortdir="Desc">{{pageLabelMap 'CommonElements_DownArrow'}}</a>
+                    <a href="javascript:void(0);" class="ascSort orderSortControl  {{#ifEqualsIgnoreCase this.searchFormData.sortCriteria 'Amount'}}{{#ifEqualsIgnoreCase this.searchFormData.sortDir 'Asc'}}active{{/ifEqualsIgnoreCase}}{{/ifEqualsIgnoreCase}}" data-sortcriteria="OrderAmount" data-sortdir="Asc">{{pageLabelMap 'CommonElements_UpArrow'}}</a>
+                    </td>
+                    <td class="right_align headerSort orderAmount" data-sortcriteria="orderAmount">{{pageLabelMap 'Status'}}
+                    <a href="javascript:void(0);" class="descSort orderSortControl {{#ifEqualsIgnoreCase this.searchFormData.sortCriteria 'Status'}}{{#ifEqualsIgnoreCase this.searchFormData.sortDir 'Desc'}}active{{/ifEqualsIgnoreCase}}{{/ifEqualsIgnoreCase}}" data-sortcriteria="OrderStatus" data-sortdir="Desc">{{pageLabelMap 'CommonElements_DownArrow'}}</a>
+                    <a href="javascript:void(0);" class="ascSort orderSortControl  {{#ifEqualsIgnoreCase this.searchFormData.sortCriteria 'Status'}}{{#ifEqualsIgnoreCase this.searchFormData.sortDir 'Asc'}}active{{/ifEqualsIgnoreCase}}{{/ifEqualsIgnoreCase}}" data-sortcriteria="OrderStatus" data-sortdir="Asc">{{pageLabelMap 'CommonElements_UpArrow'}}</a>
+                    </td>
+                    <td class="right_align headerSort wasteManifest"  data-sortcriteria="wasteManifest">{{pageLabelMap 'Waste Manifest'}}
+                        <a href="javascript:void(0);" class="descSort orderSortControl {{#ifEqualsIgnoreCase this.searchFormData.sortCriteria 'Amount'}}{{#ifEqualsIgnoreCase this.searchFormData.sortDir 'Desc'}}active{{/ifEqualsIgnoreCase}}{{/ifEqualsIgnoreCase}}" data-sortcriteria="OrderAmount" data-sortdir="Desc">{{pageLabelMap 'CommonElements_DownArrow'}}</a>
+                        <a href="javascript:void(0);" class="ascSort orderSortControl  {{#ifEqualsIgnoreCase this.searchFormData.sortCriteria 'Amount'}}{{#ifEqualsIgnoreCase this.searchFormData.sortDir 'Asc'}}active{{/ifEqualsIgnoreCase}}{{/ifEqualsIgnoreCase}}" data-sortcriteria="OrderAmount" data-sortdir="Asc">{{pageLabelMap 'CommonElements_UpArrow'}}</a>
+                    </td>
+                    <td class="right_align headerSort CertofDisposal"  data-sortcriteria="orderStatus">{{pageLabelMap 'Cert of Disposal'}}
+                    <a href="javascript:void(0);" class="descSort orderSortControl {{#ifEqualsIgnoreCase this.searchFormData.sortCriteria 'Status'}}{{#ifEqualsIgnoreCase this.searchFormData.sortDir 'Desc'}}active{{/ifEqualsIgnoreCase}}{{/ifEqualsIgnoreCase}}" data-sortcriteria="OrderStatus" data-sortdir="Desc">{{pageLabelMap 'CommonElements_DownArrow'}}</a>
+                    <a href="javascript:void(0);" class="ascSort orderSortControl  {{#ifEqualsIgnoreCase this.searchFormData.sortCriteria 'Status'}}{{#ifEqualsIgnoreCase this.searchFormData.sortDir 'Asc'}}active{{/ifEqualsIgnoreCase}}{{/ifEqualsIgnoreCase}}" data-sortcriteria="OrderStatus" data-sortdir="Asc">{{pageLabelMap 'CommonElements_UpArrow'}}</a> 
+                    </td>
+                    <td class="right_align headerSort billOfLading"  data-sortcriteria="orderStatus">{{pageLabelMap 'Bill Of Lading'}}
+                    <a href="javascript:void(0);" class="descSort orderSortControl {{#ifEqualsIgnoreCase this.searchFormData.sortCriteria 'Status'}}{{#ifEqualsIgnoreCase this.searchFormData.sortDir 'Desc'}}active{{/ifEqualsIgnoreCase}}{{/ifEqualsIgnoreCase}}" data-sortcriteria="OrderStatus" data-sortdir="Desc">{{pageLabelMap 'CommonElements_DownArrow'}}</a>
+                    <a href="javascript:void(0);" class="ascSort orderSortControl  {{#ifEqualsIgnoreCase this.searchFormData.sortCriteria 'Status'}}{{#ifEqualsIgnoreCase this.searchFormData.sortDir 'Asc'}}active{{/ifEqualsIgnoreCase}}{{/ifEqualsIgnoreCase}}" data-sortcriteria="OrderStatus" data-sortdir="Asc">{{pageLabelMap 'CommonElements_UpArrow'}}</a> 
+                    </td>
+                </tr>
+                {{#each this.orderList}}
+                    <tr class="odd myAccOrderRows myNexeoOrders" >
+                        <td class="right_align"><a href="#" data-id="{{encryptedId}}" class="gotoOrderDetails">Details</a></td>
+                        <td class="right_align">{{externalOrderId}}</td> 
+                        <td class="right_align"  data-columnType="PONumber"></td> 
+                        <td class="right_align">{{orderDateStr}}</td>
+                        <td class="right_align" data-columnType="totalAmount"></td>
+                        <td class="right_align">{{pageLabelMap status}}</td>
+                        <td id="test" class="right_align" data-columnType="wasteManifest"> </td>
+                        <td class="right_align" data-columnType="CertofDisposal"></td>
+                         <td class="right_align" data-columnType="billOfLading"></td>
+                       
+                    </tr>
+                {{/each}}
+            </table>
+            <div>
+            {{pageLabelMap 'MyNexeoESAccount_Disclaimer'}}
+            </div> </br>
+            <div id="modalSec"></div>
+    </div>
+</script>
+<script>
+CCRZ.MyAccount = _.extend(CCRZ.MyAccount||{},{
+    MyorderES :{
+        register : function(registrar){
+        var orderList = new CCRZ.collections.NexeoOrderList();
+       var useOrdPaginator = CCRZ.getPageConfig('pgbl.ord', false);
+       if(useOrdPaginator) {
+        CCRZ.orderPaginatorView = new CCRZ.views.navigatePaginationView({
+         model : orderList
+        });
+       }
+          //alert("hit1");
+       var nexeoESView = new CCRZ.views.NexeoOrdersESView({
+        model : orderList
+       });
+       registrar.registerNewView('myordersES', CCRZ.processPageLabelMap('MyAccount_MyOrdersES'), nexeoESView);//new CCRZ.views.SubscHelloWorldView()
+       if(useOrdPaginator) {
+           CCRZ.orderPaginatorView.listenTo(nexeoESView, "pagination:host:rendered", CCRZ.orderPaginatorView.hostRendered);
+       }
+      }
+    }
+});
+
+
+jQuery(function($) {
+     CCRZ.searchForm = {};
+        CCRZ.searchForm.jsonOrderStatusOptions = [{"value":"Complete/Invoiced","label":"Complete/Invoiced"},{"value":"Confirmed","label":"Confirmed"},{"value":"In-Process","label":"In-Process"},{"value":"Order Submitted","label":"Order Submitted"},{"value":"Order Rejected","label":"Order Rejected"},{"value":"Shipping","label":"Shipping"}];
+    
+    CCRZ.subsc = CCRZ.subsc || {};
+
+        var orderIds = [];
+
+        CCRZ.subsc.myNexeoRemoteActions = _.extend(CCRZ.RemoteInvocation, {
+            className : 'cc_imp_ctrl_MyAccountESOrders',
+            getExtendedOrdersList : function(orderIds, callback) {
+                this.invokeCtx('getExtendedOrdersList',
+                    orderIds,
+                    function(resp) 
+                    {
+                        callback(resp);
+                    },
+                    {
+                        buffer : false, // this call will be executed by itself
+                        nmsp   : false  // defines that this is a call to a subscriber class
+                    }
+                );
+            },
+            getAllOrdersForShipToAddress : function(callback) {
+                this.invokeCtx('getAllOrdersForShipToAddress',
+                    function(resp) 
+                    {
+                        callback(resp);
+                    },
+                    {
+                        buffer : false, // this call will be executed by itself
+                        nmsp   : false  // defines that this is a call to a subscriber class
+                    }
+                );
+            },
+            searchAllOrdersByParams : function(formData, callback) {
+                this.invokeCtx('searchAllOrdersByParams',
+                    formData,
+                    function(resp)
+                    {
+                        callback(resp);
+                    },
+                    {
+                        buffer : false, // this call will be executed by itself
+                        nmsp   : false  // defines that this is a call to a subscriber class                    
+                    }
+                );
+            },
+            reorderByPONumber : function(formData, callback) {
+                this.invokeCtx('reorderByPONumber',
+                    formData,
+                    function(resp)
+                    {
+                        callback(resp);
+                    },
+                    {
+                        buffer : false, // this call will be executed by itself
+                        nmsp   : false  // defines that this is a call to a subscriber class                    
+                    }
+                );
+            },
+            
+        });
+
+        CCRZ.models.NexeoOrderSummaryModel = Backbone.Model.extend({
+            idAttribute: "sfid",
+            initialize : function(orderSummary){
+                this.set(this.parse(orderSummary));
+            }
+        });
+
+        CCRZ.collections.NexeoOrderList = CCRZ.CloudCrazePageable.extend({
+            mode: "client",
+            state: {
+             firstPage: 1,
+             pageSize: parseInt(CCRZ.getPageConfig('pgbl.ord', true) ? CCRZ.getPageConfig('pgbl.pageSize', '3') : '2000'),
+            },
+            searchFormData :{
+             ascending:"false"     
+            },
+            model : CCRZ.models.NexeoOrderSummaryModel,
+            className : "cc_ctrl_myaccountRD",
+            initialize : function(dataList){
+             this.reset(dataList);
+            },
+
+            fetchNavData: function(state, formData, callback) {
+                var coll = this;
+                var formElements = JSON.parse(formData);
+
+                if(formElements.sortCriteria === 'PONumber'){
+                    CCRZ.subsc.myNexeoRemoteActions.reorderByPONumber( 
+                        formData
+                        ,function(resp){
+                        if (resp && resp.success && resp.data.orders){
+                            for (var i = 0; i < resp.data.orders.length; i++){
+                                orderIds.push(resp.data.orders[i].encryptedId);
+                            }
+                            coll.canPay = true;
+                            callback( resp.data.orders );
+                        };
+                    });
+                }else{
+                    if(formElements.hasOwnProperty('searchOrderInput') || formElements.hasOwnProperty('sortCriteria') ){
+                    CCRZ.subsc.myNexeoRemoteActions.searchAllOrdersByParams( 
+                        formData
+                        ,function(resp){
+                        if (resp && resp.success && resp.data.orders){
+                            for (var i = 0; i < resp.data.orders.length; i++){
+                                orderIds.push(resp.data.orders[i].encryptedId);
+                            }
+                            //coll.canPay = response.data.canPay;
+                            coll.canPay = true;
+                            callback(resp.data.orders);
+                        };
+                        
+                    });
+
+                    }else{
+                        CCRZ.subsc.myNexeoRemoteActions.getAllOrdersForShipToAddress( 
+                            function(resp){
+                            if (resp && resp.success && resp.data.orders){
+                                for (var i = 0; i < resp.data.orders.length; i++){
+                                    orderIds.push(resp.data.orders[i].encryptedId);
+                                }
+                                callback( resp.data.orders );
+                            };
+                        });
+                    }
+                }
+
+
+
+            },
+            
+            fetchAllNavData: function(state, formdata, callback) {
+                var coll = this;
+                var formElements = JSON.parse(formdata);
+                if( formElements.sortCriteria === 'PONumber' ){
+                    CCRZ.subsc.myNexeoRemoteActions.reorderByPONumber( 
+                        formdata
+                        ,function(resp){
+                        if (resp && resp.success && resp.data.orders){
+                            for (var i = 0; i < resp.data.orders.length; i++){
+                                orderIds.push(resp.data.orders[i].encryptedId);
+                            }
+                            coll.canPay = true;
+                            callback( resp.data.orders );
+                        };
+                    });
+                }else{
+                    if(formElements.hasOwnProperty('searchOrderInput') || formElements.hasOwnProperty('sortCriteria') ){
+                        CCRZ.subsc.myNexeoRemoteActions.searchAllOrdersByParams( 
+                            formdata
+                            ,function(resp){
+                            if (resp && resp.success && resp.data.orders){
+                                for (var i = 0; i < resp.data.orders.length; i++){
+                                    orderIds.push(resp.data.orders[i].encryptedId);
+                                }
+                                //coll.canPay = response.data.canPay;
+                                coll.canPay = true;
+                                callback(resp.data.orders);
+                            };
+                            
+                        });
+
+                    }else{
+                        CCRZ.subsc.myNexeoRemoteActions.getAllOrdersForShipToAddress( 
+                            function(resp){
+                            if (resp && resp.success && resp.data.orders){
+                                for (var i = 0; i < resp.data.orders.length; i++){
+                                    orderIds.push(resp.data.orders[i].encryptedId);
+                                }
+                                callback( resp.data.orders );
+                            };
+                        });
+                    }
+                }
+
+            },
+            reorder: function(orderId, callback) {
+                this.invokeContainerLoadingCtx($('.deskLayout'), "handleReorder", orderId, function(response){
+                    if(response && response.success && response.data){
+                        callback(response.data);
+                    }else{
+                        CCRZ.pubSub.trigger("pageMessage", response);
+                    }
+                });
+
+            },
+            orderCancel: function(orderId, type, callback) {
+             var coll = this;
+             this.invokeContainerLoading($('.deskLayout'), "handleCancel", orderId, type, CCRZ.pagevars.storefrontName, function(response){
+              coll.fetch();
+              callback(response);
+             });
+            },
+            searchOrder: function(formdata,sortCriteria, ascending, callback) {
+             var coll = this;
+                CCRZ.subsc.myNexeoRemoteActions.searchAllOrdersByParams( 
+                    formData
+                   ,function(resp){
+                    if (resp && resp.success && resp.data.orders){
+                        for (var i = 0; i < resp.data.orders.length; i++){
+                            orderIds.push(resp.data.orders[i].encryptedId);
+                        }
+                        for(i = 0; i < resp.data.orders.length; i++) {
+                            ordersMapForSort[ resp.data.orders[i].name]=resp.data.orders[i];
+                        }
+                        callback( resp.data.orders );
+                    };
+                });
+         
+            },
+           
+        });
+
+        CCRZ.searchForm = {};
+        CCRZ.searchForm.jsonOrderStatusOptions = [{"value":"Complete/Invoiced","label":"Complete/Invoiced"},{"value":"Confirmed","label":"Confirmed"},{"value":"In-Process","label":"In-Process"},{"value":"Order Submitted","label":"Order Submitted"},{"value":"Order Rejected","label":"Order Rejected"},{"value":"Shipping","label":"Shipping"}];
+        CCRZ.views.cancelModal = Backbone.View.extend({
+        viewName : "cancelModal",
+        templateBoth : CCRZ.util.template(CCRZ.uiProperties.myOrdersView.cancelModal.tmpl),
+        initialize: function() {
+        },
+        render : function(modelData, callback) {
+         this.dataSet = modelData;
+         this.setElement($(CCRZ.uiProperties.myOrdersView.cancelModal.selector));
+         var v = this;
+         v.$el.html(v.templateBoth(this.dataSet.toJSON()));
+         callback();
+         CCRZ.pubSub.trigger("view:"+this.viewName+":refresh", this);
+        }
+        });
+   
+        CCRZ.views.NexeoOrdersESView = CCRZ.CloudCrazeView.extend(
+        {
+            templatePhone : CCRZ.util.template(CCRZ.uiProperties.myOrdersView.phone.tmpl),
+            templateDesktop : CCRZ.util.template(CCRZ.uiProperties.myOrdersView.desktop.tmpl),
+            viewName : "myOrdersView",
+            managedSubView : true,
+            initialize : function(){
+                // alert("initialize=="+this.model);
+             this.listenTo(this.model, "reset", this.ready);
+             //this.model.fetch();
+             this.dataLoadStarted = false;
+             this.dataReady = false;
+             this.dataModel = this.model;
+            },
+            events: {
+             "click .gotoOrderDetails" : "gotoOrderDetails",
+             "click .reorder": "reorder",
+             "click .orderSortControl" : "doOrderSort",
+             "click .ordercancel": "processCancelAction",
+             "click .promptCancel": "cancelEntity",
+             "click .closeModal": "closeModal",
+             "click .editOrder": "editOrder",
+             "click .searchOrder": "searchOrder",
+             "click .resetOrder": "resetOrder",
+             "keypress .searchOrderInput" : "doSearchEnter"
+            },
+            initSetup: function(callback) {
+             //CCRZ-2335 : Different Tabs under MyAccount do not pull data real-time
+             //reset the dataLoadStarted and dataReady flags and refresh the view
+             this.dataLoadStarted = false;
+             this.dataReady = false;
+             callback();
+            },
+            ready : function(orderList, args) { 
+             this.orderList = orderList;
+             this.dataReady = true; 
+             this.render();
+            },
+            renderPhone : function(){
+             if(this.dataReady) {
+              var v = this;
+              v.$el.html(v.templatePhone(v.orderList.toJSON()));
+                CCRZ.subsc.myNexeoRemoteActions.getExtendedOrdersList(orderIds,  
+                function(resp) 
+                {
+                    if (resp && resp.success && resp.data.extendedData)
+                    {
+                        var responseData1 = resp.data.extendedData;
+
+                        $('.myNexeoOrders').each( function()
+                        {
+                             var encryptedOrderId  =  $(this).find('a.gotoOrderDetails').attr('data-Id');
+                                //alert("encryptedOrderId=="+encryptedOrderId);
+                                 var poNumberResponse = responseData1[encryptedOrderId]["poNumber"];
+                                 var currencyResponse = responseData1[encryptedOrderId]["currencyCode"]; 
+                                 var totalAmountResponse = responseData1[encryptedOrderId]["totalAmount"];
+                                 var totalAmountCanBeShow = responseData1[encryptedOrderId]["totalAmountCanBeRendered"];
+                            	 if (totalAmountCanBeShow == true) {
+                            		if(typeof currencyResponse!='undefined'){
+                                        var formattedPrice=currencyResponse+" "+formatter.format(totalAmountResponse);
+                                            }else{
+                                            var formattedPrice=" "+formatter.format(totalAmountResponse);
+                                            }
+                                     if (CCRZ.display.isPhone())
+                                     {
+                                          $(this).find('.totalAmount').text(formattedPrice);
+                                     }
+                                     else
+                                     {
+                                         $(this).find('[data-columnType="totalAmount"]').text(formattedPrice);
+                                     }
+                            	  }
+                             if (poNumberResponse)
+                             {
+                                 if (CCRZ.display.isPhone())
+                                 {
+                                     $(this).find('.poNumber').text(poNumberResponse);
+                                 }
+                                 else
+                                 {
+                                    $(this).find('[data-columnType="PONumber"]').text(poNumberResponse);
+                                 }
+                             }
+                        });
+                    }
+                });
+             }
+            },
+            renderDesktop : function(){
+             if(this.dataReady) {
+              var v = this;
+              v.data = {};
+              
+              var formData = v.orderList.searchFormData || {};
+              //populate search order form data
+              v.data.searchOrder = formData.searchOrderInput;
+              v.data.searchOrderStatus = formData.searchOrderStatus;
+              v.data.fromDateStr = formData.fromDateStr;
+              v.data.toDateStr = formData.toDateStr;
+              
+              v.data.orderList = v.orderList.toJSON();
+              v.data.orderStatusOpts = CCRZ.searchForm.jsonOrderStatusOptions;
+             
+              v.$el.html(v.templateDesktop(v.data));
+                CCRZ.subsc.myNexeoRemoteActions.getExtendedOrdersList(orderIds,  
+                function(resp) {                    
+                    if (resp && resp.success && resp.data.extendedData)
+                    {                        
+                        var responseData1 = resp.data.extendedData;                      
+                        
+                        $('.myNexeoOrders').each( function()
+                                                 {
+                                                     var encryptedOrderId  =  $(this).find('a.gotoOrderDetails').attr('data-Id'); 
+                                                     //alert("encryptedOrderId=="+encryptedOrderId);                                                    
+                                                     //var OrderNoResponse = responseData[encryptedOrderId]["orderNumber"];                                            alert("poNumberResponse==");    
+
+                                                     var poNumberResponse = responseData1[encryptedOrderId]["poNumber"];
+                                                      //alert("poNumberResponse=="+poNumberResponse);   
+                                                     var externalSapOrderId = responseData1[encryptedOrderId]["externalSapOrderId"];
+                                                     var currencyResponse = responseData1[encryptedOrderId]["currencyCode"]; 
+                                                     var totalAmountResponse = responseData1[encryptedOrderId]["totalAmount"];
+                                                     var wasteManifestResponse = responseData1[encryptedOrderId]["wasteManifest"];
+                                                     var CertofDisposalResponse = responseData1[encryptedOrderId]["CertOfDisposal"];
+                                                     var billOfLadingResponse = responseData1[encryptedOrderId]["billOfLading"];
+                                                     var splittedWasteManifestResponse ="";
+                                                     var splittedCertofDisposalResponse ="";
+                                                     var splittedbillOfLadingResponse ="";
+                                                     var totalAmountCanBeShow = responseData1[encryptedOrderId]["totalAmountCanBeRendered"];
+                            	 
+                                                     if(wasteManifestResponse != null )
+                                                         splittedWasteManifestResponse = wasteManifestResponse.split(",");                                                     
+                                                     if(CertofDisposalResponse != null )
+                                                         splittedCertofDisposalResponse = CertofDisposalResponse.split(",");                                                     
+                                                     if(billOfLadingResponse != null )
+                                                         splittedbillOfLadingResponse = billOfLadingResponse.split(",");
+                                                     console.log('splittedWasteManifestResponse::',splittedWasteManifestResponse);
+                                                     console.log('splittedCertofDisposalResponse::',splittedCertofDisposalResponse);
+                                                     console.log('splittedbillOfLadingResponse::',splittedbillOfLadingResponse);
+                                                     
+                                                     // var formattedPrice=formatPrice(totalAmountResponse,currencyResponse);
+                                                     //alert("Formatted Price "+formattedPrice +" totalAmountResponse "+totalAmountResponse+" currencyResponse "+currencyResponse);
+                                                     //adding this function since the one provided by Cloudcraze didnt work in French
+                                                     if (totalAmountCanBeShow == true) {
+                                                     if(typeof currencyResponse!='undefined'){
+                                                         var formattedPrice=currencyResponse+" "+formatter.format(totalAmountResponse);
+                                                     }else{
+                                                         var formattedPrice=" "+formatter.format(totalAmountResponse);
+                                                     }
+                                                     //alert(formattedPrice);
+                                                     
+                                                     if (CCRZ.display.isPhone())
+                                                     {
+                                                         $(this).find('.totalAmount').text(formattedPrice);
+                                                     }
+                                                     else
+                                                     {
+                                                         $(this).find('[data-columnType="totalAmount"]').text(formattedPrice);
+                                                     }
+                                                     }
+                                                     if (poNumberResponse)
+                                                     {
+                                                         if (CCRZ.display.isPhone())
+                                                         {
+                                                             $(this).find('.poNumber').text(poNumberResponse);
+                                                         }
+                                                         else
+                                                         {
+                                                             $(this).find('[data-columnType="PONumber"]').text(poNumberResponse);
+                                                         }
+                                                     }
+                                                     if (wasteManifestResponse)
+                                                     {
+                                                         if (CCRZ.display.isPhone())
+                                                         {
+                                                             $(this).find('.wasteManifest').text(wasteManifestResponse);
+                                                         }
+                                                         else
+                                                         {
+                                                             //$(this).find('[data-columnType="wasteManifest"]').text(wasteManifestResponse);
+                                                             for(var i=0; i<splittedWasteManifestResponse.length; i++) { 
+                                                                 var baseString = '<a href="javascript:CallbackendFunc1(\''+splittedWasteManifestResponse[i]+'\',\''+externalSapOrderId+'\')" href="'+ splittedWasteManifestResponse[i] +'">'+ 'WM' + zeroPad(i, 3) +'</a><br />';
+                                                                 $(this).find('[data-columnType="wasteManifest"]').append(baseString);
+                                                             }
+                                                         }
+                                                     }
+                                                     if (CertofDisposalResponse)
+                                                     {
+                                                         if (CCRZ.display.isPhone())
+                                                         {
+                                                             $(this).find('.CertofDisposal').text(CertofDisposalResponse);
+                                                         }
+                                                         else
+                                                         {
+                                                             //$(this).find('[data-columnType="CertofDisposal"]').text(CertofDisposalResponse);
+                                                             
+                                                             for(var i=0; i<splittedCertofDisposalResponse.length; i++) {  
+                                                                 var baseString = '<a href="javascript:CallbackendFunc2(\''+splittedCertofDisposalResponse[i]+'\',\''+externalSapOrderId+'\')" href="'+ splittedCertofDisposalResponse[i] +'">'+ 'CD' + zeroPad(i, 3) +'</a><br />';
+                                                                 $(this).find('[data-columnType="CertofDisposal"]').append(baseString);
+                                                             }
+                                                         }
+                                                     }
+                                                     if (billOfLadingResponse)
+                                                     {
+                                                         if (CCRZ.display.isPhone())
+                                                         {
+                                                             $(this).find('.billOfLading').text(billOfLadingResponse);
+                                                         }
+                                                         else
+                                                         {
+                                                             //$(this).find('[data-columnType="billOfLading"]').text(billOfLadingResponse);
+                                                             for(var i=0; i<splittedbillOfLadingResponse.length; i++) {    
+                                                                 console.log();
+                                                                 var baseString = '<a href="javascript:CallbackendFunc3(\''+splittedbillOfLadingResponse[i]+'\',\''+externalSapOrderId+'\')" href="'+ splittedbillOfLadingResponse[i] +'">'+ 'BL' + zeroPad(i, 3) +'</a><br />';
+                                                                 $(this).find('[data-columnType="billOfLading"]').append(baseString);
+                                                             }
+                                                         }
+                                                     }
+                                                 });
+                    }
+                });
+             }
+            },            
+            preRender: function() {
+             if(!this.dataLoadStarted) {
+              this.dataModel.fetch();
+              this.dataLoadStarted=true;
+             }
+            },
+            postRender: function() {
+             if(this.dataReady) {
+              this.updateDatePicker();
+              this.trigger('pagination:host:rendered', this, {
+               hostView : this.viewName
+              });
+             }
+            },
+            gotoOrderDetails: function (event) {
+             var objLink = $(event.target);
+             var id = objLink.data("id");
+                //alert("id=="+id);
+             orderDetails(id);
+            },
+            reorder: function(event) {
+             var objLink = $(event.target);
+             var id = objLink.data("id");
+             this.orderList.reorder(id, function(newCartId){
+              cartDetails(newCartId);
+             });
+            },
+            processCancelAction: function(event) {
+             var objLink = $(event.target);
+             var mode = objLink.data("mode");
+             var id = objLink.data("id");
+             $("#cancelMod_" + id).modal("hide");
+             if (mode == 'Edit')
+              this.editOrder(event);
+             else
+              this.orderCancel(event);
+            },
+            orderCancel: function(event) {
+             var objLink = $(event.target);
+             var id = objLink.data("id");
+             var v = this;
+             this.orderList.orderCancel(id, 'Cancel', function(orderId) {
+              v.orderList.fetch();
+             });
+            },
+            cancelEntity: function(event) {
+             var objLink = $(event.target);
+             var id = objLink.data("id");
+             var mode = objLink.data("mode");
+             var selList = this.orderList.get(id);
+             if (selList) {
+              selList.set('mode', mode);
+              this.openModal(selList);
+             }
+            },
+            openModal: function(orderBean) {
+             var modalView = new CCRZ.views.cancelModal();
+             modalView.render(orderBean, function() {
+              $('#cancelMod_' + orderBean.attributes.sfid).modal({ keyboard: false, backdrop: 'static', show: true });
+             });
+            },
+            closeModal : function(event){
+             var objLink = $(event.target);
+             var id = objLink.data("id");
+             $("#cancelMod_" + id).modal("hide");
+            },
+            editOrder: function(event) {
+             var objLink = $(event.target);
+             var id = objLink.data("id");
+             var selList = this.orderList.get(id);
+             var v = this;
+             v.orderList.orderCancel(id, 'Edit', function(response) {
+              v.reorder(event);
+             });
+            },
+            searchOrder: function(event) {
+                 var v = this;
+                 v.orderList.searchFormData = _.extend({"ascending":"false"},$("#searchOrderForm").serializeObject());
+
+                 //perform the search
+                 v.orderList.fetch();
+            },
+            doSearchEnter: function(event) {
+             var v = this;
+             if (event && event.keyCode == 13 || event.which == 13) {
+              v.searchOrder();
+              return false;
+             } else {
+              return true;
+             }
+            },
+            updateDatePicker: function() {
+             var daysArray = CCRZ.pagevars.pageLabels['DaysOfWeek'].split(",");
+             var monthsArray = CCRZ.pagevars.pageLabels['MonthsOfYear'].split(",");
+             var dateFormat = CCRZ.pagevars.pageLabels['Date_Format'];
+             $(".requestedDate").Zebra_DatePicker({ 
+              show_other_months: false,
+              readonly_element: true,
+              show_select_today: false,
+              days: daysArray,
+              months: monthsArray,
+              format: dateFormat
+             });
+         
+            },
+            resetOrder:function(){
+             var v = this;
+             v.orderList.searchFormData={
+              ascending:"false"     
+             };
+             v.orderList.fetch();
+            },
+            doOrderSort : function( event ){
+                
+                var objLink = $(event.target);
+                var sortCol = objLink.data('sortcriteria');
+                var sortDir  = objLink.data('sortdir');
+                console.log('sortcriteria:' + sortCol + ' sortdirection:' + sortDir);
+                $('#orderTable .sortControl.active').removeClass('active');
+                objLink.addClass('active');
+                $('[name="sortCriteria"]').val(sortCol);
+                $('[name="sortDir"]').val(sortDir);
+
+                this.searchFormData = _.extend({"sortCriteria": sortCol, "sortDir":sortDir},$("#searchOrderForm").serializeObject());
+                this.orderList.searchFormData = this.searchFormData;
+                console.log(this.orderList.fullCollection);
+                this.orderList.fetch();
+            }
+        });
+});
+    function CallbackendFunc1(result, externalSapOrderId) {
+        //alert(test+'-'+result);
+        var url="/mynexeo/cc_imp_mn_ViewESDoc?strDocId="+result+"&strDocType=wastemanifest&strSOID="+externalSapOrderId;//+OrderNoResponse;
+        window.open(url, '_blank');
+    }
+    function CallbackendFunc2(result, externalSapOrderId){
+        //alert(result);
+        var url="/mynexeo/cc_imp_mn_ViewESDoc?strDocId="+result+"&strDocType=certofdisposal&strSOID="+externalSapOrderId;//OrderNoResponse;
+        window.open(url, '_blank');
+    }
+    function CallbackendFunc3(result, externalSapOrderId){
+        //alert(result);
+        var url="/mynexeo/cc_imp_mn_ViewESDoc?strDocId="+result+"&strDocType=billoflading&strSOID="+externalSapOrderId;//OrderNoResponse;
+        window.open(url, '_blank');
+    }
+
+    function zeroPad(num, places) {
+      var zero = places - num.toString().length + 1;
+      return Array(+(zero > 0 && zero)).join("0") + num;
+    }
+</script>
+</apex:component>

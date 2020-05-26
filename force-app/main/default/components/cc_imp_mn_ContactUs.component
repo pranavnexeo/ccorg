@@ -1,0 +1,379 @@
+<apex:component controller="cc_imp_ctrl_ContactUs">  
+<style>
+@media screen and (-webkit-min-device-pixel-ratio:0) {
+    #liveagent_button_offline_57344000000CqDZ{
+        max-width: 100% !important;
+    } 
+    
+    #liveagent_button_online_57344000000CqDZ{
+        max-width: 100% !important;
+    } 
+}
+
+@media only screen and (max-device-width: 736px) {
+    #liveagent_button_offline_57344000000CqDZ{
+        margin-top: 26% !important;
+    } 
+    
+    #liveagent_button_online_57344000000CqDZ{
+        margin-top: 26% !important;
+    } 
+}    
+</style>
+<script id="MyAccount-ContactUs-RightRail" type="text/template">
+  <a class="modalLauncher" style="display:none" href="#maContactUsModalRightRail" data-toggle="modal">&nbsp;</a>&nbsp;
+  <div id="maContactUsModalRightRail" class="modal hide fade in" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="false" style="display: block;">
+   <div class="modal-header">
+    <button type="button" class="close cancelButton">×</button>
+    <h3 id="myModalLabel">{{pageLabelMap 'Component_SiteFooter_ContactUS'}}</h3>
+   </div>
+
+   <div class="modal-body" >
+    <div class="alert alert-error messagingSection-maContactUsModal-Error" style="display: none"></div>
+     <div class="contactNumbers">
+     <div class="container-fluid"> 
+      <div class="row-fluid">
+        <div>
+        <div class="span6" id = "modal-ContactUs-CCAct">
+            <ul>{{pageLabelMap 'ContactUs_Csr_Header'}}
+            <li>{!csrName}</li>
+            <li>{{pageLabelMap 'ContactUs_Csr_Tel'}} {!csrTel}</li>
+            <li>{{pageLabelMap 'ContactUs_Csr_Email'}} {!csrEmail}</li>    
+            <br>
+          </ul>
+            <ul>{{pageLabelMap 'ContactUs_Seller_Header'}}
+            <li>{!sellerName}</li>
+            <li>{{pageLabelMap 'ContactUs_Seller_Tel'}} {!sellerTel}</li>
+            <li>{{pageLabelMap 'ContactUs_Seller_Email'}} {!sellerEmail}</li>            
+          </ul>            
+        </div>
+
+        <div class="span6" id = "InternationalSupportPhone" style = "display:none">
+            <ul>{{pageLabelMap 'ContactUs_USA_Label'}}
+            <li>{{pageLabelMap 'ContactUs_USA_Phone'}}</li>
+          </ul>
+            <ul>{{pageLabelMap 'ContactUs_MEXICO_Label'}}
+            <li>{{pageLabelMap 'ContactUs_MEXICO_Phone'}}</li>
+          </ul>
+          	<ul>{{pageLabelMap 'ContactUs_CANADA_Label'}}
+            <li>{{pageLabelMap 'ContactUs_CANADA_Phone_English_Chemicals'}}</li>
+            <li>{{pageLabelMap 'ContactUs_CANADA_Phone_English_Plastics'}}</li>
+            <li>{{pageLabelMap 'ContactUs_CANADA_Phone_Francais'}})</li>
+          </ul>
+         
+            <ul>{{pageLabelMap 'ContactUs_EUROPE_Label'}}
+            <li>{{pageLabelMap 'ContactUs_EUROPE_Phone'}}</li>
+          </ul>
+              <ul>{{pageLabelMap 'ContactUs_ASIA_Label'}}
+            <li>{{pageLabelMap 'ContactUs_ASIA_Phone'}}</li>
+          </ul>
+        </div>
+         <div class="span6" id = "ESSupportPhone" style = "display:none">
+            <ul>{{pageLabelMap 'ContactUs_ES_Label'}}
+            <li>{{pageLabelMap 'ContactUs_ES_Phone'}}</li>
+   		 </ul>
+        </div>   
+        </div> 
+        <div style="text-align: left;margin-left: 20%;float: left; display:block; margin-top: -14%" id = "buttonLiveAgentDiv">
+            <img class='button' id='liveagent_button_online_57344000000CqDZ' style='display: none; border: 0px none; cursor: pointer; ' onclick='liveagent.startChat("57344000000CqDZ")' src='{!URLFOR($Resource.Live_Agent_Online_Image)}' />
+            <img class='button' id='liveagent_button_offline_57344000000CqDZ' style='display: none; border: 0px none; ' src='{!URLFOR($Resource.Live_Agent_Offline_Image)}' />
+        </div>    
+      </div>
+  
+
+     </div>
+     </div>    
+
+    <form id="contactUsForm">
+     <label>{{pageLabelMap 'cc_imp_mn_subject'}}
+      <select name="subject" class="subjectList">
+    {{#each subjectOptions}}
+      <option value="{{this.value}}">{{pageLabelMap this.label}}</option>
+    {{/each}}
+      </select>
+     </label>
+     <div id="reasonCodeListDiv">
+      <label>{{pageLabelMap 'cc_imp_mn_reasonCodes'}}
+       <select name="reasonCode" class="reasonCodeList">
+    {{#each reasonCodeOptions}}
+      <option value="{{this.value}}">{{this.label}}</option>
+    {{/each}}
+       </select>
+      </label>
+     </div>
+     <label for="contactUs_comments" class="">{{pageLabelMap 'cc_imp_contactUs_comments'}}</label>
+    <div><textarea id="contactUs_comments" rows="3" style="width:99%;" name="comments" class="commentsText"></textarea></div>
+    </form>
+   </div>
+   
+   <div class="modal-footer">
+    <input type="button" class="cancelButton" data-id="" value="{{pageLabelMap 'cc_imp_MyAccount_UploadFilesCancelButton'}}" id="cancelButton" />
+    <input type="button" class="saveContactUsRightRail" data-id="" value="{{pageLabelMap 'cc_imp_mn_contact_us_submit'}}" id="saveContactUsRightRail" />
+   </div>
+  </div>
+
+  <div id="maContactUsModalSuccess" class="modal hide fade in" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
+   <div class="modal-header">
+    <button type="button" class="close finishButton">×</button>
+    <h3 id="myModalLabel">{{pageLabelMap 'Component_SiteFooter_ContactUS'}}</h3>
+   </div>
+
+   <div class="modal-body">
+    <div class="alert alert-error messagingSection-maContactUsModal-Error" style="display: none"></div>
+    <form id="contactUsForm">
+     <p>{{pageLabelMap 'cc_imp_MyAccount_ContactUsConfirm'}}</p>
+    </form>
+   </div>
+   <div class="modal-footer">
+    <input type="button" class="finishButton" data-id="" value="{{pageLabelMap 'cc_imp_MyAccount_UploadFilesFinishButton'}}" id="finishButton" />
+   </div>
+  </div>
+
+</script>
+
+<div id="contactUsModal"></div>
+<apex:includeScript value="{!liveAgentURL}"/>
+<script>
+   
+    
+// Get the new Upload Files View added to the My Account page
+CCRZ.MyAccount = _.extend(CCRZ.MyAccount||{},{
+    SubscContactUs :{
+        register : function(registrar){
+            CCRZ.subsc = _.extend(CCRZ.subsc||{});
+            CCRZ.subsc.contactUsView = new CCRZ.views.contactUsView();
+            registrar.registerNewView('contactUsModal', CCRZ.pagevars.pageLabels['Component_SiteFooter_ContactUS'], CCRZ.subsc.contactUsView);
+        }
+    }
+});
+
+CCRZ.HDRMyAccount = _.extend(CCRZ.HDRMyAccount||{},{
+    SubscContactUs :{
+        register : function(registrar){
+            CCRZ.subsc = _.extend(CCRZ.subsc||{});
+            CCRZ.subsc.contactUsView = new CCRZ.views.contactUsView();
+            registrar.registerNewView('contactUsModal', CCRZ.pagevars.pageLabels['Component_SiteFooter_ContactUS'], CCRZ.subsc.contactUsView);
+        }
+    }
+});
+
+jQuery(function($) 
+{
+
+      CCRZ.views.contactUsView = CCRZ.CloudCrazeView.extend(
+      {
+          templateBoth : CCRZ.util.template("MyAccount-ContactUs-RightRail"),
+          viewName : "contactUsModal",
+          events : {
+                    "click #saveContactUsRightRail" : "savecontactus",
+                    "click .cancelButton" : "hideModal",
+                    "click .finishButton" : "finishModal",
+            "change .subjectList" : "subjectselected"
+          },
+                initialize : function()
+                {
+                    var template = Handlebars.compile($("#MyAccount-ContactUs-RightRail").html());
+                    var v = this;
+                    v.data = {};
+                    var subjects = [];
+                    //need to find subject.value = Other and make that the first one.
+                    var index = -1;
+                    subjects = CCRZ.contactUsForm.subjectOptions;
+                    for(i = 0; i < subjects.length; i++){
+                        if(subjects[i].value === 'Other'){
+                            index = i;
+                        }
+                    }
+                    if(index>0){
+                        var tempSubject = subjects[0];
+                        subjects[0] = subjects[index];
+                        subjects[index] = tempSubject;
+                    }
+
+                    v.data.subjectOptions = subjects;
+                    //Only make the reason code visible if subject.value=DisputeInvoice.  By default "Other" is
+                    //the first value, so make reason code hidden
+                    v.data.reasonCodeOptions = CCRZ.contactUsForm.reasonCodeOptions;
+                                        
+                },
+          renderDesktop : function()
+          {
+            var v = this;
+            
+            v.setElement($("#contactUsModal"));
+            var modalHtml =  v.templateBoth(v.data);
+            v.$el.html(modalHtml);
+            $("#maContactUsModalRightRail").modal("show");
+            showLiveAgent();
+            checkPhoneNumber();
+            $('#reasonCodeListDiv').hide();
+            CCRZ.handleModalDisplay();
+            //callback();
+            CCRZ.pubSub.trigger("view:"+this.viewName+":refresh", this);
+            
+          },
+          renderPhone : function()
+          {
+            var v = this;           
+            v.setElement($(".phone_center_mid"));
+            var modalHtml =  v.templateBoth(v.data);
+            v.$el.html(modalHtml);
+            showLiveAgent();
+            checkPhoneNumber();
+            $("#maContactUsModalRightRail").modal("show");
+            $('#reasonCodeListDiv').hide();
+            CCRZ.handleModalDisplay();
+            //callback();
+            CCRZ.pubSub.trigger("view:"+this.viewName+":refresh", this);
+            
+          },
+          savecontactus : function(){
+            console.log("In saveContactUsCreateCase");
+                    var v = this;
+          var subject = $('.subjectList option:selected').attr('value');
+
+          var isReasonVisible = $('#reasonCodeListDiv').is(":visible");
+
+          var reason = $('.reasonCodeList option:selected').attr('value');
+
+          if (isReasonVisible == false)
+          {
+            reason = '' ;
+          }
+
+          var comments = $('.commentsText ').val();
+
+                    var dispute = false;
+                    if (v.invoice && (subject === 'DisputeInvoice')){
+                        comments = 'Invoice SAP Id: ' + this.invoice.invoiceId + '\nInvoice Name: ' + this.invoice.name + '\n' + comments;
+                        dispute = true;
+                    }
+
+          Visualforce.remoting.Manager.invokeAction(
+            '{!$RemoteAction.cc_imp_ctrl_ContactUs.createCase}',
+             CCRZ.pagevars.remoteContext,
+             subject,
+             reason,
+             comments,
+             function(resp,evt) 
+             {
+            console.log("Response: %o", resp);
+               if (evt.status) 
+               {
+                 if (resp && resp.success) 
+                 {
+                    $("#maContactUsModalRightRail").modal("hide");
+                    $("#maContactUsModalSuccess").modal("show");
+                    if (dispute) {
+                      CCRZ.pubSub.trigger("invoice:disputed", v.invoice);
+                    }
+                 }
+                 else 
+                 {
+                   setTimeout(function(){
+                     CCRZ.pubSub.trigger('pageMessage',{
+                       messages : [{
+                         type:          'CUSTOM',
+                         severity:      'ERROR',
+                         classToAppend: 'messagingSection-maContactUsModal-Error',
+                         labelId:       'cc_imp_error_processing_request'}]
+                     });
+                   });
+                 }
+               }
+               else 
+               {
+                 setTimeout(function(){
+                   CCRZ.pubSub.trigger('pageMessage', {
+                     messages : [{
+                       type:          'CUSTOM',
+                       severity:      'ERROR',
+                       classToAppend: 'messagingSection-maContactUsModal-Error',
+                       labelId:       ''}]
+                   });
+                 });
+               }
+             }
+          );
+          },
+          subjectselected : function(){
+            var subject = $('.subjectList option:selected').attr('value');
+            if(subject === 'DisputeInvoice'){
+            $('#reasonCodeListDiv').show();
+            }else{
+              $('#reasonCodeListDiv').hide();
+            }
+          },
+                setSubject : function(subject) {
+                    $('.subjectList').val(subject);
+                    this.subjectselected();
+                },
+                disputeInvoice : function(invoice) {
+                    $('.subjectList').val('DisputeInvoice');
+                    this.invoice = invoice;
+                    this.subjectselected();
+                },
+                hideModal : function(event) {
+                    $("#maContactUsModalRightRail").modal("hide");
+                    if (!this.invoice) {
+                        if(typeof CCRZ.subsc.previousIndex == 'undefined'){
+                          CCRZ.subsc.previousIndex = 0;
+                        }
+                        else if((CCRZ.subsc.previousIndex == '9')|| (CCRZ.subsc.previousIndex == 9)){
+                          CCRZ.subsc.previousIndex = 0;
+                        }
+                        console.log("*** Going to section " + CCRZ.subsc.previousIndex);
+                        //CCRZ.myaccountView.gotoSection(CCRZ.subsc.previousIndex);
+                        CCRZ.subsc.previousIndex = 0;
+                        CCRZ.myaccountView.gotoSection(0);
+                    }
+                    this.invoice = null;
+                },
+                finishModal : function(event) {
+                    $("#maContactUsModalSuccess").modal("hide");
+                    if (!this.invoice) {
+                      CCRZ.myaccountView.gotoSection(CCRZ.subsc.previousIndex);
+                    }
+                    this.invoice = null;
+                }
+        });
+
+        CCRZ.pubSub.on("action:gotoSection:before", function(view) {
+          CCRZ.subsc = _.extend(CCRZ.subsc||{});
+          CCRZ.subsc.previousIndex = CCRZ.myaccountView.currIndex;
+        });
+
+});
+
+function showLiveAgent() {
+        if (!$(window._laq).length) { 
+             window._laq = []; 
+        }
+              
+        window._laq.push(function(){
+                liveagent.showWhenOnline('57344000000CqDZ', $('#liveagent_button_online_57344000000CqDZ')[0]);
+                liveagent.showWhenOffline('57344000000CqDZ', $('#liveagent_button_offline_57344000000CqDZ')[0]);});
+    	liveagent.init("{!liveAgentJSComponent}", "{!liveAgentId}", "{!liveAgentORGId}");
+    
+}
+    
+     function checkPhoneNumber() {
+      
+         var ESUser = $.cookie("apex__isESUser");
+		 if (ESUser) {	
+             if (ESUser.toLowerCase() == 'true') {
+                 if ($('#ESSupportPhone')) {
+                        $('#ESSupportPhone').css("display","block");
+                        $('#buttonLiveAgentDiv').css("margin-top","4%");
+                        $('#buttonLiveAgentDiv').css("margin-left","11%");
+                 }             
+             } else {     
+                     if ($('#InternationalSupportPhone')) {
+                            $('#InternationalSupportPhone').css("display","");
+                     } 
+             } 
+        }
+     }     
+</script>
+
+</apex:component>

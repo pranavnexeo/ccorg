@@ -1,0 +1,3 @@
+<apex:page >
+ <apex:iframe src="/apex/SampleRequest_PDF?id={!$CurrentPage.parameters.id}&scontrolCaching=1" frameborder="false" height="1000px" width="100%"/>
+</apex:page>

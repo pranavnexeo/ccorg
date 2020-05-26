@@ -1,0 +1,57 @@
+<apex:page controller="exportExcel" action="{!exportToExcel}" readOnly="true" contentType="application/vnd.ms-excel#opportunityData.xls">
+ 
+     
+    <apex:pageBlock >
+        <apex:pageBlockTable value="{!lstwrapper}" var="x">
+           <apex:column headerValue="Salesforce Id">
+                {!x.id}
+            </apex:column>
+             <apex:column headerValue="Created Date">
+                {!x.Created_Date}
+          </apex:column>
+               <apex:column headerValue="Owner">
+                {!x.Owner}
+            </apex:column>
+             <apex:column headerValue="Owner Manager Name">
+                {!x.OwnerDM}
+            </apex:column>
+             <apex:column headerValue="Account Type">
+                {!x.Account_Type}
+            </apex:column>
+            <apex:column headerValue="Account">
+                {!x.Account}
+            </apex:column>
+             <apex:column headerValue="Opportunity Name">
+                {!x.Opportunity_Name}
+            </apex:column>
+            <apex:column headerValue="Target">
+                {!x.Target}
+            </apex:column>
+             <apex:column headerValue="Stage">
+                {!x.Stage_Name}
+            </apex:column>
+             <apex:column headerValue="Close Date">
+               {!x.Close_Date}
+            </apex:column>
+             <apex:column headerValue="Call Report Date">
+                {!x.Call_Report_Date}
+            </apex:column>
+             <apex:column headerValue="Opportunity Overview">
+                {!x.Opportunity_Overview}
+            </apex:column> 
+            <apex:column headerValue="Annual Volume">
+                {!x.Annual_Volume}
+            </apex:column>
+            <apex:column headerValue="Potential CM">
+                {!x.Potential_CM}
+            </apex:column>
+            <apex:column headerValue="Requested Supplier">
+                {!x.Requested_Supplier}
+            </apex:column>
+            <apex:column headerValue="SAP Material">
+                {!x.SAP_Material}
+            </apex:column>
+        </apex:pageBlockTable>
+    </apex:pageBlock>   
+ 
+</apex:page>

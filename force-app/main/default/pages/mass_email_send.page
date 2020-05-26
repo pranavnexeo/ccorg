@@ -1,0 +1,20 @@
+<apex:page controller="mass_email_send" showheader="false" sidebar="false">
+  <apex:form >
+  <apeX:pageblock >
+  <apex:pagemessages />
+  <apex:pageblockbuttons >
+  <apex:commandbutton value="Send" action="{!send}" rendered="{!NOT(displaymessage)}"/>
+  </apex:pageblockbuttons>
+  <apex:pageblocksection >
+  <apeX:pageblocksectionitem >
+  <apex:outputlabel value="Sender Name"/>
+  <apex:inputfield value="{!c.lastname}" required="true"/>
+  </apeX:pageblocksectionitem>
+  <apeX:pageblocksectionitem >
+  <apex:outputlabel value="Sender Email" />
+  <apex:inputfield value="{!c.email}" required="true"/>
+  </apeX:pageblocksectionitem>
+  </apex:pageblocksection>
+  </apex:pageblock>
+  </apex:form>
+</apex:page>

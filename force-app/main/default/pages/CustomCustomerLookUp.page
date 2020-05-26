@@ -1,0 +1,166 @@
+<apex:page controller="CustomCustomerLookUpController" title="Search" showHeader="false" sideBar="false" tabStyle="Account" id="pg">
+  
+  <script>
+    var firstTime = true;
+    var payerId='';
+    var payerName ='';
+    var payerNo ='';
+    var region ='';
+    function doSearch(){
+    
+        //alert('serach');
+        firstTime = true;
+        //document.getElementById('pg:custLookupFrm:btnGo').click();
+        performSearch();
+        return false;
+    }
+    function setRegionValue(regionVal){
+        //alert('setRegionValue : '+regionVal);
+        top.window.opener.setRegion(regionVal);
+    }
+    function getSoldToPartys(id,custName,custNo,region){
+        //alert(firstTime);
+        if(firstTime==true){
+            payerId= id;
+            payerName = custName;
+            payerNo = custNo;
+            getSoldTo(custNo);
+            
+            firstTime=false;
+        }else{
+            top.window.opener.setSoldTo(id,payerNo,region);
+            top.window.opener.lookupPick2('{!FormTag}','{!TextBox}_lkid','{!TextBox}',payerId,payerName,region, false);
+        }
+        return false;
+    }
+  
+  </script>
+  
+  <style type="text/css">
+        .custPopup{
+            background-color: white;
+            border-width: 2px;
+            border-style: solid;
+            z-index: 9999;
+            left: 50%;
+            padding:10px;
+            position: absolute;
+            /* These are the 3 css properties you will need to change so the popup 
+            displays in the center of the screen. First set the width. Then set 
+            margin-left to negative half of what the width is. You can add 
+            the height property for a fixed size pop up if you want.*/
+            width: 500px;
+            margin-left: -250px;
+            top:100px;
+        }
+        .popupBackground{
+            background-color:black;
+            opacity: 0.20;
+            filter: alpha(opacity = 20);
+            position: absolute;
+            width: 100%;
+            height: 100%;
+            top: 0;
+            left: 0;
+            z-index: 9998;
+        }
+   </style>
+   
+  <apex:form id="custLookupFrm">
+  
+  <apex:ActionStatus id="busyStatus">
+     
+     
+        <apex:facet name="start" >
+            <c:BusyStatusComp height="300px" width="300px" Message="Pleas Wait..." />
+        </apex:facet>
+        
+    
+  </apex:ActionStatus>
+  
+  <apex:actionFunction name="performSearch"
+            action="{!Search}"
+            rerender="searchResults" status="busyStatus">
+  </apex:actionFunction>
+  
+  <apex:actionFunction name="getSoldTo"
+            action="{!getSoldTos}"
+            rerender="pnlSearchResults,txtSearch,custNo" status="busyStatus">
+        <apex:param name="custNo" value="" />
+  </apex:actionFunction>
+   
+  <apex:outputPanel id="page" layout="block" style="margin:5px;padding:10px;padding-top:2px;">
+    
+                <apex:actionRegion >  
+                  <apex:PanelGrid id="top"  style="margin:5px;padding:10px;padding-top:2px;" columns="5">
+                    <apex:outputLabel value="Customer Name" style="font-weight:Bold;padding-right:10px;" for="txtSearch"/>
+                    <apex:inputText id="txtSearch" value="{!searchString}" onKeydown="Javascript: if (event.keyCode==13) doSearch();"/>
+                    <apex:outputLabel value="Customer Number" style="font-weight:Bold;padding-right:10px;" for="custNo"/>
+                    <apex:inputText id="custNo" value="{!customerNumber}" onKeydown="Javascript: if (event.keyCode==13) doSearch();"/>
+                    <apex:commandButton id="btnGo" value="Go" onclick="return doSearch();" rerender="searchResults"></apex:commandButton>
+                  </apex:PanelGrid>
+
+                <apex:outputPanel id="pnlSearchResults" style="margin:10px;height:350px;overflow-Y:auto;" layout="block">
+                    
+                    <apex:pageBlock id="searchResults"> 
+                      <apex:pageBlockTable value="{!display_list}" var="a" id="tblResults">
+                        <apex:column >
+                          <apex:facet name="header">
+                            <apex:outputlabel value="Customer" />
+                          </apex:facet>
+                          <apex:outputLink onclick="setRegionValue('{!a.region}');javascript:top.window.opener.lookupPick2('{!FormTag}','{!TextBox}_lkid','{!TextBox}','{!a.act.Id}','{!JSENCODE(a.act.Name)}','{!a.region}', false)" rendered="{!actualCustType=='Ship To'}">{!a.act.Name}</apex:outputLink>
+                           <apex:outputLink onclick="return getSoldToPartys('{!a.act.Id}','{!JSENCODE(a.act.name)}','{!a.act.SAP_Customer_Number__c}','{!a.region}')" value="#" rendered="{!actualCustType!='Ship To'}">{!a.act.Name}</apex:outputLink>     
+                        </apex:column>
+                        <apex:column >
+                            <apex:facet name="header">
+                            <apex:outputlabel value="CustomerNo" />
+                          </apex:facet>
+                          <apex:outputText value="{!a.act.SAP_Customer_Number__c}"/>
+                        </apex:column>
+                         <apex:column >
+                            <apex:facet name="header">
+                            <apex:outputlabel value="PartnerFunctions" />
+                          </apex:facet>
+                          <apex:outputText value="{!a.act.SAP_Partner_Functions__c}"/>
+                        </apex:column>
+                        <apex:column >
+                            <apex:facet name="header">
+                            <apex:outputlabel value="SalesOrg-DistChnl-Div" />
+                          </apex:facet>
+                          <apex:outputText value="{!a.act.sales_area__c}"/>
+                        </apex:column>
+                        <apex:column >
+                            <apex:facet name="header">
+                            <apex:outputlabel value="Default Plant" />
+                            </apex:facet>
+                            <apex:outputText value="{!a.act.SAP_ShippingPlant__c}"/>
+                        </apex:column>
+                         <apex:column >
+                            <apex:facet name="header">
+                            <apex:outputlabel value="Region" />
+                          </apex:facet>
+                          <apex:outputText value="{!a.region}"/>
+                        </apex:column>    
+                        <apex:column >
+                            <apex:facet name="header">
+                            <apex:outputlabel value="Sales Group" />
+                          </apex:facet>
+                          <apex:outputText value="{!a.act.SAP_SalesGroup__c}"/>
+                        </apex:column>
+                        <apex:column >
+                            <apex:facet name="header">
+                            <apex:outputlabel value="Seller" />
+                          </apex:facet>
+                          <apex:outputText value="{!a.act.Owner.Name}"/>
+                        </apex:column>
+                         
+                        
+                      </apex:pageBlockTable>
+                    </apex:pageBlock>
+                </apex:outputPanel>
+            </apex:actionRegion>
+
+          
+  </apex:outputPanel>
+  </apex:form>
+</apex:page>

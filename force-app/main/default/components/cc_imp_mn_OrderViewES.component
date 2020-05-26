@@ -1,0 +1,555 @@
+<apex:component controller="cc_imp_mn_ctrl_OrderViewES">
+
+<!-- Adding this style in order to move the Grand Total after the Subtotal section on the div price-->
+<style>
+.totals_total_line {
+    margin-top: -15px !important;
+}
+.orderHistory {
+    display: none;
+    }
+.diclaimerESAccount {
+ 	margin-top: 43px !important;
+}
+.total {
+ 	display: none !important; 
+}
+</style>
+    
+<script type="text/javascript">
+    var isEs = {!isES};
+    if(isEs){
+        CCRZ.uiProperties.OrderDetailView.partial.orderItemsDesktop = '#MyNexeo-OrderItems-DesktopES';    
+        CCRZ.uiProperties.OrderDetailView.phone.tmpl = 'MyNexeo-OrderDetails-View-MobileES';
+    }
+</script>
+<script>
+function goBack() {
+    window.history.back();
+}
+</script>
+<script id="MyNexeo-OrderItems-DesktopES" type="text/template">
+    
+    <button onclick="goBack()">{{pageLabelMap 'MyAccount_OrderHistory'}}</button>
+
+
+    
+    <div id="cart_items_container orderdetailSection" class="">
+        <div class="alert alert-error messagingSection-sds-Error" style="display: none"></div>
+        <div class="alert alert-info messagingSection-sds-Info" style="display: none"></div>
+
+        <div class="cart_item_list">
+        
+        <table id="orderTable" class="shopping_cart">
+            <tr class="even">
+                <!---<td class="right_align">{{pageLabelMap 'Checkout_SKU'}}</td>--->
+                <td class="right_align">{{pageLabelMap 'Item#'}}</td>
+                <td class="right_align">{{pageLabelMap 'Product Desc'}}</td>
+                <td class="right_align">{{pageLabelMap 'Profile#'}}</td>
+                <td class="right_align">{{pageLabelMap 'Profile Desc'}}</td>
+                <!--<td class="right_align">{{pageLabelMap 'CartInc_Price'}}</td>-->
+                <td class="right_align">{{pageLabelMap 'PricePerUnit'}}</td>
+                <td class="right_align">{{pageLabelMap 'CartInc_Qty'}}</td>
+                <td class="right_align">{{pageLabelMap 'Container'}}</td>
+                <td class="right_align">{{pageLabelMap 'CartInc_Total'}}</td>
+                <td class="right_align">{{pageLabelMap 'cc_imp_mn_ShippingLinkHeader'}}</td>
+                <!--<td class="right_align">{{pageLabelMap 'cc_imp_mn_SDSHeader'}}</td>
+                <td class="right_align">{{pageLabelMap 'cc_imp_mn_ShippingLinkHeader'}}</td>
+                <td class="right_align">{{pageLabelMap 'cc_imp_mn_CofAHeader'}}</td> -->
+            </tr>
+            {{#each this.orderItems}}
+            <tr class="odd myAccOrderRows">
+                <!--<td class="right_align">{{this.mockProduct.sku}}</td>-->
+                <!--<td class="right_align">{{this.sku}}</td>--->
+                <td class="right_align">{{this.sequenceNumber}}</td>
+                 <!--<td class="right_align"><a href="#" class="prodLink" data-id="{{this.mockProduct.sku}}">{{displayProductName 'Aggregate_Display' this.translatedParentProductName this.translatedProductName }}</a></td> -->
+                 <td class="right_align">{{this.translatedProductName}}</td>
+                <td class="right_align">
+                    {{#if this.isSubstanceId}}
+                        <a href="/mynexeo/cc_imp_mn_ViewProfileDoc?strPid={{this.SubstanccId}}" target="_blank">{{this.customerMaterialNumber}}</a> 
+                        <!--<a href="javascript:void(0);" class="msds-btn-link" data-id="{{this.productNumber}}" data-sfid="{{this.SubstanccId}}">{{this.customerMaterialNumber}}</a>-->
+                     {{else}}
+                        {{this.customerMaterialNumber}}
+                    {{/if}} 
+                </td>
+                <td class="right_align">{{this.ProfileDesc}}</td>
+   
+              <!--  <td class="right_align">{{{price this.price ../../../currencyCode}}}</td>-->
+                <td class="right_align">{{{price this.priceperunit ../currencyCode}}}</td>
+                <td class="right_align">{{this.quantity}}</td>
+                <td class="right_align">{{this.Container}}</td>
+                <td class="right_align">{{{price this.SubAmount ../currencyCode}}}</td>
+                <!--<td class="right_align"> 
+                    <a href="javascript:void(0);" class="msds-btn-link" data-id="{{this.productNumber}}" data-sfid="{{this.itemID}}">{{pageLabelMap 'cc_imp_mn_SDS'}}</a>
+                </td> -->
+                <td class="right_align">
+                    {{#if this.orderId}}
+                    <a href="{!$Page.ccrz__CCPage}?pagekey=mn-fleetTrack&docNumber={{this.orderId}}&itemNumber={{this.sequenceNumber}}&effectiveAccount={!$CurrentPage.Parameters.effectiveAccount}" target="_self" class="track-btn-link" data-id="{{this.orderId}}">{{pageLabelMap 'cc_imp_mn_ShippingLink'}}</a>
+                    {{/if}}                    
+                </td>
+                <!--<td class="right_align">
+                    {{#if this.batchNumber1}}
+                    <a href="javascript:void(0);" class="cofa-btn-link" data-id="{{this.productNumber}}" id="batch1" data-batch="{{this.batchNumber1}}" data-sfid="{{this.itemID}}">{{this.batchNumber1}}</a>
+                    <br>
+                    {{/if}}
+                    
+                    {{#if this.batchNumber2}}
+                    <a href="javascript:void(0);" class="cofa-btn-link" data-id="{{this.productNumber}}" id="batch2" data-batch="{{this.batchNumber2}}" data-sfid="{{this.itemID}}">{{this.batchNumber2}}</a>
+                    <br>
+                    {{/if}} 
+                    
+                    {{#if this.batchNumber3}}
+                    <a href="javascript:void(0);" class="cofa-btn-link" data-id="{{this.productNumber}}" id="batch3" data-batch="{{this.batchNumber3}}" data-sfid="{{this.itemID}}">{{this.batchNumber3}}</a>
+                    <br>
+                    {{/if}} 
+                   
+                    {{#if this.batchNumber4}}
+                    <a href="javascript:void(0);" class="cofa-btn-link" data-id="{{this.productNumber}}" id="batch4" data-batch="{{this.batchNumber4}}" data-sfid="{{this.itemID}}">{{this.batchNumber4}}</a>
+                    <br>
+                    {{/if}} 
+                    
+                    {{#if this.batchNumber5}}
+                    <a href="javascript:void(0);" class="cofa-btn-link" data-id="{{this.productNumber}}" id="batch5" data-batch="{{this.batchNumber5}}" data-sfid="{{this.itemID}}">{{this.batchNumber5}}</a>
+                    <br>
+                    {{/if}}
+                    
+                    {{#if this.batchNumber6}}
+                    <a href="javascript:void(0);" class="cofa-btn-link" data-id="{{this.productNumber}}" id="batch6" data-batch="{{this.batchNumber6}}" data-sfid="{{this.itemID}}">{{this.batchNumber6}}</a>
+                    <br>
+                    {{/if}}
+                    
+                    {{#if this.batchNumber7}}
+                    <a href="javascript:void(0);" class="cofa-btn-link" data-id="{{this.productNumber}}" id="batch7" data-batch="{{this.batchNumber7}}" data-sfid="{{this.itemID}}">{{this.batchNumber7}}</a>
+                    <br>
+                    {{/if}}
+                    
+                    {{#if this.batchNumber8}}
+                    <a href="javascript:void(0);" class="cofa-btn-link" data-id="{{this.productNumber}}" id="batch8" data-batch="{{this.batchNumber8}}" data-sfid="{{this.itemID}}">{{this.batchNumber8}}</a>
+                    <br>
+                    {{/if}}
+                    
+                    {{#if this.batchNumber9}}
+                    <a href="javascript:void(0);" class="cofa-btn-link" data-id="{{this.productNumber}}" id="batch9" data-batch="{{this.batchNumber9}}" data-sfid="{{this.itemID}}">{{this.batchNumber9}}</a>
+                    <br>
+                    {{/if}}
+                    
+                    {{#if this.batchNumber10}}
+                    <a href="javascript:void(0);" class="cofa-btn-link" data-id="{{this.productNumber}}" id="batch10" data-batch="{{this.batchNumber10}}" data-sfid="{{this.itemID}}">{{this.batchNumber10}}</a>
+                    <br>
+                    {{/if}}
+                    
+                    {{#if this.batchNumber11}}
+                    <a href="javascript:void(0);" class="cofa-btn-link" data-id="{{this.productNumber}}" id="batch11" data-batch="{{this.batchNumber11}}" data-sfid="{{this.itemID}}">{{this.batchNumber11}}</a>
+                    <br>
+                    {{/if}}
+                    
+                    {{#if this.batchNumber12}}
+                    <a href="javascript:void(0);" class="cofa-btn-link" data-id="{{this.productNumber}}" id="batch12" data-batch="{{this.batchNumber12}}" data-sfid="{{this.itemID}}">{{this.batchNumber12}}</a>
+                    <br>
+                    {{/if}}
+                    
+                    {{#if this.batchNumber13}}
+                    <a href="javascript:void(0);" class="cofa-btn-link" data-id="{{this.productNumber}}" id="batch13" data-batch="{{this.batchNumber13}}" data-sfid="{{this.itemID}}">{{this.batchNumber13}}</a>
+                    <br>
+                    {{/if}}
+                    
+                    {{#if this.batchNumber14}}
+                    <a href="javascript:void(0);" class="cofa-btn-link" data-id="{{this.productNumber}}" id="batch14" data-batch="{{this.batchNumber14}}" data-sfid="{{this.itemID}}">{{this.batchNumber14}}</a>
+                    <br>
+                    {{/if}}
+                    
+                    {{#if this.batchNumber15}}
+                    <a href="javascript:void(0);" class="cofa-btn-link" data-id="{{this.productNumber}}" id="batch15" data-batch="{{this.batchNumber15}}" data-sfid="{{this.itemID}}">{{this.batchNumber15}}</a>
+                    <br>
+                    {{/if}}
+                                                            
+                </td> -->
+            </tr>
+            {{/each}}
+        </table>
+            </div>
+        </div>
+        <div class="clear"></div>
+
+        {{pageLabelMap 'MyNexeoESAccount_Disclaimer'}}
+
+</script>
+
+<script id="MyNexeo-OrderDetails-View-MobileES" type="text/template">
+  <button onclick="goBack()">{{pageLabelMap 'MyAccount_OrderHistory'}}</button>
+
+
+    <div class="checkout_container">
+        <h2 class="title">{{pageLabelMap 'OrderConfirmation_Title'}}</h2>
+        <div class="checkout_detail">
+            <div class="checkout_detail_item">
+                {{#if this.isConfirmation}}
+                <p class="basic_large">{{pageLabelMap 'OrderConfirmation_PlacedOrder' this.name this.orderDateStr}}</p>
+                {{/if}}
+                <div id="accordion" class="accordion clear">
+                    <div class="accordion-group">
+                        <div class="accordion-heading">
+                            <a href="#collapseOne" data-parent="#accordion" data-toggle="collapse" class="accordion-toggle">{{pageLabelMap 'OrderInformation'}}</a>
+                        </div>
+                        <div class="accordion-body in collapse" id="collapseOne" style="height: auto;">
+                            <div class="accordion-inner">    
+                                <p class="basic"><strong>{{pageLabelMap 'OrderSummaryNew_OrderNumber'}}:</strong> {{this.name}}</p>
+                                {{#ifDisplay 'OD.DsplExtOrderNumber'}} 
+                                <p class="basic"><strong>{{pageLabelMap 'ExternalOrderID'}}:</strong> {{this.externalOrderId}}</p> 
+                                {{/ifDisplay}}
+                                <p class="basic"><strong>{{pageLabelMap 'MyOrdersInc_OrderDate'}}:</strong> {{this.orderDateStr}}</p>
+                                <p class="basic"><strong>{{pageLabelMap 'MyOrdersInc_Status'}}:</strong> {{pageLabelMap this.status}}</p>
+                            </div>
+                        </div>                  
+                    </div>
+                    <div class="accordion-group">
+                        <div class="accordion-heading">
+                            <a href="#collapseTwo" data-parent="#accordion" data-toggle="collapse" class="accordion-toggle">{{pageLabelMap 'UserInformation'}}</a>
+                        </div>
+                        <div class="accordion-body in collapse" id="collapseTwo" style="height: auto;">
+                            <div class="accordion-inner">                      
+                                <p class="basic"><strong>{{pageLabelMap 'CheckOut_BuyerInformation'}}</strong><br>
+                                    {{this.buyerFirstName}} {{this.buyerLastName}}<br>
+                                    {{this.buyerPhone}}<br>
+                                    {{this.buyerEmail}}
+                                </p>
+                                <!--
+                                <p class="basic_half"><strong>{{pageLabelMap 'CheckOut_BillingAddress'}}</strong><br/>
+                                    {{> addressDisplay this.billingAddress}}
+                                </p>
+                                <p class="basic_half"><strong>{{pageLabelMap 'CheckOut_ShippingAddress'}}</strong><br/>
+                                    {{> addressDisplay this.shippingAddress}}
+                                </p>-->
+                            </div>
+                        </div>
+                    </div> 
+
+                    <div class="accordion-group">
+                        <div class="accordion-heading">
+                            <a href="#collapseThree" data-parent="#accordion" data-toggle="collapse" class="accordion-toggle">{{pageLabelMap 'ShippingPaymentInformation'}}</a>
+                        </div>
+                        <div class="accordion-body in collapse" id="collapseThree" style="height: auto;">
+                            <div class="accordion-inner">                      
+                                 <p class="basic">
+                                    <strong>{{pageLabelMap 'CheckOut_ShippingInformation'}}</strong><br/>
+                                    {{#if this.shippingMethod}}
+                                        {{pageLabelMap 'CheckOut_ShippingMethod'}}: {{this.shippingMethod}}<br/>
+                                    {{/if}}
+                                    {{#if this.shippingInst}}
+                                        {{pageLabelMap 'CheckOut_ShippingNotes'}}: {{this.shippingInst}}<br/>
+                                    {{/if}}
+                                    {{#if this.requestedDate}}
+                                        {{pageLabelMap 'Checkout_RequestedDeliveryDt'}}: {{this.requestedDateStr}}<br/>
+                                    {{/if}}
+                                </p>                   
+                                <p class="basic"><strong>{{pageLabelMap 'CheckOut_PaymentInformationLeg'}}</strong><br/>
+                                    {{#each this.payments}}
+                                        {{#ifEquals paymentMethod "Credit Card"}}
+                                            {{cardType}} {{pageLabelMap 'CheckOut_CCCardNumber'}} #: {{cardNumber}}, {{pageLabelMap 'CheckOut_CCExpDate'}}:{{expMonth}}/{{expYear}}
+                                        {{else}}
+                                            {{pageLabelMap paymentMethod}}: {{accountNumber}}
+                                        {{/ifEquals}}
+                                        <br/>
+                                    {{/each}}
+                                    {{#each this.transactionPayments}}
+                                        {{pageLabelMapMultiString 'PaymentDisplay_' this.accountType this.accountType this.accountNumber this.subAccountNumber (pageLabelMapMultiString 'PaymentType_' this.paymentType) (pageLabelMapMultiString 'PaymentExpMonth_' this.expirationMonth) (pageLabelMap this.expirationYear)}}
+                                    {{/each}}
+                                </p>      
+                                {{#if this.hasCoupon}}
+                                <p class=" basic coupon_section"><strong>{{pageLabelMap 'CartInc_AppliedCoupon'}}</strong><br/>{{this.couponName}}</p>
+                                {{/if}}
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="accordion-group">
+                        <div class="accordion-heading">
+                            <a href="#collapseFour" data-parent="#accordion" data-toggle="collapse" class="accordion-toggle">{{pageLabelMap 'CartDetails'}}</a>
+                        </div>
+                        <div class="alert alert-error messagingSection-sds-Error" style="display: none"></div>
+                        <div class="alert alert-info messagingSection-sds-Info" style="display: none"></div>
+                        <div class="accordion-body in collapse" id="collapseFour" style="height: auto;">
+                            <div class="accordion-inner">                      
+                                {{#each this.orderItems}}
+                                <div class="cart_review_1_row">
+                                    <div class="cart_review_1_row_item">
+                                        {{#ifNotEquals this.itemType 'Coupon'}}                             
+                                            <p><a href="#" class="prodLink" data-id="{{this.mockProduct.sku}}">{{displayProductName 'Aggregate_Display' this.translatedParentProductName this.translatedProductName }}</a></p>
+                                            {{#if this.showSubProdTerm}}
+                                                <p><label class="prodLink">{{insertTokens this.orderDisplayName this.displayName (price this.price) (price this.SubAmount) (price this.price) (price this.SubAmount) (price this.recurringPrice) (price this.recurringPriceSubAmount) (pageLabelPrefixMap 'Subscriptions_Frequency_' this.orderFrequencyUOM) (pageLabelPrefixMap 'Subscriptions_Frequency_' this.installmentFrequencyUOM) this.orderFrequency this.installmentFrequency this.installmentCount this.orderCount}}</span></label></p>
+                                            {{/if}}
+                                            <p>{{pageLabelMap 'Checkout_SKU'}}: {{this.mockProduct.sku}}</p>
+                                            <p>{{pageLabelMap 'cc_imp_mn_Sequence'}}: {{this.sequenceNumber}}</p>
+                                            <p>Customer Material #: {{this.customerMaterialNumber}}</p>
+                                            <p>
+                                                <a href="#" class="msds-btn-link" data-id="{{this.productNumber}}" data-sfid="{{this.itemID}}">{{pageLabelMap 'cc_imp_mn_SDS'}}</a>
+                                            </p>
+                                            {{#if this.orderId}}
+                                                <p>
+                                                <a href="{!$Page.ccrz__CCPage}?pagekey=mn-fleetTrack&docNumber={{this.orderId}}&itemNumber={{this.sequenceNumber}}&effectiveAccount={!$CurrentPage.Parameters.effectiveAccount}" target="_blank" class="track-btn-link" data-id="{{this.orderId}}">{{pageLabelMap 'cc_imp_mn_ShippingLink'}}</a>
+                                                </p>
+                                            {{/if}}                    
+                                            {{#if this.batchNumber1}}
+                                                <p>
+                                                <a href="javascript:void(0);" class="cofa-btn-link" data-id="{{this.productNumber}}" data-batch="{{this.batchNumber1}}"
+                                                data-sfid="{{this.itemID}}">{{pageLabelMap 'cc_imp_mn_CofA'}} {{this.batchNumber1}}</a>
+                                                </p>
+                                            {{/if}}                    
+                                             {{#if this.batchNumber2}}
+                                                <p>
+                                                <a href="javascript:void(0);" class="cofa-btn-link" data-id="{{this.productNumber}}" data-batch="{{this.batchNumber2}}" data-sfid="{{this.itemID}}">{{pageLabelMap 'cc_imp_mn_CofA'}} {{this.batchNumber2}}</a>
+                                                </p>
+                                            {{/if}}
+                                            {{#if this.batchNumber3}}
+                                                <p>
+                                                <a href="javascript:void(0);" class="cofa-btn-link" data-id="{{this.productNumber}}" data-batch="{{this.batchNumber3}}" data-sfid="{{this.itemID}}">{{pageLabelMap 'cc_imp_mn_CofA'}} {{this.batchNumber3}}</a>
+                                                </p>
+                                            {{/if}}                                                
+                                             {{#if this.batchNumber4}}
+                                                <p>
+                                                <a href="javascript:void(0);" class="cofa-btn-link" data-id="{{this.productNumber}}" data-batch="{{this.batchNumber4}}" data-sfid="{{this.itemID}}">{{pageLabelMap 'cc_imp_mn_CofA'}} {{this.batchNumber4}}</a>
+                                                </p>
+                                            {{/if}}
+                                            {{#if this.batchNumber5}}
+                                                <p>
+                                                <a href="javascript:void(0);" class="cofa-btn-link" data-id="{{this.productNumber}}" data-batch="{{this.batchNumber5}}" data-sfid="{{this.itemID}}">{{pageLabelMap 'cc_imp_mn_CofA'}} {{this.batchNumber5}}</a>
+                                                </p>
+                                            {{/if}}
+                                            {{#if this.batchNumber6}}
+                                                <p>
+                                                <a href="javascript:void(0);" class="cofa-btn-link" data-id="{{this.productNumber}}" data-batch="{{this.batchNumber6}}" data-sfid="{{this.itemID}}">{{pageLabelMap 'cc_imp_mn_CofA'}} {{this.batchNumber6}}</a>
+                                                </p>
+                                            {{/if}}                                                                    
+                                            {{#if this.batchNumber7}}
+                                                <p>
+                                                <a href="javascript:void(0);" class="cofa-btn-link" data-id="{{this.productNumber}}" data-batch="{{this.batchNumber7}}" data-sfid="{{this.itemID}}">{{pageLabelMap 'cc_imp_mn_CofA'}} {{this.batchNumber7}}</a>
+                                                </p>
+                                            {{/if}}  
+                                            {{#if this.batchNumber8}}
+                                                <p>
+                                                <a href="javascript:void(0);" class="cofa-btn-link" data-id="{{this.productNumber}}" data-batch="{{this.batchNumber8}}" data-sfid="{{this.itemID}}">{{pageLabelMap 'cc_imp_mn_CofA'}} {{this.batchNumber8}}</a>
+                                                </p>
+                                            {{/if}} 
+                                            {{#if this.batchNumber9}}
+                                                <p>
+                                                <a href="javascript:void(0);" class="cofa-btn-link" data-id="{{this.productNumber}}" data-batch="{{this.batchNumber9}}" data-sfid="{{this.itemID}}">{{pageLabelMap 'cc_imp_mn_CofA'}} {{this.batchNumber9}}</a>
+                                                </p>
+                                            {{/if}}  
+                                            {{#if this.batchNumber10}}
+                                                <p>
+                                                <a href="javascript:void(0);" class="cofa-btn-link" data-id="{{this.productNumber}}" data-batch="{{this.batchNumber10}}" data-sfid="{{this.itemID}}">{{pageLabelMap 'cc_imp_mn_CofA'}} {{this.batchNumber10}}</a>
+                                                </p>
+                                            {{/if}}  
+                                            {{#if this.batchNumber11}}
+                                                <p>
+                                                <a href="javascript:void(0);" class="cofa-btn-link" data-id="{{this.productNumber}}" data-batch="{{this.batchNumber11}}" data-sfid="{{this.itemID}}">{{pageLabelMap 'cc_imp_mn_CofA'}} {{this.batchNumber11}}</a>
+                                                </p>
+                                            {{/if}}  
+                                            {{#if this.batchNumber12}}
+                                                <p>
+                                                <a href="javascript:void(0);" class="cofa-btn-link" data-id="{{this.productNumber}}" data-batch="{{this.batchNumber12}}" data-sfid="{{this.itemID}}">{{pageLabelMap 'cc_imp_mn_CofA'}} {{this.batchNumber12}}</a>
+                                                </p>
+                                            {{/if}}  
+                                            {{#if this.batchNumber13}}
+                                                <p>
+                                                <a href="javascript:void(0);" class="cofa-btn-link" data-id="{{this.productNumber}}" data-batch="{{this.batchNumber13}}" data-sfid="{{this.itemID}}">{{pageLabelMap 'cc_imp_mn_CofA'}} {{this.batchNumber13}}</a>
+                                                </p>
+                                            {{/if}}  
+                                            {{#if this.batchNumber14}}
+                                                <p>
+                                                <a href="javascript:void(0);" class="cofa-btn-link" data-id="{{this.productNumber}}" data-batch="{{this.batchNumber14}}" data-sfid="{{this.itemID}}">{{pageLabelMap 'cc_imp_mn_CofA'}} {{this.batchNumber14}}</a>
+                                                </p>
+                                            {{/if}}  
+                                            {{#if this.batchNumber15}}
+                                                <p>
+                                                <a href="javascript:void(0);" class="cofa-btn-link" data-id="{{this.productNumber}}" data-batch="{{this.batchNumber15}}" data-sfid="{{this.itemID}}">{{pageLabelMap 'cc_imp_mn_CofA'}} {{this.batchNumber15}}</a>
+                                                </p>
+                                            {{/if}}                        
+                                            {{#if this.isSubscription}}
+                                                <p class="subscriptionSummary">{{subscriptionSummary 'Order_Subscription_' this.subscriptionFrequency mockProduct.sku itemTotal}}</p>
+                                                <p class="subscriptionNextDate">{{pageLabelMap 'Order_Subscription_Next_Payment'}} {{this.nextSubscriptionDateStr}}</p>
+                                                {{#if this.isLimitedSubscription}}
+                                                    <p class="subscriptionSummary">{{pageLabelMap 'Order_Subscription_End_Date'}} {{this.subscriptionEndDateStr}}</p>
+                                                {{/if}}
+                                            {{/if}}
+                                            {{#each minorLines}}
+                                                {{#if this.isSubscription}}
+                                                    <p class="subscriptionSummary">{{subscriptionSummary 'Order_Subscription_' this.subscriptionFrequency mockProduct.sku itemTotal}}</p>
+                                                    <p class="subscriptionNextDate">{{pageLabelMap 'Order_Subscription_Next_Payment'}} {{this.nextSubscriptionDateStr}}</p>
+                                                    {{#if this.isLimitedSubscription}}
+                                                        <p class="subscriptionEndDate">{{pageLabelMap 'Order_Subscription_End_Date'}} {{this.subscriptionEndDateStr}}</p>
+                                                    {{/if}}
+                                                {{/if}}
+                                            {{/each}}
+                                            {{#if this.minorLines }}
+                                                <p><a href="#included_items{{this.itemID}}" id="includedItemsLink" data-toggle="modal" data-id="{{this.itemID}}">{{pageLabelMap 'CheckOut_IncludedItems'}}</a></p>
+                                                {{> includedDisplay}}
+                                            {{/if}}
+                                        {{/ifNotEquals}}
+                                        {{#ifEquals this.itemType 'Coupon'}}
+                                            <p>{{{this.mockProduct.name}}}</p>
+                                        {{/ifEquals}}
+                                    <div class="cart_figures">
+                                        <div class="section1">
+                                            {{#ifNotEquals this.itemType 'Coupon'}}{{pageLabelMap 'CartInc_Price'}}:{{/ifNotEquals}}
+                                            {{#ifEquals this.itemType 'Coupon'}}&#160;{{/ifEquals}}
+                                        </div>
+                                        <div class="section2">
+                                            {{#ifNotEquals this.itemType 'Coupon'}}{{pageLabelMap 'Qty'}}:{{/ifNotEquals}}
+                                            {{#ifEquals this.itemType 'Coupon'}}&#160;{{/ifEquals}}
+                                        </div>
+                                        <div class="section3">{{pageLabelMap 'CartInc_Total'}}:</div>
+                                        <div class="section1">
+                                            {{#ifNotEquals this.itemType 'Coupon'}}
+                                            {{#if price}}
+                                                {{{price this.price ../../currencyCode}}}
+                                            {{else}}
+                                                &#160;
+                                            {{/if}}
+                                            {{/ifNotEquals}}
+                                            {{#ifEquals this.itemType 'Coupon'}}&#160;{{/ifEquals}}
+                                        </div>
+                                        <div class="section2">
+                                            {{#ifNotEquals this.itemType 'Coupon'}}{{this.quantity}}{{/ifNotEquals}}
+                                            {{#ifEquals this.itemType 'Coupon'}}&#160;{{/ifEquals}}
+                                        </div>
+                                        <div class="section3 totalAmount">
+                                            <strong class="price">{{{price this.itemTotal ../currencyCode}}}</strong>
+                                        </div>
+                                        <div class="clear"></div>
+                                    </div>
+                                </div>
+                            </div>
+                            {{/each}}
+                            {{> totalsSection}}                      
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</script>
+
+<script type="text/javascript">
+    jQuery(function($) {
+        console.log("*** Updating main view");
+        CCRZ.pubSub.once('view:OrderDetailView:refresh', function(view) {
+        console.log("*** updating prototype %o", view);
+            var viewPrototype = Object.getPrototypeOf(view);
+            if (viewPrototype != null) {
+                viewPrototype.events = _.extend(viewPrototype.events, {"click .msds-btn-link" : "fetchProfileDoc" , "click .cofa-btn-link" : "fetchCofA"});
+                viewPrototype.fetchProfileDoc = function(event) {
+                    var objLink = $(event.target);
+                    var materialId = objLink.data("sfid");
+                    //var sfid = objLink.data("sfid");
+                    //alert("hit");
+                    cc_imp_mn_ctrl_OrderViewES.fetchProfileDoc(
+                        CCRZ.pagevars.remoteContext,
+                        materialId,
+                        function(response) {
+                            if (response && response.data.success) {
+                                if (response.data.sdsData) {
+                                    var pdfDataAsUri = "/mynexeo/servlet/servlet.FileDownload?file=" + response.data.sdsData;
+                                    window.open(pdfDataAsUri, '_blank');
+                                }
+                                else {
+
+                                    var message = CCRZ.processPageLabelMap('cc_imp_no_cofa_pdf');
+                                    //need to add new message for the above
+
+                                    CCRZ.pubSub.trigger('pageMessage', CCRZ.createPageMessage('ERROR', 'messagingSection-sds-Error', message)); 
+                                }
+                            }
+                            else {
+                                
+                                var message = CCRZ.processPageLabelMap('cc_imp_no_svc_connection');
+                                CCRZ.pubSub.trigger('pageMessage', CCRZ.createPageMessage('ERROR', 'messagingSection-sds-Error', message));
+                                
+                            }      
+                        }
+                    );
+                }; 
+                viewPrototype.fetchCofA = function(event) {
+                    console.log("fetchCofA entry: %o", event);
+                    var objLink = $(event.target);
+                    var materialId = objLink.data("id");
+                    var batchNumber = objLink.data("batch");
+                    var sfid = objLink.data("sfid");
+                    console.log("MaterialId: " + materialId);
+                    console.log("batchNumber: " + batchNumber);
+                    console.log("sfid: " + sfid);
+                    
+
+                    cc_imp_mn_ctrl_OrderViewES.fetchCofAAttachment(
+                        CCRZ.pagevars.remoteContext,
+                        materialId,
+                        batchNumber,
+                        sfid,
+                        function(response) {
+                            console.log("Response from fetchCofAAttachment %o", response);
+
+                            if (response && response.data.success) {
+                                if (response.data.cofaData) {
+                                    console.log("Got data: %o", response.data.cofaData);
+                                    var pdfDataAsUri = "/mynexeo/servlet/servlet.FileDownload?file=" + response.data.cofaData;
+                                    window.open(pdfDataAsUri);
+                                }
+                                else {
+                                    console.log("Did not get data");
+                                    /*
+                                    setTimeout(function() {
+                                        CCRZ.pubSub.trigger('pageMessage',{
+                                            messages :      [{
+                                            type:          'CUSTOM',
+                                            severity:      'INFO',
+                                            classToAppend: 'messagingSection-sds-Info',
+                                            labelId:       'cc_imp_no_cofa_pdf'}]
+                                        });
+                                    });
+                                    */
+                                    
+                                    var message = CCRZ.processPageLabelMap('cc_imp_no_cofa_pdf');                 
+                                    CCRZ.pubSub.trigger('pageMessage', CCRZ.createPageMessage('ERROR', 'messagingSection-sds-Error', message)); 
+
+                                }
+                            }
+                            else {
+                                console.log("Response error or no response.data");
+                                var message = CCRZ.processPageLabelMap('cc_imp_no_svc_connection');
+                                CCRZ.pubSub.trigger('pageMessage', CCRZ.createPageMessage('ERROR', 'messagingSection-sds-Error', message)); 
+                                /*
+                                setTimeout(function() {
+                                    CCRZ.pubSub.trigger('pageMessage',{
+                                        messages :      [{
+                                        type:          'CUSTOM',
+                                        severity:      'ERROR',
+                                        classToAppend: 'messagingSection-sds-Error',
+                                        labelId:       'cc_imp_error_processing_cofa_request'}]
+                                    });
+                                });
+                                */
+                            }      
+                        }
+                    );
+                }; 
+                view.delegateEvents();
+
+                var extendedDataMap = {!extendedOrderJSON};
+                for (var i = 0; i < view.model.attributes.orderItems.length; i++) {
+                    var orderItemId = view.model.attributes.orderItems[i].itemID;
+                    view.model.attributes.orderItems[i] = _.extend(view.model.attributes.orderItems[i], extendedDataMap[orderItemId]);
+                }
+                var updateSequence = {!updateSequence};
+                if (updateSequence) {
+                    cc_imp_mn_ctrl_OrderViewES.updateSequence(extendedDataMap, function(response) {  
+                    });
+                }
+                view.render();
+            }              
+        });       
+    
+   });
+    
+
+</script>
+</apex:component>

@@ -1,0 +1,25 @@
+<apex:page >
+<apex:includeScript value="/support/console/32.0/integration.js"/>
+<script type="text/javascript">
+sforce.console.chat.onChatStarted(function(result) {
+sforce.console.chat.onAgentSend(result.chatKey,
+function(resOnAgentSend) {
+if(!(resOnAgentSend.isAutoGreeting && resOnAgentSend.isTransferred)) {
+sforce.console.chat.sendMessage(result.chatKey, resOnAgentSend.content, function(resSendMessage) {
+if(!resSendMessage.success){
+return;
+}
+});
+}
+else {
+sforce.console.chat.sendMessage(result.chatKey, "Hi! Thank you for your patience. Give me one second while I review your chat." ,
+function(resSendMessage) {
+if(!resSendMessage.success){
+return;
+}
+});
+}
+});
+});
+</script>
+</apex:page>

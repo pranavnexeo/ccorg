@@ -1,0 +1,406 @@
+<apex:component controller="cc_3d_ctrl_MyAccountUserInfo" >
+
+<script type="text/javascript">
+	CCRZ.uiProperties.contactInfoView.desktop.tmpl='MyAccountContactInformation3dDesktop';
+  CCRZ.uiProperties.contactInfoView.phone.tmpl='MyAccountContactInformation3dMobile';
+
+	CCRZ.uiProperties.contactInfoEditView.desktop.tmpl='MyAccountContactInformationEdit3dDesktop';
+</script>
+
+
+<script id="MyAccountContactInformation3dDesktop" type="text/template">
+<h2 class="title">{{pageLabelMap 'MyAccount_Profile'}}</h2>
+<div class="main_content_large_right_container">
+ <fieldset>
+  <legend>{{pageLabelMap 'MyAccount_Profile_User_Information'}}</legend>
+  <div class="my_account_information">
+   <div class="row myAccName">
+    <label class="shorter"><strong>{{pageLabelMap 'MyAccount_Profile_Name'}}:</strong></label>
+    <span>{{userFirstName}} {{userLastName}}</span>
+   </div>
+   <div class="row myAccPhone">
+    <label class="shorter"><strong>{{pageLabelMap 'MyAccount_Profile_Phone'}}:</strong></label>
+    <span>{{userPhone}}</span>
+   </div>
+   <div class="row myAccUserName">
+    <label class="shorter"><strong>{{pageLabelMap 'MyAccount_Profile_Username'}}:</strong></label>
+    <span>{{username}}</span>
+   </div>
+   <div class="row myAccEmailAddr">
+    <label class="shorter"><strong>{{pageLabelMap 'MyAccount_Profile_Email'}}:</strong></label>
+    <span>{{emailAddress}}</span>
+   </div>
+   <div class="row myAccLanguage">
+    <label class="shorter"><strong>{{pageLabelMap 'MyAccount_Profile_Language'}}:</strong></label>
+    <span>{{language}}</span>
+   </div>
+   <div class="row myAccCurrency">
+    <label class="shorter"><strong>{{pageLabelMap 'MyAccount_Profile_Currency'}}:</strong></label>
+    <span>{{currencyName}}</span>
+   </div>
+   <div class="row myAccCurrency">
+    <label class="shorter"><strong>{{pageLabelMap 'MyAccount_VatNumber'}}:</strong></label>
+    <span class="vatNumberDisplay"></span>
+   </div>
+   {{#ifDisplay 'reg.tmZn'}}
+   <div class="row myAccTimeZone">
+    <label class="shorter"><strong>{{pageLabelMap 'MyAccount_Profile_TimeZone'}}:</strong></label>
+    <span>{{timeZone}}</span>
+  </div>
+   {{/ifDisplay}}
+  </div>
+
+ </fieldset>
+ <br/>
+ {{#if hideEditProfile}} {{else}}
+  <input type="button" class="gotoSectionContactInfoEdit button right" value="{{pageLabelMap 'MyAccount_EditProfile'}}" /><br/>
+ {{/if}}
+</div>
+</script>
+
+<script id="MyAccountContactInformation3dMobile" type="text/template">
+<div class="checkout_container">
+ <h2 class="title">{{pageLabelMap 'MyAccount_MyProfile'}}</h2>
+ <div class="checkout_detail">
+  <div class="checkout_detail_item">
+   <div id="accordion" class="accordion clear">
+ 
+    <div class="accordion-group myAccProfileUserInfo">
+     <div class="accordion-heading">
+      <a href="#collapseThree" data-parent="#accordion" data-toggle="collapse" class="accordion-toggle">{{pageLabelMap 'MyAccount_UserInformation'}}</a>
+     </div>
+     <div class="accordion-body in collapse" id="collapseThree" style="height: auto;">
+      <div class="accordion-inner">
+       <p class="basic">
+        <span class="myAccUserFullName"<strong>{{pageLabelMap 'MyAccount_Profile_Name'}}:</strong> {{this.userFirstName}} {{this.userLastName}}
+        <br></span>
+        <span class="myAccUserPhone"<strong>{{pageLabelMap 'MyAccount_Profile_Phone'}}:</strong> {{this.userPhone}}
+        <br></span>
+        <span class="myAccUserName"<strong>{{pageLabelMap 'MyAccount_Profile_Username'}}:</strong> {{this.username}}
+        <br></span>
+        <span class="myAccEmailAddr"<strong>{{pageLabelMap 'MyAccount_Email'}}:</strong> {{this.emailAddress}}
+        <br></span>
+        <span class="myAccLanguage"><strong>{{pageLabelMap 'MyAccount_Language'}}:</strong> {{this.language}}
+        <br></span>
+        <span class="myAccCurrency"<strong>{{pageLabelMap 'MyAccount_Currency'}}:</strong> {{this.currencyName}}
+        <br></span>
+        <span class="myAccCurrency"<strong>{{pageLabelMap 'MyAccount_VatNumber'}}:</strong>
+        <span class="vatNumberDisplay"></span><br></span>
+        {{#ifDisplay 'reg.tmZn'}}
+         <span class="myAccTimeZone"<strong>{{pageLabelMap 'MyAccount_Profile_TimeZone'}}:</strong> {{this.timeZone}}
+         <br></span>
+        {{/ifDisplay}}
+        {{#if hideEditProfile}} {{else}}
+         <a href="#edit_user_information" data-toggle="modal" class="edit_information icon-edit">
+          {{pageLabelMap 'MyAccount_Edit'}}
+         </a>
+        {{/if}}
+       </p>
+      </div>
+     </div>
+    </div>
+   </div>  <!--***************-->
+
+   <div id="edit_user_information" class="modal hide fade" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
+    <div class="modal-header">
+     <button type="button" class="close" data-dismiss="modal" aria-hidden="true">×</button>
+     <h3 id="myModalLabel">Edit User Information</h3>
+    </div>
+    <div class="modal-body">
+     <form id="userInformationForm">
+      <label>First Name</label><input type="text" placeholder="First" value="{{this.userFirstName}}" name="userFirstName" class="checkout_wide">
+      <label>Last Name</label><input type="text" placeholder="Last" value="{{this.userLastName}}" name="userLastName" class="checkout_wide">
+      <label>Phone</label><input type="text" placeholder="Phone" value="{{this.userPhone}}" name="userPhone" class="checkout_wide">
+      <label>Username</label><input type="text" placeholder="Username" value="{{this.userName}}" name="userName" class="checkout_wide">
+      <label>Email</label><input type="text" placeholder="Email" value="{{this.emailAddress}}" name="emailAddress" class="checkout_wide">
+      <label>VAT EU Number</label><input type="text" class="vatNumberDisplay checkout_wide" name="customField1" >
+      <label>Language</label>
+       <select name="language" class="checkout_wide" value="{{this.language}}">
+        {{#each this.languageList}}
+         {{#ifEquals this.LanguageCode__c ../languageKey}}
+          <option value="{{this.value}}" selected>{{this.label}}</option>
+         {{else}}
+          <option value="{{this.value}}" selected>{{this.label}}</option>
+         {{/ifEquals}}
+        {{/each}}
+       </select>
+      <label>Currency</label>
+      <select name="currencyCode" value="{{this.currencyCode}}" class="checkout_wide">
+       {{#each this.currencyList}}
+        {{#ifEquals this.CurrencyISOCode ../currencyCode}}
+         <option value="{{this.value}}" selected>{{this.label}}</option>
+        {{else}}
+         <option value="{{this.value}}">{{this.label}}</option>
+        {{/ifEquals}}
+       {{/each}}
+      </select>
+     </form>
+    </div>
+    <div class="modal-footer">
+     <button class="btn btn-primary" id="updateUserInfoBtn">Update User Information</button>
+    </div>
+   </div>
+  </div>
+  {{#if this.myAccountEditProfileOverrideLink}}
+   <div class="modal-footer">
+    <button onclick="window.location='{{myAccountEditProfileOverrideLink}}';" class="btn btn-primary">{{pageLabelMap 'MyAccount_EditProfileOverrideButton'}}</button>
+   </div>
+  {{/if}}
+ </div>
+</div>
+</script>
+
+
+<script id="MyAccountContactInformationEdit3dDesktop" type="text/template">
+<h2 class="title">{{pageLabelMap 'MyAccount_Profile'}}</h2>
+<div class="main_content_large_right_container">
+ <div class="alert alert-error error_update_contact" style="display: none"></div>
+
+ <form id="myAccountForm" class="horizontal_form_slim">
+
+  <fieldset>
+   <legend>{{pageLabelMap 'MyAccount_Profile_User_Information'}}</legend>
+   <div class="my_account_information">
+    <div class="half">
+    <div class="row">
+      <label><strong>{{pageLabelMap 'MyAccount_Profile_FirstName'}}</strong><br/>
+       <input name="userFirstName" value="{{userFirstName}}" />
+      </label>
+     </div>
+    </div>
+    <div class="half">
+     <div class="row">
+      <label><strong>{{pageLabelMap 'MyAccount_Profile_LastName'}}</strong><br/>
+       <input name="userLastName" value="{{userLastName}}" />
+      </label>
+     </div>
+    </div>
+    <div class="half">
+    <div class="row">
+     <label><strong>{{pageLabelMap 'MyAccount_Profile_Phone'}}</strong><br/>
+      <input type="text"  name="userPhone" value="{{userPhone}}" />
+     </label>
+    </div>
+    </div>
+	<div class="half">
+     <div class="row">
+      <label><strong>{{pageLabelMap 'MyAccount_VatNumber'}}:</strong><br/>
+       <input class="vatNumberDisplay" type="text" name="customField1" /><br/>
+      </label>
+     </div>
+    </div>
+    <div class="row">
+     <label><strong>{{pageLabelMap 'MyAccount_Profile_Username'}}</strong>
+      <input name="username" value="{{username}}" />
+     </label>
+    </div>
+    <div class="row">
+     <label><strong>{{pageLabelMap 'MyAccount_Profile_Email'}}</strong>
+      <input name="emailAddress" value="{{emailAddress}}" />
+     </label>
+    </div>
+    <div class="row">
+     <label><strong>{{pageLabelMap 'MyAccount_Profile_Language'}}</strong>
+      <select name="language" value="{{this.language}}">
+       {{#each this.languageList}}
+        {{#ifEquals this.label ../language}}
+         <option value="{{this.value}}" selected>{{this.label}}</option>
+        {{else}}
+         <option value="{{this.value}}">{{this.label}}</option>
+        {{/ifEquals}}
+       {{/each}}
+      </select>
+     </label>
+    </div>
+    <div class="row">
+     <label><strong>{{pageLabelMap 'MyAccount_Profile_Currency'}}</strong>
+      <select name="currencyCode" value="{{this.currencyCode}}">
+       {{#each this.currencyList}}
+        {{#ifEquals this.value ../currencyCode}}
+         <option value="{{this.value}}" selected>{{this.label}}</option>
+        {{else}}
+         <option value="{{this.value}}">{{this.label}}</option>
+        {{/ifEquals}}
+       {{/each}}
+      </select>
+     </label>
+    </div>
+    {{#ifDisplay 'reg.tmZn'}}
+    <div class="row">
+     <label><strong>{{pageLabelMap 'SiteRegistration_TimeZone'}}</strong>
+      <select name="timeZoneValue" value="{{this.timeZoneValue}}" class="timeZoneSelect">
+       {{#each this.timeZoneOptions}}
+        {{#ifEquals this.value ../timeZoneValue}}
+         <option value="{{this.value}}" selected>{{this.label}}</option>
+        {{else}}
+         <option value="{{this.value}}">{{this.label}}</option>
+        {{/ifEquals}}
+       {{/each}}
+      </select>
+     </label>
+    </div>
+    {{/ifDisplay}}
+   </div>
+  </fieldset>
+ </form>
+ <br/>
+ <p class="two_buttons">
+  <div class="right">
+   <input type="button" class="closeEditProfile button" value="{{pageLabelMap 'Cancel'}}" />
+   <input type="button" class="updateProfile button" value="{{pageLabelMap 'Save'}}" />
+  </div>
+ </p>
+ <br/>
+</div>
+</script>
+
+<script>
+	$(function(){
+
+		 	CCRZ.subsc = CCRZ.subsc || {};
+
+	        CCRZ.subsc.myNexeoRemoteActions = _.extend(CCRZ.RemoteInvocation, {
+	            className : 'cc_3d_ctrl_MyAccountUserInfo',
+	            getVatNumber : function(callback) {
+	                this.invokeCtx('getVatNumber',
+	                    function(resp) 
+	                    {
+	                        callback(resp);
+	                    },
+	                    {
+	                        buffer : false, // this call will be executed by itself
+	                        nmsp   : false  // defines that this is a call to a subscriber class
+	                    }
+	                );
+	            },
+	            setVatNumber : function(newVat,callback) {
+	                this.invokeCtx('setVatNumber',
+	                    newVat,
+	                    function(resp) 
+	                    {
+	                        callback(resp);
+	                    },
+	                    {
+	                        buffer : false, // this call will be executed by itself
+	                        nmsp   : false  // defines that this is a call to a subscriber class
+	                    }
+	                );
+	            }
+	        });
+
+	   CCRZ.pubSub.on('view:contactInfoView:refresh',function(view){
+			
+			CCRZ.subsc.myNexeoRemoteActions.getVatNumber(  
+			 function(resp) {
+
+					if (resp && resp.success && resp.data.vatNumber)
+					{
+						$('.vatNumberDisplay').html( resp.data.vatNumber );
+            $('input[type=text].vatNumberDisplay').val(resp.data.vatNumber);
+					}
+			});
+
+      var viewPrototype = Object.getPrototypeOf(view);
+      if(viewPrototype!=null){
+        viewPrototype.updateUserInfo = function(event) {
+          var v = this;
+          var newVatNumInput = $('input[type=text].vatNumberDisplay').val();
+          var objLink = $(event.currentTarget);
+          loading(objLink);
+          var data = $("#userInformationForm").serializeObject();
+          v.model.updateUserInformation(data, true, function() {
+            CCRZ.subsc.myNexeoRemoteActions.setVatNumber(newVatNumInput, function(vatUpdResponse) {
+              if (vatUpdResponse && vatUpdResponse.success){
+                v.handleResponse(objLink, $("#edit_user_information"));
+                window.location.reload();
+              }else{
+                if(vatUpdResponse.data && vatUpdResponse.data.message) {
+                vatUpdResponse.messages[0] = vatUpdResponse.data.message;
+                  CCRZ.pubSub.trigger('pageMessage',vatUpdResponse);
+                    $('.title')[0].scrollIntoView();
+                  }
+                doneLoading(objLink);
+              }
+
+            });
+          });
+        };
+        view.delegateEvents();
+      }
+
+	   });
+
+
+
+		CCRZ.pubSub.on('view:editAccountView:refresh',function(view){
+			
+			CCRZ.subsc.myNexeoRemoteActions.getVatNumber(
+			 function(resp) {
+					if (resp && resp.success && resp.data.vatNumber)
+					{
+						$('input[type=text].vatNumberDisplay').val(resp.data.vatNumber);
+					}
+			});
+
+			var viewPrototype = Object.getPrototypeOf(view);
+			if (viewPrototype != null) {
+				viewPrototype.updateContactInformation = function(event) {
+				   var newVatNumInput = $('input[type=text].vatNumberDisplay').val();
+				   var objLink = $(event.currentTarget);
+				   loading(objLink);
+				   var v = this;
+				   var serializedMyAccountForm = $("#myAccountForm").serializeObject();
+				   if(v.model.get("preventContactEdit")) {
+					CCRZ.subsc.myNexeoRemoteActions.setVatNumber(newVatNumInput, function(resp3) {
+							if (resp3 && resp3.success){
+								v.updateUserInformation(objLink, serializedMyAccountForm);
+							}else{
+							if(resp3.data && resp3.data.message) {
+							resp3.messages[0] = resp3.data.message;
+				       		CCRZ.pubSub.trigger('pageMessage',resp3);
+				       			$('.title')[0].scrollIntoView();
+				      		}
+				     		doneLoading(objLink);
+							}
+					});
+				   } else {
+				    v.model.updateContactInformation(serializedMyAccountForm, false, function(response) {
+				     if(response && response.success) {
+				      
+				      CCRZ.subsc.myNexeoRemoteActions.setVatNumber(newVatNumInput, function(resp2) {
+				      	if (resp2 && resp2.success){
+				      		v.updateUserInformation(objLink, serializedMyAccountForm);
+				      	}else{
+				      		if(resp2.data && resp2.data.message) {
+				      		resp2.messages[0] = resp2.data.message;
+				       		CCRZ.pubSub.trigger('pageMessage',resp2);
+				       			$('.title')[0].scrollIntoView();
+				      		}
+				     		doneLoading(objLink);
+				      	}
+				      });
+				     } else {
+				      if(response && response.messages) {
+				       CCRZ.pubSub.trigger('pageMessage',response);
+				       $('.title')[0].scrollIntoView();
+				      }
+				      doneLoading(objLink);
+				     }
+				    });
+				   }
+
+				};
+				view.delegateEvents();
+
+
+			}
+
+			
+
+		});
+
+	});
+</script>
+
+
+</apex:component>

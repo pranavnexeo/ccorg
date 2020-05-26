@@ -1,0 +1,94 @@
+<apex:page standardcontroller="Account" extensions="Sample_Request_Controller" tabStyle="Sample_Request__c" >
+<apex:stylesheet value="{!$Resource.SampleRequestStyles}"></apex:stylesheet>
+
+        <apex:sectionHeader title="{!$Label.New_Sample_Request} {!Sample_Request_Link}" subtitle="Select Opportunity"/>
+        <apex:form >
+
+                <apex:pageBlock title="What Opportunity is this sample for?">
+                        <apex:facet name="footer">
+                                <apex:outputPanel >
+                                        <center>
+                                        <apex:commandButton action="{!step2A}" value="{!$Label.Previous}" styleClass="btn"/>
+                                        <apex:commandButton action="{!step3}" value="{!$Label.Next}" styleClass="btn"/>
+                                        </center>
+                                </apex:outputPanel>
+                                </apex:facet>
+                        <apex:pageBlockSection title="End Market" columns="1" showHeader="true" collapsible="false">
+                          <apex:inputfield value="{!samplerequest.End_Market__c}" required="true"/>
+                         
+                        </apex:pageblocksection>
+
+                        <apex:outputPanel id="generalInformation">
+                                <apex:pageBlockSection title="{!$Label.Related_to_the_Following}" columns="1" showHeader="true" collapsible="false">
+                                        <apex:panelGrid columns="2">
+                                                <apex:outputText value="{!$Label.Account}" styleClass="HeaderLabel" rendered="{!GotAccount}"/>
+                                                <apex:outputLink value="/{!account.Id}" target="=_blank">{!account.Name}</apex:outputLink>
+                                                
+                                                <apex:outputText value="{!$Label.Contact}: " styleClass="HeaderLabel" rendered="{!GotContact}"/>
+                                                <apex:outputLink value="/{!contact.Id}" target="_blank">{!contact.Name}</apex:outputLink>
+                                                
+                                                <apex:outputText value="{!$Label.Contact}: " styleClass="HeaderLabel" rendered="{!CreatingContact}"/>
+                                                <apex:outputText value="{!$Label.New_Contact}" styleClass="HeaderData" rendered="{!CreatingContact}"/>
+                                                
+                                        </apex:panelGrid>
+                                </apex:pageBlockSection>
+                        </apex:outputPanel> 
+
+                        <apex:pageBlockSection id="relatedOpps" title="Open Opportunities:" columns="1" collapsible="false">
+                                   <apex:dataTable value="{!opportunities}" var="opportunityList" cellPadding="4" border="1" styleClass="list">
+                                        <apex:column >
+                                                <apex:facet name="header">&nbsp;</apex:facet>
+<!-- {!IF (opportunity.Id=opportunityList.Id,'CHECKED', '')} -->
+                                                <input type="radio" name="{!account.name}" value="{!opportunityList.Id}" id="{!account.name}"  onclick="selectOpportunity(this.value)"/> 
+                                        </apex:column>
+                                        <apex:column >
+                                                <apex:facet name="header">{!$Label.Opportunity}</apex:facet>
+                                                <apex:outputLink value="/{!opportunityList.Id}" target="_blank">{!opportunityList.Name}</apex:outputLink>&nbsp;
+                                        </apex:column>
+                                        <apex:column >
+                                                <apex:facet name="header">{!$Label.Description}</apex:facet>
+                                                <apex:outputText value="{!opportunityList.Description}"></apex:outputText>&nbsp;
+                                        </apex:column>
+                                        <apex:column >
+                                                <apex:facet name="header">{!$Label.Stage_Name}</apex:facet>
+                                                <apex:outputText value="{!opportunityList.StageName}"></apex:outputText>&nbsp;
+                                        </apex:column>
+                                        <apex:column >
+                                                <apex:facet name="header">{!$Label.Type}</apex:facet>
+                                                <apex:outputText value="{!opportunityList.RecordType.Name}"></apex:outputText>&nbsp;
+                                        </apex:column>
+                                        <apex:column >
+                                                <apex:facet name="header">{!$Label.Close_Date}</apex:facet>
+                                                <apex:outputField value="{!opportunityList.CloseDate}"></apex:outputField>&nbsp;
+                                        </apex:column>
+                                </apex:dataTable>
+
+                                <apex:inputHidden value="{!opportunitySelected}" id="SelectedOpportunity"/>
+
+
+
+                <!-- <input type="radio" name="{!account.name}" id="NewOpportunity" value="New Opportunity" onclick="selectOpportunity(this.value)" disabled='disabled'/>&nbsp;&nbsp;<B>Create Opportunity</B> -->
+                <input type="radio" name="{!account.name}" id="NoOpportunity" value="No Opportunity" onclick="selectOpportunity(this.value)"/>&nbsp;&nbsp;<B>No Opportunity</B> 
+
+                                <script language="javascript">
+                                        function selectOpportunity(selectedId)
+                                            {
+                                            document.getElementById('{!$Component.SelectedOpportunity}').value=selectedId;
+                                            }
+                                </script>
+
+                                &nbsp;&nbsp;
+<!--
+                
+-->
+                        </apex:pageBlockSection> 
+
+                        <apex:pageBlockSection title="{!$Label.Validation_Error}" columns="1" collapsible="false" rendered="{!IF(ValidationErrorMessage!='','True','False')}">
+                             <apex:pageBlock title="{!$Label.Error_Messages}" rendered="{!IF(ValidationErrorMessage!='','True','False')}">
+                                   <apex:outputText escape="False" styleClass="Warning" value="{!ValidationErrorMessage}" rendered="{!IF(ValidationErrorMessage!='','True','False')}"/>
+                             </apex:pageBlock>
+                        </apex:pageBlockSection>
+&nbsp;&nbsp;&nbsp;
+                    </apex:pageBlock> 
+                </apex:form>
+</apex:page>

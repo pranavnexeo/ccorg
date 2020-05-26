@@ -1,0 +1,910 @@
+<apex:page standardcontroller="NCAR_Cases__c" extensions="NCAR_Extension_New">
+<script>
+function formalreschanged(field){
+  
+  formalreschangedjs(document.getElementById(field).value);
+}
+</script>
+<apex:form >
+<apex:actionfunction name="formalreschangedjs" action="{!toggledisplayactionstaken}" rerender="Response1, Response2, Response3" status="status" immediate="true">
+<apex:param name="yesno" value=""/>
+</apex:actionfunction>
+
+<apex:sectionHeader title="Case Edit" subtitle="{!subtitle}"/>
+<apex:outputpanel id="NewLayout" rendered="{!displaynewlayout}" >
+<apex:outputtext value="New Layout"/>
+<apex:pageblock title="Case Edit" rendered="{!NOT(displaycontactpopup)}">
+<apex:pagemessages />
+<apex:pageblockButtons >
+<apex:commandbutton value="Save Draft" action="{!savedraftincident}"/>
+<apex:commandbutton value="Save and Submit" action="{!createsubmitincident}"/>
+<apex:commandbutton value="Cancel" action="{!cancel}"/>
+</apex:pageblockButtons>
+
+<apex:pageblocksection title="Case Information">
+<apex:outputfield value="{!mycase.ownerid}"/>
+<apex:inputfield value="{!mycase.subject__c}" />
+<apex:outputfield value="{!mycase.Status__c}"/>
+<apex:inputfield value="{!mycase.Import_Export__c}" required="true"/>
+<apex:inputfield value="{!mycase.Carrier__c}" />
+<apex:inputfield value="{!mycase.CAPA__c}" />
+<apex:pageblocksectionitem > 
+<apex:outputlabel value="Customer Service Supervisor"/>
+  <apex:outputPanel styleClass="requiredInput" layout="block">
+    <apex:outputPanel styleClass="requiredBlock" layout="block"/>                        
+           <apex:selectlist id="css" value="{!css}" size="1"  style="{!if(AND(NOT(firstload), csserror), 'border-size:2px; border-color:#CC0000;border-style:solid;', '')}">
+             <apex:selectoptions value="{!cssName}"/>
+           </apex:selectlist>
+                <apex:outputPanel styleClass="errorMsg" layout="block" rendered="{!if(AND(NOT(firstload), csserror), true, false)}">
+            <strong>Error:</strong> You must enter a value
+     </apex:outputPanel>
+</apex:outputPanel>
+
+</apex:pageblocksectionitem>
+</apex:pageblocksection>
+<apex:actionregion >
+<apex:pageblocksection title="Customer Information" id="customerinfo">
+
+<apex:pageblocksectionitem helptext="Select 'Create New Contact' to Create a New Contact on this Account." >                  
+<apex:outputlabel value="Contact "/>
+<apex:outputPanel styleClass="requiredInput" layout="block" rendered="{!NOT(isnull(mycase.Account__c))}" id="contact">    
+<apex:outputPanel styleClass="requiredBlock" layout="block" /> 
+<apex:selectlist value="{!selectedcontact}" size="1" style="{!if(AND(firstload = false, iscontactvalid = false), invalidformat , validformat )}">
+<apex:selectoptions value="{!contacts}"/>
+<apex:actionsupport event="onchange" action="{!refreshcontact}" rerender="phone, email"/>
+</apex:selectlist>
+<apex:outputPanel styleClass="errorMsg" layout="block" rendered="{!AND(firstload = false, iscontactvalid = false)}">
+<strong>Error:</strong> You must enter a value.
+</apex:outputPanel>
+</apex:outputpanel>
+</apex:pageblocksectionitem>
+<apex:commandbutton value="Edit Contact" action="{!showcontactpopup}" disabled="{!isnull(mycase.Account__c)}" />
+<apex:outputfield value="{!Contact.email}" id="email"/>
+<apex:outputfield value="{!mycase.Account__c}" rendered="{!NOT(isnull(mycase.Account__c))}" id="inputaccount"/>
+<apex:inputfield value="{!mycase.Account__c}"  required="true" rendered="{!isnull(mycase.Account__c)}" id="outputaccount">
+<apex:actionsupport event="onchange" action="{!accountchanged}" rerender="customerinfo" />
+</apex:inputfield>
+<apex:outputfield value="{!Contact.phone}" id="phone"/>
+<apex:outputfield value="{!account.SAP_Division_Desc__c}"/>
+<!--<apex:inputfield value="{!mycase.Customer_Initiated__c}"/>-->
+<apex:inputfield value="{!mycase.Customer_Initiated1__c}" required="true"/>
+<apex:outputfield value="{!account.Full_Address__c}"/>
+</apex:pageblocksection>
+</apex:actionregion>
+<apex:actionregion >
+<apex:pageblocksection title="Customer Acknowledgement">
+<!-- <apex:inputfield id="Ack1" value="{!mycase.Send_Customer_Acknowledgement__c}" onchange="javascript:ackalert('{!$Component.Ack1}')" /> -->
+<apex:inputfield value="{!mycase.Acknowledgement_Format__c}" required="true"/>
+</apex:pageblocksection>
+</apex:actionregion>
+<apex:actionregion >
+<apex:pageblocksection title="Customer Response" id="Response1">
+<!-- <apex:inputfield value="{!mycase.Customer_Response_Required__c}" />-->
+<apex:inputfield value="{!mycase.Formal_Corrective_Action_Response_Req1__c}" onchange="formalreschanged('{!$Component.formalres}')" id="formalres" required="true" />
+<apex:inputfield value="{!mycase.Response_Format__c}" required="true" rendered="{!displayactionstaken}"/>
+<apex:inputfield value="{!mycase.Response_Required_By__c}" required="true" rendered="{!displayactionstaken}"/>
+</apex:pageblocksection>
+</apex:actionregion>
+
+<apex:pageblocksection title="Search for Sales Order Line Items">
+<apex:pageblocksectionitem >
+<apex:outputtext value="Sales Order"/>
+<apex:inputtext value="{!salesorder}"/>
+</apex:pageblocksectionitem>
+<apex:pageblocksectionitem >
+<apex:commandbutton value="Search" action="{!searchorders}" />
+<apex:commandbutton value="Add Items" action="{!addorders}" rerender="selected" />
+</apex:pageblocksectionitem>
+<apex:pageblocktable value="{!orders}" var="order">
+<apex:column headerValue="Selected">
+<apex:inputcheckbox value="{!order.selected}"/>
+</apex:column>
+<apex:column headervalue="Sales Order">
+<apex:outputfield value="{!order.order.Sales_Order_Number__c}"/>
+</apex:column>
+<apex:column headervalue="Line">
+<apex:outputfield value="{!order.order.Line_Item_Number__c}"/>
+</apex:column>
+<apex:column headervalue="Quantity in LBs">
+<apex:outputfield value="{!order.order.Ordered_Qty_in_LB__c}"/>
+</apex:column>
+<apex:column headervalue="SAP Material">
+<apex:outputfield value="{!order.order.Material__c}"/>
+</apex:column>
+<apex:column headervalue="Created Date">
+<apex:outputfield value="{!order.order.Created_Date__c}"/>
+</apex:column>
+<apex:column headervalue="Delivery Date">
+<apex:outputfield value="{!order.order.Delivery_Date__c}"/>
+</apex:column>
+<apex:column headervalue="Shipping Plant">
+<apex:outputfield value="{!order.order.Plant_Desc__c}"/>
+</apex:column>
+</apex:pageblocktable>
+</apex:pageblocksection>
+
+<apex:pageblocksection title="Selected Line Items" id="selected">
+<apex:pageblocktable value="{!selectedorders}" var="so">
+
+<apex:column headervalue="Selected">
+<apex:inputcheckbox value="{!so.selected}"/>
+</apex:column>
+<apex:column headervalue="Sales Order">
+<apex:outputfield value="{!so.line.open_orders__r.Sales_Order_Number__c}"/>
+</apex:column>
+<apex:column headervalue="Line">
+<apex:outputfield value="{!so.line.open_orders__r.Line_Item_Number__c}"/>
+</apex:column>
+<apex:column headervalue="Quantity in LBs">
+<apex:outputfield value="{!so.line.open_orders__r.Ordered_Qty_in_LB__c}"/>
+</apex:column>
+<apex:column headervalue="SAP Material">
+<apex:outputfield value="{!so.line.open_orders__r.Material__c}"/>
+</apex:column>
+<apex:column headervalue="Created Date">
+<apex:outputfield value="{!so.line.open_orders__r.Created_Date__c}"/>
+</apex:column>
+<apex:column headervalue="Delivery Date">
+<apex:outputfield value="{!so.line.open_orders__r.Delivery_Date__c}"/>
+</apex:column>
+<apex:column headervalue="Shipping Plant">
+<apex:outputfield value="{!so.line.open_orders__r.Plant_Desc__c}"/>
+</apex:column>
+
+</apex:pageblocktable>
+<apex:commandbutton value="Remove Selected" action="{!removelines}"/>
+</apex:pageblocksection>
+<apex:actionregion >
+<apex:pageblocksection columns="1" title="Incident Information">
+<apex:pageblocksectionitem id="Category" >
+<apex:outputlabel value="Tier 1"/>
+  <apex:outputPanel styleClass="requiredInput" layout="block">
+    <apex:outputPanel styleClass="requiredBlock" layout="block"/>                        
+           <apex:selectList size="1" value="{!mycase.Category__c}"  style="{!if(AND(NOT(firstload), mycase.Category__c = null), 'border-size:2px; border-color:#CC0000;border-style:solid;', '')}">
+                <apex:selectOptions value="{!ND.Level1}"/> 
+                <apex:actionsupport event="onchange" action="{!field1changed}" rerender="SubCategory"/>            
+                        </apex:selectList>
+                <apex:outputPanel styleClass="errorMsg" layout="block" rendered="{!if(AND(NOT(firstload), mycase.Category__c = null), true, false)}">
+            <strong>Error:</strong> You must enter a value
+     </apex:outputPanel>
+</apex:outputPanel>
+</apex:pageblocksectionitem>
+
+<apex:pageblocksectionitem >
+<apex:outputlabel value="Tier 2"/>
+  <apex:outputPanel styleClass="requiredInput" layout="block">
+    <apex:outputPanel styleClass="requiredBlock" layout="block"/>                        
+           <apex:selectList id="SubCategory" size="1" value="{!mycase.Subcategory__c}"  style="{!if(AND(NOT(firstload), mycase.Subcategory__c = null), 'border-size:2px; border-color:#CC0000;border-style:solid;', '')}">
+                <apex:selectOptions value="{!ND.Level2}"/> 
+                <apex:actionsupport event="onchange" action="{!field2changed}" rerender="SubCategoryDetails"/>            
+                        </apex:selectList>
+                <apex:outputPanel styleClass="errorMsg" layout="block" rendered="{!if(AND(NOT(firstload), mycase.Subcategory__c = null), true, false)}">
+            <strong>Error:</strong> You must enter a value
+     </apex:outputPanel>
+</apex:outputPanel>
+</apex:pageblocksectionitem>
+
+<apex:pageblocksectionitem >
+<apex:outputlabel value="Tier 3"/>
+  <apex:outputPanel styleClass="requiredInput" layout="block">
+    <apex:outputPanel styleClass="requiredBlock" layout="block"/>                        
+           <apex:selectList id="SubCategoryDetails" size="1" value="{!mycase.Subcategory_Details__c}"  style="{!if(AND(NOT(firstload), mycase.Subcategory_Details__c = null), 'border-size:2px; border-color:#CC0000;border-style:solid;', '')}">
+                <apex:selectOptions value="{!ND.Level3}"/> 
+                <apex:actionsupport event="onchange" action="{!field3changed}" rerender=""/>            
+                        </apex:selectList>
+                <apex:outputPanel styleClass="errorMsg" layout="block" rendered="{!if(AND(NOT(firstload), mycase.Subcategory_Details__c = null), true, false)}">
+            <strong>Error:</strong> You must enter a value
+     </apex:outputPanel>
+</apex:outputPanel>
+</apex:pageblocksectionitem>
+
+
+<apex:pageblocksectionitem >
+<apex:outputlabel value="Description"/>
+  <apex:outputPanel styleClass="requiredInput" layout="block">
+    <apex:outputPanel styleClass="requiredBlock" layout="block"/>  
+    <apex:inputtextarea cols="60" rows="6"  value="{!mycase.Description__c}" style="{!if(AND(NOT(firstload), mycase.Description__c = null), 'border-size:2px; border-color:#CC0000;border-style:solid;', '')}"/>                               
+                <apex:outputPanel styleClass="errorMsg" layout="block" rendered="{!if(AND(NOT(firstload), mycase.Description__c = null), true, false)}">
+            <strong>Error:</strong> You must enter a value
+     </apex:outputPanel>
+</apex:outputPanel>
+</apex:pageblocksectionitem>
+</apex:pageblocksection>
+</apex:actionregion>
+<apex:pageblocksection columns="1" title="Memos">
+<apex:inputfield value="{!mycase.Memo_CSR__c}"/>
+<apex:inputfield value="{!mycase.Memo_Plant__c}"/>
+<apex:inputfield value="{!mycase.Memo_Purchasing__c}"/>
+</apex:pageblocksection>
+</apex:pageblock>
+
+</apex:outputpanel>
+
+<apex:outputpanel id="SubmitterLayout" rendered="{!displaysubmitterlayout}">
+<apex:outputtext value="Submitter Layout"/>
+<apex:pageblock >
+<apex:pagemessages />
+<apex:pageblockButtons >
+<apex:commandbutton value="Save Draft" action="{!savedraftincident}"/>
+<apex:commandbutton value="Save and Submit" action="{!resubmitincident}"/>
+<apex:commandbutton value="Cancel" action="{!cancel}"/>
+</apex:pageblockButtons>
+
+<apex:pageblocksection title="Case Information">
+<apex:outputfield value="{!mycase.ownerid}"/>
+<apex:inputfield value="{!mycase.subject__c}" />
+<apex:outputfield value="{!mycase.Status__c}"/>
+<apex:pageblocksectionitem />
+<apex:outputfield value="{!mycase.Import_Export__c}" />
+<apex:inputfield value="{!mycase.Carrier__c}" />
+<apex:outputlabel value="Customer Service Supervisor"/>
+  <apex:outputPanel styleClass="requiredInput" layout="block">
+    <apex:outputPanel styleClass="requiredBlock" layout="block"/>                        
+           <apex:selectlist id="css" value="{!css}" size="1"  style="{!if(AND(NOT(firstload), csserror), 'border-size:2px; border-color:#CC0000;border-style:solid;', '')}">
+             <apex:selectoptions value="{!cssName}"/>
+           </apex:selectlist>
+                <apex:outputPanel styleClass="errorMsg" layout="block" rendered="{!if(AND(NOT(firstload), csserror), true, false)}">
+            <strong>Error:</strong> You must enter a value
+     </apex:outputPanel>
+</apex:outputPanel>
+</apex:pageblocksection>
+<apex:actionregion >
+<apex:pageblocksection title="Customer Information">
+<apex:pageblocksectionitem helptext="Select 'Create New Contact' to Create a New Contact on this Account." >                  
+<apex:outputlabel value="Contact"/>
+<apex:outputfield value="{!mycase.Contact__c}"/>
+</apex:pageblocksectionitem>
+<apex:commandbutton value="Edit Contact" action="{!showcontactpopup}" disabled="true"/>
+
+<apex:outputfield value="{!Contact.email}" />
+<apex:outputfield value="{!mycase.Account__c}" id="inputaccount"/>
+<apex:outputfield value="{!Contact.phone}" />
+<apex:outputfield value="{!account.SAP_Division_Desc__c}"/>
+<!--<apex:inputfield value="{!mycase.Customer_Initiated__c}"/>-->
+<apex:inputfield value="{!mycase.Customer_Initiated1__c}" required="true"/>
+<apex:outputfield value="{!account.Full_Address__c}"/>
+</apex:pageblocksection>
+</apex:actionregion>
+
+<apex:actionregion >
+<apex:pageblocksection title="Customer Acknowledgement">
+<!--<apex:inputfield id="Ack2" value="{!mycase.Send_Customer_Acknowledgement__c}" onchange="javascript:ackalert('{!$Component.Ack2}')" />-->
+<apex:inputfield value="{!mycase.Acknowledgement_Format__c}" required="true"/>
+</apex:pageblocksection>
+</apex:actionregion>
+<apex:actionregion >
+<apex:pageblocksection title="Customer Response" id="Response2">
+<!--<apex:inputfield value="{!mycase.Customer_Response_Required__c}" >
+<apex:actionsupport event="onchange" action="{!toggledisplayactionstaken}" status="status" rerender="Response2" immediate="true"/>
+</apex:inputfield>-->
+<apex:inputfield value="{!mycase.Formal_Corrective_Action_Response_Req1__c}" onchange="formalreschanged('{!$Component.formalres}')" id="formalres" required="true" />
+<apex:inputfield value="{!mycase.Response_Format__c}" required="true" rendered="{!displayactionstaken}"/>
+<apex:pageblocksectionitem rendered="{!NOT(displayactionstaken)}"/>
+<apex:outputfield value="{!mycase.Problem_Statement__c}" />
+<apex:outputfield value="{!mycase.Immediate_Action__c}"/>
+<apex:outputfield value="{!mycase.Root_Cause__c}" />
+<apex:outputfield value="{!mycase.Actions_Taken__c}" />
+
+<apex:inputfield value="{!mycase.Response_Required_By__c}" required="true" rendered="{!displayactionstaken}"/>
+</apex:pageblocksection>
+</apex:actionregion>
+
+<apex:pageblocksection title="Search for Sales Order Line Items">
+<apex:pageblocksectionitem >
+<apex:outputtext value="Sales Order"/>
+<apex:inputtext value="{!salesorder}"/>
+</apex:pageblocksectionitem>
+<apex:pageblocksectionitem >
+<apex:commandbutton value="Search" action="{!searchorders}" disabled="true"/>
+<apex:commandbutton value="Add Items" action="{!addorders}" disabled="true"/>
+</apex:pageblocksectionitem>
+<apex:pageblocktable value="{!orders}" var="order">
+<apex:column headervalue="Sales Order">
+<apex:outputfield value="{!order.order.Sales_Order_Number__c}"/>
+</apex:column>
+<apex:column headervalue="Line">
+<apex:outputfield value="{!order.order.Line_Item_Number__c}"/>
+</apex:column>
+<apex:column headervalue="Quantity in LBs">
+<apex:outputfield value="{!order.order.Ordered_Qty_in_LB__c}"/>
+</apex:column>
+<apex:column headervalue="SAP Material">
+<apex:outputfield value="{!order.order.Material__c}"/>
+</apex:column>
+<apex:column headervalue="Created Date">
+<apex:outputfield value="{!order.order.Created_Date__c}"/>
+</apex:column>
+<apex:column headervalue="Delivery Date">
+<apex:outputfield value="{!order.order.Delivery_Date__c}"/>
+</apex:column>
+<apex:column headervalue="Shipping Plant">
+<apex:outputfield value="{!order.order.Plant_Desc__c}"/>
+</apex:column>
+</apex:pageblocktable>
+</apex:pageblocksection>
+
+<apex:pageblocksection title="Selected Line Items">
+<apex:pageblocktable value="{!lines}" var="item">
+<apex:column headervalue="Sales Order">
+<apex:outputfield value="{!item.open_orders__r.Sales_Order_Number__c}"/>
+</apex:column>
+<apex:column headervalue="Line">
+<apex:outputfield value="{!item.open_orders__r.Line_Item_Number__c}"/>
+</apex:column>
+<apex:column headervalue="Quantity in LBs">
+<apex:outputfield value="{!item.open_orders__r.Ordered_Qty_in_LB__c}"/>
+</apex:column>
+<apex:column headervalue="SAP Material">
+<apex:outputfield value="{!item.open_orders__r.Material__c}"/>
+</apex:column>
+<apex:column headervalue="Created Date">
+<apex:outputfield value="{!item.open_orders__r.Created_Date__c}"/>
+</apex:column>
+<apex:column headervalue="Delivery Date">
+<apex:outputfield value="{!item.open_orders__r.Delivery_Date__c}"/>
+</apex:column>
+<apex:column headervalue="Shipping Plant">
+<apex:outputfield value="{!item.open_orders__r.Plant_Desc__c}"/>
+</apex:column>
+
+</apex:pageblocktable>
+</apex:pageblocksection>
+<apex:actionregion >
+<apex:pageblocksection columns="2" title="Incident Information">
+
+<apex:pageblocksectionitem id="Category2" >
+<apex:outputlabel value="Tier 1"/>
+  <apex:outputPanel styleClass="requiredInput" layout="block">
+    <apex:outputPanel styleClass="requiredBlock" layout="block"/>                        
+           <apex:selectList size="1" value="{!mycase.Category__c}"  style="{!if(AND(NOT(firstload), mycase.Category__c = null), 'border-size:2px; border-color:#CC0000;border-style:solid;', '')}">
+                <apex:selectOptions value="{!ND.Level1}"/> 
+                <apex:actionsupport event="onchange" action="{!field1changed}" rerender="SubCategory2"/>            
+                        </apex:selectList>
+                <apex:outputPanel styleClass="errorMsg" layout="block" rendered="{!if(AND(NOT(firstload), mycase.Category__c = null), true, false)}">
+            <strong>Error:</strong> You must enter a value
+     </apex:outputPanel>
+</apex:outputPanel>
+</apex:pageblocksectionitem>
+<apex:outputfield value="{!mycase.Revised_Category__c}" />
+<apex:pageblocksectionitem >
+<apex:outputlabel value="Tier 2"/>
+  <apex:outputPanel styleClass="requiredInput" layout="block">
+    <apex:outputPanel styleClass="requiredBlock" layout="block"/>                        
+           <apex:selectList id="SubCategory2" size="1" value="{!mycase.Subcategory__c}"  style="{!if(AND(NOT(firstload), mycase.Subcategory__c = null), 'border-size:2px; border-color:#CC0000;border-style:solid;', '')}">
+                <apex:selectOptions value="{!ND.Level2}"/> 
+                <apex:actionsupport event="onchange" action="{!field2changed}" rerender="SubCategoryDetails2"/>            
+                        </apex:selectList>
+                <apex:outputPanel styleClass="errorMsg" layout="block" rendered="{!if(AND(NOT(firstload), mycase.Subcategory__c = null), true, false)}">
+            <strong>Error:</strong> You must enter a value
+     </apex:outputPanel>
+</apex:outputPanel>
+</apex:pageblocksectionitem>
+<apex:outputfield value="{!mycase.Revised_Subcategory__c}" />
+<apex:pageblocksectionitem >
+<apex:outputlabel value="Tier 3"/>
+  <apex:outputPanel styleClass="requiredInput" layout="block">
+    <apex:outputPanel styleClass="requiredBlock" layout="block"/>                        
+           <apex:selectList id="SubCategoryDetails2" size="1" value="{!mycase.Subcategory_Details__c}"  style="{!if(AND(NOT(firstload), mycase.Subcategory_Details__c = null), 'border-size:2px; border-color:#CC0000;border-style:solid;', '')}">
+                <apex:selectOptions value="{!ND.Level3}"/> 
+                <apex:actionsupport event="onchange" action="{!field3changed}" rerender=""/>            
+                        </apex:selectList>
+                <apex:outputPanel styleClass="errorMsg" layout="block" rendered="{!if(AND(NOT(firstload), mycase.Subcategory_Details__c = null), true, false)}">
+            <strong>Error:</strong> You must enter a value
+     </apex:outputPanel>
+</apex:outputPanel>
+</apex:pageblocksectionitem>
+<apex:outputfield value="{!mycase.Revised_Subcategory_Details__c}" />
+
+
+</apex:pageblocksection>
+</apex:actionregion>
+<apex:pageblocksection columns="1">
+<apex:pageblocksectionitem >
+<apex:outputlabel value="Description"/>
+  <apex:outputPanel styleClass="requiredInput" layout="block">
+    <apex:outputPanel styleClass="requiredBlock" layout="block"/>  
+    <apex:inputtextarea cols="60" rows="6"  value="{!mycase.Description__c}" style="{!if(AND(NOT(firstload), mycase.Description__c = null), 'border-size:2px; border-color:#CC0000;border-style:solid;', '')}"/>                               
+                <apex:outputPanel styleClass="errorMsg" layout="block" rendered="{!if(AND(NOT(firstload), mycase.Description__c = null), true, false)}">
+            <strong>Error:</strong> You must enter a value
+     </apex:outputPanel>
+</apex:outputPanel>
+</apex:pageblocksectionitem>
+</apex:pageblocksection>
+<apex:pageblocksection columns="1" title="Memos">
+<apex:inputfield value="{!mycase.Memo_CSR__c}"/>
+<apex:inputfield value="{!mycase.Memo_Plant__c}"/>
+<apex:inputfield value="{!mycase.Memo_Purchasing__c}"/>
+</apex:pageblocksection>
+</apex:pageblock>
+</apex:outputpanel>
+
+<apex:outputpanel id="ApproverLayout" rendered="{!displayapproverlayout}">
+<apex:outputtext value="Approver Layout"/>
+<apex:pageblock >
+<apex:pageMessage summary="<b> If an 8D is required it must be attached prior to closing the NCAR </b> "  severity="Info" strength = "3" escape="false" />
+<apex:pagemessages />
+<apex:pageblockButtons >            
+<apex:commandbutton value="Save Draft" action="{!savedraftincident}"/>
+<apex:commandbutton value="Save and Submit" action="{!approversaveincident}" rendered="{!displaylevel1approver}"/>
+<apex:commandbutton value="Approve" action="{!evaluatorapprove}" rendered="{!displaylevel2approver}"/>
+<apex:commandbutton value="Reject" action="{!evaluatorreject}" rendered="{!displaylevel2approver}"/>
+<apex:commandbutton value="Approve" action="{!QOSapprove}" rendered="{!displayQOSApprover}"/>
+<apex:commandbutton value="Reject" action="{!QOSreject}" rendered="{!displayQOSApprover}"/>
+<apex:commandbutton value="Request More Info" action="{!requestmoreinfo}" rendered="{!displaylevel1approver}"/>
+<apex:commandbutton value="Cancel" action="{!cancel}"/>
+</apex:pageblockButtons>
+
+<apex:pageblocksection title="Case Information">
+<apex:outputfield value="{!mycase.ownerid}"/>
+<apex:inputfield value="{!mycase.subject__c}" />
+<apex:outputfield value="{!mycase.Status__c}"/>
+<apex:pageblocksectionitem />
+<apex:inputfield value="{!mycase.Import_Export__c}" required="true"/>
+<apex:inputfield value="{!mycase.Carrier__c}" />
+<apex:outputlabel value="Customer Service Supervisor"/>
+  <apex:outputPanel styleClass="requiredInput" layout="block">
+    <apex:outputPanel styleClass="requiredBlock" layout="block"/>                        
+           <apex:selectlist id="css" value="{!css}" size="1"  style="{!if(AND(NOT(firstload), csserror), 'border-size:2px; border-color:#CC0000;border-style:solid;', '')}">
+             <apex:selectoptions value="{!cssName}"/>
+           </apex:selectlist>
+                <apex:outputPanel styleClass="errorMsg" layout="block" rendered="{!if(AND(NOT(firstload), csserror), true, false)}">
+            <strong>Error:</strong> You must enter a value
+     </apex:outputPanel>
+</apex:outputPanel>
+</apex:pageblocksection>
+<apex:actionregion >
+<apex:pageblocksection title="Customer Information" id="customerinfo2">
+<apex:pageblocksectionitem helptext="Select 'Create New Contact' to Create a New Contact on this Account." >                  
+<apex:outputlabel value="Contact"/>
+<apex:outputfield value="{!mycase.Contact__c}"/>
+</apex:pageblocksectionitem>
+<apex:commandbutton value="Edit Contact" action="{!showcontactpopup}" disabled="true"/>
+
+<apex:outputfield value="{!Contact.email}" id="email2"/>
+<apex:outputfield value="{!mycase.Account__c}" id="inputaccount"/>
+<apex:outputfield value="{!Contact.phone}" id="phone2"/>
+<apex:outputfield value="{!account.SAP_Division_Desc__c}"/>
+<!--<apex:inputfield value="{!mycase.Customer_Initiated__c}"/>-->
+<apex:inputfield value="{!mycase.Customer_Initiated1__c}" required="true"/>
+<apex:outputfield value="{!account.Full_Address__c}"/>
+</apex:pageblocksection>
+</apex:actionregion>
+
+<apex:actionregion >
+<apex:pageblocksection title="Customer Acknowledgement">
+<!--<apex:inputfield id="Ack3" value="{!mycase.Send_Customer_Acknowledgement__c}" onchange="javascript:ackalert('{!$Component.Ack3}')" /> -->
+<apex:inputfield value="{!mycase.Acknowledgement_Format__c}" required="true"/>
+</apex:pageblocksection>
+</apex:actionregion>
+<apex:actionregion >
+<apex:pageblocksection title="Customer Response" id="Response3">
+<!--<apex:inputfield value="{!mycase.Customer_Response_Required__c}" >
+<apex:actionsupport event="onchange" action="{!toggledisplayactionstaken}" status="status" rerender="Response3" immediate="true"/>
+</apex:inputfield>-->
+<apex:inputfield value="{!mycase.Formal_Corrective_Action_Response_Req1__c}" onchange="formalreschanged('{!$Component.formalres}')" id="formalres" required="true" />
+<apex:inputfield value="{!mycase.Response_Format__c}" required="true" rendered="{!displayactionstaken}"/>
+<apex:pageblocksectionitem rendered="{!NOT(displayactionstaken)}"/>
+<apex:pageblocksectionitem >
+<apex:outputlabel value="Problem Statement"/>
+  <apex:outputPanel styleClass="requiredInput" layout="block">
+    <apex:outputPanel styleClass="requiredBlock" layout="block"/>  
+    <apex:inputtextarea cols="60" rows="10" value="{!mycase.Problem_Statement__c}" style="{!if(AND(NOT(firstload), mycase.Problem_Statement__c = null), 'border-size:2px; border-color:#CC0000;border-style:solid;', '')}"/>                               
+                <apex:outputPanel styleClass="errorMsg" layout="block" rendered="{!if(AND(NOT(firstload), mycase.Problem_Statement__c = null), true, false)}">
+            <strong>Error:</strong> You must enter a value
+     </apex:outputPanel>
+</apex:outputPanel>
+</apex:pageblocksectionitem>
+<apex:pageblocksectionitem >
+<apex:outputlabel value="Immediate Action"/>
+  <apex:outputPanel styleClass="requiredInput" layout="block">
+    <apex:outputPanel styleClass="requiredBlock" layout="block"/>  
+    <apex:inputtextarea cols="60" rows="10"  value="{!mycase.Immediate_Action__c}" style="{!if(AND(NOT(firstload), mycase.Immediate_Action__c = null), 'border-size:2px; border-color:#CC0000;border-style:solid;', '')}"/>                               
+                <apex:outputPanel styleClass="errorMsg" layout="block" rendered="{!if(AND(NOT(firstload), mycase.Immediate_Action__c = null), true, false)}">
+            <strong>Error:</strong> You must enter a value
+     </apex:outputPanel>
+</apex:outputPanel>
+</apex:pageblocksectionitem>
+<apex:pageblocksectionitem >
+<apex:outputlabel value="Root Cause"/>
+  <apex:outputPanel styleClass="requiredInput" layout="block">
+    <apex:outputPanel styleClass="requiredBlock" layout="block"/>  
+    <apex:inputtextarea cols="60" rows="10"  value="{!mycase.Root_Cause__c}" style="{!if(AND(NOT(firstload), mycase.Root_Cause__c = null), 'border-size:2px; border-color:#CC0000;border-style:solid;', '')}"/>                               
+                <apex:outputPanel styleClass="errorMsg" layout="block" rendered="{!if(AND(NOT(firstload), mycase.Root_Cause__c = null), true, false)}">
+            <strong>Error:</strong> You must enter a value
+     </apex:outputPanel>
+</apex:outputPanel>
+</apex:pageblocksectionitem>
+<apex:pageblocksectionitem >
+<apex:outputlabel value="Actions Taken"/>
+  <apex:outputPanel styleClass="requiredInput" layout="block">
+    <apex:outputPanel styleClass="requiredBlock" layout="block"/>  
+    <apex:inputtextarea cols="60" rows="10"  value="{!mycase.Actions_Taken__c}" style="{!if(AND(NOT(firstload), mycase.Actions_Taken__c = null), 'border-size:2px; border-color:#CC0000;border-style:solid;', '')}"/>                               
+                <apex:outputPanel styleClass="errorMsg" layout="block" rendered="{!if(AND(NOT(firstload), mycase.Actions_Taken__c = null), true, false)}">
+            <strong>Error:</strong> You must enter a value
+     </apex:outputPanel>
+</apex:outputPanel>
+</apex:pageblocksectionitem>
+
+<apex:inputfield value="{!mycase.Response_Required_By__c}" required="true" rendered="{!displayactionstaken}"/>
+<apex:pageblocksectionitem rendered="{!NOT(displayactionstaken)}"/>
+<apex:pageblocksectionitem helpText="To be completed by Quality: Indicates results of effectiveness after actions have been completed and opportunity for recurrence has occured.">
+<apex:outputlabel value="Effectiveness Follow-up"/>
+  <apex:outputPanel styleClass="requiredInput" layout="block">
+    <!--<apex:outputPanel styleClass="requiredBlock" layout="block"/>  -->
+    <apex:inputtextarea cols="60" rows="10"  value="{!mycase.Effectiveness_Follow_up__c}" style="{!if(AND(NOT(firstload), mycase.Effectiveness_Follow_up__c= null), 'border-size:2px; border-color:#CC0000;border-style:solid;', '')}"/>                               
+            <!--
+            <apex:outputPanel styleClass="errorMsg" layout="block" rendered="{!if(AND(NOT(firstload), mycase.Effectiveness_Follow_up__c = null), true, false)}">
+            <strong>Error:</strong> You must enter a value
+            </apex:outputPanel>
+            -->
+</apex:outputPanel>
+</apex:pageblocksectionitem>
+</apex:pageblocksection>
+
+</apex:actionregion>
+
+<apex:pageblocksection title="Search for Sales Order Line Items">
+<apex:pageblocksectionitem >
+<apex:outputtext value="Sales Order"/>
+<apex:inputtext value="{!salesorder}"/>
+</apex:pageblocksectionitem>
+<apex:pageblocksectionitem >
+<apex:commandbutton value="Search" action="{!searchorders}" disabled="true"/>
+<apex:commandbutton value="Add Items" action="{!addorders}" rerender="selected2" disabled="true"/>
+</apex:pageblocksectionitem>
+<apex:pageblocktable value="{!orders}" var="order">
+<apex:column headervalue="Sales Order">
+<apex:outputfield value="{!order.order.Sales_Order_Number__c}"/>
+</apex:column>
+<apex:column headervalue="Line">
+<apex:outputfield value="{!order.order.Line_Item_Number__c}"/>
+</apex:column>
+<apex:column headervalue="Quantity in LBs">
+<apex:outputfield value="{!order.order.Ordered_Qty_in_LB__c}"/>
+</apex:column>
+<apex:column headervalue="SAP Material">
+<apex:outputfield value="{!order.order.Material__c}"/>
+</apex:column>
+<apex:column headervalue="Created Date">
+<apex:outputfield value="{!order.order.Created_Date__c}"/>
+</apex:column>
+<apex:column headervalue="Delivery Date">
+<apex:outputfield value="{!order.order.Delivery_Date__c}"/>
+</apex:column>
+<apex:column headervalue="Shipping Plant">
+<apex:outputfield value="{!order.order.Plant_Desc__c}"/>
+</apex:column>
+</apex:pageblocktable>
+</apex:pageblocksection>
+
+<apex:pageblocksection title="Selected Line Items" id="selected2">
+<apex:pageblocktable value="{!lines}" var="item">
+<apex:column headervalue="Sales Order">
+<apex:outputfield value="{!item.open_orders__r.Sales_Order_Number__c}"/>
+</apex:column>
+<apex:column headervalue="Line">
+<apex:outputfield value="{!item.open_orders__r.Line_Item_Number__c}"/>
+</apex:column>
+<apex:column headervalue="Quantity in LBs">
+<apex:outputfield value="{!item.open_orders__r.Ordered_Qty_in_LB__c}"/>
+</apex:column>
+<apex:column headervalue="SAP Material">
+<apex:outputfield value="{!item.open_orders__r.Material__c}"/>
+</apex:column>
+<apex:column headervalue="Created Date">
+<apex:outputfield value="{!item.open_orders__r.Created_Date__c}"/>
+</apex:column>
+<apex:column headervalue="Delivery Date">
+<apex:outputfield value="{!item.open_orders__r.Delivery_Date__c}"/>
+</apex:column>
+<apex:column headervalue="Shipping Plant">
+<apex:outputfield value="{!item.open_orders__r.Plant_Desc__c}"/>
+</apex:column>
+
+</apex:pageblocktable>
+</apex:pageblocksection>
+<apex:actionregion >
+<apex:pageblocksection columns="2" title="Incident Information">
+
+<apex:outputfield value="{!mycase.Category__c}" />
+<apex:outputfield value="{!mycase.Revised_Category__c}"  rendered="{!displayqosapprover}"/>
+
+<apex:pageblocksectionitem id="RevisedCategory"  rendered="{!displayapproverlayout}">
+<apex:outputlabel value="Revised Tier 1"/>
+  <apex:outputPanel styleClass="requiredInput" layout="block">
+    <apex:outputPanel styleClass="requiredBlock" layout="block"/>                        
+           <apex:selectList size="1" value="{!mycase.Revised_Category__c}"  style="{!if(AND(NOT(firstload), mycase.Revised_Category__c = null), 'border-size:2px; border-color:#CC0000;border-style:solid;', '')}">
+                <apex:selectOptions value="{!ND.Level1}"/> 
+                <apex:actionsupport event="onchange" action="{!revfield1changed}" rerender="RevisedSubCategory"/>            
+          </apex:selectList>
+                <apex:outputPanel styleClass="errorMsg" layout="block" rendered="{!if(AND(NOT(firstload), mycase.Revised_Category__c = null), true, false)}">
+            <strong>Error:</strong> You must enter a value
+     </apex:outputPanel>
+</apex:outputPanel>
+</apex:pageblocksectionitem>
+
+<apex:outputfield value="{!mycase.Subcategory__c}" />
+<apex:outputfield value="{!mycase.Revised_Subcategory__c}"  rendered="{!displayqosapprover}"/>
+
+<apex:pageblocksectionitem rendered="{!displayapproverlayout}">
+<apex:outputlabel value="Revised Tier 2"/>
+  <apex:outputPanel styleClass="requiredInput" layout="block">
+    <apex:outputPanel styleClass="requiredBlock" layout="block"/>                        
+           <apex:selectList id="RevisedSubCategory" size="1" value="{!mycase.Revised_Subcategory__c}"  style="{!if(AND(NOT(firstload), mycase.Revised_Subcategory__c = null), 'border-size:2px; border-color:#CC0000;border-style:solid;', '')}">
+                <apex:selectOptions value="{!ND.Level2}"/> 
+                <apex:actionsupport event="onchange" action="{!revfield2changed}" rerender="RevisedSubCategoryDetails"/>            
+                        </apex:selectList>
+                <apex:outputPanel styleClass="errorMsg" layout="block" rendered="{!if(AND(NOT(firstload), mycase.Revised_Subcategory__c = null), true, false)}">
+            <strong>Error:</strong> You must enter a value
+     </apex:outputPanel>
+</apex:outputPanel>
+</apex:pageblocksectionitem>
+
+<apex:outputfield value="{!mycase.Subcategory_Details__c}" />
+<apex:outputfield value="{!mycase.Revised_Subcategory_Details__c}" rendered="{!displayqosapprover}"/>
+
+<apex:pageblocksectionitem rendered="{!displayapproverlayout}">
+<apex:outputlabel value="Revised Tier 3" />
+  <apex:outputPanel styleClass="requiredInput" layout="block">
+    <apex:outputPanel styleClass="requiredBlock" layout="block"/>                        
+           <apex:selectList id="RevisedSubCategoryDetails" size="1" value="{!mycase.Revised_Subcategory_Details__c}"  style="{!if(AND(NOT(firstload), mycase.Revised_Subcategory_Details__c = null), 'border-size:2px; border-color:#CC0000;border-style:solid;', '')}">
+                <apex:selectOptions value="{!ND.Level3}"/> 
+                <apex:actionsupport event="onchange" action="{!revfield3changed}" rerender="RevisedSubCategoryfinalDetails"/>            
+                        </apex:selectList>
+                <apex:outputPanel styleClass="errorMsg" layout="block" rendered="{!if(AND(NOT(firstload), mycase.Revised_Subcategory_Details__c = null), true, false)}">
+            <strong>Error:</strong> You must enter a value
+     </apex:outputPanel>
+</apex:outputPanel>
+</apex:pageblocksectionitem>
+
+
+<apex:pageblocksectionitem >
+<apex:outputlabel value="Description"/>
+<apex:outputtext value="{!mycase.Description__c}" />
+</apex:pageblocksectionitem>
+
+
+<apex:pageblocksectionitem >
+<apex:outputlabel value="Revised Tier 4" rendered="{!displayapproverlayout}" />
+  <apex:outputPanel styleClass="requiredInput" layout="block">
+    <apex:outputPanel styleClass="requiredBlock" layout="block"/>                        
+           <apex:selectList id="RevisedSubCategoryfinalDetails" size="1" value="{!mycase.Rev_Subcategory_Final_Details__c}"  style="{!if(AND(NOT(firstload), mycase.Rev_Subcategory_Final_Details__c = null), 'border-size:2px; border-color:#CC0000;border-style:solid;', '')}">
+                <apex:selectOptions value="{!ND.Level4}"/> 
+                <apex:actionsupport event="onchange" action="{!revfield4changed}" rerender=""/>            
+                        </apex:selectList>
+                <apex:outputPanel styleClass="errorMsg" layout="block" rendered="{!if(AND(NOT(firstload), mycase.Rev_Subcategory_Final_Details__c = null), true, false)}">
+            <strong>Error:</strong> You must enter a value
+     </apex:outputPanel>
+</apex:outputPanel>
+</apex:pageblocksectionitem>
+
+</apex:pageblocksection>
+</apex:actionregion>
+
+
+<apex:pageblocksection title="Approver Comments">
+<apex:pageblocksectionitem >
+<apex:outputlabel value="Approver Comments"/>
+<apex:inputtextarea cols="60" rows="10" value="{!comments}"/>
+</apex:pageblocksectionitem>
+</apex:pageblocksection>
+<apex:pageblocksection columns="1" title="Memos">
+<apex:inputfield value="{!mycase.Memo_CSR__c}"/>
+<apex:inputfield value="{!mycase.Memo_Plant__c}"/>
+<apex:inputfield value="{!mycase.Memo_Purchasing__c}"/>
+</apex:pageblocksection>
+</apex:pageblock>
+</apex:outputpanel>
+
+<apex:outputpanel id="ReadOnlyLayout" rendered="{!displayreadonlylayout}">
+<apex:outputtext value="Read Only Layout"/>
+<apex:pageblock >
+<apex:pageblockButtons >
+<apex:commandbutton value="Delivery Block Removed" action="{!deliveryblockremoved}" rendered="{!displaydeliveryblockremovedbutton}"/>
+<apex:commandbutton value="Cancel" action="{!cancel}"/>
+</apex:pageblockButtons>
+
+<apex:pageblocksection title="Case Information">
+<apex:outputfield value="{!mycase.ownerid}"/>
+<apex:outputfield value="{!mycase.subject__c}" rendered="{!rendertitle}"/>
+<apex:outputfield value="{!mycase.Status__c}"/>
+<apex:pageblocksectionitem />
+<apex:outputfield value="{!mycase.Import_Export__c}" />
+<apex:outputfield value="{!mycase.Carrier__c}" />
+<apex:outputfield value="{!mycase.Customer_ServiceSupervisor__c}"/>
+
+</apex:pageblocksection>
+<apex:actionregion >
+<apex:pageblocksection title="Customer Information" id="customerinfo3">
+<apex:pageblocksectionitem helptext="Select 'Create New Contact' to Create a New Contact on this Account." >                  
+<apex:outputlabel value="Contact"/>
+<apex:outputfield value="{!mycase.Contact__c}"/>
+</apex:pageblocksectionitem>
+<apex:pageblocksectionitem />
+
+<apex:outputfield value="{!Contact.email}" id="email3"/>
+<apex:outputfield value="{!mycase.Account__c}" />
+<apex:outputfield value="{!Contact.phone}" id="phone3"/>
+<apex:outputfield value="{!account.SAP_Division_Desc__c}"/>
+<!--<apex:outputfield value="{!mycase.Customer_Initiated__c}"/>-->
+<apex:outputfield value="{!mycase.Customer_Initiated1__c}"/>
+<apex:outputfield value="{!account.Full_Address__c}"/>
+</apex:pageblocksection>
+</apex:actionregion>
+
+<apex:actionregion >
+<apex:pageblocksection title="Customer Acknowledgement">
+<!--<apex:outputfield value="{!mycase.Send_Customer_Acknowledgement__c}"  />-->
+<apex:outputfield value="{!mycase.Acknowledgement_Format__c}" />
+</apex:pageblocksection>
+</apex:actionregion>
+<apex:actionregion >
+<apex:pageblocksection title="Customer Response" id="Response">
+<apex:outputfield value="{!mycase.Formal_Corrective_Action_Response_Req1__c}" />
+<apex:outputfield value="{!mycase.Response_Format__c}" rendered="{!displayactionstaken}"/>
+<apex:pageblocksectionitem rendered="{!NOT(displayactionstaken)}"/>
+<apex:outputfield value="{!mycase.Problem_Statement__c}" />
+<apex:outputfield value="{!mycase.Immediate_Action__c}"/>
+<apex:outputfield value="{!mycase.Root_Cause__c}" />
+<apex:outputfield value="{!mycase.Actions_Taken__c}" />
+<apex:outputfield value="{!mycase.Response_Required_By__c}" rendered="{!displayactionstaken}"/>
+</apex:pageblocksection>
+</apex:actionregion>
+<apex:pageblocksection title="Search for Sales Order Line Items">
+<apex:pageblocksectionitem >
+<apex:outputtext value="Sales Order"/>
+<apex:inputtext value="{!salesorder}"/>
+</apex:pageblocksectionitem>
+<apex:pageblocksectionitem >
+<apex:commandbutton value="Search" action="{!searchorders}" disabled="true"/>
+<apex:commandbutton value="Add Items" action="{!addorders}" rerender="selected3" disabled="true"/>
+</apex:pageblocksectionitem>
+<apex:pageblocktable value="{!orders}" var="order">
+
+<apex:column headervalue="Sales Order">
+<apex:outputfield value="{!order.order.Sales_Order_Number__c}"/>
+</apex:column>
+<apex:column headervalue="Line">
+<apex:outputfield value="{!order.order.Line_Item_Number__c}"/>
+</apex:column>
+<apex:column headervalue="Quantity in LBs">
+<apex:outputfield value="{!order.order.Ordered_Qty_in_LB__c}"/>
+</apex:column>
+<apex:column headervalue="SAP Material">
+<apex:outputfield value="{!order.order.Material__c}"/>
+</apex:column>
+<apex:column headervalue="Created Date">
+<apex:outputfield value="{!order.order.Created_Date__c}"/>
+</apex:column>
+<apex:column headervalue="Delivery Date">
+<apex:outputfield value="{!order.order.Delivery_Date__c}"/>
+</apex:column>
+<apex:column headervalue="Shipping Plant">
+<apex:outputfield value="{!order.order.Plant_Desc__c}"/>
+</apex:column>
+</apex:pageblocktable>
+</apex:pageblocksection>
+
+<apex:pageblocksection title="Selected Line Items" id="selected3">
+<apex:pageblocktable value="{!lines}" var="item">
+<apex:column headervalue="Sales Order">
+<apex:outputfield value="{!item.open_orders__r.Sales_Order_Number__c}"/>
+</apex:column>
+<apex:column headervalue="Line">
+<apex:outputfield value="{!item.open_orders__r.Line_Item_Number__c}"/>
+</apex:column>
+<apex:column headervalue="Quantity in LBs">
+<apex:outputfield value="{!item.open_orders__r.Ordered_Qty_in_LB__c}"/>
+</apex:column>
+<apex:column headervalue="SAP Material">
+<apex:outputfield value="{!item.open_orders__r.Material__c}"/>
+</apex:column>
+<apex:column headervalue="Created Date">
+<apex:outputfield value="{!item.open_orders__r.Created_Date__c}"/>
+</apex:column>
+<apex:column headervalue="Delivery Date">
+<apex:outputfield value="{!item.open_orders__r.Delivery_Date__c}"/>
+</apex:column>
+<apex:column headervalue="Shipping Plant">
+<apex:outputfield value="{!item.open_orders__r.Plant_Desc__c}"/>
+</apex:column>
+
+</apex:pageblocktable>
+</apex:pageblocksection>
+
+<apex:pageblocksection columns="1" title="Incident Information">
+
+<apex:outputfield value="{!mycase.Category__c}" />
+<apex:outputfield value="{!mycase.Subcategory__c}" />
+<apex:outputfield value="{!mycase.Subcategory_Details__c}" />
+<apex:pageblocksectionitem >
+<apex:outputlabel value="Description"/>
+<apex:outputtext value="{!mycase.Description__c}" />
+</apex:pageblocksectionitem>
+</apex:pageblocksection>
+<apex:pageblocksection columns="1" title="Memos">
+<apex:outputfield value="{!mycase.Memo_CSR__c}"/>
+<apex:outputfield value="{!mycase.Memo_Plant__c}"/>
+<apex:outputfield value="{!mycase.Memo_Purchasing__c}"/>
+</apex:pageblocksection>
+</apex:pageblock>
+</apex:outputpanel>
+
+
+       <apex:outputPanel id="Contact">
+            <apex:outputPanel layout="block" rendered="{!displaycontactpopup}">
+                <apex:pageblock >
+                <apex:pageblockbuttons >
+                <apex:commandButton value="OK" action="{!createcontact}" />
+                <apex:commandButton value="Cancel" action="{!hideContactPopup}" immediate="true"/>
+                </apex:pageblockbuttons>
+                <apex:pageblocksection title="Create Contact">
+                <apex:pageblocksectionitem >
+                <apex:outputlabel value="First Name"/>
+                <apex:inputfield value="{!Contact.FirstName}"/>
+                </apex:pageblocksectionitem>
+                <apex:pageblocksectionitem >
+                <apex:outputlabel value="Last Name"/>
+                <apex:inputfield value="{!Contact.LastName}"/>
+                </apex:pageblocksectionitem>
+                <apex:pageblocksectionitem >
+                <apex:outputlabel value="Phone"/>
+                <ApeX:inputfield value="{!Contact.Phone}"/>
+                </apex:pageblocksectionitem>
+                <apex:pageblocksectionitem >
+                <apex:outputlabel value="Fax"/>
+                <ApeX:inputfield value="{!Contact.fax}"/>
+                </apex:pageblocksectionitem>
+                <apex:pageblocksectionitem >
+                <apex:outputlabel value="Email"/>
+                <ApeX:inputfield value="{!Contact.Email}" required="true"/>
+                </apex:pageblocksectionitem>
+                <apex:pageblocksectionitem >
+                <apex:outputlabel value="Account"/>
+                <ApeX:outputfield value="{!mycase.Account__c}"/>
+                </apex:pageblocksectionitem>
+                <apex:pageblocksectionitem >
+                <apex:outputlabel value="Street"/>
+                <ApeX:outputfield value="{!Contact.MailingStreet}"/>
+                </apex:pageblocksectionitem>
+                <apex:pageblocksectionitem >
+                <apex:outputlabel value="City"/>
+                <ApeX:outputfield value="{!Contact.MailingCity}"/>
+                </apex:pageblocksectionitem>
+                <apex:pageblocksectionitem >
+                <apex:outputlabel value="State / Province"/>
+                <ApeX:outputfield value="{!Contact.MailingState}"/>
+                </apex:pageblocksectionitem>
+                <apex:outputlabel value="Zip"/>
+                <apex:pageblocksectionitem >
+                <ApeX:outputfield value="{!Contact.MailingPostalCode}"/>
+                </apex:pageblocksectionitem>
+                <apex:pageblocksectionitem >
+                <apex:outputlabel value="Country"/>
+                <ApeX:outputfield value="{!Contact.MailingCountry}"/>
+                </apex:pageblocksectionitem>
+                </apex:pageblocksection>
+                
+                
+                </apex:pageblock>
+            </apex:outputPanel>
+        </apex:outputPanel>
+<apex:actionStatus id="status">
+<apex:facet name="start">
+<c:EnhancedActionStatus BackColor="#efefef" borderColor="#336699" borderSize="3" height="50px" width="120px" ImageUrl="{!$Resource.spinner}" Message="Loading..." messageStyle="color:darkred;font-size:11pt;font-weight:bold;"/>
+</apex:facet>
+</apex:actionStatus>
+<script>              
+    function ackalert(field1){
+       var ex = document.getElementById(field1).checked;
+       if(ex){         
+         var r=confirm("For use with FDA Regulated Markets Only. Click OK if this is regarding a FDA Regulated Market.");
+            if (r==false)
+            {
+              document.getElementById(field1).checked = false;             
+            }                 
+          }       
+     }
+</script>    
+</apex:form>
+</apex:page>

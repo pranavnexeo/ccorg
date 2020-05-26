@@ -1,0 +1,179 @@
+<apex:page controller="Salesforce_Process_Navigator_Controller" tabStyle="Salesforce_Process__c">
+<apex:stylesheet value="{!$Resource.AshlandStyles}"></apex:stylesheet>
+
+	<apex:sectionHeader title="Salesforce Process Navigator"/>
+   	<apex:form >
+   	
+           <apex:pageBlock title="Salesforce Process Navigator Instructions">
+               <apex:outputText escape="False" value="{!TopText}"/>
+
+
+
+           </apex:pageBlock>
+   	
+			   <apex:pageBlock id="FilterPageBlock">
+               <apex:pageBlockSection title="Process Filters" collapsible="false" columns="1">
+				<apex:panelGrid columns="4" id="FilterGrid">
+					<apex:panelGroup id="BusinessesGroup">
+	 	                <apex:outputText styleClass="HeaderLabel" value="Business(s): "/>
+	 	                <apex:commandLink action="{!selectAllBusinesses}" value="(Select All)" rerender="FilterPageBlock,FilterGrid,Processes,Salesforce_Processes" id="SelectAllBusinesses" status="status_filtering"/>
+ 	                </apex:panelGroup>
+ 	                
+					<apex:panelGroup id="Rollout_RegionsGroup">
+ 	                <apex:outputText styleClass="HeaderLabel" value="Rollout Regions(s): "/>
+	 	                <apex:commandLink action="{!selectAllRollout_Regions}" value="(Select All)" rerender="FilterPageBlock,FilterGrid,Processes,Salesforce_Processes" id="SelectAllRolloutRegions" status="status_filtering"/>
+ 	                </apex:panelGroup>
+
+					<apex:panelGroup id="User_RolesGroup">
+ 	                <apex:outputText styleClass="HeaderLabel" value="User Role(s): "/>
+	 	                <apex:commandLink action="{!selectAllUser_Roles}" value="(Select All)" rerender="FilterPageBlock,FilterGrid,Processes,Salesforce_Processes" id="SelectAllUser_Roles" status="status_filtering"/>
+ 	                </apex:panelGroup>
+
+					<apex:panelGroup id="Salesforce_ObjectsGroup">
+ 	                <apex:outputText styleClass="HeaderLabel" value="Salesforce Object(s): "/>
+	 	                <apex:commandLink action="{!selectAllSalesforce_Objects}" value="(Select All)" rerender="FilterPageBlock,FilterGrid,Processes,Salesforce_Processes" id="SelectAllSalesforce_Objects" status="status_filtering"/>
+ 	                </apex:panelGroup>
+
+					<apex:selectList value="{!Businesses}" size="5" multiselect="true">
+						<apex:selectOptions value="{!Business_items}"/>
+						<apex:actionSupport event="onchange" rerender="FilterPageBlock,Processes,Salesforce_Processes" status="status_filtering"/>
+					</apex:selectList>
+
+					<apex:selectList value="{!Rollout_Regions}" size="3" multiselect="true">
+						<apex:selectOptions value="{!Rollout_Region_items}"/>
+						<apex:actionSupport event="onchange" rerender="FilterPageBlock,Processes,Salesforce_Processes" status="status_filtering"/>
+					</apex:selectList>
+
+					<apex:selectList value="{!User_Roles}" size="5" multiselect="true">
+						<apex:selectOptions value="{!User_Role_items}"/>
+						<apex:actionSupport event="onchange" rerender="FilterPageBlock,Processes,Salesforce_Processes" status="status_filtering"/>
+					</apex:selectList>
+
+					<apex:selectList value="{!Salesforce_Objects}" size="5" multiselect="true">
+						<apex:selectOptions value="{!Salesforce_Object_items}"/>
+						<apex:actionSupport event="onchange" rerender="FilterPageBlock,Processes,Salesforce_Processes" status="status_filtering"/>
+					</apex:selectList>
+				</apex:panelGrid>  
+
+	            </apex:pageBlockSection>
+           </apex:pageBlock>
+
+				 <apex:outputPanel id="detail">
+				  <apex:actionStatus id="status_filtering">
+				   <apex:facet name="start">
+       	<apex:pageBlock title="Processes" id="Processes_Refreshing">
+       	            <apex:pageBlockButtons location="top">
+                <apex:commandButton disabled="true" value="{!IF(showDescriptions, 'Hide ', 'Show ')}Descriptions" /> 
+                <apex:commandButton disabled="true" value="{!IF(showCategories, 'Hide ', 'Show ')}Categories" /> 
+                <apex:commandButton disabled="true" value="{!IF(limittoProcesseswithMetrics, 'Show All Processes', 'Limit to Processes with Metrics ')}" /> 
+            </apex:pageBlockButtons>
+       	
+				     <CENTER>Refreshing Processes...</CENTER><BR/>
+				     <CENTER><img src="/img/waiting_dots.gif" border="0" width="156" height="25" /></CENTER>
+
+				     </apex:pageBlock>
+				   </apex:facet>
+				   <apex:facet name="stop">
+				   <!--<apex:detail subject="{!$CurrentPage.parameters.cid}" relatedList="false" title="false"/>   --> 
+
+
+
+       	<apex:pageBlock title="Processes" id="Processes">
+       	
+            <apex:pageBlockButtons location="top">
+                <apex:commandButton value="{!IF(showDescriptions, 'Hide ', 'Show ')}Descriptions" action="{!toggle_showDescriptions}" rerender="FilterPageBlock,Processes,Salesforce_Processes" status="status_filtering"/> 
+                <apex:commandButton value="{!IF(showCategories, 'Hide ', 'Show ')}Categories" action="{!toggle_showCategories}" rerender="FilterPageBlock,Processes,Salesforce_Processes" status="status_filtering"/> 
+                <apex:commandButton value="{!IF(limittoProcesseswithMetrics, 'Show All Processes', 'Limit to Processes with Metrics ')}" action="{!toggle_limittoProcesseswithMetrics}" rerender="FilterPageBlock,Processes,Salesforce_Processes" status="status_filtering"/> 
+            </apex:pageBlockButtons>
+
+				<apex:panelGrid columns="1">
+	                <apex:actionStatus startStyleClass="StrongMessage" id="status_filtering_old" startText=" Updating..."/>
+	            </apex:panelGrid>
+
+               <apex:pageBlockSection columns="1" collapsible="false">
+       	
+                <apex:dataTable value="{!ProcessRecordstoDisplay}" var="lines" styleClass="list" id="Salesforce_Processes" width="1024px">
+					<apex:column style="width: 70px">
+			  			<apex:facet name="header">&nbsp;</apex:facet>
+						<apex:outputLink value="/{!lines.SF_Process.Id}" id="ViewLink"><b>View</b></apex:outputLink>&nbsp;|&nbsp;
+						<apex:outputLink value="/{!lines.SF_Process.Id}/e" id="EditLink"><b>Edit</b></apex:outputLink>
+					</apex:column>
+					<apex:column style="width: 300px" >
+			  			<apex:facet name="header"><b>Name</b></apex:facet>
+						<b><apex:outputField styleClass="RowName" value="{!lines.SF_Process.SFDC_Functionality_Name__c}"/></b>
+					</apex:column>
+
+					<apex:column style="width: 150px" rendered="{!showDescriptions}">
+			  			<apex:facet name="header"><b>Description</b></apex:facet>
+						<apex:outputField value="{!lines.SF_Process.Detailed_Description__c}"/>&nbsp;
+						<apex:outputText rendered="{!IF(lines.SF_Process.Detailed_Description__c='','true','false')}" escape="false" value="{!HTML_nbsp}"/>
+					</apex:column>
+
+					<apex:column style="width: 150px" rendered="{!showCategories}">
+			  			<apex:facet name="header"><b>Business(s)</b></apex:facet>
+						<apex:outputText escape="false" value="{!lines.formatted_Businesses}"  />
+					</apex:column>
+
+					<apex:column style="width: 150px" rendered="{!showCategories}">
+			  			<apex:facet name="header"><b>Rollout Region(s)</b></apex:facet>
+						<apex:outputText escape="false" value="{!lines.formatted_Rollout_Areas}"  />
+					</apex:column>
+
+					<apex:column style="width: 150px" rendered="{!showCategories}">
+			  			<apex:facet name="header"><b>Business Role(s)</b></apex:facet>
+						<apex:outputText escape="false" value="{!lines.formatted_User_Roles}"  />
+					</apex:column>
+
+					<apex:column style="width: 150px" rendered="{!showCategories}">
+			  			<apex:facet name="header"><b>Salesforce Object(s)</b></apex:facet>
+						<apex:outputText escape="false" value="{!lines.formatted_Salesforce_Objects}"  />
+					</apex:column>
+
+					<apex:column style="width: 50px" >
+			  			<apex:facet name="header"><b>Measurable Metric?</b></apex:facet>
+						<apex:outputField value="{!lines.SF_Process.Measurable__c}"  />
+					</apex:column>
+
+					<apex:column style="width: 150px" >
+			  			<apex:facet name="header"><b>Metric 1</b></apex:facet>
+						<apex:outputText rendered="{!IF(AND(lines.SF_Process.Link_to_Metrics_1__c<>'',showDescriptions),'true','false')}" escape="false" value="{!HTML_Line}"/>
+						<apex:outputText rendered="{!IF(AND(lines.SF_Process.Link_to_Metrics_1__c<>'',showDescriptions),'true','false')}" escape="false" value="{!HTML_CenterOn}"/>
+						<apex:outputLink rendered="{!IF(lines.SF_Process.Link_to_Metrics_1__c<>'','true','false')}" value="{!lines.SF_Process.Link_to_Metrics_1__c}" id="Metric1Link" target="_blank">Open Metric 1</apex:outputLink>			  			
+						<apex:outputText rendered="{!IF(AND(lines.SF_Process.Link_to_Metrics_1__c<>'',showDescriptions),'true','false')}" escape="false" value="{!HTML_CenterOff}"/>
+						<apex:outputText rendered="{!IF(AND(lines.SF_Process.Link_to_Metrics_1__c<>'',showDescriptions),'true','false')}" escape="false" value="{!HTML_Line}"/>
+						<apex:outputField value="{!lines.SF_Process.Metric_1_Description__c}" rendered="{!showDescriptions}"/>
+						<apex:outputText rendered="{!IF(lines.SF_Process.Metric_1_Description__c='','true','false')}" escape="false" value="{!HTML_nbsp}"/>
+					</apex:column>
+
+					<apex:column style="width: 150px" >
+			  			<apex:facet name="header"><b>Metric 2</b></apex:facet>
+						<apex:outputText rendered="{!IF(AND(lines.SF_Process.Link_to_Metrics_2__c<>'',showDescriptions),'true','false')}" escape="false" value="{!HTML_Line}"/>
+						<apex:outputText rendered="{!IF(AND(lines.SF_Process.Link_to_Metrics_2__c<>'',showDescriptions),'true','false')}" escape="false" value="{!HTML_CenterOn}"/>
+						<apex:outputLink rendered="{!IF(lines.SF_Process.Link_to_Metrics_2__c<>'','true','false')}" value="{!lines.SF_Process.Link_to_Metrics_2__c}" id="Metric2Link" target="_blank">Open Metric 2</apex:outputLink>			  			
+						<apex:outputText rendered="{!IF(AND(lines.SF_Process.Link_to_Metrics_2__c<>'',showDescriptions),'true','false')}" escape="false" value="{!HTML_CenterOff}"/>
+						<apex:outputText rendered="{!IF(AND(lines.SF_Process.Link_to_Metrics_2__c<>'',showDescriptions),'true','false')}" escape="false" value="{!HTML_Line}"/>
+						<apex:outputField value="{!lines.SF_Process.Metric_2_Description__c}" rendered="{!showDescriptions}"/>
+						<apex:outputText rendered="{!IF(lines.SF_Process.Metric_2_Description__c='','true','false')}" escape="false" value="{!HTML_nbsp}"/>
+					</apex:column>
+
+					<apex:column style="width: 100px" >
+			  			<apex:facet name="header"><b>Examples</b></apex:facet>
+						<apex:outputText rendered="{!IF(AND(lines.SF_Process.Link_to_Example__c<>'',showDescriptions),'true','false')}" escape="false" value="{!HTML_Line}"/>
+						<apex:outputText rendered="{!IF(AND(lines.SF_Process.Link_to_Example__c<>'',showDescriptions),'true','false')}" escape="false" value="{!HTML_CenterOn}"/>
+						<apex:outputLink rendered="{!IF(lines.SF_Process.Link_to_Example__c<>'','true','false')}" value="{!lines.SF_Process.Link_to_Example__c}" id="ExampleLink" target="_blank">Open Example</apex:outputLink>			  			
+						<apex:outputText rendered="{!IF(AND(lines.SF_Process.Link_to_Example__c<>'',showDescriptions),'true','false')}" escape="false" value="{!HTML_CenterOff}"/>
+						<apex:outputText rendered="{!IF(AND(lines.SF_Process.Link_to_Example__c<>'',showDescriptions),'true','false')}" escape="false" value="{!HTML_Line}"/>
+						<apex:outputText rendered="{!IF(lines.SF_Process.Link_to_Example__c='','true','false')}" escape="false" value="{!HTML_nbsp}"/>
+					</apex:column>
+
+				</apex:dataTable>
+			</apex:pageBlockSection>
+			
+
+			
+       	</apex:pageBlock>
+				   </apex:facet>
+				  </apex:actionStatus>
+				 </apex:outputPanel> 
+	</apex:form>
+</apex:page>

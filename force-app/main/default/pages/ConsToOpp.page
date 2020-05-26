@@ -1,0 +1,34 @@
+<apex:page standardcontroller="Consumption__c" extensions="ConsToOppConvert" action="{!doconvert}">
+<apex:form >
+        <apex:outputPanel id="popup">
+            <apex:outputPanel styleClass="customPopup" layout="block" rendered="{!displayPopUp}">
+                <center>
+                <apex:pageMessage summary="This Consumption has previously been converted to or from an Opportunity. Do you wish to create another Opportunity from this Consumption?" severity="Confirm" strength="2"/><br/><br/><br/>
+                
+                <apex:commandButton value="Continue" action="{!processcontinue}" rerender="popup"/>
+                <apex:commandButton value="Cancel" action="{!processcancel}" rerender="popup"/>
+                </center>
+            </apex:outputPanel>
+        </apex:outputPanel>
+ 
+    </apex:form>
+ 
+    <style type="text/css">
+       .customPopup{
+            background-color: white;
+            border-style: solid;
+            border-width: 2px;
+            left: 50%;
+            padding:10px;
+            position: absolute;
+            z-index: 9999;
+            /* These are the 3 css properties you will need to tweak so the pop 
+            up displays in the center of the screen. First set the width. Then set 
+            margin-left to negative half of what the width is. You can also add 
+            the height property for a fixed size pop up.*/
+            width: 450px;
+            margin-left: -225px;
+            top:100px;
+        }
+    </style>
+</apex:page>

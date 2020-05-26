@@ -1,0 +1,64 @@
+<apex:page controller="BBBTemplateController" >
+
+
+<apex:form >
+<apex:pageblock >
+<apex:pageblockButtons >
+<apex:commandbutton value="Search" action="{!refreshthis}"/>
+<apex:commandbutton value="Check Email" action="{!refreshthis}"/>
+<apex:commandbutton value="Send" action="{!sendemail}"/>
+<apex:commandbutton value="Go Back" action="{!closepopup}"/>
+</apex:pageblockButtons>
+
+<apex:pageblocksection >
+<apex:pageblocksectionitem rendered="{!templateidnull}">
+<apex:outputlabel value="Template: " rendered="{!templateidnull}"/>
+<apex:selectlist id="templates" size="1" value="{!templateid}" rendered="{!templateidnull}" >
+<apex:selectoptions value="{!templates}" />
+</apex:selectlist>
+</apex:pageblocksectionitem>
+
+<apex:pageblocksectionitem >
+<apex:outputlabel for="search" value="Contact Last Name: "/>
+<apex:inputtext id="search" value="{!searchcontact}"/>
+</apex:pageblocksectionitem>
+
+<apex:pageblocksectionitem >
+<apex:outputlabel for="m" value="Matched Contacts: "/>
+<apex:selectlist size="1" id="m" value="{!contactid}">
+<apex:selectoptions value="{!matchedcontacts}"/>
+</apex:selectlist>
+</apex:pageblocksectionitem>
+
+<apex:pageblocksectionitem >
+<apex:outputlabel value="Email: "/>
+<apex:outputlabel id="email" value="{!contactemail}" />
+</apex:pageblocksectionitem>
+
+<apex:pageblocksectionitem >
+<apex:outputlabel title="Only 1 email address is allowed." value="Add'tl email" />
+<apex:inputtext title="Only 1 email address is allowed." value="{!otheremail}"/>
+</apex:pageblocksectionitem>
+
+<apex:pageblocksectionitem >
+<apex:outputlabel value="BCC Myself" />
+<apex:inputcheckbox value="{!bccme}"/>
+</apex:pageblocksectionitem>
+<apex:pageblocksectionitem >
+<apex:outputlabel value="CC Seller " />
+<apex:inputcheckbox value="{!ccseller}"/>
+</apex:pageblocksectionitem>
+<apex:pageblocksectionitem >
+<apex:outputlabel value="CC Customer Service " />
+<apex:inputcheckbox value="{!cccsr}"/>
+</apex:pageblocksectionitem>
+
+<apex:pageblocksectionitem >
+<apex:Outputlabel value="Status: " for="status"/>
+<apex:outputlabel value="{!endmessage}" />
+</apex:pageblocksectionitem>
+</apex:pageblocksection>
+</apex:pageblock>
+
+</apex:form>
+</apex:page>

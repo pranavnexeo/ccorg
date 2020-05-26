@@ -1,0 +1,823 @@
+<apex:component controller="Target_Calculator_Controller">
+    <apex:attribute name="Account_Id" description="Id of the Account"  type="Id" />
+    <apex:attribute name="MaterialId" description="Id of the Material"  type="Id" Default=""/>
+    <apex:attribute name="type" description="Acceptable Values: Customer, Prospect, Default"  type="String" default="Default"/>
+    <apex:includeScript value="{!URLFOR($Resource.jquery_1_11_0_min, 'jquery-1.11.0.min.js')}"/> 
+    <apex:includeScript value="{!URLFOR($Resource.JQMobile, '/JQMobile/jquery.mobile-1.4.2.min.js')}"/>
+    <apex:stylesheet value="{!URLFOR($Resource.JQMobile, '/JQMobile/Nexeo.min.css')}"/>
+    <apex:stylesheet value="{!URLFOR($Resource.JQMobile, '/JQMobile/jquery.mobile.structure-1.4.2.min.css')}"/>
+    <apex:stylesheet value="{!URLFOR($Resource.JQMobile, '/JQMobile/jquery.mobile.icons-1.4.2.min.css')}"/>
+    
+    <script src="{!URLFOR($Resource.JQuery_Pricing, '/JQuery_Pricing/js/jquery.form.js')}" type="text/javascript"/>
+    <script src="{!URLFOR($Resource.JQuery_Pricing, '/JQuery_Pricing/js/jquery.validate.js')}" type="text/javascript"/>
+
+    <!--<apex:includeScript value="{!URLFOR($Resource.MobileSample_Resources_jQueryMobile, 'backbone/underscore-1.4.4.min.js')}"/>
+    <apex:includeScript value="{!URLFOR($Resource.MobileSample_Resources_jQueryMobile, 'force.entity.js')}"/>
+    <apex:includeScript value="{!URLFOR($Resource.MobileSample_Resources_jQueryMobile, 'SObjectData.js')}"/> -->
+
+    <head>
+        <title>Target Calculator</title>
+       
+<style>
+.tablecontainer { width:100%; font-size:1.2em; }
+label.error { 
+    float: left; 
+    color: red; 
+    padding-top: .5em; 
+    vertical-align: top; 
+    font-weight:bold
+}
+.price-list thead th,
+.price-list tbody tr:last-child {
+    border-bottom: 1px solid #d6d6d6; /* non-RGBA fallback */
+    border-bottom: 1px solid rgba(0,0,0,.1);
+}
+.price-list tbody th,
+.price-list tbody td {
+    border-bottom: 1px solid #e6e6e6; /* non-RGBA fallback  */
+    border-bottom: 1px solid rgba(0,0,0,.05);
+}
+.price-list tbody tr:last-child th,
+.price-list tbody tr:last-child td {
+    border-bottom: 0;
+}
+.price-list tbody tr:nth-child(odd) td,
+.price-list tbody tr:nth-child(odd) th {
+    background-color: #eeeeee; /* non-RGBA fallback  */
+    background-color: rgba(0,0,0,.04);
+}
+
+</style>
+        <script type="text/javascript">
+            var timeout;
+            if(typeof sforce == 'undefined' && '{!$CurrentPage.Parameters.nooverride}' != '1'){
+                  window.location.href = "/apex/{!$CurrentPage.Name}_i?id={!$CurrentPage.Parameters.Id}"
+            }
+            var $j = jQuery.noConflict(); 
+
+
+            $j(document).ready(function() {
+                $j.mobile.loading( "show");
+                $j("#acctform").validate({
+                   errorPlacement: function(error, element) {
+                    if ($j(element).is('.sel')) {
+                        error.insertAfter($j(element).parent());
+                    } else {
+                        error.insertAfter(element);
+                    }
+                   }
+                });
+                
+                $j("#targetform").validate({
+                   errorPlacement: function(error, element) {
+                        error.insertAfter(element);
+                   },
+                    rules: {
+                        notes: {
+                          maxlength: 250
+                        }
+                    }
+                });
+                
+                
+                
+                
+                InitPage1Events();  
+                setDefaultValues();
+
+            });
+            
+            function setDefaultValues(){
+               $j('#select-choice-1').selectmenu();
+               $j('#select-choice-2').selectmenu();
+               $j('#select-choice-3').selectmenu();
+               $j('#select-choice-4').selectmenu();
+               
+               $j('#select-choice-2').val('{!defaults.SAP_Division__c}').selectmenu('refresh');
+               $j('#select-choice-1').val('{!defaults.SAP_Sales_Org__c}').selectmenu('refresh');
+               
+               
+               $j.mobile.loading( "hide");           
+               if($j('#select-choice-2').val != '' && $j('#select-choice-1').val != '')
+               {
+                   
+                   if($j('#select-choice-2').val() == '32'){
+                      
+                         $j('#matType').hide();
+                         $j('#select-choice-MatType').removeClass('required');
+                         $j('#region').hide();
+                         $j('#select-choice-4').removeClass('required');
+                         $j('#endmarket').hide();
+                         $j('#select-choice-3').removeClass('required');
+                         $j('#custsize').hide();  
+                         $j('#radio-size-a').removeClass('required');
+                         $j('#radio-size-b').removeClass('required');
+                         $j('#radio-size-c').removeClass('required');
+
+                                                   
+                     }
+                     else{
+                     
+                         $j('#matType').show();
+                         $j('#select-choice-MatType').addClass('sel required');
+                         $j('#region').show();
+                         $j('#select-choice-4').addClass('sel required');
+                         $j('#endmarket').show();
+                         $j('#select-choice-3').addClass('sel required');
+                         $j('#custsize').show();
+                         $j('#radio-size-a').addClass('sel required');
+                         $j('#radio-size-b').addClass('sel required');
+                         $j('#radio-size-c').addClass('sel required');
+                         
+                   }
+                   
+                   refreshLists($j('#select-choice-1').val(), $j('#select-choice-2').val());
+                   setTimeout( function(){
+                       $j('#select-choice-3').val('{!defaults.Nexprice_End_Market__c}').selectmenu('refresh');
+                       $j('#select-choice-4').val('{!defaults.Nexprice_Region__c}').selectmenu('refresh');
+                       if('{!Account_id}' != '')
+                          setAccountValues();
+                   }, 250);
+               }
+               
+            }
+            
+            function setAccountValues(){
+            $j("#select-search").append('<option value="consumption">Consumption Materials</option>');
+            $j("#select-search").append('<option value="opportunity">Opportunity Materials</option>');
+            
+            $j.mobile.loading( "show");
+            Target_Calculator_Controller.getAccount('{!Account_Id}', function(result, event){
+               if(event.type == 'exception') {
+                  alert(event.message);
+                  $j.mobile.loading( "hide");
+               }else{
+
+               var changepage = result.SAP_Sales_Org__c != '' &&
+                                result.SAP_DivisionCode__c != '' &&
+                                result.Nexprice_Market__c != '' &&
+                                result.Nexprice_Region__c != '' &&
+                                result.Nexprice_Size__c != '' &&
+                                typeof result.SAP_Sales_Org__c != 'undefined' &&
+                                typeof result.SAP_DivisionCode__c != 'undefined' &&
+                                typeof result.Nexprice_Market__c != 'undefined' &&
+                                typeof result.Nexprice_Region__c != 'undefined' &&
+                                typeof result.Nexprice_Size__c != 'undefined';    
+                                        
+
+               if(result.SAP_Sales_Org__c != '')
+               {  $j('#select-choice-1').val(result.SAP_Sales_Org__c).selectmenu('refresh');    
+               }
+               if(result.SAP_DivisionCode__c != '')
+               {  $j('#select-choice-2').val(result.SAP_DivisionCode__c).selectmenu('refresh');
+               }
+               refreshLists($j('#select-choice-1').val(), $j('#select-choice-2').val())
+
+               setTimeout( function(){
+
+               if(result.Nexprice_Market__c != '')
+                  $j('#select-choice-3').val(result.Nexprice_Market__c).selectmenu('refresh');
+               
+               if(result.Nexprice_Region__c != '')
+                  $j('#select-choice-4').val(result.Nexprice_Region__c).selectmenu('refresh');
+               
+               if(result.Nexprice_Size__c == 'MEDIUM'){
+                  $j('#radio-size-b').attr('checked', 'checked');
+               }
+               else if(result.Nexprice_Size__c == 'LARGE'){
+                  $j('#radio-size-c').attr('checked', 'checked');
+               }
+               
+               if(!changepage && '{!type}' == 'Customer')
+                 changepage = true;
+                 
+               if(changepage && '{!MaterialId}' == '')
+               {  gotoPage('acctform', 'listpage', 'none');
+                  
+               }
+               else if(changepage && '{!MaterialId}' != '')
+                 updateTable('{!MaterialId}');
+               else
+               $j.mobile.loading( "hide");
+               
+               }, 250);
+             }
+            
+            });
+            }
+            function showMaterials(q, type) { 
+
+            $j.mobile.loading( "show");
+            var flip = $j('#checkbox-based-flipswitch').prop('checked');
+            var division = $j('#select-choice-2').val();
+            var matType = $j('#select-choice-MatType').val();
+            Target_Calculator_Controller.getMaterials(q, type, $j('#select-choice-1').val(), '{!Account_id}', flip, division, matType, function(result, event){   
+              if(event.type == 'exception') {
+                            alert('Error:'+event.message);
+                            $j.mobile.loading( "hide");
+                           
+              } else{
+                
+                $j('#mList').empty();
+                if(result.length == 0)
+                  $j.mobile.loading( "hide");
+                  
+                $j.each(result,
+                    function(e, i) {
+                    var newLi = $j('<li></li>');
+                    if( type == 'material' || type == 'consumption' || type == 'opportunity')
+                    {            
+                        var newLink = $j('<a id="' +this.Id+ '" data-transition="flip">' + this.Name + '<br/>' + this.Name.substring(this.Name.indexOf(" - ") + 3) + '<br/>' + this.Material_General_Data__r.Material_Container_Desc__c + '</a>');
+                        newLink.click(function(e) {
+                            e.preventDefault();        
+                            updateTable($j(this).attr('id'));
+                        });
+                        newLi.append(newLink);            
+                        newLi.appendTo('#mList');
+                    }
+                    else if(type == 'base'){
+                        var newLink = $j('<a id="' +this.Id+ '" data-transition="flip" data-value="' + this.Material_Base_Code__c + '">' + this.Material_Base_Code_Description__c + ' - ' + this.Material_Base_Code__c  + '</a>');
+                        newLink.click(function(e) {
+                            e.preventDefault();
+                            updateContainerPage($j(this).attr('data-value'));
+                            $j.mobile.changePage('#containerpage', {changeHash: true});
+                        });
+                        newLi.append(newLink);            
+                        newLi.appendTo('#mList');
+                    }
+                    if(e == (result.length - 1))
+                    {  $j('#mList').listview('refresh');
+                       $j.mobile.loading( "hide");
+                    }
+                  });
+             }
+            });
+          }  
+            
+            function updateContainerPage(basecode){
+            var flip = $j('#checkbox-based-flipswitch').prop('checked');
+            var division = $j('#select-choice-2').val();
+            var matType = $j('#select-choice-MatType').val();
+               Target_Calculator_Controller.getContainers(basecode, flip, division, matType, function(result, event){
+                        if(event.type == 'exception') {
+                            alert('Error:'+event.message);
+                        } else{
+                        $j('#cList').empty();
+                        $j.each(result,
+                            function() {
+                            var newLi = $j('<li></li>');
+                            var newLink = $j('<a id="' +this.Id+ '" data-transition="flip">' + this.Name + '<br/>' + this.Name.substring(this.Name.indexOf(" - ") + 3) + '<br/>' +
+                                              this.Material_General_Data__r.Material_Container_Code__r.Material_Container_Code_Description__c + '</a>');
+                            newLink.click(function(e) {
+                                e.preventDefault();
+                                 updateTable($j(this).attr('id'));
+                                
+                            });
+                            newLi.append(newLink);            
+                            newLi.appendTo('#cList');
+                         });
+                    
+                       $j('#cList').listview('refresh');
+                       }
+                    });
+            }
+            function updateTable(recordid){
+              
+              $j('#tablecontainer').empty();
+              var matType = $j('#select-choice-MatType').val();
+              var unitType = $j("input[name='unit-type']:checked").val();
+              
+              
+              $j( ".thetable" ).trigger('create');
+              
+              $j.mobile.changePage('#targetpage', {changeHash: true,  transition: 'flip'});
+              $j.mobile.loading( "show");
+              if('{!Type}' == 'Default'){
+                Target_Calculator_Controller.getTiers(getData(recordid), matType, unitType, function(result, event){
+                        if(event.type == 'exception') {
+                            alert('Error:'+event.message);
+                            $j.mobile.loading( "hide");
+                        } else{
+                            processResult(result);
+                            $j.mobile.loading( "hide");
+                        }
+              });
+              }
+              if('{!Type}' == 'Prospect'){
+                Target_Calculator_Controller.getProspectTiers(getData(recordid), '{!Account_Id}', unitType, function(result, event){
+                        if(event.type == 'exception') {
+                            alert('Error:'+event.message);
+                            $j.mobile.loading( "hide");
+                        } else{
+                            processResult(result);
+                            $j.mobile.loading( "hide");
+                        }
+              });
+              }
+              if('{!Type}' == 'Customer'){
+                Target_Calculator_Controller.getCustomerTiers(getData(recordid), '{!Account_Id}', unitType, function(result, event){
+                        if(event.type == 'exception') {
+                            alert('Error:'+event.message);
+                            $j.mobile.loading( "hide");
+                        } else{
+                            processResult(result);
+                            $j.mobile.loading( "hide");
+                        }
+              });
+              }
+            }
+            
+            function processResult(result){
+                     $j('#sendtome').val(result.Id);
+                     $j('#tablecontainer').empty();
+                     
+                     var itemText = '';
+                     if('{!type}' == 'Customer' || '{!Type}' == 'Prospect')
+                       itemText += 'Account: ' + result.Account__r.Name + ' (' + result.Account__r.AccountNumber + ')<br/>';
+                     
+                     itemText += 'Material: ' + result.Material__r.Name + '<br/>' + 'PLM: ' + result.Material__r.Material_Group2_Desc__c + '<br/>';
+                     
+                     if(typeof result.Region__c != 'undefined')
+                       itemText += 'Region: ' + result.Region__c + '<br/>';
+                     if(typeof result.End_Market__c != 'undefined')
+                       itemText += 'End Market: ' + result.End_Market__c + '<br/>';
+                     
+                     if(typeof result.Error_Message__c != 'undefined')
+                       if(result.Error_Message__c != '')
+                         itemText += 'Error Message: ' + result.Error_Message__c + '<br/>';
+                     
+                     itemText += '<div class="ui-body">' + $j('<div/>').html(result.Target_Table__c).text() + '</div>';
+
+                     $j('#tablecontainer').append(itemText);
+                     $j( ".thetable" ).trigger('create');
+ 
+            }
+            function getData(recordid){
+            
+              var data = new Object();
+              data.SALES_ORG = $j('#select-choice-1').val();
+              data.DIVISION = $j('#select-choice-2').val();
+              data.PRICING_ENDMKT = $j('<div/>').html($j('#select-choice-3').val()).text();
+              data.SUB_REGION = $j('<div/>').html($j('#select-choice-4').val()).text();
+              data.CUSTOMER_SIZE = $j("input[name='radio-size']:checked").val();
+              data.MATERIAL = recordid;
+              return data;
+            }
+            
+            function setData(result){
+        
+   
+              $j('#select-choice-1').val(result.Sales_Org__c);
+              $j('#select-choice-2').val(result.Division__c);
+              $j('#select-choice-2, #select-choice-1').selectmenu("refresh");
+              $j('#select-choice-1').trigger('change');
+              
+              setTimeout( function(){
+              $j('#select-choice-3').val($j('<div/>').html(result.End_Market__c).text());
+              $j('#select-choice-4').val($j('<div/>').html(result.Region__c).text());
+              $j('#select-choice-3, #select-choice-4').selectmenu("refresh");
+   
+    
+              }, 1000);
+              
+              $j("#select-search").val('material');
+              $j("input[placeholder='Find a material...']").val(result.Material__r.Name);
+              $j("input[placeholder='Find a material...']").trigger('change');
+              $j("input[name='radio-size']:checked").removeAttr('checked');
+              $j("input[name='radio-size']").each(function(i, r){
+                 if($j(r).val() == result.Customer_Size__c)
+                   $j(r).attr('checked', 'checked');
+              }); 
+            }
+            function InitPage2Events() {
+               
+               $j("#select-search").change(function(){
+                  var value = $j("input[placeholder='Find a material...']").val();
+                  if ((value && value.length > 2) || $j("#select-search").val() == 'consumption' || $j("#select-search").val() == 'opportunity' ) {      
+                     showMaterials(value, $j("#select-search").val());
+                }else{
+                  $j('#mList').empty();
+                  $j('#mList').listview('refresh');
+                }
+                  
+               });
+               setTimeout(function(){
+                   $j("#listpage form").submit(function () {
+                    
+                    var value = $j(this).find('input').val();
+                    if ( value && value.length > 2 ) {
+                      showMaterials(value, $j("#select-search").val())
+                      
+                    }else{
+                      $j('#mList').empty();
+                      $j('#mList').listview('refresh');
+                    }
+                   });
+              }, 100);
+            }
+            
+            function InitPage1Events(){
+
+               $j('#select-choice-1').change(function(){
+                  if($j(this).val() != "" && $j('#select-choice-2').val() != "")                     
+                      refreshLists($j(this).val(), $j('#select-choice-2').val());
+                  else
+                    clearLists();
+               });
+               
+               $j('#select-choice-2').change(function(){
+                 if($j(this).val() != "" && $j('#select-choice-1').val() != ""){
+                
+                     if($j(this).val() == '32'){
+                      
+                         $j('#matType').hide();
+                         $j('#select-choice-MatType').removeClass('required');
+                         $j('#region').hide();
+                         $j('#select-choice-4').removeClass('required');
+                         $j('#endmarket').hide();
+                         $j('#select-choice-3').removeClass('required');
+                         $j('#custsize').hide();  
+                         $j('#radio-size-a').removeClass('required');
+                         $j('#radio-size-b').removeClass('required');
+                         $j('#radio-size-c').removeClass('required');
+
+                                                   
+                     }
+                     else{
+                     
+                         $j('#matType').show();
+                         $j('#select-choice-MatType').addClass('sel required');
+                         $j('#region').show();
+                         $j('#select-choice-4').addClass('sel required');
+                         $j('#endmarket').show();
+                         $j('#select-choice-3').addClass('sel required');
+                         $j('#custsize').show();
+                         $j('#radio-size-a').addClass('sel required');
+                         $j('#radio-size-b').addClass('sel required');
+                         $j('#radio-size-c').addClass('sel required');
+                         
+                         }
+                         refreshLists($j('#select-choice-1').val(), $j(this).val());
+                                         
+                  }  
+                 else
+                    clearLists();
+               });
+               
+               $j('#select-choice-MatType').change(function(){
+                   if($j(this).val() == 'COMMODITY'){
+                       
+                       $j('#custsize').hide();
+                       $j('#radio-size-a').removeClass('required');
+                       $j('#radio-size-b').removeClass('required');
+                       $j('#radio-size-c').removeClass('required');
+                       $j('#endmarket').hide();
+                       $j('#select-choice-3').removeClass('required');
+                   }
+                   else{   
+                       $j('#custsize').show();
+                       $j('#radio-size-a').addClass('sel required');
+                       $j('#radio-size-b').addClass('sel required');
+                       $j('#radio-size-c').addClass('sel required');
+                       $j('#endmarket').show();
+                       $j('#select-choice-3').addClass('sel required');
+                   }
+               });
+            }
+            
+            
+            
+            function clearLists(){
+              $j('#select-choice-3').empty();
+              $j('#select-choice-3').append('{!marketoptions}');
+              $j('#select-choice-3').selectmenu( "refresh" );
+              
+              $j('#select-choice-4').empty();
+              $j('#select-choice-4').append('{!regionoptions}');
+              $j('#select-choice-4').selectmenu( "refresh" );
+            }
+            function refreshLists(org, div){
+              if(typeof org != 'undefined' && org != "" &&
+                 typeof div != 'undefined' && div != ""){
+                    Target_Calculator_Controller.getMarkets(org, div, function(result, event){
+                        if(event.type == 'exception') {
+                            alert('Error:'+event.message);
+                        } else{
+                           $j('#select-choice-3').empty();
+                           $j('#select-choice-3').append($j('<div/>').html(result).text());
+                           $j('#select-choice-3').selectmenu( "refresh" );
+                           if($j('#select-choice-3').children().length > 1)
+                             $j('#select-choice-3').selectmenu( "enable" );
+                           else
+                             $j('#select-choice-3').selectmenu( "disable" );
+                           
+                        }
+                    });
+                    Target_Calculator_Controller.getRegions(org, div, function(result, event){
+                        if(event.type == 'exception') {
+                            alert('Error:'+event.message);
+                        } else{
+                           $j('#select-choice-4').empty();
+                           $j('#select-choice-4').append($j('<div/>').html(result).text());
+                           $j('#select-choice-4').selectmenu( "refresh" );
+                           if($j('#select-choice-4').children().length > 1)
+                             $j('#select-choice-4').selectmenu( "enable" );
+                           else
+                             $j('#select-choice-4').selectmenu( "disable" );
+                        }
+                    });
+                 }
+                 else{
+                   //$j('#select-choice-4').selectmenu( "enable" );
+                   //$j('#select-choice-4').selectmenu( "disable" );
+                 
+                 }
+            }
+            
+            function gotoPage(formid, pageid, transition){
+              InitPage2Events();
+              if('{!MaterialId}' == ''){
+                  if($j('#' + formid).valid() || '{!type}' == 'Customer')
+                  $j.mobile.changePage('#' + pageid, {changeHash: true, transition: transition});
+                  $j.mobile.loading( "hide");
+              }
+              else{
+                  if($j('#' + formid).valid())
+                  updateTable('{!MaterialId}');
+              }
+              
+            }
+            
+            function goToRecent(){
+              $j('#rList').empty();
+              var type = 'Default';
+              if('{!Account_Id}' != '')
+                type = '{!Account_Id}';
+              
+              
+              Target_Calculator_Controller.getRecent( type, function(result, event){
+                     if(event.type == 'exception') {
+                        alert('Error:'+event.message);
+                     }
+                     else{
+                     
+                     $j.each(result,
+                       function(i, r) {
+          
+                          var newLi = $j('<li></li>');
+                          var createdDate = new Date(this.CreatedDate);
+                          
+                          var newLinkText = '<a id="' + this.Id + '" data-transition="flip">' + this.Material__r.Name + '<br/>';
+                          
+                          if(typeof this.Account__c != 'undefined')
+                             newLinkText +=  this.Account__r.Name + '<br/>';
+                             
+                          if(typeof this.Region__c != 'undefined')
+                             newLinkText +=  this.Region__c + '<br/>';
+                             
+                          if(typeof this.End_Market__c != 'undefined')
+                             newLinkText += this.End_Market__c + '<br/>';
+                          
+                          newLinkText += createdDate.toDateString() + ' ' + createdDate.toLocaleTimeString() + '</a>';
+                          var newLink = $j(newLinkText);
+                          newLink.click(function(e) {
+                                e.preventDefault();
+                                updateItemPage(r);
+                                $j.mobile.changePage('#recentitempage', {changeHash: true});
+                            });
+                            newLi.append(newLink);            
+                            newLi.appendTo('#rList');
+                         });
+               
+                       $j('#rList').listview('refresh');
+                       }
+              });
+              $j.mobile.changePage('#recentpage' , {changeHash: true, transition: 'flip'});
+            }
+
+            function updateItemPage(result){
+                 $j('#tablecontainer2').empty();
+                 $j('#sendtome2').val(result.Id);
+                 var itemText = 'Material: ' + result.Material__r.Name + '<br/>';
+                 
+                 if(typeof result.Account__c != 'undefined')
+                   itemText += 'Account: ' + result.Account__r.Name + '<br/>';
+                   
+                 if(typeof result.Region__c != 'undefined')
+                   itemText += 'Region: ' + result.Region__c + '<br/>';
+                   
+                 if(typeof result.End_Market__c != 'undefined')
+                   itemText += 'End Market: ' + result.End_Market__c + '<br/>';
+                   
+                 itemText += '<div class="ui-body">' + $j('<div/>').html(result.Target_Table__c).text() + '</div>';
+                 $j('#tablecontainer2').append(itemText);
+                 $j( ".thetable" ).trigger('create');
+                 setData(result);
+            }
+            
+            function sendEmail(formid, buttonid, notesid){
+              if($j('#' + formid).valid())
+              { 
+                 Target_Calculator_Controller.SendEmail( $j('#' + buttonid).val(), $j('#' + notesid).val(), function(result, event){
+                     if(event.type == 'exception') {
+                        alert('Error:'+event.message);
+                     }
+                     else{
+                        alert(result);
+                     }
+                 });
+            }
+          }
+        </script>    
+    </head>
+
+    <body>    
+
+        <div data-role="page" data-theme="b" id="detailpage">
+            <div data-role="header" data-position="fixed">
+                <a onclick="goToRecent();" class='ui-btn-left' data-icon='arrow-l' data-direction="reverse" data-transition="flip">Recent</a>
+                <a onclick="gotoPage('acctform', 'listpage', 'flip');" class='ui-btn-right' data-icon='arrow-r' data-iconpos="right">Next</a> 
+                <h1>Account Details</h1>
+            </div>
+            <div data-role="content">
+            <form id="acctform">
+                                
+                <div data-role="fieldcontain">
+                   
+                   <select name="select-choice-1" id="select-choice-1" class="required sel">
+                      <apex:outputtext value="{!orgoptions}" escape="false"/>
+                   </select>
+                   <div class="error_container"/>
+                </div>
+                
+                <div data-role="fieldcontain">
+                   
+                   <select name="select-choice-2" id="select-choice-2" class="required sel">
+                      <apex:outputtext value="{!divoptions}" escape="false"/>
+                       <!--<option class="salesdiv" value="">Select Division...</option>
+                       <option class="salesdiv" value="31">31-Nexeo Chem</option>
+                       <option class="salesdiv" value="32">32-Nexeo Plastics</option>-->
+                   </select>
+                   <div class="error_container"/>
+                </div>
+                
+                <div data-role="fieldcontain" id="region">
+                  
+                   <select name="select-choice-4" id="select-choice-4">
+                      <apex:outputtext value="{!regionoptions}" escape="false"/>
+                   </select>
+                   <div class="error_container"/>
+                </div>
+                
+                <div data-role="fieldcontain" id="matType">
+                <!-- <fieldset data-role="controlgroup" data-type="horizontal">  -->
+                    <select name="select-choice-MatType" id="select-choice-MatType">
+                    <apex:outputtext value="{!matTypeoptions}" escape="false"/>
+                    <!-- <option class="matType" value="">Select COM/SPC...</option>
+                    <option value="COMMODITY">COMMODITY</option>
+                    <option value="SPECIALTY">SPECIALTY</option> -->
+                    
+                    </select>
+                    <div class="error_container"/>
+                   <!-- </fieldset> -->
+                </div>
+                
+                <div data-role="fieldcontain" id="endmarket">
+                   
+                   <select name="select-choice-3" id="select-choice-3">
+                      <apex:outputtext value="{!marketoptions}" escape="false"/>
+                   </select>
+                   <div class="error_container"/>
+                </div>
+                
+                <div data-role="fieldcontain" id="custsize">
+                    
+                    <fieldset data-role="controlgroup" data-type="horizontal">              
+                        <input type="radio" name="radio-size" id="radio-size-a" value="SMALL" checked="checked" />
+                        <label for="radio-size-a">Small</label>
+                        <input type="radio" name="radio-size" id="radio-size-b" value="MEDIUM"  />
+                        <label for="radio-size-b">Med.</label>
+                        <input type="radio" name="radio-size" id="radio-size-c" value="LARGE"  />
+                        <label for="radio-size-c">Large</label>
+                    </fieldset>
+                    <div class="error_container"/>
+                </div>
+                
+                <div data-role="fieldcontain" id="unitType">
+                    <fieldset data-role="controlgroup" data-type="horizontal">              
+                        <input type="radio" name="unit-type" id="radio-unit-lb" value="LB" checked="checked" />
+                        <label for="radio-unit-lb">USD/LB</label>
+                        <input type="radio" name="unit-type" id="radio-unit-kg" value="KG"  />
+                        <label for="radio-unit-kg">USD/KG</label>
+                    </fieldset>
+                    <div class="error_container"/> 
+                </div>               
+                
+                </form>
+            </div>  
+          </div>  
+    
+        <div data-role="page" data-theme="b" id="listpage">                
+            <div data-role="header" data-position="fixed">
+                
+                <h2>Materials</h2>
+                
+                <apex:outputpanel layout="none" rendered="{!IF(type = 'Customer', false, true)}">
+                  <a href='#detailpage' class='ui-btn-left' data-icon='arrow-l' data-direction="reverse" data-transition="flip">Back</a>
+                </apex:outputpanel>
+                
+                <fieldset data-role="controlgroup"  class="ui-btn-right">
+                <!--<label for="checkbox-based-flipswitch"></label>-->
+                Show All Materials:
+                        <input type="checkbox" id="checkbox-based-flipswitch" data-iconpos="right" data-role="flipswitch"></input>
+                </fieldset>
+            </div>
+            
+            <div data-role="content" id="materialList"> 
+            <div data-role="fieldcontain">
+                    <fieldset data-role="controlgroup" data-type="horizontal">   
+                        <select name="select-search" id="select-search">
+                          <apex:repeat value="{!searches}" var="s">
+                            <apex:outputtext value="{!s}" escape="false"/>
+                          </apeX:repeat>
+                        </select>
+                    </fieldset>  
+                </div> 
+                <div data-role="fieldcontain" id="material" class="searchbox">          
+                <ul id="mList" data-role="listview" data-inset="true" data-filter="true" data-filter-placeholder="Find a material..." data-filter-theme="d"></ul>
+                </div>
+
+            </div>
+        </div>
+        
+        <div data-role="page" data-theme="b" id="containerpage">                
+            <div data-role="header" data-position="fixed">
+                <h2>Materials</h2>
+                  <a href='#listpage' class='ui-btn-left' data-icon='arrow-l' data-direction="reverse" data-transition="flip">Back</a>
+            </div>
+            
+            <div data-role="content" id="containerList">  
+                <div data-role="fieldcontain" id="container" class="searchbox">          
+                   <ul id="cList" data-role="listview" data-inset="true"></ul>
+                </div>
+            </div>
+        </div>
+       
+        <div data-role="page" data-theme="b" id="targetpage">                
+            <div data-role="header" data-position="fixed">
+                <h2>Target Information</h2>
+                <a href='#listpage' onclick="InitPage2Events();" id="back2" class='ui-btn-left' data-icon='arrow-l' data-direction="reverse" data-transition="flip">Back</a>
+                <apex:outputpanel layout="none" rendered="{!IF(type = 'Customer', false, true)}">
+                <a href='#detailpage' id="home" class='ui-btn-right' data-icon='home' data-transition="flip">Home</a>
+                </apex:outputpanel>
+            </div>
+            <div data-role="content" >   
+                    
+                 <div data-role="fieldcontain" class="tablecontainer">
+                 <div id="tablecontainer"></div>
+                 </div>
+             <form id="targetform"> 
+                 <div data-role="fieldcontain">
+                 <textarea name="notes" id="notes" data-clear-btn="true"></textarea>
+                 </div>
+                 <div data-role="fieldcontain">
+                 <button type="button" class="ui-btn ui-corner-all" onclick="sendEmail('targetform', 'sendtome', 'notes');" value="" id="sendtome">Send to Me</button>
+                 </div>
+             </form>
+            </div>
+        </div>
+        
+        <div data-role="page" data-theme="b" id="recentpage">                
+            <div data-role="header" data-position="fixed">
+                <h2>Recent</h2>
+                  <a href='#detailpage' class='ui-btn-left' data-icon='arrow-l' data-direction="reverse" data-transition="flip">Back</a>
+            </div>
+            
+            <div data-role="content" id="recentlist">  
+                <div data-role="fieldcontain" id="recent">          
+                <ul id="rList" data-role="listview" data-inset="true" ></ul>
+                </div>
+            </div>
+        </div> 
+        
+        <div data-role="page" data-theme="b" id="recentitempage">                
+            <div data-role="header" data-position="fixed">
+                <h2>Target Information</h2>
+                <a href='#recentpage' class='ui-btn-left' data-icon='arrow-l' data-direction="reverse" data-transition="flip">Back</a>
+                <a href='#detailpage' class='ui-btn-right' data-icon='home' data-transition="flip">Home</a>
+            </div>
+            <div data-role="content" >   
+                   
+                 <div data-role="fieldcontain" id="tablecontainer2" class="tablecontainer"></div>
+            <form id="targetform2">  
+                 <div data-role="fieldcontain">
+                 <textarea name="notes" id="notes2" data-clear-btn="true"></textarea>
+                 </div>
+                 <div data-role="fieldcontain">
+                 <button type="button" class="ui-btn ui-corner-all" onclick="sendEmail('targetform2', 'sendtome2', 'notes2');" value="" id="sendtome2">Send to Me</button>
+                 </div>
+             </form>
+            </div>
+        </div>
+    </body>  
+</apex:component>

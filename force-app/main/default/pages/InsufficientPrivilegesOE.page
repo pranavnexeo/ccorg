@@ -1,0 +1,17 @@
+<apex:page lightningStylesheets="{!$User.UIThemeDisplayed == 'Theme4d'}">
+ <!-- Start page content -->
+    <a name="skiplink"><img src="/img/s.gif" alt="Content Starts Here" class="skiplink skipLinkTargetInner zen-skipLinkTarget" title="Content Starts Here" width="1" height="1"/></a>
+
+<div style="display:none;" id="errorTitle">Insufficient Privileges</div>
+<div style="display:none;" id="errorDesc">You do not have the level of access necessary to perform the operation you requested. Please contact the owner of the record or your administrator if access is necessary.</div>
+<table cellspacing="10">
+<tbody><tr><td><span style="font-weight: bold; font-size: 12pt;">Insufficient Privileges</span></td></tr>
+    <tr><td>
+You do not have the level of access necessary to perform the operation you requested. Please contact the owner of the record or your administrator if access is necessary.
+ For more information, see <a href="javascript:openPopupFocusEscapePounds('https://help.salesforce.com/apex/htdoor?loc=help&amp;target=admin_insufficient_privileges_flowchart.htm&amp;language=en_US&amp;release=214.11.4&amp;instance=CS95&amp;showSplash=true', 'Help', 1024, 768, 'width=1024,height=768,resizable=yes,toolbar=yes,status=yes,scrollbars=yes,menubar=yes,directories=no,location=yes,dependant=no', false, false);">Insufficient Privileges Errors</a>.
+    <br/><br/>  
+        </td></tr>
+    </tbody>
+    </table>
+
+</apex:page>

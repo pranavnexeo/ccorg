@@ -1,0 +1,28 @@
+<apex:page Controller="Approval_Items_Controller" showHeader="false" sidebar="false" tabstyle="Nexeo_Competitor__c" >
+<br/>
+<apex:pageblock >
+<apex:image value="/img/icon/home24.png"/>
+<apex:outputlabel value="Items to Approve" style="font-size:16px;font-weight:bold;"/>
+<apex:pageblocktable var="i" value="{!approvals}">
+<apex:column headervalue="Action">
+<apex:outputlink value="{!i.reassignLink}" target="_top" rendered="{!IF(i.TargetObjectType == 'Case', false, true)}">Reassign</apex:outputlink>
+<apex:outputlabel value=" | " rendered="{!IF(i.TargetObjectType == 'Case', false, true)}"/>
+<apex:outputlink value="{!i.approverejectlink}" target="_top" rendered="{!IF(i.TargetObjectType == 'Case', false, true)}">Approve / Reject</apex:outputlink>
+</apex:column>
+<apex:column headervalue="RelatedTo">
+<apex:outputlink value="{!i.RelatedTolink}" target="_top">{!i.TargetObjectName}</apex:outputlink>
+</apex:column>
+<apex:column headervalue="Type">
+<apex:outputlabel value="{!i.TargetObjecttype}"/>
+</apex:column>
+<apex:column headervalue="Most Recent Approver">
+<apex:outputLink value="/{!i.user.id}" target="_top">{!i.user.name}</apex:outputlink>
+</apex:column>
+<apex:column headervalue="Date Submitted">
+<apex:outputfield value="{!i.step.createddate}"/>
+</apex:column>
+
+</apex:pageblocktable>
+</apex:pageblock>
+
+</apex:page>

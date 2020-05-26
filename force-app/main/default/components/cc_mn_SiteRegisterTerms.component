@@ -1,0 +1,56 @@
+<apex:component >
+
+<script id="RegistrationTermsFieldset" type="text/template">
+    <fieldset>
+        <legend class="coso_footer_tc">{{pageLabelMap 'Footer_TermsAndConditions'}}</legend>
+        <div class="shipping_payment">
+            <div class="row shiping_payment_term">
+                <input name="#" class="boxes terms" type="checkbox" style="margin: 0 0 0 10px;" />
+                <span>
+                    <strong>{{pageLabelMap 'cc_imp_SiteRegister_TermsDescription'}}</strong>
+                </span>
+            </div>
+        </div>
+    </fieldset>
+</script>
+
+<script type="text/javascript">
+
+
+    jQuery(function($) {
+
+        CCRZ.views.RegistrationTerms = CCRZ.CloudCrazeView.extend({
+            template: CCRZ.util.template('RegistrationTermsFieldset'),
+            events: {
+                "click .terms" : "handleTerms"
+            },
+            render: function() {
+                var v = this;
+                v.setElement($("#termsDiv"));
+                v.$el.html(v.template());
+                v.handleTerms();
+                CCRZ.pubSub.trigger("view:"+this.viewName+":refresh", this);
+            },
+            handleTerms: function() {
+                var proceedButton = $('[type=button].submit');
+                if (proceedButton) {
+                    var checkedTerms = $('.terms:checked').length;
+                    if (1 == checkedTerms) {
+                        proceedButton.removeAttr('disabled').removeClass('disabled');
+                    }
+                    else {
+                        proceedButton.attr('disabled','disabled').addClass('disabled');
+                    }
+                }
+            }
+        });
+
+        CCRZ.pubSub.once("view:newCustomerView:refresh", function(view) {
+            var termsView = new CCRZ.views.RegistrationTerms();
+            termsView.render();
+        });
+    });
+
+</script>
+
+</apex:component>

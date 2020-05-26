@@ -1,0 +1,253 @@
+<apex:component controller="cc_imp_ctrl_FileUpload">
+
+
+<script id="MyAccount-UploadFiles-UploadDialog" type="text/template">
+<a class="modalLauncher" style="display:none" href="#uploadFilesMod" data-toggle="modal">&#160;</a>&#160;
+<div id="uploadFilesMod" class="modal hide fade in" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
+   <div class="modal-header">
+    <button type="button" class="close" data-dismiss="modal" aria-hidden="true">×</button>
+     <h3 id="myModalLabel">{{pageLabelMap 'cc_imp_MyAccount_UploadFilesModalTitle'}}</h3>
+   </div>
+   <div id="fileFormDiv">
+   <form id="uploadFileForm" class="modal-body">
+     <select name="fileBean.fileType">
+      <option value="Tax Exemption Form">{{pageLabelMap 'cc_imp_UploadFiles_TaxExemption'}}</option>
+     	<option value="DEA Registration Form">{{pageLabelMap 'cc_imp_UploadFiles_DEA'}}</option>
+     	<option value="Other">{{pageLabelMap 'cc_imp_UploadFiles_Other'}}</option>
+     </select>
+     <input type="file" name="fileBean.filePath" id="thefile">
+     <input type="text" placeholder="{{pageLabelMap 'cc_imp_MyAccount_UploadFilesCommentsHint'}}" value="" name="fileBean.comments">
+
+   </form>
+   </div><!-- fileFormDiv -->
+   <div class="modal-footer">
+    <input type="button" class="cancelFile btn-warning" data-id="" value="{{pageLabelMap 'cc_imp_MyAccount_UploadFilesCancelButton'}}" id="cancelButton" />
+    <input type="button" class="saveFile" data-id="" value="{{pageLabelMap 'cc_imp_MyAccount_UploadFilesButton'}}" id="saveButton" />
+   </div>
+  </div>
+</script>
+
+<script id="UploadFiles-Confirmation" type="text/template">
+  <div class="modal-header">
+    <button type="button" class="close" data-dismiss="modal" aria-hidden="true">×</button>
+     <h3 id="myModalLabel">{{pageLabelMap 'cc_imp_MyAccount_UploadFilesModalTitle'}}</h3>
+   </div>
+   <div id="fileFormDiv">
+   <form id="uploadFileForm" class="modal-body">
+   {{pageLabelMap 'cc_imp_MyAccount_UploadFilesModalConfirm'}}
+   </form>
+   </div><!-- fileFormDiv -->
+   <div class="modal-footer">
+    <input type="button" class="cancelFile" data-id="" value="{{pageLabelMap 'cc_imp_MyAccount_UploadFilesFinishButton'}}" id="finishButton" />
+   </div>
+</script>
+
+<script id="MyAccount-Upload-Files" type="text/template">
+<div class="acctmainSection" style="display: block;">
+  <h2 class="title">{{pageLabelMap 'cc_imp_MyAccount_UploadFilesModalTitle'}}</h2>
+  <div class="main_content_large_solo_container">
+
+   <p>
+   	 {{pageLabelMap 'cc_imp_MyAccount_UploadFilesMessage'}}<p />
+     <input type="button" class="uploadFile" data-id="" value="{{pageLabelMap 'cc_imp_MyAccount_UploadFilesButton'}}"><br> 
+   </p>
+   <div id="modalSec">
+  
+ 
+ </div>
+  </div>
+ </div>
+</script>
+
+
+<script>
+// Get the new Upload Files View added to the My Account page
+CCRZ.MyAccount = _.extend(CCRZ.MyAccount||{},{
+    SubscUploadFiles :{
+        register : function(registrar){
+            registrar.registerNewView('uploadFiles', CCRZ.processPageLabelMap('cc_imp_MyAccount_UploadFilesMenu'), new CCRZ.views.uploadFilesView());
+        }
+    }
+});
+
+CCRZ.HDRMyAccount = _.extend(CCRZ.HDRMyAccount||{},{
+    SubscUploadFiles :{
+        register : function(registrar){
+            registrar.registerNewView('uploadFiles', CCRZ.processPageLabelMap('cc_imp_MyAccount_UploadFilesMenu'), new CCRZ.views.uploadFilesView());
+        }
+    }
+});
+
+jQuery(function($) {
+    CCRZ.views.uploadFilesModal = CCRZ.CloudCrazeView.extend({
+    	templateBoth : CCRZ.util.template("MyAccount-UploadFiles-UploadDialog"),
+    	viewName : "uploadFilesModal",
+    	events : {
+
+    	},
+    	initialize: function(){
+
+    	},
+    	render : function(modelData, callback){
+    		console.log('in uploadFilesModel render');
+    		this.dataSet = modelData;
+    		this.setElement($("#modalSec")); // where to insert the modal
+    		var v = this;
+    		v.$el.html(v.templateBoth());
+    		CCRZ.handleModalDisplay();
+    		callback();
+    		CCRZ.pubSub.trigger("view:"+this.viewName+":refresh", this);
+
+    	},
+    });
+
+    CCRZ.views.uploadFilesView = CCRZ.CloudCrazeView.extend({
+        templatePhone : CCRZ.util.template('MyAccount-Upload-Files'),
+        templateDesktop : CCRZ.util.template('MyAccount-Upload-Files'),
+        managedSubView : true,
+        viewName : "subscUploadFilesView",
+        events: {
+        	"click .uploadFile" : "displayUploadFileModal",
+        	"click .cancelFile" : "cancelEdit",
+        	"click .saveFile" : "saveUploadFile"
+        },
+        cancelEdit: function(event){
+        	var objLink = $(event.target);
+        	var id = objLink.data("id");
+        	this.closeModal(id);
+        },
+
+        uploadFile: function(theFile, formData, fileContents){
+                Visualforce.remoting.Manager.invokeAction(
+                    '{!$RemoteAction.cc_imp_ctrl_FileUpload.uploadFile}',
+                    CCRZ.pagevars.remoteContext,
+                    theFile.name,
+                    theFile.type,
+                    formData.fileBean.fileType,
+                    //reader.result,
+                    // window.btoa(reader.result),
+                    window.btoa(fileContents),
+                    formData.fileBean.comments,
+                    function(response ){
+                        theResponse = response;
+                        console.log('Upload file response: %o', theResponse);
+                        // close the modal
+                        //$("#uploadFilesMod").modal("hide");
+
+
+                        $("#uploadFilesMod").html(Handlebars.compile($("#UploadFiles-Confirmation").html()));
+
+
+                    }
+                );
+        },
+        saveUploadFile: function(event){
+        	console.log('in saveUploadFile');
+        	$("#saveButton").attr("disabled","disabled");
+        	$("#cancelButton").attr("disabled","disabled");
+
+        	var formData = form2js('uploadFileForm', '.', false, function(node){}, false);
+        	console.log('Form Data: %o', formData);
+
+        	// Read the file
+        	var inputFile = $("#thefile");
+        	console.log('Inputfile: %o', inputFile);
+        	var theFile = inputFile[0].files[0];//.files[0];
+        	console.log('theFile: %o', theFile);
+        	var reader = new FileReader();
+        	var fileContent;
+
+
+        	reader.onloadend = function(event){
+        		console.log('Finished reading file');
+                if(reader.result) fileContent = reader.result;
+        		// fileContent = reader.result;
+
+//                uploadFile(theFile, formData, fileContent);
+				Visualforce.remoting.Manager.invokeAction(
+					'{!$RemoteAction.cc_imp_ctrl_FileUpload.uploadFile}',
+					CCRZ.pagevars.remoteContext,
+					theFile.name,
+					theFile.type,
+					formData.fileBean.fileType,
+					//reader.result,
+					// window.btoa(reader.result),
+                    window.btoa(fileContent),
+					formData.fileBean.comments,
+					function(response ){
+						theResponse = response;
+						console.log('Upload file response: %o', theResponse);
+        				// close the modal
+        				//$("#uploadFilesMod").modal("hide");
+
+
+						$("#uploadFilesMod").html(Handlebars.compile($("#UploadFiles-Confirmation").html()));
+
+
+					}
+				);
+        	}
+
+//extend FileReader
+            if (!FileReader.prototype.readAsBinaryString) {
+                console.log('Overriding the filereader readAsBinaryString');
+                FileReader.prototype.readAsBinaryString = function (fileData) {
+                var binary = "";
+                var pt = this;
+                var reader = new FileReader();      
+                reader.onload = function (e) {
+                    var bytes = new Uint8Array(reader.result);
+                    var length = bytes.byteLength;
+                    for (var i = 0; i < length; i++) {
+                        binary += String.fromCharCode(bytes[i]);
+                    }
+                    //pt.result  - readonly so assign binary
+                    pt.content = binary;
+                    fileContent = binary;
+                    $(pt).trigger('onloadend');
+                }
+                reader.readAsArrayBuffer(fileData);
+                }
+            }
+
+        	reader.readAsBinaryString(theFile);
+
+        	console.log('call remote action to save file');
+        },
+        displayUploadFileModal : function(){
+        	//var objLink = $(event.target);
+        	//var id = objLink.data("id");
+        	this.openModal();
+        },
+        openModal : function() {
+        	var modalView = new CCRZ.views.uploadFilesModal();
+        	modalView.render(null, function(){
+        		$("#uploadFilesMod").modal("show");
+        	});
+        },
+        closeModal: function(idVal){
+        	$("#uploadFilesMod").modal("hide");
+        },
+        initSetup : function(callback){
+            // alert('Rendering the view');
+                         // load data into the view
+            $("#uploadFilesMod").hide();
+            callback();
+        },
+        renderPhone : function() {
+        	console.log('renderPhone');
+            this.$el.html(this.templatePhone(this));
+        },
+        renderDesktop : function() {
+        	console.log('renderDesktop');
+            this.$el.html(this.templateDesktop(this));
+        },
+        sampleFuncion: function(){
+        	console.log('sampleFunction');
+                         // could be ’submit’, etc
+        }
+    });
+});
+</script>
+
+</apex:component>

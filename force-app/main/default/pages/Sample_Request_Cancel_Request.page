@@ -1,0 +1,36 @@
+<apex:page controller="Sample_Request_Controller" tabStyle="Sample_Request__c" action="{!init_Cancel_Request}">
+<apex:stylesheet value="{!$Resource.SampleRequestStyles}"></apex:stylesheet>
+
+        <apex:sectionHeader title="{!$Label.Cancel} {!$Label.Sample_Request} {!Sample_Request_Link}"/>
+        <apex:form >
+                <apex:pageBlock title="{!$Label.Cancel} {!$Label.Sample_Request}">
+                        <apex:facet name="footer">
+                                <apex:outputPanel >
+                                        <center>
+                                        <apex:commandButton action="{!Cancel_Sample_Request}" value="{!$Label.Cancel} {!$Label.Sample_Request}" styleClass="btn" rendered="{!IF(ErrorMessage!='','False','True')}"/>
+                                        <apex:commandButton action="{!Cancel_Save}" value="{!$Label.abort} {!$Label.Cancel}" styleClass="btn"/> 
+                                        </center>
+                                </apex:outputPanel>
+                                </apex:facet>
+                                <apex:pageBlockSection title="{!$Label.Enter_Cancel_Reason}" columns="1" collapsible="false" rendered="{!IF(ErrorMessage!='','False','True')}">
+                                        <apex:InputField value="{!sampleRequest.Cancellation_Reason__c}" rendered="{!IF(ErrorMessage!='','False','True')}"/>
+                                </apex:pageBlockSection>
+
+                                <apex:pageBlockSection title="{!$Label.Insufficient_Access}" columns="1" collapsible="false" rendered="{!IF(ErrorMessage!='','True','False')}">
+                                    <apex:pageBlock title="{!$Label.Error_Messages}" rendered="{!IF(ErrorMessage!='','True','False')}">
+                                        <apex:outputText styleClass="Warning" value="{!ErrorMessage}" rendered="{!IF(ErrorMessage!='','True','False')}"/>
+                                        <apex:outputText styleClass="Warning" value=" Current Sample Coordinator: " rendered="{!IF(ErrorMessage!='','True','False')}"/>
+                                        <apex:outputField value="{!sampleRequest.Sample_Coordinator__c}" rendered="{!IF(ErrorMessage!='','True','False')}"/>
+                                    </apex:pageBlock>
+                                </apex:pageBlockSection>
+
+                                <apex:pageBlockSection title="{!$Label.Validation_Error}" columns="1" collapsible="false" rendered="{!IF(ValidationErrorMessage!='','True','False')}">
+                                    <apex:pageBlock title="Error Message(s)" rendered="{!IF(ValidationErrorMessage!='','True','False')}">
+                                        <apex:outputText escape="False" styleClass="Warning" value="{!ValidationErrorMessage}" rendered="{!IF(ValidationErrorMessage!='','True','False')}"/>
+                                    </apex:pageBlock>
+                                </apex:pageBlockSection>
+
+                    </apex:pageBlock> 
+                </apex:form>
+
+</apex:page>

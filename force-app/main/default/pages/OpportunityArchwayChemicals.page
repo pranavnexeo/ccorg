@@ -1,0 +1,179 @@
+<apex:page standardcontroller="Opportunity" extensions="OpportunityArchwayChemicalsController">
+
+    <style type="text/css">
+        .custPopup {
+            background-color: white;
+            border-width: 2px;
+            border-style: solid;
+            z-index: 9999;
+            left: 50%;
+            padding: 10px;
+            position: absolute;
+            /* These are the 3 css properties you will need to change so the popup 
+            displays in the center of the screen. First set the width. Then set 
+            margin-left to negative half of what the width is. You can add 
+            the height property for a fixed size pop up if you want.*/
+            width: 500px;
+            margin-left: -250px;
+            top: 100px;
+        }
+        
+        .popupBackground {
+            background-color: black;
+            opacity: 0.20;
+            filter: alpha(opacity=20);
+            position: absolute;
+            width: 100%;
+            height: 100%;
+            top: 0;
+            left: 0;
+            z-index: 9998;
+        }
+    </style>
+   
+    <apex:messages />
+    <apex:sectionheader title="{!$Label.Opp_Edit}" subtitle="{!IF(ISNULL(Opportunity.Name), $Label.Opp_New , Opportunity.Name)}" />
+    <apex:form id="theform">
+        <apex:actionFunction action="{!makeTargetRequired}" name="MakeTargetRequired" rerender="targetdate,sectionitem" immediate="true">
+            <apex:param name="firstParam" value="" />
+        </apex:actionFunction>
+           <apex:actionFunction action="{!changeStageName}" name="changeStageName" rerender="probability" immediate="true">
+            <apex:param name="stageName" value="" />
+        </apex:actionFunction>
+     
+        
+        <apex:pageblock mode="edit" title="{!$Label.Opp_Edit}">
+            <apex:pageblockButtons >
+                <apex:commandButton action="{!customSave}" value="{!$Label.Opp_Save}" reRender="theform" />
+                <apex:commandButton action="{!cancel}" value="{!$Label.Opp_Cancel}" />
+            </apex:pageblockButtons>
+
+
+            <apex:pageblocksection title="{!$Label.Opp_New_Section}" showheader="false" columns="1">
+                <apex:inputfield value="{!Opportunity.Name}" required="true" style="width:75%;"/>
+                <apex:inputfield value="{!Opportunity.SAP_Material__c}" required="false" style="width:75%;"/>
+                
+            </apex:pageblocksection>
+            
+            
+            <apex:pageblocksection title="{!$Label.Opp_Profile}" showheader="false" columns="2" >
+
+                <apex:inputfield value="{!Opportunity.CurrencyIsoCode}" required="true" />
+                <apex:inputfield value="{!Opportunity.Requested_Supplier__c}" required="true" />
+            </apex:pageblocksection>
+            
+            
+            <apex:actionregion >  
+            <apex:pageblocksection showheader="false" columns="2" id="customerinfo">
+            
+                <apex:inputfield value="{!Opportunity.AccountId}" required="true" >
+                <apex:actionsupport event="onchange" action="{!populateContact}" rerender="customerinfo" />
+                </apex:inputfield>
+                <apex:inputfield value="{!Opportunity.End_Market__c}" required="false" />
+                
+                <apex:inputfield value="{!Opportunity.Related_HQ_Account__c}" required="false" />
+                <apex:inputfield value="{!Opportunity.Technical_Representative__c}" required="false" />
+
+                <apex:pageblocksectionitem helptext="{!$Label.Opp_Primary_Contact_Help_Text}">
+                    <apex:outputlabel value=" {!$Label.Opp_Primary_Contact} " />
+                    <apex:outputpanel >
+                        <apex:selectlist value="{!Opportunity.Contact__c}" size="1" id="contactlist">
+                            <apex:selectoptions value="{!contacts}" />
+                        </apex:selectlist>
+                        <apex:commandbutton value="{!$Label.Opp_Create_New_Contact}" action="{!showPopup}" rerender="contactpanel" immediate="true" title="{!$Label.Opp_Create_New_Contact_Help}" disabled="{!isnull(opportunity.Accountid)}" />
+                    </apex:outputpanel>
+                </apex:pageblocksectionitem>
+                
+                </apex:pageblocksection>
+                </apex:actionregion>
+                <apex:pageblocksection showheader="false" columns="2" >
+                
+                
+                <apex:pageblocksectionitem >
+                <apex:outputlabel value="{!$Label.Opp_Target}"/>
+                <apex:outputpanel id="sectionitem">
+                <apex:inputfield value="{!Opportunity.Target__c}" id="target" onchange="MakeTargetRequired(this.checked)" />
+                <apex:outputfield value="{!Opportunity.Target_Date__c}" label="" id="targetdate" />
+                <apex:outputlabel value="  {!$Label.Opp_Target_Type} "/>
+                <apex:inputfield value="{!Opportunity.Target_Type__c}"  id="targettype"  />  
+                
+                </apex:outputpanel>
+                </apex:pageblocksectionitem>
+                <apex:inputfield value="{!Opportunity.CloseDate}" required="true" />
+                </apex:pageblocksection>
+                <apex:actionregion >
+                <apex:pageblocksection columns="2">        
+                <apex:inputfield value="{!Opportunity.Price_Unit_of_Measure__c}" required="false" />
+        
+                <apex:pageblocksectionitem helptext="{!$Label.Opp_Stage_Help_Text}">
+                    <apex:outputlabel value="{!$Label.Opp_Stage}" />
+                    <apex:outputpanel >
+                    <apex:inputField value="{!Opportunity.StageName}" onchange="changeStageName(this.value)" >
+                    </apex:inputField>
+                        
+                    </apex:outputpanel>
+                </apex:pageblocksectionitem>
+                </apex:pageblocksection>
+                </apex:actionregion>
+                <apex:pageblocksection columns="2">
+          
+                <apex:inputfield value="{!Opportunity.Potential_CM__c}" required="false" />
+                <apex:inputfield value="{!Opportunity.Lost_Reason__c}" required="true" />
+                <apex:inputfield value="{!Opportunity.Annual_Usage__c}" required="false" />
+                <apex:inputfield value="{!Opportunity.Probability}" required="false" id="probability" />
+                <apex:inputfield value="{!Opportunity.LeadSource_User__c}"/>
+                <apex:inputfield value="{!Opportunity.LeadSource}" required="false" />
+                <apex:inputfield value="{!Opportunity.CampaignId}" required="false" />
+                <apex:inputfield value="{!Opportunity.External_Ref_Id__c}"/>
+                <apex:pageblocksectionitem />
+                
+
+                
+                
+            </apex:pageblocksection>
+            
+            
+            
+            <apex:pageblocksection title="{!$Label.Opp_New_Section}" showheader="false" columns="1">
+             <apex:inputfield value="{!Opportunity.Overview__c}" required="false" style="width:75%;"/>
+            </apex:pageblocksection>
+            <apex:pageblocksection title="{!$Label.Opp_System_Information}" showheader="true" columns="2">
+                <apex:pageblocksectionitem />
+                <apex:outputfield value="{!Opportunity.Last_Modified_By__c}" />
+            </apex:pageblocksection>
+            <apex:actionRegion >
+<apex:outputPanel id="contactpanel">
+            <apex:outputPanel styleClass="popupBackground" layout="block" rendered="{!displayPopUp}"/>
+              <apex:outputPanel styleClass="custPopup" layout="block" rendered="{!displayPopUp}">  
+                <apex:pageblock >
+                <apex:pageblockbuttons >
+                <apex:commandButton value="{!$Label.Opp_Pop_Up_Save_Contact}" action="{!createcontact}" reRender="contactpanel,customerinfo,contactlist"/>
+                <apex:commandButton value="{!$Label.Opp_Pop_Up_Close}" action="{!closePopup}" rerender="contactpanel" immediate="true"/>
+                </apex:pageblockbuttons> 
+                <apex:pageblocksection title="{!$Label.Opp_Pop_Up_Create_Contact}">
+                <apex:pageblocksectionitem >
+                <apex:outputlabel value="{!$Label.Opp_Pop_Up_First_Name}"/>
+                <apex:inputfield value="{!contact.FirstName}"/>
+                </apex:pageblocksectionitem>
+                <apex:pageblocksectionitem >
+                <apex:outputlabel value="{!$Label.Opp_Pop_Up_Last_Name}"/>
+                <apex:inputfield value="{!contact.LastName}"/>
+                </apex:pageblocksectionitem>
+                <apex:pageblocksectionitem >
+                <apex:outputlabel value="{!$Label.Opp_Pop_Up_Phone}"/>
+                <ApeX:inputfield value="{!contact.Phone}"/>
+                </apex:pageblocksectionitem>
+                <apex:pageblocksectionitem >
+                <apex:outputlabel value="{!$Label.Opp_Pop_Up_Email}"/>
+                <ApeX:inputfield value="{!contact.Email}" required="true"/>
+                </apex:pageblocksectionitem>
+                </apex:pageblocksection>
+                </apex:pageblock>
+                </apex:outputPanel>
+            </apex:outputPanel>
+           </apex:actionRegion> 
+
+        </apex:pageblock>
+    </apex:form>
+
+</apex:page>

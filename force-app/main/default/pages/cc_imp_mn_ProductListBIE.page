@@ -1,0 +1,5 @@
+<apex:page showHeader="false" sidebar="false" docType="html-5.0" standardStylesheets="false" cache="false" applyHtmlTag="false" applyBodyTag="false" >
+<!-- Registration Page Override -->
+
+  <c:cc_imp_mn_ProductList />
+</apex:page>

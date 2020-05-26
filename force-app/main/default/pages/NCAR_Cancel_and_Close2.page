@@ -1,0 +1,17 @@
+<apex:page standardcontroller="NCAR_Cases__c" extensions="NCAR_Extension_New" >
+<apeX:form >
+<apex:pageblock rendered="{!NOT(displayrequestmoreinfoerror)}">
+<apex:pageblockbuttons >
+<apex:commandbutton value="Cancel and Close" action="{!cancelandclose}"/>
+<apex:commandbutton value="Go Back" action="{!cancel}"/>
+</apex:pageblockbuttons>
+<apex:inputTextarea value="{!Comments}" cols="20" rows="10"/>
+</apex:pageblock>
+<apex:pageblock rendered="{!displayrequestmoreinfoerror}">
+<apex:pageblockbuttons >
+<apex:commandbutton value="Cancel" action="{!cancel}" />
+</apex:pageblockbuttons>
+<apex:pageMessage summary="You are not the Approver and can not Terminate this NCAR." severity="error" strength="3" />
+</apex:pageblock>
+</apex:form>
+</apex:page>

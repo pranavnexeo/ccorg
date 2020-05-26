@@ -1,0 +1,282 @@
+<apex:component >
+
+<script>
+    CCRZ.uiProperties.ShippingView.desktop.tmpl = 'MyNexeo-Shipping-Desktop';
+    CCRZ.uiProperties.ShippingView.phone.tmpl = 'MyNexeo-Shipping-Mobile';
+</script>
+
+<script id="MyNexeo-Shipping-Desktop" type="text/template">
+  <form id="shipForm" class="margin_form shipForm">
+   <div class="alert alert-error messagingSection-Error" style="display: none"></div>
+   <div class="alert alert-info messagingSection-Info" style="display: none"></div>
+   <div class="alert alert-warning messagingSection-Warning" style="display: none"></div>
+   <fieldset>
+    <legend>{{pageLabelMap 'CheckOut_ShipmentInformation'}}</legend>
+    <div class="shipping_payment">
+     <div class="row coso_ship_guide_text">{{pageLabelMap 'CheckOut_ShippingGuidingText'}}</div>
+     {{#ifDisplay 'SO.DsplShipOptions'}}
+      {{#if this.shippingMethods}}
+       <div class="row coso_ship_method">
+        <label>{{pageLabelMap 'CheckOut_ShippingMethod'}}</label>
+        <select class="shippingOptions" name="shippingMethod">
+         {{#each this.shippingMethods}}
+          <option value="{{this.uniqueId}}" {{#ifEquals ../shippingMethod this.uniqueId}} selected {{/ifEquals}}>
+           {{this.provider}} - {{pageLabelMap this.serviceName}}
+          </option>
+         {{/each}}
+        </select>
+       </div>
+       <div class="row coso_est_shipping">
+        <label>{{pageLabelMap 'CheckOut_EstimatedShipping'}}</label><span class="shippingCost"></span>
+       </div>
+      {{/if}}
+     {{/ifDisplay}}
+     {{#ifDisplay 'SO.DsplShipComplete'}}
+      <div class="row coso_ship_complete">
+       <label>{{pageLabelMap 'CheckOut_ShipComplete'}}</label>
+       <input type="checkbox" name="shipComplete" class="boxes" value="true" {{#if this.shipComplete}} checked {{/if}} />
+      </div>
+     {{/ifDisplay}}
+     {{#ifDisplay 'SO.DsplShipNotes'}}
+      <div class="row coso_ship_notes">
+       <label>{{pageLabelMap 'CheckOut_ShippingNotes'}}</label>
+       <textarea name="shippingInst" rows="6" class="shipnotes">{{this.shippingInst}}</textarea>
+      </div>
+     {{/ifDisplay}}
+     {{#ifDisplay 'SO.ShowReqDate'}}
+      <div class="row deliveryDateMessages" id="deliveryDateMessages"></div>
+      {{#unless this.requestedDateData.ApiError}}
+      <div class="row coso_ship_delivery_date">
+       <label>{{pageLabelMap 'Checkout_RequestedDeliveryDt'}}</label>
+       <input name="requestedDateStr" value="{{this.requestedDateStr}}" class="requestedDate">
+           
+           
+      </div>
+      {{/unless}}
+     {{/ifDisplay}}
+     <div class="row">{{pageLabelMap 'Checkout_Shipping_Conditions' }}</div>
+    </div>
+   </fieldset>
+   {{#if this.terms}}
+    <fieldset>
+     <legend class="coso_footer_tc">{{pageLabelMap 'Footer_TermsAndConditions'}}</legend>
+     <div class="shipping_payment">
+      {{#each this.terms}}
+       <div class="row shiping_payment_term">
+        <div class="shipping_payment_checkbox"><input type="checkbox" name="#" class="boxes mynexeo"/></div>
+        <div class="shipping_payment_desc"><strong>{{pageLabelMap 'cc_imp_SiteRegister_TermsDescription'}} </strong></div>
+       </div>
+      {{/each}}
+     </div>
+    </fieldset>
+   {{/if}}
+   <p class="link_button coso_proceed shippingDetails">
+    <input class="button processBack" type="button" value="{{pageLabelMap 'Back'}}" alt="{{pageLabelMap 'Back'}}" />
+    <input class="button right proceed processShippingInfo disabled" type="button" id="processShipping" disabled value="{{pageLabelMap 'CheckOut_AcceptAndProceed'}}" alt="{{pageLabelMap 'CheckOut_AcceptAndProceed'}}" />
+    <br/>
+   </p>
+  </form>
+</script>
+
+<script id="MyNexeo-Shipping-Mobile" type="text/template">
+  <div class="checkout_container">
+   <div class="alert alert-error messagingSection-Error" style="display: none"></div>
+   <div class="alert alert-info messagingSection-Info" style="display: none"></div>
+   <div class="alert alert-warning messagingSection-Warning" style="display: none"></div>
+   <h2 class="title">{{pageLabelMap 'CheckOut_ShippingStep'}} </h2>
+   <div class="checkout_detail">
+    <div class="checkout_detail_item">
+     <div class="accordion clear" id="accordion">
+      <div class="accordion-group">
+       <div class="accordion-heading">
+        <a class="accordion-toggle" data-parent="#accordion" data-toggle="collapse" href="#collapseOne">{{pageLabelMap 'CheckOut_ShipmentInformation'}}</a>
+       </div>
+       <div class="accordion-body in collapse" id="collapseOne">
+        <div class="accordion-inner">
+         <form id="shipForm" class="shipform">
+          {{#ifDisplay 'SO.DsplShipOptions'}}
+           {{#if this.shippingMethods}}
+            <label class="basic">{{pageLabelMap 'CheckOut_ShippingMethod'}}</label>
+            <select class="shippingOptions checkout_wide" name="shippingMethod">
+             {{#each this.shippingMethods}}
+              <option value="{{this.uniqueId}}" {{#ifEquals ../shippingMethod this.uniqueId}} selected {{/ifEquals}}>
+               {{this.provider}} - {{pageLabelMap this.serviceName}}
+              </option>
+             {{/each}}
+            </select>
+            <label class="basic">{{pageLabelMap 'CheckOut_EstimatedShipping'}}</label><span class="shippingCost displayData"></span>
+           {{/if}}
+          {{/ifDisplay}}
+          {{#ifDisplay 'SO.DsplShipComplete'}}
+           <p>
+            <label class="basic">{{pageLabelMap 'CheckOut_ShipComplete'}}</label>
+            <input type="checkbox" name="shipComplete" class="shipping_options displayData" value="true" {{#if this.shipComplete}} checked {{/if}} />
+           </p>
+          {{/ifDisplay}}
+          {{#ifDisplay 'SO.ShowReqDate'}}
+           <p class="deliveryDateMessages" id="deliveryDateMessages"></p>
+           {{#unless this.requestedDateData.ApiError}}
+           <p>
+            <label class="basic">{{pageLabelMap 'Checkout_RequestedDeliveryDt'}}</label>
+            <input name="requestedDateStr" value="{{this.requestedDateStr}}" class="requestedDate checkout_wide">
+           </p>
+           {{/unless}}
+          {{/ifDisplay}}
+          {{#ifDisplay 'SO.DsplShipNotes'}}
+           <p>
+            <label class="basic">{{pageLabelMap 'CheckOut_ShippingNotes'}}</label>
+            <textarea name="shippingInst" class="notes shipnotes">{{this.shippingInst}}</textarea>
+           </p>
+          {{/ifDisplay}}
+          <p>
+           <label class="shipping_options"><input class="shipping_options boxes terms" name="acceptTerms" type="checkbox" value="checkbox">{{pageLabelMap 'CheckOut_TermsAndConditionsAccept'}}</label>
+          </p>
+          <div class="button_large_container_steps">
+           <input class="large_grey_button processShippingInfo proceed disabled" name="" automation-id="CheckOut_MobileGotoReview" type="button" disabled value="{{pageLabelMap 'CheckOut_MobileGotoReview'}}">
+               
+               </div>
+         </form>
+        </div>
+       </div>
+      </div>
+     </div>     
+    </div>
+   </div>
+
+   <h2 class="title">{{pageLabelMap 'Footer_TermsAndConditions'}}</h2>
+   <div class="checkout_detail_item">
+    <div class="accordion clear" id="termsAccordion">
+     <div class="accordion-group">
+      {{#each this.terms}}
+       <p class="basic term{{id}}">
+        <div class="accordion-heading">
+         <a class="accordion-toggle" data-parent="#termsAccordion" data-toggle="collapse" href="#term_{{id}}">{{this.title}}</a>
+        </div>
+        <div class="accordion-body in collapse" id="term_{{id}}">
+         <div class="accordion-inner">
+          {{unescape this.description}}
+         </div>
+        </div>
+       </p>
+      {{/each}}
+     </div>
+    </div>
+   </div>
+
+  </div>
+</script>
+
+<script type="text/javascript">
+
+
+  jQuery(function($) {
+      
+        CCRZ.pubSub.on('view:cartCheckoutView:refresh', function(cartCheckoutView) {
+        var proceedButton = $("#processShipping");
+        if (proceedButton) {
+            //alert("ProceedButton");
+            proceedButton.attr('disabled','disabled').addClass('disabled');
+        }
+            
+            
+                      $('.requestedDate').Zebra_DatePicker({           
+                onClear: function(view, elements) {
+                  
+                  var proceedButton = $("#processShipping");
+                  console.log('FGG 217');                   
+                  var d = $('.requestedDate').val();                      
+                  if (proceedButton) 
+                  {
+                     var checkedTerms = $('.mynexeo:checked').length;
+                     if (1 == checkedTerms && d!='') 
+                     {                     
+                         console.log('FGG if Condition 221');
+                         proceedButton.removeAttr('disabled').removeClass('disabled'); 
+                         proceedButton.prop({disabled: false});
+                         console.log('FGG after removeclass');                      
+                     }
+                     else{
+                            proceedButton.prop('disabled', true);                          
+                            console.log('FGG else Condition 225');
+                            //proceedButton.attr('disabled','disabled').addClass('disabled');
+                         }
+                   }
+    },            
+              	onSelect: function(view, elements) {
+                  
+                  var proceedButton = $("#processShipping");
+                  console.log('FGG 217');                   
+                  var d = $('.requestedDate').val();                      
+                  if (proceedButton) 
+                  {
+                     var checkedTerms = $('.mynexeo:checked').length;
+                     if (1 == checkedTerms && d!='') 
+                     {                     
+                         console.log('FGG if Condition 221');
+                         proceedButton.removeAttr('disabled').removeClass('disabled'); 
+                         proceedButton.prop({disabled: false});
+                         console.log('FGG after removeclass');                      
+                     }
+                     else{
+                            proceedButton.prop('disabled', true);                          
+                            console.log('FGG else Condition 225');
+                            //proceedButton.attr('disabled','disabled').addClass('disabled');
+                         }
+                   }
+    }        
+		});
+                  var datepicker = $('.requestedDate').data('Zebra_DatePicker');
+
+            	  var formatToUseOnProcess = 'm/d/Y';
+            	  // If french and Candian then use the format 'Y-m-d'
+            	  if (new String(CCRZ.pagevars.userLocale).valueOf()  == new String('fr_CA').valueOf()) {
+                      formatToUseOnProcess = 'Y-m-d';
+                  }
+
+                  if(datepicker){
+                     datepicker.clear_date;
+                     datepicker.update({
+                         direction: 1,
+                         disabled_dates: ['* * * 0,6'],
+                         format: formatToUseOnProcess,
+                         
+                        });
+                      
+                  }
+     
+     
+            
+  });
+      
+        CCRZ.pubSub.on("view:ShippingView:refresh", function(shippingView) {
+                 shippingView.handleTerms = function() {
+                      var proceedButton = $("#processShipping");                        
+                      console.log('FGG 217');                   
+                      var d = $('.requestedDate').val();                      
+                if (proceedButton) {
+           	         var checkedTerms = $('.mynexeo:checked').length;
+                    if (1 == checkedTerms && d!='') {                     
+                         proceedButton.removeAttr('disabled').removeClass('disabled');                                    
+                     
+                         proceedButton.prop({
+  disabled: false
+});
+                          console.log('FGG after removeclass');
+                      
+                    }
+                    else {
+                        proceedButton.prop('disabled', true);                         
+                          console.log('FGG else Condition 225');            
+                    }
+                }
+                 };
+             
+    shippingView.events['click .mynexeo'] = 'handleTerms';
+             
+    shippingView.delegateEvents();  
+  }); 
+  });
+
+</script>
+
+</apex:component>

@@ -1,0 +1,316 @@
+<apex:page standardController="Authorization_for_Expenditure__c" extensions="AFEExtension"  sidebar="false">
+<script>
+function hide()
+{
+    alert("reminder sent");
+}
+function getAttachments()
+{
+window.open('https://nexeo.sharepoint.com/NIT/tech/Applications/Forms/AllItems.aspx?RootFolder=%2FNIT%2Ftech%2FApplications%2FSaaS%2FSalesforce%2FApplication%20Artifacts%2FAuthorization%20For%20Expenditure%2FAFE%20Reference%20Documents&InitialTabId=Ribbon%2EDocument&VisibilityContext=WSSTabPersistence (https://nexeo.sharepoint.com/NIT/tech/Applications/Forms/AllItems.aspx?RootFolder=/NIT/tech/Applications/SaaS/Salesforce/Application Artifacts/Authorization For Expenditure/AFE Reference Documents&InitialTabId=Ribbon.Document&VisibilityContext=WSSTabPersistence');
+}
+
+</script>
+
+    <apex:pagemessages ></apex:pagemessages>
+    
+   <apex:form >
+        
+        <!--apex:actionFunction name="callRecordAudit" action="{!AFEView}" reRender="pageDetails"/ -->
+        
+        <apex:pageBlock id="blk">
+        
+        <apex:pageBlockButtons location="top" >
+            
+            <apex:commandButton action="{!URLFOR($Action.Authorization_for_Expenditure__c.Edit,Authorization_for_Expenditure__c.Id)}" value="Edit" rendered="{!IF(Authorization_for_Expenditure__c.Status__c == 'New' || Authorization_for_Expenditure__c.Status__c == 'Rejected'||$User.Email==$Setup.CustomSettings__c.Divisional_AFE_Coordinator__c || $Permission.Show_AFE_Edit_Button,TRUE,FALSE)}"/>
+            <apex:commandButton action="{!URLFOR($Action.Authorization_for_Expenditure__c.Delete,Authorization_for_Expenditure__c.Id)}" value="Delete"/>
+            <apex:commandButton action="{!remainder}" value="Reminder for Approval" rendered="{!IF(Authorization_for_Expenditure__c.Status__c =='Pending Approval' || Authorization_for_Expenditure__c.Status__c=='Submitted','TRUE','FALSE')}"  onclick="hide();"   />
+            <apex:commandButton action="{!MarkAfe}" value="Mark AFE as Satsified" rendered="{!IF(Authorization_for_Expenditure__c.Status__c =='Approved',TRUE,FALSE)}"  >
+            <apex:actionsupport event="onclick" rerender="blk"/>
+            
+            </apex:commandButton>
+            <apex:commandButton action="{!ViewAppr}" value="View Approvers" rendered="{!IF(Authorization_for_Expenditure__c.Status__c == 'Approved' || Authorization_for_Expenditure__c.Status__c == 'Completed & Accepted',FALSE,TRUE)}"/>
+            <!-- input type="button" class="btn" value="View Approvers"
+               onclick="window.location.href='/apex/changeApprovers?id={!Authorization_for_Expenditure__c.Id}'"/ -->
+            <apex:commandButton value="AFE Closeout & Cancellation" action="{!showPopup}" rerender="tstpopup" rendered="{!IF(Authorization_for_Expenditure__c.Status__c == 'Approved' 
+            || Authorization_for_Expenditure__c.Status__c == 'CloseOut Rejected' || Authorization_for_Expenditure__c.Status__c == 'Completed & Accepted'
+            || Authorization_for_Expenditure__c.Status__c == 'Pending CloseOut Approval',TRUE,FALSE)}"/>
+            <apex:commandButton action="{!showPopupCancel}" value="Cancel AFE" reRender="Comments" immediate="true" rendered="{!IF(Authorization_for_Expenditure__c.CloseStatus__c == 'Cancelled' || Authorization_for_Expenditure__c.Status__c == 'Approved'||Authorization_for_Expenditure__c.Status__c == 'Completed & Accepted',False,True)}"/>
+         </apex:pageBlockButtons>
+        </apex:pageBlock>
+        
+        
+           <apex:outputPanel id="Comments" >
+        <apex:outputPanel styleClass="popupBackground" layout="block" rendered="{!displayPopUpCancel}"/>
+            <apex:outputPanel styleClass="custPopup" layout="block" rendered="{!displayPopUpCancel}">
+            <apex:pageBlock >
+                <apex:pageBlockSection id="sec">
+                    <apex:inputField value="{!Authorization_for_Expenditure__c.Comments_for_Cancellation__c}"/>
+                    
+                </apex:pageBlockSection>
+            </apex:pageBlock>
+               <apex:pageBlock >
+               <apex:commandButton value="Save" action="{!CancelAfe}"  />
+               <apex:commandButton value="Cancel" action="{!Cancel}" />
+               </apex:pageBlock>
+            </apex:outputPanel>
+            </apex:outputPanel>
+        
+        
+        
+        
+         <apex:outputPanel id="tstpopup">
+        <apex:outputPanel styleClass="popupBackground" layout="block" rendered="{!displayPopUp}"/>
+            <apex:outputPanel styleClass="custPopup" layout="block" rendered="{!displayPopUp}">
+            <apex:pageBlock >
+                <apex:pageBlockSection id="sec">
+                    <apex:inputField value="{!Authorization_for_Expenditure__c.AFE_Close_out_date__c}">
+                     <apex:actionsupport event="onchange" rerender="sec" />
+                    </apex:inputField>
+                    
+                        <apex:inputField required="true" rendered="{!Authorization_for_Expenditure__c.AFE_Close_out_date__c=='Yes'}" value="{!Authorization_for_Expenditure__c.AFE_CloseOut_date1__c}"/>                       
+                        <apex:inputField required="true" rendered="{!Authorization_for_Expenditure__c.AFE_Close_out_date__c=='Yes'}" value="{!Authorization_for_Expenditure__c.Planned_Operational_Date__c}"/>
+                        <apex:inputField required="true" rendered="{!Authorization_for_Expenditure__c.AFE_Close_out_date__c=='Yes'}" value="{!Authorization_for_Expenditure__c.Actual_Operational_Date_In_Service__c}"/>
+                        <apex:inputField required="true" rendered="{!Authorization_for_Expenditure__c.AFE_Close_out_date__c=='Yes'}" value="{!Authorization_for_Expenditure__c.No_new_commitments_or_PO_s_will_be_accep__c}"/>
+                        <apex:inputField required="true" rendered="{!Authorization_for_Expenditure__c.AFE_Close_out_date__c=='Yes'}" value="{!Authorization_for_Expenditure__c.Exchange_Rate_when_Complete__c}" />                                               
+                        <apex:inputField value="{!Authorization_for_Expenditure__c.Distribution_List__c}"/>
+                        <apex:inputField value="{!Authorization_for_Expenditure__c.Distribution_List2__c}"/>
+                        <apex:inputField value="{!Authorization_for_Expenditure__c.Distribution_List3__c}"/>
+                        <apex:inputField value="{!Authorization_for_Expenditure__c.Distribution_List4__c}"/>
+                        <apex:inputField value="{!Authorization_for_Expenditure__c.Distribution_List5__c}"/>
+                    
+                </apex:pageBlockSection>
+            </apex:pageBlock>
+               <apex:pageBlock >
+               <apex:commandButton value="Save" action="{!Save}" />
+               <apex:commandButton value="Cancel" action="{!Cancel}" />
+               </apex:pageBlock>
+            </apex:outputPanel>
+            </apex:outputPanel>
+            
+         <apex:outputPanel id="pageDetails">
+            <apex:actionStatus startText="Recording Audit..." id="myStatus">
+             <apex:facet name="stop"></apex:facet>
+            </apex:actionStatus>
+            <!--  apex:detail subject="{!Authorization_for_Expenditure__c.Id}" relatedList="true" title="false" relatedListHover="false" id="detailPage"/ -->
+         </apex:outputPanel>
+        <apex:pageBlock >
+            <apex:pageBlockSection showHeader="true" title="General Information Section" columns="2">
+                        <apex:pageBlockSectionItem >
+                        <apex:outputLabel for="afe_name" value="AFE#"/>
+                        <apex:outputField title="AFE Number" value="{!Authorization_for_Expenditure__c.AFE__c}"/>                       
+                        </apex:pageBlockSectionItem>
+
+                        <apex:outputField value="{!Authorization_for_Expenditure__c.Tracking_Control_Number__c}"/>
+                        <apex:outputField value="{!Authorization_for_Expenditure__c.Budget_Number__c}"/>
+                        <apex:pageBlockSectionItem />
+                        <apex:outputField value="{!Authorization_for_Expenditure__c.E_Number__c}"/>
+                        <apex:outputField value="{!Authorization_for_Expenditure__c.WBS__c}"/>
+                        <apex:pageBlockSectionItem />
+                        <apex:outputField value="{!Authorization_for_Expenditure__c.AFE_Class__c}"/>
+                        <apex:outputField value="{!Authorization_for_Expenditure__c.Origination_Type__c}"/>
+                        <apex:outputField value="{!Authorization_for_Expenditure__c.Confidential_AFE__c}"/>
+                        <apex:outputField value="{!Authorization_for_Expenditure__c.Proper_Attachment_Loaded__c}"/>
+                        
+                        <apex:outputField value="{!Authorization_for_Expenditure__c.Short_form__c}"/>
+                        <apex:outputField value="{!Authorization_for_Expenditure__c.AFE_Title__c}"/>
+                        <apex:pageBlockSectionItem />
+                        <apex:outputField value="{!Authorization_for_Expenditure__c.HSSE_Impact__c}"/>
+                        <apex:outputField value="{!Authorization_for_Expenditure__c.USD_Total_Amount__c}"/>
+                        <apex:outputField value="{!Authorization_for_Expenditure__c.PSM_Covered_Process__c}"/>
+                        <apex:outputField value="{!Authorization_for_Expenditure__c.energy_Improvement__c}"/>
+                        <apex:outputField value="{!Authorization_for_Expenditure__c.Local_Currency__c}"/>
+                        <apex:pageBlockSectionItem />
+                        <apex:outputField value="{!Authorization_for_Expenditure__c.Local_Currency_Total_Amount__c}"/>
+                        <apex:outputField value="{!Authorization_for_Expenditure__c.Exchange_Rate__c}"/>
+                        <apex:outputField value="{!Authorization_for_Expenditure__c.Expense_Amount__c}"/>
+                        <apex:pageBlockSectionItem />
+                        <apex:outputField value="{!Authorization_for_Expenditure__c.Brief_Description__c}"/>
+                        <apex:pageBlockSectionItem />
+                        <apex:outputField value="{!Authorization_for_Expenditure__c.CloseStatus__c}"/>
+                        <apex:outputField value="{!Authorization_for_Expenditure__c.Status__c}"/>
+                        <apex:pageBlockSectionItem />
+                        <apex:outputField value="{!Authorization_for_Expenditure__c.Type_of_Project__c}"/>
+                </apex:pageBlockSection>
+                
+                <apex:pageBlockSection rendered="{!Authorization_for_Expenditure__c.Type_of_Project__c='Short Form'}" >
+                      <apex:outputField value="{!Authorization_for_Expenditure__c.total_asset_cost__c}"/>
+                      <apex:outputField value="{!Authorization_for_Expenditure__c.Number_of_Assets__c}"/>
+                      <apex:outputField value="{!Authorization_for_Expenditure__c.Freight__c}"/>
+                      <apex:outputField value="{!Authorization_for_Expenditure__c.Taxes__c}"/>
+                      <apex:outputField value="{!Authorization_for_Expenditure__c.Contingency__c}"/>                        
+                </apex:pageBlockSection>
+                <apex:pageBlockSection rendered="{!Authorization_for_Expenditure__c.Type_of_Project__c='Detailed Project'}" >
+                        <apex:outputField value="{!Authorization_for_Expenditure__c.Project_Charter__c}"/>
+                        <apex:outputField value="{!Authorization_for_Expenditure__c.Business_Case_Justification__c}"/>
+                        <apex:outputField value="{!Authorization_for_Expenditure__c.WBS_Structure__c}"/>
+                        <apex:outputField value="{!Authorization_for_Expenditure__c.Any_other_supporting_documents__c}"/>
+                        
+                </apex:pageBlockSection>
+                
+                <apex:pageBlockSection showHeader="true" title="AFE Information Section" columns="2">
+                        <apex:outputField value="{!Authorization_for_Expenditure__c.Commercial_Unit__c}"/>
+                        <apex:outputField value="{!Authorization_for_Expenditure__c.Business_Group__c}"/>
+                        <apex:outputField value="{!Authorization_for_Expenditure__c.Region__c}"/>
+                         <apex:outputField value="{!Authorization_for_Expenditure__c.City_OLD__c}"/>
+                        <apex:outputField value="{!Authorization_for_Expenditure__c.State_Province_OLD__c}"/>
+                        <apex:outputField value="{!Authorization_for_Expenditure__c.Country_OLD__c}"/>
+                        <apex:outputField value="{!Authorization_for_Expenditure__c.Physical_Location__c}"/>
+                                           
+                        <apex:outputField value="{!Authorization_for_Expenditure__c.Company_Code__c}"/>
+                        <apex:pageBlockSectionItem />
+                        <apex:pageBlockSectionItem />
+                        <apex:outputField value="{!Authorization_for_Expenditure__c.Target_Completion_Date__c}"/>
+                        <apex:outputField value="{!Authorization_for_Expenditure__c.Date_Prepared__c}"/>
+                        <apex:outputField value="{!Authorization_for_Expenditure__c.Cost_Center_number__c}"/>
+                        <apex:outputField value="{!Authorization_for_Expenditure__c.Approval_Routing_Priority__c}"/>
+                        <apex:outputField value="{!Authorization_for_Expenditure__c.Approved_for_Submittal_By__c}"/>
+                        <apex:outputField value="{!Authorization_for_Expenditure__c.Prepared_By__c}"/>
+                        <apex:outputField value="{!Authorization_for_Expenditure__c.Usage_Codes_OLD__c}"/>
+                </apex:pageBlockSection>
+                <apex:pageBlockSection showHeader="true" title="Budget Appropriation Information (All USD)" columns="2">
+                </apex:pageBlockSection>
+                <apex:pageBlockSection showHeader="true" title="Original AFE's" columns="2" rendered="{!IF(Authorization_for_Expenditure__c.Origination_Type__c == 'Supplement',False,True)}">
+                        <apex:outputField value="{!Authorization_for_Expenditure__c.Prior_AFEs_Approved__c}"/>
+                        <apex:outputField value="{!Authorization_for_Expenditure__c.Prior_AFEs_Pending_Approval__c}"/>
+                        <apex:outputField value="{!Authorization_for_Expenditure__c.Capital_Appropriation__c}"/>
+                        <apex:outputField value="{!Authorization_for_Expenditure__c.Current_Year_Capital_Appropriations_Amou__c}"/>
+                        <apex:outputField value="{!Authorization_for_Expenditure__c.Total_Prior_AFE_Amount__c}"/>
+                        <apex:outputField value="{!Authorization_for_Expenditure__c.Old_Carryover_from_Prior_Years__c}"/>
+                        <apex:outputField value="{!Authorization_for_Expenditure__c.This_AFE_Amount__c}"/>
+                        <apex:outputField value="{!Authorization_for_Expenditure__c.Over_Under_Budget_Appropriations__c}"/>
+                        <apex:outputField value="{!Authorization_for_Expenditure__c.Current_Yr_Budgeted_Appropriations__c}"/>
+                        <apex:outputField value="{!Authorization_for_Expenditure__c.Old_Carryover_to_Next_Year__c}"/>
+                        <apex:outputField value="{!Authorization_for_Expenditure__c.New_Carryover_to_Next_Year__c}"/>
+                        <apex:pageBlockSectionItem />
+                </apex:pageBlockSection>
+                <apex:pageBlockSection showHeader="true" title="Supplement AFE's only" columns="2" rendered="{!IF(Authorization_for_Expenditure__c.Origination_Type__c == 'Supplement',True,False)}">
+                        <apex:outputField value="{!Authorization_for_Expenditure__c.Supplement__c}"/>
+                        <apex:outputField value="{!Authorization_for_Expenditure__c.Original_AFE_Amount1__c}"/>
+                        <apex:outputField value="{!Authorization_for_Expenditure__c.AFE_for_Suppliment__c}"/>
+                        <apex:outputField value="{!Authorization_for_Expenditure__c.Prior_Supps_Approved__c}"/>
+                        <apex:outputField value="{!Authorization_for_Expenditure__c.This_AFE_Supplement__c}"/>
+                        <apex:outputField value="{!Authorization_for_Expenditure__c.Cumulative_Supplement_Total__c}"/>
+                        <apex:outputField value="{!Authorization_for_Expenditure__c.AFE_Total_to_Date__c}"/>
+                </apex:pageBlockSection>
+                <apex:pageBlockSection showHeader="true" title="Additional Information Section" columns="2">
+                        <apex:outputField value="{!Authorization_for_Expenditure__c.Budget__c}"/>
+                        <apex:outputField value="{!Authorization_for_Expenditure__c.Expenditure_Class__c}"/>
+                        <apex:outputField value="{!Authorization_for_Expenditure__c.Budget_Year__c}"/>
+                        <apex:pageBlockSectionItem /><apex:pageBlockSectionItem />
+                        <apex:outputField value="{!Authorization_for_Expenditure__c.Priority_Level__c}"/>
+                        <apex:outputField value="{!Authorization_for_Expenditure__c.Asset_Type__c}"/>
+                        
+                        <!--<apex:outputField value="{!Authorization_for_Expenditure__c.Usage_Codes__c}"/>
+                        <apex:outputField value="{!Authorization_for_Expenditure__c.For_Accounting_Use_Only__c}"/>
+                        <apex:outputField value="{!Authorization_for_Expenditure__c.Responsible_Buyer__c}"/>
+                        <apex:outputField value="{!Authorization_for_Expenditure__c.Internal_Number__c}"/> -->
+                        <!--<apex:commandlink onclick=" return getAttachments();"><span style="color:Blue;font-weight: bolder; font-size: larger;margin-left: 80px; " >Reference Documents For AFE</span></apex:commandLink>-->
+                </apex:pageBlockSection>
+                <apex:pageBlockSection showHeader="true" title="Review Routing & Approval Section" columns="2">
+                        <apex:outputField value="{!Authorization_for_Expenditure__c.Levels_Of_Approval_Required__c}"/>
+                        <apex:outputField value="{!Authorization_for_Expenditure__c.Division_AFE_Coordinator__c}"/>
+                        <apex:outputField value="{!Authorization_for_Expenditure__c.Approval_Submission_Requirements_Meet__c}"/>
+
+                        
+                        <apex:repeat value="{!pricingList}" var="AFESObj">
+                                    
+                                    <apex:outputfield value="{!AFESObj.Level__c}"/>
+                                    <apex:pageBlockSectionItem />
+                                    <apex:outputfield value="{!AFESObj.Approver_1__c}"/>
+                                    <apex:pageBlockSectionItem />
+                                    <apex:outputfield value="{!AFESObj.Approver_2__c}"/>
+                                    <apex:pageBlockSectionItem />
+                                    <apex:outputfield value="{!AFESObj.Approver_3__c}"/>
+                                    <apex:pageBlockSectionItem />
+                                    <apex:outputfield value="{!AFESObj.Approver_4__c}"/>
+                                    <apex:pageBlockSectionItem />
+                                    <apex:outputfield value="{!AFESObj.Approver_5__c}"/>
+                                    <apex:pageBlockSectionItem />
+                                    
+                                               
+                                </apex:repeat>
+                              
+                </apex:pageBlockSection> 
+                <apex:pageBlockSection showHeader="true" title="AFE CloseOut and Cancellation Section" columns="2" rendered="{!IF(Authorization_For_Expenditure__c.Status__c == 'Approved' || Authorization_For_Expenditure__c.Status__c == 'CloseOut Rejected' ||
+                                                                                                                                 Authorization_For_Expenditure__c.Status__c == 'Pending CloseOut Approval' || Authorization_For_Expenditure__c.Status__c == 'Completed & Accepted',True,False) }">
+                        <apex:outputField value="{!Authorization_for_Expenditure__c.No_new_commitments_or_PO_s_will_be_accep__c}"/>
+                        <apex:outputField value="{!Authorization_for_Expenditure__c.AFE_Closed_By__c}"/>
+                        <apex:outputField value="{!Authorization_for_Expenditure__c.Distribution_List__c}"/>
+                        <apex:outputField value="{!Authorization_for_Expenditure__c.Distribution_List2__c}"/>
+                        <apex:outputField value="{!Authorization_for_Expenditure__c.Distribution_List3__c}"/>
+                        <apex:outputField value="{!Authorization_for_Expenditure__c.Distribution_List4__c}"/>
+                        <apex:outputField value="{!Authorization_for_Expenditure__c.Distribution_List5__c}"/>
+                        <apex:outputField value="{!Authorization_for_Expenditure__c.Planned_Operational_Date__c}"/>
+                        <apex:outputField value="{!Authorization_for_Expenditure__c.AFE_CloseOut_date1__c}"/>
+                        <apex:outputField value="{!Authorization_for_Expenditure__c.AFE_CloseOut_date1__c}"/>                       
+                        <apex:outputField value="{!Authorization_for_Expenditure__c.Planned_Operational_Date__c}"/>
+                        <apex:outputField value="{!Authorization_for_Expenditure__c.Actual_Operational_Date_In_Service__c}"/>
+                        <apex:outputField value="{!Authorization_for_Expenditure__c.No_new_commitments_or_PO_s_will_be_accep__c}"/>
+                        <apex:outputField value="{!Authorization_for_Expenditure__c.Exchange_Rate_when_Complete__c}" />                                               
+                        
+                        
+                        
+                </apex:pageBlockSection>
+                <apex:pageBlockSection showHeader="true" columns="2" Title="Audit Trail">
+                        <apex:outputField value="{!Authorization_for_Expenditure__c.CreatedById}" label="Record Created By"/>
+                        <apex:outputField value="{!Authorization_for_Expenditure__c.CreatedDate}" label="Record Created date"/>
+                        <apex:outputField value="{!Authorization_for_Expenditure__c.LastModifiedById}" label="Record Modified By"/>
+                        <apex:outputField value="{!Authorization_for_Expenditure__c.LastModifiedDate}" label="Record Modified date"/>
+                        <apex:outputField value="{!Authorization_for_Expenditure__c.SystemModstamp}"/>
+                        <apex:outputField value="{!Authorization_for_Expenditure__c.Record_Approved_Date__c}"/>
+                        <!-- apex:outputField value="{!Authorization_for_Expenditure__c.Record_Approved_By__c}"/ -->
+                        
+                        
+                       
+                </apex:pageBlockSection>
+                
+        
+        </apex:pageBlock>
+         
+              </apex:form>
+              <apex:relatedList list="NotesAndAttachments"/>
+        <!-- apex:relatedList list="OpenActivities"/>
+        <apex:relatedList list="ActivityHistories"/ -->
+        <apex:relatedList list="ProcessSteps"/>
+        <!-- apex:relatedList list="Authorization_for_Expenditures__r"/ -->
+              <style type="text/css">
+        .custPopup {
+    background-color: white;
+    border-style: solid;
+    border-width: 2px;
+    height: 376px;
+    left: 35%;
+    margin-left: -250px;
+    padding: 10px;
+    position: absolute;
+    top: 100px;
+    width: 850px;
+    z-index: 9999;
+}
+        .popupBackground{
+            background-color:black;
+            opacity: 0.20;
+            filter: alpha(opacity = 20);
+            position: absolute;
+            width: 100%;
+            height: 100%;
+            top: 0;
+            left: 0;
+            z-index: 9998;
+        }
+                .datePicker {
+        z-index: 9999;/*Changed this css property which was 100 prior*/
+        position: absolute;
+        display: none;
+        top: 0;
+        left: 0;
+        width: 17em;
+        background-color: #b7c6b2;
+        border-bottom: 1px solid #000;
+        border-right: 1px solid #000;
+        margin: 0;
+        padding: 1px 1px 2px 2px;
+    }
+
+    </style>
+</apex:page>

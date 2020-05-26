@@ -1,0 +1,30 @@
+<!--***********************************************************************************************************************   
+Nexeo Solutions    
+---------------------------------------------------------------------------------------------------------------------
+*
+*   Date Created:        2/1/2016
+*    Author:             Francisco Garcia
+*   Last Modified:       
+*   Last Modified By: 
+*	VF Controller:		 cc_imp_mn_ctrl_HomePageBIE
+*	VF Page:			 cc_imp_mn_HomePageBIE			
+*   Short Description:   Define if the current user of customer portal is a Prospect account if yes, display a Message.
+*   ********************************************************************************************************************-->
+<apex:component controller="cc_imp_mn_ctrl_HomePageBIE">
+    <p></p>   
+    <p></p>
+    <div id='prospect-message' style='font-size:large; height:300px '>    
+        {!prospectMessage}            
+    </div>    
+    <input type="hidden" id="prospect" value="{!prospectMessage}"/> 
+	<p></p>
+    <p></p>
+    <script type="text/javascript">
+     if(document.getElementById("prospect").value!=''){        
+            document.getElementById('nexeo-splash').style.display = 'none';                  
+     }
+   	 else{
+        document.getElementById('prospect-message').style.display = 'none';         
+    	}
+	</script>
+</apex:component>

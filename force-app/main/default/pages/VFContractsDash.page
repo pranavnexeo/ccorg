@@ -1,0 +1,24 @@
+<apex:page standardController="Contract" recordSetvar="contracts">
+    <apex:form >
+    <apex:pageBlock >
+            <apex:panelGrid columns="1">
+                <apex:selectList value="{!filterId}" size="1">
+                    <apex:actionSupport event="onchange" rerender="list"/>
+                    <apex:selectOption Itemvalue="00BP0000000YXfu" ItemLabel="My CDFs"/>
+                </apex:selectList>
+            </apex:panelgrid>
+            <apex:pageBlockSection >
+                <apex:datatable var="c" value="{!contracts}" id="list">
+                <apex:column >
+                <apex:facet name="header">Name</apex:facet>
+                <apex:outputtext value="{!c.Name}"/>
+                </apex:column>
+                <apex:column >
+                <apex:facet name="header">Account</apex:facet>
+                <apex:outputtext value="{!c.Accountid}"/>
+                </apex:column>
+                </apex:datatable>
+            </apex:pageBlockSection>
+    </apex:pageBlock>
+  </apex:form>
+</apex:page>

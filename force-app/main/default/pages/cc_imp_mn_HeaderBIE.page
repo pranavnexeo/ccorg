@@ -1,0 +1,6 @@
+<apex:page showHeader="false" sidebar="false" docType="html-5.0" standardStylesheets="false" cache="false" applyHtmlTag="false" applyBodyTag="false">
+	  <c:cc_imp_mn_EffectiveAccountSelector />
+	  <c:cc_imp_mn_header />
+	  <c:cc_imp_mn_TopMenu />
+	  <c:cc_imp_mn_FileNotFound />
+</apex:page>

@@ -1,0 +1,61 @@
+<apex:page standardController="Corporate_Incident_Record__c">
+<apex:sectionHeader title="Corporate Incident Record Edit" subtitle="{!Corporate_Incident_Record__c.name}"/>
+<apex:form >
+<apex:pageBlock id="sec2" title="Corporate Incident Record Edit" mode="edit">
+
+<apex:pageBlockButtons location="top">
+<apex:commandButton value="Save" action="{!save}"/>
+<apex:commandButton value="Save & New" action="{!save}" />
+<apex:commandButton value="Cancel" action="{!cancel}"/>
+</apex:pageBlockButtons>
+
+<apex:pageBlockButtons location="bottom">
+<apex:commandButton value="Save" action="{!save}"/>
+<apex:commandButton value="Save & New" action="{!save}" />
+<apex:commandButton value="Cancel" action="{!cancel}"/>
+</apex:pageBlockButtons>
+
+<apex:pageBlockSection title="General Information Section">
+
+<apex:inputField value="{!Corporate_Incident_Record__c.name}" required="true"/>
+<apex:inputField value="{!Corporate_Incident_Record__c.Description__c}" required="true"/>
+<apex:pageBlockSectionItem >
+<apex:outputLabel value="{!$ObjectType.Corporate_Incident_Record__c.fields.Incident_Type__c.label}" />
+<apex:actionRegion >
+<apex:inputField value="{!Corporate_Incident_Record__c.Incident_Type__c}"  required="true" >
+<apex:actionsupport event="onchange" rerender="sec1" status="status" />
+</apex:inputField>
+</apex:actionRegion>
+</apex:pageBlockSectionItem>
+
+<apex:inputField value="{!Corporate_Incident_Record__c.Incident_Date_Time__c}" required="true"/>
+<apex:inputField value="{!Corporate_Incident_Record__c.Incident_Resolver__c}" required="true"/>
+<apex:inputField value="{!Corporate_Incident_Record__c.Priority__c}" required="true"/>
+<apex:inputField value="{!Corporate_Incident_Record__c.Incident_Characterization__c}" required="true"/>
+<apex:inputField value="{!Corporate_Incident_Record__c.Caller_Phone__c}" required="true"/>
+<apex:inputField value="{!Corporate_Incident_Record__c.Caller_Name__c}" required="true"/>
+<apex:inputField value="{!Corporate_Incident_Record__c.Caller_Company_Organization__c}" required="false"/>
+<apex:inputField value="{!Corporate_Incident_Record__c.Caller_E_Mail__c}" required="false"/>
+</apex:pageBlockSection>
+
+
+<apex:outputpanel id="sec1"> 
+<apex:pageBlockSection title="Incident Details" rendered="{!(Corporate_Incident_Record__c.Incident_Type__c !=null)}">
+<apex:inputField value="{!Corporate_Incident_Record__c.Incident_Location_Site_Name__c}" required="false" rendered="{!(Corporate_Incident_Record__c.Incident_Type__c == 'Product Incident - Transportation')}"/>
+<apex:inputField value="{!Corporate_Incident_Record__c.Incident_Location_Site_Address__c}" required="false" rendered="{!(Corporate_Incident_Record__c.Incident_Type__c == 'Product Incident - Transportation')}"/>
+<apex:inputField value="{!Corporate_Incident_Record__c.Caller_Full_Address__c}" rendered="{!(Corporate_Incident_Record__c.Incident_Type__c == 'External Inquiry')||(Corporate_Incident_Record__c.Incident_Type__c == 'Product Incident - Consumer')}" />
+<apex:inputField value="{!Corporate_Incident_Record__c.Products_Materials__c}" required="false" rendered="{!(Corporate_Incident_Record__c.Incident_Type__c == 'Product Incident - Transportation')||(Corporate_Incident_Record__c.Incident_Type__c == 'Product Incident - Product Recall')||(Corporate_Incident_Record__c.Incident_Type__c == 'Product Incident - Consumer')}"/>
+<apex:inputField value="{!Corporate_Incident_Record__c.Products_Materials_Legacy__c}" required="false" rendered="{!(Corporate_Incident_Record__c.Incident_Type__c == 'Product Incident - Transportation')||(Corporate_Incident_Record__c.Incident_Type__c == 'Product Incident - Product Recall')||(Corporate_Incident_Record__c.Incident_Type__c == 'Product Incident - Consumer')}"/>
+<apex:inputField value="{!Corporate_Incident_Record__c.Business_Associated_with_Product__c}" required="false" rendered="{!(Corporate_Incident_Record__c.Incident_Type__c == 'Product Incident - Transportation')||(Corporate_Incident_Record__c.Incident_Type__c == 'Product Incident - Product Recall')||(Corporate_Incident_Record__c.Incident_Type__c == 'Product Incident - Consumer')}"/>
+<apex:inputField value="{!Corporate_Incident_Record__c.Waste_Generator_Company__c}" rendered="{!(Corporate_Incident_Record__c.Incident_Type__c == 'Customer Waste Issue')}"/>
+<apex:inputField value="{!Corporate_Incident_Record__c.Waste_Generator_Location__c}" rendered="{!(Corporate_Incident_Record__c.Incident_Type__c == 'Customer Waste Issue')}"/>
+ <apex:inputField value="{!Corporate_Incident_Record__c.Carrier_Name__c}" rendered="{!(Corporate_Incident_Record__c.Incident_Type__c == 'Product Incident - Transportation')}"/>
+<apex:inputField value="{!Corporate_Incident_Record__c.Shipment_Origination_Site__c}" rendered="{!(Corporate_Incident_Record__c.Incident_Type__c == 'Product Incident - Transportation')||(Corporate_Incident_Record__c.Incident_Type__c == 'Product Incident - Product Recall')}"/>
+</apex:pageBlockSection>
+</apex:outputPanel>
+
+
+
+</apex:pageBlock>
+</apex:form>
+</apex:page>

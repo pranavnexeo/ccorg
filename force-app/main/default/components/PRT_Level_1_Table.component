@@ -1,0 +1,125 @@
+<apex:component controller="Price_Request_Email_Template"  access="global" allowDML="true">
+
+<apex:attribute name="recordid" description="The Price Request Transaction Id"  type="Id" required="required" assignto="{!recordid}"/>
+
+
+<style type="text/css">
+table#thetable, tr.thetr, td.thetd
+{
+border:1px solid green;
+border-collapse:collapse;
+}
+th.theth
+{
+background-color:green;
+color:white;
+}
+</style>
+
+
+<table id="thetable_priceSupport">
+<tr class="thetr">
+<th class="theth" colspan="9">Price Supports</th>
+</tr>
+<tr class="thetr">
+<th class="theth">Price Support Id</th>
+<th class="theth">Agreement Number</th>
+<th class="theth">Supplier Name</th>
+<th class="theth">Supplier Number</th>
+<th class="theth">Effective Date</th>
+<th class="theth">Expiration Date</th>
+<th class="theth">Region</th>
+<th class="theth">Supplier Supported Price</th>
+<th class="theth">1st Discount</th>
+
+
+</tr>
+<apeX:repeat value="{!priceSupports}" var="t">
+<tr class="thetr">
+<td class="thetd"><apex:outputfield value="{!t.Name}"/></td>
+<td class="thetd"><apex:outputfield value="{!t.Agreement_Number__c}"/></td>
+<td class="thetd"><apex:outputfield value="{!t.Supplier_Name__c}"/></td>
+<td class="thetd"><apex:outputfield value="{!t.Supplier_Number__c}"/></td>
+<td class="thetd"><apex:outputfield value="{!t.Effective_Date__c}"/></td>
+<td class="thetd"><apex:outputfield value="{!t.Expiration_Date__c}"/></td>
+<td class="thetd"><apex:outputfield value="{!t.Region_Code__c}"/></td>
+<td class="thetd"><apex:outputfield value="{!t.Supplier_Supported_Price__c}"/></td>
+<td class="thetd"><apex:outputfield value="{!t.X1st_Discount_Sell__c}"/></td>
+
+
+
+</tr>
+</apex:repeat>
+</table>
+
+<br/><br/>
+
+<table id="thetable">
+<tr class="thetr">
+<th class="theth">Effective Date</th>
+<th class="theth">Expiration Date</th>
+<th class="theth">Bracket</th>
+<th class="theth">UoM</th>
+<th class="theth">Price</th>
+<th class="theth">UoM</th>
+<th class="theth">TPI</th>
+<th class="theth">Floor</th>
+<th class="theth">UoM</th>
+</tr>
+<apeX:repeat value="{!Requested_Tiers}" var="t">
+<tr class="thetr">
+<td class="thetd"><apex:outputfield value="{!t.Effective_Date__c}"/></td>
+<td class="thetd"><apex:outputfield value="{!t.Expiration_Date__c}"/></td>
+<td class="thetd"><apex:outputfield value="{!t.Volume__c}"/></td>
+<td class="thetd"><apex:outputfield value="{!t.Volume_UoM__c}"/></td>
+<td class="thetd"><apex:outputfield value="{!t.Price__c}"/></td>
+<td class="thetd"><apex:outputfield value="{!t.Price_UoM__c}"/></td>
+<td class="thetd"><apex:outputfield value="{!t.TPI__c}"/></td>
+<td class="thetd"><apex:outputfield value="{!t.Exception_1_Price__c}"/></td>
+<td class="thetd"><apex:outputfield value="{!t.Volume_UoM__c}"/></td>
+</tr>
+</apex:repeat>
+</table>
+
+<br/><br/>
+
+<table id="thetable_CM">
+<tr class="thetr">
+<th class="theth" colspan="4">Standard Cost CM Data</th>
+</tr>
+<tr class="thetr">
+<th class="theth">Material Cost</th>
+<th class="theth">Variable Warehouse</th>
+<th class="theth">Variable Delivery</th>
+<th class="theth">CM %</th>
+</tr>
+
+<tr class="thetr">
+<td class="thetd"><apex:outputfield value="{!trans.Material_Cost__c}"/></td>
+<td class="thetd"><apex:outputfield value="{!trans.Variable_Warehouse__c}"/></td>
+<td class="thetd"><apex:outputfield value="{!trans.Variable_Delivery__c}"/></td>
+<td class="thetd"><apex:outputfield value="{!trans.CM_Value__c}"/></td>
+</tr>
+</table>
+
+<br/><br/>
+<table id="thetable_CMData">
+<tr class="thetr">
+<th class="theth" colspan="4">Unit CM Data</th>
+</tr>
+<tr class="thetr">
+<th class="theth">Unit CM</th>
+<th class="theth">Unit Material Cost</th>
+<th class="theth">Unit Variable Warehouse</th>
+<th class="theth">Unit Variable Delivery</th>
+</tr>
+
+<tr class="thetr">
+<td class="thetd"><apex:outputfield value="{!trans.Unit_Contribution_Margin__c}"/></td>
+<td class="thetd"><apex:outputfield value="{!trans.Unit_Material_Cost__c}"/></td>
+<td class="thetd"><apex:outputfield value="{!trans.Unit_Warehouse_Charge__c}"/></td>
+<td class="thetd"><apex:outputfield value="{!trans.Unit_Freight_Charge__c}"/></td>
+</tr>
+</table>
+
+</apex:component>

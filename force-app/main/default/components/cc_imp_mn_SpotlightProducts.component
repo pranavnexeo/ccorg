@@ -1,0 +1,255 @@
+<apex:component >
+
+ <script type="text/javascript">
+    CCRZ.uiProperties.spotlightView.desktop.tmpl = 'SpotlightDesktopImp';
+    CCRZ.uiProperties.spotlightView.phone.tmpl   = 'SpotlightMobileImp';
+  </script>
+
+	<script id="SpotlightDesktopImp" type="text/template">
+		{{#if this.Spotlight}}
+			<div class="product_spotlight_container" >
+				<h2 class="title">
+					{{#if this.crossSell}}
+						{{pageLabelMap 'CrossSell_AlsoConsider'}}
+					{{else}}
+						{{pageLabelMap 'Spotlight_Title'}}
+					{{/if}}
+				</h2>
+				<div class="product_spotlight">
+					{{#each this.Spotlight}}
+						<div class="product_spotlight_item">
+							<div class="product_spotlight_viewport">
+								<a href="javascript:void(0);" class="productName" data-id="{{this.mockProduct.sku}}">
+									{{displayImage this.mediaWrapper 'spot' alt=this.mockProduct.name dataId=this.mockProduct.sku}}
+					            </a>
+							</div>
+							<p>
+								<a href="javascript:void(0);" class="productName" data-id="{{this.mockProduct.sku}}">{{this.mockProduct.name}}</a>
+								<br/>
+								<strong>{{pageLabelMap 'CartInc_SKU'}}</strong>&nbsp;{{this.mockProduct.sku}}
+							</p>
+							<div class="description richtext">
+								{{unescape this.mockProduct.shortDesc}}
+							</div>
+                            {{#if this.showNewSubscriptionSelection}}
+                                <p class="price priceSubscription">
+                                    <strong>{{pageLabelMap 'Prod_SpotLightPrice' (price this.price) (price this.minSubPrice) (price this.maxSubPrice)}}</strong>
+                                </p>
+                            {{else}}
+                                <!-- // check if it is a range price for aggregated product -->
+                                {{#if this.maxPrice}} 
+                                    <!-- page label and page config setting needed -->
+                                    <p class="price"> {{#ifbothPricesZero this.minPrice this.maxPrice}}
+                                    {{pageLabelMap 'CartInc_Price'}}: <strong>{{displayRangePrice 'ProductDetails_PriceRangeFormat' this.minPrice this.maxPrice}}</strong>      
+                                    {{/ifbothPricesZero}}</p> 
+                                {{else}}
+                                    {{#if this.displayPrice}}
+                                        <p class="price displayPrice">
+                                            {{pageLabelPrefixMap 'DisplayPrice_' this.displayPrice}}
+                                        </p>
+                                    {{else}}
+                                        <p class="price">
+                                            {{pageLabelMap 'CartInc_Price'}}: <strong>{{price this.price}}</strong>
+                                        </p>
+                                    {{/if}}
+                                {{/if}}
+                            {{/if}}
+						</div>
+					{{/each}}
+				</div>
+			</div>
+			{{/if}}
+			{{#if this.Featured}}
+				<div class="featured_products_container">
+					<h2 class="title">
+						{{#if this.crossSell}}
+							{{pageLabelMap 'CrossSell_AlsoConsider'}}
+						{{else}}
+							{{pageLabelMap 'Featured_Title'}}
+						{{/if}}
+					</h2>
+					<div class="featured_products"> 
+						{{#eachStyles this.Featured this.colNum "featured_products_item"}}
+					 	 	<div class="{{styleClass}}">
+					 	 		<div class="featured_products_viewport">
+									<a href="javascript:void(0);" class="productName" data-id="{{this.mockProduct.sku}}">
+										{{displayImage this.mediaWrapper 'featured' alt=this.mockProduct.name dataId=this.mockProduct.sku}}
+						            </a>
+					 	 		</div>
+								<p>
+									<a href="javascript:void(0);" class="productName" data-id="{{this.mockProduct.sku}}">{{this.mockProduct.name}}</a>
+									<br/>
+									<strong>{{pageLabelMap 'CartInc_SKU'}}</strong>&nbsp;{{this.mockProduct.sku}}
+								</p>
+								<div class="description">
+									{{unescape this.mockProduct.shortDesc}}
+								</div>
+	                            {{#if this.showNewSubscriptionSelection}}
+	                                <p class="price priceSubscription">
+	                                    <strong>{{pageLabelMap 'Prod_SpotLightPrice' (price this.price) (price this.minSubPrice) (price this.maxSubPrice)}}</strong>
+	                                </p>
+	                            {{else}}
+	                                <!-- // check if it is a range price for aggregated product -->
+	                                {{#if this.maxPrice}} 
+	                                    <!-- page label and page config setting needed -->
+	                                    <p class="price"> {{#ifbothPricesZero this.minPrice this.maxPrice}}
+	                                    {{pageLabelMap 'CartInc_Price'}}: <strong>{{displayRangePrice 'ProductDetails_PriceRangeFormat' this.minPrice this.maxPrice}}</strong>		
+	                                    {{/ifbothPricesZero}}</p>
+	                                {{else}}
+	                                    {{#if this.displayPrice}}
+	                                        <p class="price displayPrice">
+	                                            {{pageLabelPrefixMap 'DisplayPrice_' this.displayPrice}}
+	                                        </p>
+	                                    {{else}}
+	                                        <p class="price">
+	                                            {{pageLabelMap 'CartInc_Price'}}: <strong>{{price this.price}}</strong>
+	                                        </p>
+	                                    {{/if}}
+	                                {{/if}}
+	                            {{/if}}
+							</div>
+						{{/eachStyles}}
+					</div>
+				</div>
+			{{/if}}
+	</script>
+
+   <script id="SpotlightMobileImp" type="text/template">
+
+   {{#if {!(ISPICKVAL($User.UserType,'Guest'))} }}
+		{{#if this.Spotlight}}
+			<div class="products_1_row_medium_container">
+				<h2 class="title">
+					{{#if this.crossSell}}
+						{{pageLabelMap 'CrossSell_AlsoConsider'}}
+					{{else}}
+						{{pageLabelMap 'Spotlight_Title'}}
+					{{/if}}
+				</h2>
+				<div class="products_1_row_medium">
+					{{#each this.Spotlight}}
+						<div class="products_1_row_medium_item">
+							<div class="product_listing_viewport">
+								<a href="#" class="productName" data-id="{{this.mockProduct.sku}}">
+									{{displayImage this.mediaWrapper 'spot' alt=this.mockProduct.name dataId=this.mockProduct.sku}}
+								</a>
+							</div>
+							<p>
+								<a href="#" class="productName" data-id="{{this.mockProduct.sku}}">{{this.mockProduct.name}}</a>
+							</p>
+							<p class="included_items">
+								<a class="included_items" href="#additional_info{{this.mockProduct.sku}}" id="additionalInfoLink" data-toggle="modal">{{pageLabelMap 'AdditionalInfo'}}</a>
+								<div id="additional_info{{this.mockProduct.sku}}" class="modal hide fade in" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
+									<div class="modal-header">
+										<button type="button" class="close" data-dismiss="modal" aria-hidden="true">×</button>
+										<h3 id="myModalLabel">{{this.mockProduct.name}} {{pageLabelMap 'ProductsInc_MiscDetails'}}</h3>
+									</div>
+									<div class="modal-body">
+										{{this.miscMessage}}
+									</div>
+								</div>
+							</p>
+							<p>
+								<span>
+									<strong class="price">
+                                    {{#if this.showNewSubscriptionSelection}}
+                                        <p class="price priceSubscription">
+                                            <strong>{{pageLabelMap 'Prod_SpotLightPrice' (price this.price) (price this.minSubPrice) (price this.maxSubPrice)}}</strong>
+                                        </p>
+                                    {{else}}
+                                        <!-- // check if it is a range price for aggregated product -->
+                                        {{#if this.maxPrice}} 
+                                            <!-- page label and page config setting needed -->
+                                            <p class="price"> {{#ifbothPricesZero this.minPrice this.maxPrice}}
+                                            {{pageLabelMap 'CartInc_Price'}}: <strong>{{displayRangePrice 'ProductDetails_PriceRangeFormat' this.minPrice this.maxPrice}}</strong>      
+                                            {{/ifbothPricesZero}}</p> 
+                                        {{else}}
+                                            {{#if this.displayPrice}}
+                                                <p class="price displayPrice">
+                                                    {{pageLabelPrefixMap 'DisplayPrice_' this.displayPrice}}
+                                                </p>
+                                            {{else}}
+                                                <p class="price">
+                                                    {{pageLabelMap 'CartInc_Price'}}: <strong>{{price this.price}}</strong>
+                                                </p>
+                                            {{/if}}
+                                        {{/if}}
+                                    {{/if}}
+									</strong>
+								</span>
+							</p>
+							<p class="">{{{this.mockProduct.shortDesc}}}
+						</div>			
+					{{/each}}
+				</div>
+			</div>
+		{{/if}}
+		{{#if this.Featured}}
+			<div class="products_1_row_medium_container">
+				<h2 class="title">
+					{{#if this.crossSell}}
+						{{pageLabelMap 'CrossSell_AlsoConsider'}}
+					{{else}}
+						{{pageLabelMap 'Featured_Title'}}
+					{{/if}}
+				</h2>
+				<div class="products_1_row_medium">
+					{{#each this.Featured}}
+						<div class="products_1_row_medium_item">
+							<div class="product_listing_viewport">
+								<a href="#" class="productName" data-id="{{this.mockProduct.sku}}">
+									{{displayImage this.mediaWrapper 'featured' alt=this.mockProduct.name dataId=this.mockProduct.sku}}
+								</a>
+							</div>
+							<p>
+								<a href="#" class="productName" data-id="{{this.mockProduct.sku}}">{{this.mockProduct.name}}</a>
+							</p>
+							<p class="included_items">
+								<a class="included_items" href="#additional_info{{this.mockProduct.sku}}" id="additionalInfoLink" data-toggle="modal">{{pageLabelMap 'AdditionalInfo'}}</a>
+								<div id="additional_info{{this.mockProduct.sku}}" class="modal hide fade in" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
+									<div class="modal-header">
+										<button type="button" class="close" data-dismiss="modal" aria-hidden="true">×</button>
+										<h3 id="myModalLabel">{{this.mockProduct.name}} {{pageLabelMap 'ProductsInc_MiscDetails'}}</h3>
+									</div>
+									<div class="modal-body">
+										{{this.miscMessage}}
+									</div>
+								</div>
+							</p>
+							<p>
+								<span>
+									<strong class="price">
+                                    {{#if this.showNewSubscriptionSelection}}
+                                        <p class="price priceSubscription">
+                                            <strong>{{pageLabelMap 'Prod_SpotLightPrice' (price this.price) (price this.minSubPrice) (price this.maxSubPrice)}}</strong>
+                                        </p>
+                                    {{else}}
+                                        <!-- // check if it is a range price for aggregated product -->
+                                        {{#if this.maxPrice}} 
+                                            <!-- page label and page config setting needed -->
+                                            <p class="price"> {{#ifbothPricesZero this.minPrice this.maxPrice}}
+                                                {{pageLabelMap 'CartInc_Price'}}: <strong>{{displayRangePrice 'ProductDetails_PriceRangeFormat' this.minPrice this.maxPrice}}</strong>      
+                                            {{/ifbothPricesZero}}</p>
+                                        {{else}}
+                                            {{#if this.displayPrice}}
+                                                <p class="price displayPrice">
+                                                    {{pageLabelPrefixMap 'DisplayPrice_' this.displayPrice}}
+                                                </p>
+                                            {{else}}
+                                                <p class="price">
+                                                    {{pageLabelMap 'CartInc_Price'}}: <strong>{{price this.price}}</strong>
+                                                </p>
+                                            {{/if}}
+                                        {{/if}}
+                                    {{/if}}
+									</strong>
+								</span>
+							</p>
+							<p class="">{{{this.mockProduct.shortDesc}}}
+						</div>			
+					{{/each}}
+				</div>
+			</div>
+		{{/if}}
+	</script>
+</apex:component>

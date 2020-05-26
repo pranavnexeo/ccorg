@@ -1,0 +1,137 @@
+<apex:component controller="cc_imp_mn_ctrl_MyAccount" >
+
+<script id="MyAccount-View-Credit" type="text/template">
+  <div class="acctmainSection" style="display: block;">
+    <h2 class="title">{{pageLabelMap 'cc_imp_MyAccount_ViewCreditTitle'}}</h2>
+        <div class="alert alert-error messagingSection-viewCredit-Error" style="display: none"></div>
+        <div class="alert alert-info messagingSection-viewCredit-Info" style="display: none"></div>
+        <div class="main_content_large_solo_container">
+        <form>
+          <table class="viewCreditTable">
+              <tr>
+                <th class="tableHeaderAlign" rowspan="2">{{pageLabelMap 'cc_imp_MyAccount_ViewCreditCurrency'}}</th>
+                <th class="tableHeaderAlign" rowspan="2">{{pageLabelMap 'cc_imp_MyAccount_ViewCreditBalanceDue'}}</th>
+                <th class="tableHeaderAlign" rowspan="2">{{pageLabelMap 'cc_imp_MyAccount_ViewCreditCurrent'}}</th>
+                <th class="tableHeaderAlign" colspan="5">{{pageLabelMap 'cc_imp_MyAccount_ViewCreditPastDue'}}</th>
+              </tr>
+              <tr>
+                <td class="viewCreditSubHeaderStyle">{{pageLabelMap 'cc_imp_MyAccount_ViewCreditPastDue0To5'}}</td>
+                <td class="viewCreditSubHeaderStyle">{{pageLabelMap 'cc_imp_MyAccount_ViewCreditPastDue6To15'}}</td>
+                <td class="viewCreditSubHeaderStyle">{{pageLabelMap 'cc_imp_MyAccount_ViewCreditPastDue16To30'}}</td>
+                <td class="viewCreditSubHeaderStyle">{{pageLabelMap 'cc_imp_MyAccount_ViewCreditPastDue31To60'}}</td>
+                <td class="viewCreditSubHeaderStyle">{{pageLabelMap 'cc_imp_MyAccount_ViewCreditPastDueOver60'}}</td>
+              </tr>
+              <tr>
+                <td class="tableHeaderAlign">{{creditHistoryData.currency_key}}</td>
+                <td class="tableHeaderAlign">{{price creditHistoryData.amt_total creditHistoryData.currency_key}}</td>
+                <td class="tableHeaderAlign">{{price creditHistoryData.amt_open creditHistoryData.currency_key}}</td>
+                <td class="tableHeaderAlign">{{price creditHistoryData.amt_0to5 creditHistoryData.currency_key}}</td>
+                <td class="tableHeaderAlign">{{price creditHistoryData.amt_6to15 creditHistoryData.currency_key}}</td>
+                <td class="tableHeaderAlign">{{price creditHistoryData.amt_16to30 creditHistoryData.currency_key}}</td>
+                <td class="tableHeaderAlign">{{price creditHistoryData.amt_31to60 creditHistoryData.currency_key}}</td>
+                <td class="tableHeaderAlign">{{price creditHistoryData.amt_over60 creditHistoryData.currency_key}}</td>
+              </tr>
+            </table>
+         </form>
+        </div>
+    </div>
+   </div>
+</script>
+
+
+<script>
+// Get the new Upload Files View added to the My Account page
+CCRZ.MyAccount = _.extend(CCRZ.MyAccount||{},{
+    SubscViewCredit :{
+        register : function(registrar){
+            registrar.registerNewView('viewCredit', CCRZ.processPageLabelMap('cc_imp_MyAccount_ViewCreditMenu'), new CCRZ.views.viewCreditView());
+        }
+    }
+});
+
+/** commenting as this is not being use on the header menu
+CCRZ.HDRMyAccount = _.extend(CCRZ.HDRMyAccount||{},{
+    SubscViewCredit :{
+        register : function(registrar){
+            registrar.registerNewView('viewCredit', CCRZ.processPageLabelMap('cc_imp_MyAccount_ViewCreditMenu'), new CCRZ.views.viewCreditView());
+        }
+    }
+}); */
+
+jQuery(function($) 
+{
+
+
+       CCRZ.models.viewCreditModel = CCRZ.CloudCrazeModel.extend({
+                     className: 'cc_imp_mn_ctrl_MyAccount',
+                     fetch: function(callback)
+                     {
+                       var model = this;
+                       var callModelCredit = $.cookie("viewCallCr");
+
+                         if (!callModelCredit) {
+                            
+                           Visualforce.remoting.Manager.invokeAction(
+                                '{!$RemoteAction.cc_imp_mn_ctrl_MyAccount.fetchCreditHistory}',
+                                CCRZ.pagevars.remoteContext,
+                                function(response )
+                                {
+                                  model.set(model.parse(response.data));
+                                  var valueOnCookie = JSON.stringify(response.data);
+                                  document.cookie="viewCallCr="+valueOnCookie+";path=/mynexeo";
+
+                            });
+                         } else {
+                           
+                            var valueEval = JSON.parse(callModelCredit);
+                         	model.set(valueEval);
+                         }
+                      }
+
+           });
+  
+    CCRZ.viewCreditModel = new CCRZ.models.viewCreditModel();
+    
+
+    CCRZ.views.viewCreditView = CCRZ.CloudCrazeView.extend({
+        templateBoth : CCRZ.util.template('MyAccount-View-Credit'),
+        managedSubView : true,
+        viewName : "subscViewCreditView",
+        init: function() 
+        {
+           CCRZ.viewCreditModel.fetch();
+        },
+        render : function() 
+        {
+            this.$el.html(this.templateBoth(CCRZ.viewCreditModel.attributes));
+            
+            this.displayPageMessages(CCRZ.viewCreditModel.attributes);
+        },
+        displayPageMessages: function (modelData)
+        {
+          if (modelData && modelData.success == false)
+          {
+             CCRZ.pubSub.trigger('pageMessage',{
+                                   messages :      [{
+                                       type:          'CUSTOM',
+                                       severity:      'ERROR',
+                                       classToAppend: 'messagingSection-viewCredit-Error',
+                                       labelId:       'cc_imp_error_processing_view_credit_request'}]
+                               }); 
+          }
+          else if (modelData.success && !modelData.creditHistoryData.company_name)
+          {
+              CCRZ.pubSub.trigger('pageMessage',{
+                                     messages :      [{
+                                         type:          'CUSTOM',
+                                         severity:      'INFO',
+                                         classToAppend: 'messagingSection-viewCredit-Info',
+                                         labelId:       'cc_imp_view_credit_no_data'}]
+                                 }); 
+          }
+        }
+    });
+});
+</script>
+
+</apex:component>

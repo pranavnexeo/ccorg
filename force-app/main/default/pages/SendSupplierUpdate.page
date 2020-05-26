@@ -1,0 +1,31 @@
+<apex:page standardcontroller="Nexeo_Competitor__c" extensions="SendSupplierUpdate">
+
+<apex:form >
+
+<apex:pageblock >
+
+<apeX:pageblockbuttons >
+<apex:commandbutton value="Continue" action="{!sendEmail}"/>
+<apeX:commandbutton value="Cancel" onclick="javascript:self.close();"/>
+</apex:pageblockbuttons>
+
+<apex:pageblocktable value="{!contacts}" var="c">
+
+<apex:column headervalue="Select">
+<apex:inputcheckbox value="{!c.selected}"/>
+</apex:column>
+
+<apex:column headervalue="Name">
+<apex:outputtext value="{!c.sc.Name}"/>&nbsp;
+</apex:column>
+
+<apex:column headervalue="Email">
+<apex:outputtext value="{!c.sc.Email__c}"/>
+</apex:column>
+
+
+</apex:pageblocktable>
+</apeX:pageblock>
+</apex:form>
+
+</apex:page>

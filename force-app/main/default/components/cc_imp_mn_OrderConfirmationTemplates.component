@@ -1,0 +1,161 @@
+<!--
+ - Created by tdissi on 9/11/18.
+ -->
+
+<apex:component id="cc_imp_mn_OrderConfirmationTemplates">
+    <script type="text/javascript">
+        if (CCRZ.pagevars.currentPageName === 'ccrz__OrderConfirmation') {
+            CCRZ.uiProperties.OrderDetailView.desktop.tmpl = 'MyNexeo-OrderDetails-View-Desktop';
+        }
+    </script>
+
+    <script id="MyNexeo-OrderDetails-View-Desktop" type="text/template">
+        <div class="margin_form">
+            {{#if this.isConfirmation}}
+            <fieldset class="clear confDetails">
+                <legend class="grey confDetails">{{pageLabelMap 'OrderConfirmation_Title'}}</legend>
+                <p class="larger"><strong>{{pageLabelMap 'OrderConfirmation_PlacedOrder' this.name
+                        this.orderDateStr}}</strong></p>
+                {{#unless this.userIsGuest}}
+                <p class="larger">{{pageLabelMap 'OrderConfirmation_StatusInfo'}} &nbsp;<a href="#"
+                                                                                           class="orderHistory">{{pageLabelMap
+                        'OrderConfirmation_OrderHistory'}}</a></p>
+                {{/unless}}
+                <p>{{pageLabelMap 'OrderConfirmation_GuidingText'}}</p>
+                <p>{{pageLabelMap 'OrderConfirmation_GuidingText2'}}</p>
+                <p>
+                    {{#each this.payments}}
+                    {{#ifEquals paymentMethod "PO Number"}}
+                    {{pageLabelMap 'CheckOut_POGuidingText'}}
+                    {{/ifEquals}}
+                    {{/each}}
+                </p>
+            </fieldset>
+            {{else}}
+            <fieldset class="clear orderDetails">
+                <legend class="grey orderDetails">{{pageLabelMap 'OrderInformation'}}</legend>
+                <p class="larger">
+                    <span class="orderNum"><strong>{{pageLabelMap 'OrderView_OrderNumber'}}:</strong> {{this.name}}</span><br/>
+                    {{#ifDisplay 'OD.DsplExtOrderNumber'}} <span class="orderExtNum"><strong>{{pageLabelMap 'ExternalOrderID'}}:</strong> {{this.externalOrderId}}</span><br/>
+                    {{/ifDisplay}}
+                    <span class="orderDate"><strong>{{pageLabelMap 'MyOrdersInc_OrderDate'}}:</strong> {{this.orderDateStr}}</span><br/>
+                    <span class="orderStat"><strong>{{pageLabelMap 'MyOrdersInc_Status'}}:</strong> {{pageLabelMap this.status}}</span><br/>
+                    <span class="rightside"><a href="#" class="orderHistory">{{pageLabelMap 'OrderConfirmation_OrderHistory'}}</a></span>
+                </p>
+                <p>
+                    {{#each this.payments}}
+                    {{#ifEquals paymentMethod "PO Number"}}
+                    {{pageLabelMap 'CheckOut_POGuidingText'}}
+                    {{/ifEquals}}
+                    {{/each}}
+                </p>
+            </fieldset>
+            {{/if}}
+            <fieldset class="grey">
+                <legend class="grey">{{pageLabelMap 'CheckOut_GeneralInformation'}}</legend>
+                <ul class="order_review">
+                    <li>
+                        <p>
+                            <strong>{{pageLabelMap 'CheckOut_BuyerInformation'}}</strong><br/>
+                            {{this.buyerFirstName}} {{this.buyerLastName}}<br/>
+                            {{this.buyerPhone}}<br/>
+                            {{this.buyerEmail}}
+                        </p>
+                        <p>
+                            <strong>{{pageLabelMap 'CheckOut_ShippingInformation'}}</strong><br/>
+                            {{#if this.shippingMethod}}
+                            {{pageLabelMap 'CheckOut_ShippingMethod'}}: {{this.shippingMethod}}<br/>
+                            {{/if}}
+                            {{#if this.shippingInst}}
+                            {{pageLabelMap 'CheckOut_ShippingNotes'}}: {{this.shippingInst}}<br/>
+                            {{/if}}
+                            {{#if this.requestedDate}}
+                            {{pageLabelMap 'Checkout_RequestedDeliveryDt'}}: {{this.requestedDateStr}}<br/>
+                            {{/if}}
+                        </p>
+                    </li>
+                    <li>
+                        <p>
+                            <strong>{{pageLabelMap 'CheckOut_BillingAddress'}}</strong><br/>
+                            {{> addressDisplay this.billingAddress}}
+                        </p>
+                        <p><strong>{{pageLabelMap 'CheckOut_PaymentInformationLeg'}}</strong><br/>
+                            {{#each this.payments}}
+                            {{#ifEquals paymentMethod "Credit Card"}}
+                            <br/>{{cardType}} {{pageLabelMap 'CheckOut_CCCardNumber'}}: ************{{cardNumber}}<br/>{{pageLabelMap
+                            'CheckOut_CCExpDate'}}:{{expMonth}}/{{expYear}}
+                            {{else}}
+                            {{pageLabelMap paymentMethod}}: {{accountNumber}}
+                            {{/ifEquals}}
+                            {{/each}}
+                            <apex:outputPanel layout="none" rendered="True">
+                            {{#each this.transactionPayments}}
+                            {{pageLabelMapMultiString 'PaymentDisplay_' this.accountType this.accountType this.accountNumber this.subAccountNumber (pageLabelMapMultiString 'PaymentType_' this.paymentType) (pageLabelMapMultiString 'PaymentExpMonth_' this.expirationMonth) (pageLabelMap this.expirationYear)}}
+                            {{/each}}
+                            </apex:outputPanel>
+                        </p>
+                    </li>
+                    <li>
+                        <p>
+                            <strong>{{pageLabelMap 'CheckOut_ShippingAddress'}}</strong><br/>
+                            {{> addressDisplay this.shippingAddress}}
+                        </p>
+                        {{#if this.hasCoupon}}
+                    <li>
+                        <p class="coupon_section"><strong>{{pageLabelMap 'CartInc_AppliedCoupon'}}</strong><br/>{{this.couponName}}
+                        </p>
+                    </li>
+                    {{/if}}
+                    </li>
+                </ul>
+            </fieldset>
+            {{> orderItemsDesktop}}
+            {{> totalsSection}}
+            <div class="clear"></div>
+            {{#if this.shipments}}
+            <br/><br/>
+            <table border="0" cellpadding="0" cellspacing="0" class="shopping_cart orderShipments">
+                <thead class="rich-table-thead ordShipmentHdr">
+                <tr>
+                    <th class="smaller ordShipmentTrackingUrlHdr" width="10%">&nbsp;</th>
+                    <th class="smaller ordShipmentDateHdr" width="14%">{{pageLabelMap 'OrderShipment_ShipmentDate'}}
+                    </th>
+                    <th class="smaller ordShipmentCarrierHdr" width="14%">{{pageLabelMap 'OrderShipment_Carrier'}}</th>
+                    <th class="smaller ordShipmentMethodHdr" width="21%">{{pageLabelMap
+                        'OrderShipment_ShipmentMethod'}}
+                    </th>
+                    <th class="smaller ordShipmentTrackingNumHdr" width="21%">{{pageLabelMap
+                        'OrderShipment_TrackingNumber'}}
+                    </th>
+                    <th class="smaller ordShipmentDeliverDateHdr" width="14%">{{pageLabelMap
+                        'OrderShipment_DeliveryDate'}}
+                    </th>
+                </tr>
+                </thead>
+                {{#each this.shipments}}
+                <tr class="header odd orderShipmentRow {{sfid}}">
+                    <td class="ordShipmentTrackingUrl"><a target="shiptracking" href="{{{trackingUrl}}}">{{pageLabelMap
+                            'OrderShipment_Track'}}</a></td>
+                    <td class="ordShipmentDate">{{shipmentDateStr}}</td>
+                    <td class="ordShipmentCarrier">{{carrier}}</td>
+                    <td class="ordShipmentMethod">{{shippingMethod}}</td>
+                    <td class="ordShipmentTrackingNum">{{trackingNo}}</td>
+                    <td class="ordShipmentDeliverDate">{{deliveryDateStr}}</td>
+                </tr>
+                {{#each this.items}}
+                <tr class="child even ordShipmentDetails">
+                    <td/>
+                    <td colspan="5" class="orderShipmentDetailLine {{sfid}}">
+                        {{pageLabelMap 'CartInc_SKU'}} {{sku}}, {{pageLabelMap 'CartInc_Qty'}}: {{quantity}}
+                    </td>
+                </tr>
+                {{/each}}
+                {{/each}}
+            </table>
+            {{/if}}
+        </div>
+    </script>
+
+
+
+</apex:component>

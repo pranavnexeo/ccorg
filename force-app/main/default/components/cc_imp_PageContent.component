@@ -1,0 +1,92 @@
+<apex:component controller="cc_imp_ctrl_PageContent">
+<apex:attribute name="contentKey" description="Page Content - contentKey" type="String" required="true"/>
+
+<div class="pageContentTarget" style="margin:0px 30px 0px 30px">
+</div>
+
+<script id="ContentFrame" type="text/template">
+    <iframe id="contentFrame" width="100%" height="{{contentHeight}}px" name="Content" src="{{contentURL}}" />
+</script>
+
+<script type="text/javascript">
+jQuery(function($) {
+    CCRZ.subsc       = CCRZ.subsc || {};
+    CCRZ.subsc.views = CCRZ.subsc.views || {};
+
+    CCRZ.subsc.views.PageContentView = CCRZ.CloudCrazeView.extend({
+        events : {
+
+        },
+
+        className: 'cc_imp_ctrl_PageContent',
+        viewName:  'PageContentView',
+        template: CCRZ.util.template('ContentFrame'),
+
+        init : function(){
+            var view = this;
+            this.invokeContainerLoadingCtx(
+                $('body'),
+                'fetch',
+                '{!contentKey}',
+                function(resp, evt) {
+                    CCRZ.console.log('[PageContentView] resp: ' + resp);
+                    if (evt.status) {
+                        if (resp && resp.success) { // response was successful
+                            if (resp.data.contentURL) {
+                                view.contentURL = resp.data.contentURL;
+                                view.contentHeight = '800';
+                                if (resp.data.contentHeight) {
+                                    view.contentHeight = resp.data.contentHeight;
+                                }
+                                view.render();
+                            }
+                            else if (resp.data.contentBody) {
+                                view.contentBody = resp.data.contentBody;
+                                view.render();
+                            }
+                        }
+                        else {
+                            CCRZ.console.log('[PageContentView] no page content for {!contentKey}. Did not render.');
+                        }
+                    }
+
+                    else {
+                        CCRZ.console.log('[PageContentView] remote action failure.')
+                    }
+                },
+                {
+                    buffer : false, // this call will be executed by itself
+                    nmsp   : false  // defines that this is a call to a subscriber class
+                }); // end invokeCtx call
+        },
+
+        renderDesktop: function() {
+            this.setElement($('.pageContentTarget'));
+            if (this.contentURL) {
+                this.$el.html(this.template(this));
+            }
+            else if (this.contentBody) {
+                this.$el.html(this.htmlDecode(this.contentBody));
+            }
+        },
+
+        renderPhone: function() {
+            this.setElement($('.phone_center_column'));
+            if (this.contentURL) {
+                this.$el.html(this.template(this));
+            }
+            else if (this.contentBody) {
+                this.$el.html(this.htmlDecode(this.contentBody));
+            }
+        },
+
+        htmlDecode: function(input) {
+            var e       = document.createElement('div');
+            e.innerHTML = input;
+            return e.childNodes.length === 0 ? "" : e.childNodes[0].nodeValue;
+        }
+    });
+    CCRZ.subsc.pageContent = new CCRZ.subsc.views.PageContentView();
+});
+</script>
+</apex:component>

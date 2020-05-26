@@ -1,0 +1,104 @@
+<apex:page standardcontroller="ART_Release__c" extensions="GenerateReleaseFromRequests" id="thePage"  >
+<apex:form >
+<apex:pageblock >
+<apex:pageblockbuttons id="buttons">
+<apex:commandbutton value="Create Release" action="{!CreateRelease}" />
+<apex:commandbutton value="Approve Requests" action="{!ApproveRequests}" id="approve" rerender="tblResults, theList"/>
+<apex:commandbutton value="Reject Requests" action="{!RejectRequests}" id="reject" rerender="tblResults, theList"/>
+
+<b><apex:outputlabel value="Status equals: " for="theList"/></b>
+<apex:selectlist size="1" value="{!SelectedStatus}" id="theList">
+<apex:selectoptions value="{!statuses}"/>
+<apex:actionsupport event="onchange" action="{!statuschanged}" rerender="section" status="btnstatus"/>
+</apex:selectlist>
+
+<b><apex:outputlabel value="My Approvals Only" for="MyApprovals" id="MyLabel"/></b>
+<apex:inputcheckbox value="{!MyApprovalsOnly}" id="MyApprovals" >
+<apex:actionsupport event="onchange" action="{!MyApprovalschanged}" rerender="section" status="btnstatus"/>
+</apex:inputcheckbox>
+
+<apex:actionStatus id="btnstatus">
+          <apex:facet name="start">
+          <c:EnhancedActionStatus BackColor="#efefef" borderColor="#336699" borderSize="3" height="20px" width="100px" ImageUrl="{!$Resource.spinner}" Message="Loading..." messageStyle="color:darkred;font-size:11pt;font-weight:bold;"/>
+          </apex:facet>
+          </apex:actionStatus>
+</apex:pageblockbuttons>
+
+<apex:pageblocksection id="section" columns="1">
+<apex:inputfield value="{!release.name}" id="name" required="true" rendered="{!IF(SelectedStatus = 'Approved for Release', TRUE, FALSE)}"/>
+<apex:pageblocksectionitem >
+<apex:outputlabel value="Approval / Rejection Comments"/>
+<apex:inputtextarea cols="50" rows="5" value="{!comments}"/>
+
+
+</apex:pageblocksectionitem>
+                <apex:pageBlockTable value="{!requests}" var="r" id="tblResults">
+                <apex:column headervalue="Selected">
+                <apex:inputcheckbox value="{!r.isselected}" rendered="{!IF(AND(ISBLANK(r.request.Release__c), OR(SelectedStatus = 'Approved for Release', SelectedStatus = 'Requesting Approval for Release')), TRUE, FALSE)}"/>
+                </apex:column>
+                <apex:column >
+                <apex:facet name="header">
+                <apex:commandLink action="{!sortResults}" >Request Number<apex:image value="{!sortArrow}" rendered="{!IF(sortField = 'Request_Number__c', true, false)}"/>
+                <apex:param assignTo="{!sortField}" value="Request_Number__c"/>
+                </apex:commandlink>                
+                </apex:facet>
+                <apex:outputfield value="{!r.request.Request_Number__c}"/>
+                </apex:column>
+                <apex:column >
+                <apex:facet name="header">
+                <apex:commandLink action="{!sortResults}" >Request Name<apex:image value="{!sortArrow}" rendered="{!IF(sortField = 'Name', true, false)}"/>
+                <apex:param assignTo="{!sortField}" value="Name"/>
+                </apex:commandlink>                
+                </apex:facet>
+                <apex:outputLink value="/{!r.request.id}" target="__blank"><apex:outputfield value="{!r.request.Name}"/></apex:outputlink>
+                </apex:column>
+                <apex:column >
+                <apex:facet name="header">
+                <apex:commandLink action="{!sortResults}" >Status<apex:image value="{!sortArrow}" rendered="{!IF(sortField = 'Status__c', true, false)}"/>
+                <apex:param assignTo="{!sortField}" value="Status__c"/>
+                </apex:commandlink>                
+                </apex:facet>
+                <apex:outputfield value="{!r.request.Status__c}"/>
+                </apex:column>
+                
+                <apex:column >
+                <apex:facet name="header">
+                <apex:commandLink action="{!sortResults}" >Release Name<apex:image value="{!sortArrow}" rendered="{!IF(sortField = 'Release__c', true, false)}"/>
+                <apex:param assignTo="{!sortField}" value="Release__c"/>
+                </apex:commandlink>                
+                </apex:facet>
+                <apex:outputfield value="{!r.request.Release__c}"/>
+                </apex:column>
+                   
+                <apex:column >
+                <apex:facet name="header">
+                <apex:commandLink action="{!sortResults}" >Project Name<apex:image value="{!sortArrow}" rendered="{!IF(sortField = 'Project__c', true, false)}"/>
+                <apex:param assignTo="{!sortField}" value="Project__c"/>
+                </apex:commandlink>                
+                </apex:facet>
+                <apex:outputfield value="{!r.request.Project__c}"/>
+                </apex:column>
+                <apex:column >
+                <apex:facet name="header">
+                <apex:commandLink action="{!sortResults}" >Target Date<apex:image value="{!sortArrow}" rendered="{!IF(sortField = 'Target_Date_For_Nexeo_Release__c', true, false)}"/>
+                <apex:param assignTo="{!sortField}" value="Target_Date_For_Nexeo_Release__c"/>
+                </apex:commandlink>                
+                </apex:facet>
+                <apex:outputfield value="{!r.request.Target_Date_for_Nexeo_Release__c}"/>
+                </apex:column>
+                <apex:column >
+                <apex:facet name="header">
+                <apex:commandLink action="{!sortResults}" >Subject<apex:image value="{!sortArrow}" rendered="{!IF(sortField = 'Subject__c', true, false)}"/>
+                <apex:param assignTo="{!sortField}" value="Subject__c"/>
+                </apex:commandlink>                
+                </apex:facet>
+                <apex:outputfield value="{!r.request.Subject__c}"/>
+                </apex:column>
+
+                </apex:pageblocktable>
+
+</apex:pageblocksection>
+</apex:pageblock>
+</apex:form>
+
+</apex:page>

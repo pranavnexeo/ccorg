@@ -1,0 +1,51 @@
+<apex:component >
+
+<script type="text/javascript">
+    jQuery(function($) {
+        CCRZ.pubSub.once('view:newCustomerView:refresh', function(view) {
+
+            var viewPrototype = Object.getPrototypeOf(view);
+            if (viewPrototype != null) {
+                viewPrototype.events = _.extend(viewPrototype.events, {"change .isCustomer" : "showInvoiceFields", "click  .submit" : "submitOverride"});
+                viewPrototype.showInvoiceFields = function(event) {
+                    var isCustomer = $(event.target).val();
+                    if (isCustomer == 'true') {
+                        $( ".showCF1" ).show();
+                        $( ".showCF2" ).show();
+                    }
+                    else {
+                        $( ".showCF1" ).hide();
+                        $( ".showCF2" ).hide();
+                    }
+                }; 
+                viewPrototype.submitOverride = function(event) {
+                    var isCustomer = $('.isCustomer').val();
+                    if (isCustomer == null || isCustomer == '') {
+                        var message = CCRZ.processPageLabelMap('cc_imp_SiteRegister_SelectIsCustomer');
+                        CCRZ.pubSub.trigger('pageMessage', CCRZ.createPageMessage('ERROR', 'error_messages_section', message)); 
+                        document.body.scrollTop = document.documentElement.scrollTop = 0;
+                    }
+                    else if (isCustomer == 'true') {
+                        var invoiceNumber = $('#customField1').val();
+                        var invoiceAmount = $('#customField2').val();
+                        if (invoiceNumber == null || invoiceAmount == null) {
+                            var message = CCRZ.processPageLabelMap('cc_imp_SiteRegister_InvoiceDataRequired');
+                            CCRZ.pubSub.trigger('pageMessage', CCRZ.createPageMessage('ERROR', 'error_messages_section', message)); 
+                            document.body.scrollTop = document.documentElement.scrollTop = 0;
+                        }
+                        else {
+                            this.submit(event);
+                        }
+                    }
+                    else {
+                        this.submit(event);
+                    }
+                }; 
+                view.delegateEvents();
+            }              
+        });
+
+    });
+</script>
+
+</apex:component>

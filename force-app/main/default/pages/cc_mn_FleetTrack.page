@@ -1,0 +1,3 @@
+<apex:page id="cc_mn_FleetTrack" applyHtmlTag="false" docType="html-5.0" sidebar="false" showHeader="false" standardStylesheets="false" readOnly="true">
+    <c:cc_mn_FleetTrack docNumber="{!$CurrentPage.parameters.docNumber}" itemNumber="{!$CurrentPage.parameters.itemNumber}" />
+</apex:page>

@@ -1,0 +1,1 @@
+<apex:page standardController="NCAR_Cases__c" extensions="caseRedirect_New" tabStyle="Case" showheader="true" action="{!redirectedit}" />

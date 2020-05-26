@@ -1,0 +1,444 @@
+<apex:component controller="cc_imp_ctrl_mn_header"  allowDML="true">
+
+    <style>
+    .modal.fade {
+        z-index: -1050;
+    }
+    .modal.fade.in {
+        z-index: 1050;
+    }
+    .cartHeaderLink.switchLocale {
+        background: url(/mynexeo/resource/1510162377000/CC_Theme_Nexeo/images/language.png)left top no-repeat !important;
+    }
+    .account_sign_in_products.firstDiv {
+        text-align: left;
+        padding-left: 3px;
+     }
+     .account_sign_in_products.secondDiv {
+        position: absolute; 
+        left: 0 !important; 
+        right: 0 !important; 
+        margin: auto !important;
+      }
+      .cart_products.thirdDiv {
+        float: right !important;      
+      }
+     .linksContainer {
+        border: 1px; 
+        position: relative; 
+        overflow: hidden; 
+        padding-bottom:10px;      
+      }
+    .modal.fade.bannerformmodal.mobile.in {
+        height: 50%;
+      }                 
+    </style>
+    
+ <script type="text/javascript">
+    CCRZ.uiProperties.headerView.desktop.tmpl = 'HeaderDesktopImp';
+    CCRZ.uiProperties.headerView.phone.tmpl   = 'HeaderPhoneImp';
+</script>
+  
+    <script type="text/javascript">
+  
+     function updateLocale(locale) {                             
+        var language=locale;
+        var isGuest = {!ISPICKVAL($User.UserType,'Guest')};
+        if (isGuest){
+
+            CCRZ.pagevars.userLocale = language;
+            CCRZ.homePage();
+          
+        } else {
+            Visualforce.remoting.Manager.invokeAction(
+                '{!$RemoteAction.cc_imp_ctrl_mn_header.updateLocale}',language,            
+                function(result, event){
+                    CCRZ.homePage();
+                }, 
+                {escape: true}
+            );
+        }
+    }
+     $( window ).load(function() {
+         var loginAsExternalUser = '{!loginAsExternalUser}';
+         if (loginAsExternalUser.toLowerCase() == 'true') {            
+             $('#emailField').val('{!emailField}');
+   	         $('#passwordField').val('{!passwordField}');
+             $('#send2Dsk').click();
+             
+         } 
+         
+         var ESUser = CCRZ.getCookie("apex__isESUser");
+
+		 if (ESUser !== undefined) {
+            
+             var ua = window.navigator.userAgent;
+    		 var msie = ua.indexOf("MSIE ");
+
+             if (msie > 0 || navigator.userAgent.match(/Trident.*rv\:11\./) || window.navigator.userAgent.indexOf("Edge") > -1) {
+                 ESUser = {!isESUser};
+                 ESUser = ESUser.toString();
+             }
+
+             if (ESUser.toLowerCase() != 'true') {
+                 if ($('#spanCartHeaderLink') !== undefined) {
+                        $('#spanCartHeaderLink').css("display","");
+                 }
+         
+                 if ($('#cartHeader') !== undefined) {
+                        $('#cartHeader').css("display","");
+                 }
+                 
+                 if ($('#ccProductSearchWidgetId') !== undefined){
+                    $('#ccProductSearchWidgetId').css("display","");
+                 }
+                       
+             } 
+         }
+
+     });
+    
+    </script>
+    
+    
+
+<script id="HeaderDesktopImp" type="text/template">
+      
+    {{#if {!(ISPICKVAL($User.UserType,'Guest'))} }}
+    <div class="top_navigation"> 
+        <div class="misc-function" />
+        <p> 
+           <span>
+      
+      
+      
+               <span class="acctsec">
+                    <a class="acct" id="switchLocale" href="#"  data-toggle="modal" data-target="#bannerformmodal" >{{pageLabelMap 'LocaleSwitcher_Label'}}</a> |
+                </span>
+                    
+              <span class="loginoutsec"></span>
+            </span>
+        </p>
+    </div>  
+    <div class="logo_tagline hidden-phone">
+        <div class="logo">
+            <a href="#" id="logoUrl">
+                <img src="{{this.logoUrl}}"/>
+            </a>
+        </div>
+    </div>  
+                
+<div class="modal fade bannerformmodal" tabindex="-1" role="dialog" aria-labelledby="bannerformmodal" aria-hidden="true" id="bannerformmodal">
+<div class="modal-dialog modal-sm">
+        <div class="modal-content">
+          <div class="modal-content">
+                <div class="modal-header">
+                <button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
+                <h4 class="modal-title" id="myModalLabel">{{pageLabelMap 'LocaleSwitcher_Modal_Label'}}</h4>
+                </div>
+               <div class="modal-body">
+                 <table class="localeModalTable table table-hover table-bordered cc_locale_modal_table"
+                     id="available_locales">                 
+                     <tr>
+                         <td><button onclick="updateLocale('fr_CA')">{{pageLabelMap 'LOC_fr_CA'}}</button><button onclick="updateLocale('en_US')">{{pageLabelMap 'LOC_en_US'}}</button>
+                </td> 
+                     </tr>          
+               </table>
+                  
+            </div>
+              <div class="modal-footer">
+                  {{pageLabelMap 'LocaleSwitcher_Modal_Note'}}
+              </div>          
+        </div>
+        </div>
+      </div>
+    </div>
+    {{else}}
+    <div class="top_navigation"> 
+        <div class="misc-function" />
+        <div class="search_form" style = "display:none" id = 'ccProductSearchWidgetId'/> <!-- populated by cc_productSearchWidget -->
+        <p>
+            <span>             
+           <span class="acctsec">
+                    <a class="acct" href="#" onclick="CCRZ.homePage();" >{{pageLabelMap 'GotoHome_Label'}}</a> |
+            </span>
+             <span class="acctsec">
+                    <a class="acct" id="switchLocale" href="#"  data-toggle="modal" data-target="#bannerformmodal" >{{pageLabelMap 'LocaleSwitcher_Label'}}</a> |
+                </span>
+                <span class="acctsec">
+                    <a class="acct" id="goToAccount" href="#" >{{pageLabelMap 'Component_SiteHeader_MyAccount'}}</a> |
+                </span>
+                
+                <span class="cartsec" id = "spanCartHeaderLink" style = "display:none">                    
+                    <a id="cartHeader" class="chead cartHeaderLink"  href="#"></a> |
+                </span>   
+                    
+                <span class="loginoutsec"></span>
+            </span>
+        </p>
+    </div>
+    <div class="logo_tagline hidden-phone">
+        <div class="logo">
+            <a href="#" id="logoUrl">
+                <img src="{{this.logoUrl}}"/>
+            </a>
+        </div>
+    </div>  
+                <div class="modal fade bannerformmodal" tabindex="-1" role="dialog" aria-labelledby="bannerformmodal" aria-hidden="true" id="bannerformmodal">
+<div class="modal-dialog modal-sm">
+        <div class="modal-content">
+          <div class="modal-content">
+                <div class="modal-header">
+                <button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
+                <h4 class="modal-title" id="myModalLabel">{{pageLabelMap 'LocaleSwitcher_Modal_Label'}}</h4>
+                </div>
+               <div class="modal-body">
+                  
+                 <table class="localeModalTable table table-hover table-bordered cc_locale_modal_table"
+                     id="available_locales">                 
+                     <tr>
+                         <td><button onclick="updateLocale('fr_CA')">{{pageLabelMap 'LOC_fr_CA'}}</button><button onclick="updateLocale('en_US')">{{pageLabelMap 'LOC_en_US'}}</button>
+                </td> 
+                     </tr> 
+                
+                                                             
+                       
+               </table>
+                 
+               
+               
+            </div>
+              <div class="modal-footer">
+                  {{pageLabelMap 'LocaleSwitcher_Modal_Note'}}
+              </div>          
+        </div>
+        </div>
+      </div>
+    </div>
+    {{/if}}
+</script>
+
+
+<script id="HeaderPhoneImp" type="text/template">
+   {{#if {!(ISPICKVAL($User.UserType,'Guest'))} }}
+   
+       <div class="account_sign_in_products">
+       </div>
+       
+      <div class="account_sign_in_products secondDiv"  >
+                <p>
+                    <a class="cartHeaderLink switchLocale" id="switchLocale" href="#"  data-toggle="modal" data-target="#bannerformmodal" >{{pageLabelMap 'LocaleSwitcher_Label'}}</a>
+                </p>
+      </div>    
+
+
+        <div id="login" class="modal hide fade in" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
+            <div class="modal-header">
+                <button type="button" class="close" data-dismiss="modal" aria-hidden="true">X</button>
+                <h3 id="myModalLabel">{{pageLabelMap 'Component_SiteHeader_Login'}}</h3>
+            </div>
+            <div class="modal-body">
+                <div class="message_container" style="display:none;">
+                    <span class="error-msg">
+
+                    </span>
+                </div>
+                <form>
+                    <label>{{pageLabelMap 'Component_SiteHeader_EmailAddress'}}</label>
+                    <input name="" type="email" id="modal_email">
+                    <label>{{pageLabelMap 'Component_SiteHeader_Password'}}</label>
+                   <input name="" type="password" id="modal_password">
+                </form>
+            </div>
+            <div class="modal-footer">
+                <input type="button" class="btn btn-primary" id="signInButton" value="{{pageLabelMap 'Component_SiteHeader_SignIn'}}"/>
+                {{#ifDisplay 'Login.DsplReg'}}
+                    <input type="button" class="btn btn-primary" id="siteRegister" style="margin-top:10px; margin-left:0px;" value="{{pageLabelMap 'SiteLogin_CreateAccount'}}"/>
+                {{/ifDisplay}}
+                <a href="#" id="forgotPasswordButton" style="margin-top:10px;float:right;">{{pageLabelMap 'Component_SiteHeader_ForgotPassword'}}</a>
+            </div>
+        </div>
+        <div id="forgotPassword" class="modal hide fade in" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
+            <div class="modal-header">
+                <button type="button" class="close" data-dismiss="modal" aria-hidden="true">X</button>
+                <h3 id="myModalLabel">{{pageLabelMap 'Component_SiteHeader_ForgotPassword'}}</h3>
+            </div>
+            <div class="modal-body">
+                <form>
+                    <p>{{pageLabelMap 'ForgotPassword_PleaseEnterEmail'}}</p>
+                    <label>{{pageLabelMap 'Component_SiteHeader_EmailAddress'}}</label>
+                    <input name="" type="email" id="fpEmailField">
+                </form>
+            </div>
+            <div class="modal-footer">
+                <input type="button" class="btn btn-primary" id="submitBtn" value="{{pageLabelMap 'Component_SiteHeader_Submit'}}"/>
+                <a href="#" id="backToLogin" style="margin-top:10px;float:right;">{{pageLabelMap 'Component_SiteHeader_BackLogin'}}</a>
+            </div>
+        </div>
+                
+                <div class="modal fade bannerformmodal mobile" tabindex="-1" role="dialog" aria-labelledby="bannerformmodal" aria-hidden="true" id="bannerformmodal">
+<div class="modal-dialog modal-sm">
+        <div class="modal-content">
+          <div class="modal-content">
+                <div class="modal-header">
+                <button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
+                <h4 class="modal-title" id="myModalLabel">{{pageLabelMap 'LocaleSwitcher_Modal_Label'}}</h4>
+                </div>
+               <div class="modal-body">
+                 <table class="localeModalTable table table-hover table-bordered cc_locale_modal_table"
+                     id="available_locales">                 
+                     <tr>
+                         <td><button onclick="updateLocale('fr_CA')">{{pageLabelMap 'LOC_fr_CA'}}</button><button onclick="updateLocale('en_US')">{{pageLabelMap 'LOC_en_US'}}</button>
+                </td> 
+                     </tr>          
+               </table>
+                  
+            </div>
+              <div class="modal-footer">
+                  {{pageLabelMap 'LocaleSwitcher_Modal_Note'}}
+              </div>          
+        </div>
+        </div>
+      </div>
+    </div>
+    {{else}}
+    <div class="phone_header">
+        <div class="products_phone">
+            <p><a href="#products" data-toggle="modal" id="productHeaderLink">{{pageLabelMap 'Component_SiteHeader_Products'}}</a></p>
+        </div>
+
+        <div id="products" class="modal hide fade in" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
+            <div class="modal-header">
+                <button type="button" class="close" data-dismiss="modal" aria-hidden="true">X</button>
+                <h3 id="myModalLabel">{{pageLabelMap 'Component_SiteHeader_ProductsNavigation'}}</h3>
+            </div>
+            <div class="modal-body" id="productListHeader">
+
+            </div>
+        </div>
+    
+        <!-- In order to have the links : Accounts, Change language and Cart on the same line 
+            we have create this container with it own styles-->
+       <div class="linksContainer">     
+            <div class="account_sign_in_products firstDiv">
+    
+            </div>
+            
+            <div class="account_sign_in_products secondDiv"  >
+                <p>
+                    <a class="cartHeaderLink switchLocale" id="switchLocale" href="#"  data-toggle="modal" data-target="#bannerformmodal" >{{pageLabelMap 'LocaleSwitcher_Label'}}</a>
+                </p>
+            </div>  
+                    
+            <div class="cart_products thirdDiv" id="cartHeader" style = "display:none">
+    
+            </div>
+       </div>
+    
+    <div class="modal fade bannerformmodal mobile" tabindex="-1" role="dialog" aria-labelledby="bannerformmodal" aria-hidden="true" id="bannerformmodal">
+<div class="modal-dialog modal-sm">
+        <div class="modal-content">
+          <div class="modal-content">
+                <div class="modal-header">
+                <button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
+                <h4 class="modal-title" id="myModalLabel">{{pageLabelMap 'LocaleSwitcher_Modal_Label'}}</h4>
+                </div>
+               <div class="modal-body">
+                 <table class="localeModalTable table table-hover table-bordered cc_locale_modal_table"
+                     id="available_locales">                 
+                     <tr>
+                         <td><button onclick="updateLocale('fr_CA')">{{pageLabelMap 'LOC_fr_CA'}}</button><button onclick="updateLocale('en_US')">{{pageLabelMap 'LOC_en_US'}}</button>
+                </td> 
+                     </tr>          
+               </table>
+                  
+            </div>
+              <div class="modal-footer">
+                  {{pageLabelMap 'LocaleSwitcher_Modal_Note'}}
+              </div>          
+        </div>
+        </div>
+      </div>
+    </div>
+                      
+        <div id="login" class="modal hide fade in" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
+            <div class="modal-header">
+                <button type="button" class="close" data-dismiss="modal" aria-hidden="true">X</button>
+                <h3 id="myModalLabel">{{pageLabelMap 'Component_SiteHeader_Login'}}</h3>
+            </div>
+            <div class="modal-body">
+                <div class="message_container" style="display:none;">
+                    <span class="error-msg">
+
+                    </span>
+                </div>
+                <form>
+                    <label>{{pageLabelMap 'Component_SiteHeader_EmailAddress'}}</label>
+                    <input name="" type="email" id="modal_email">
+                    <label>{{pageLabelMap 'Component_SiteHeader_Password'}}</label>
+                   <input name="" type="password" id="modal_password">
+                </form>
+            </div>
+            <div class="modal-footer">
+                <input type="button" class="btn btn-primary" id="signInButton" value="{{pageLabelMap 'Component_SiteHeader_SignIn'}}"/>
+                {{#ifDisplay 'Login.DsplReg'}}
+                    <input type="button" class="btn btn-primary" id="siteRegister" style="margin-top:10px; margin-left:0px;" value="{{pageLabelMap 'SiteLogin_CreateAccount'}}"/>
+                {{/ifDisplay}}
+                <a href="#" id="forgotPasswordButton" style="margin-top:10px;float:right;">{{pageLabelMap 'Component_SiteHeader_ForgotPassword'}}</a>
+            </div>
+        </div>
+
+        <div id="forgotPassword" class="modal hide fade in" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
+            <div class="modal-header">
+                <button type="button" class="close" data-dismiss="modal" aria-hidden="true">X</button>
+                <h3 id="myModalLabel">{{pageLabelMap 'Component_SiteHeader_ForgotPassword'}}</h3>
+            </div>
+            <div class="modal-body">
+                <form>
+                    <p>{{pageLabelMap 'ForgotPassword_PleaseEnterEmail'}}</p>
+                    <label>{{pageLabelMap 'Component_SiteHeader_EmailAddress'}}</label>
+                    <input name="" type="email" id="fpEmailField">
+                </form>
+            </div>
+            <div class="modal-footer">
+                <input type="button" class="btn btn-primary" id="submitBtn" value="{{pageLabelMap 'Component_SiteHeader_Submit'}}"/>
+                <a href="#" id="backToLogin" style="margin-top:10px;float:right;">{{pageLabelMap 'Component_SiteHeader_BackLogin'}}</a>
+            </div>
+        </div>
+
+        <div id="account" class="modal hide fade in" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
+            <div class="modal-header">
+                <button type="button" class="close" data-dismiss="modal" aria-hidden="true">X</button>
+                <h3 id="myModalLabel">{{pageLabelMap 'Component_SiteHeader_Account'}}</h3>
+            </div>
+            <div class="modal-body">
+                <ul class="modal-navigation">
+                    {{#each this.myAccountLinks}}
+                        <li>
+                            <a href="javascript:void(0);" class="gotoMA {{this.viewState}}" data-vs="{{this.viewState}}">
+                                {{pageLabelMap this.linkLabel}}
+                            </a>
+                        </li>
+                    {{/each}}
+                    <li><a href="#" class="doLogout">{{pageLabelMap 'Component_SiteHeader_Logout'}}</a></li>
+                </ul>
+            </div>
+        </div>
+        <div id="cart" class="modal hide fade in" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
+            <div class="modal-header">
+                <button type="button" class="close" data-dismiss="modal" aria-hidden="true">X</button>
+                <h3 id="myModalLabel">{{pageLabelMap 'Component_SiteHeader_MyCart'}}</h3>
+            </div>
+            <!-- <div class="modal-body"><div id="cartBody"></div><div class="dropdown_cart_total"></div></div> CCRZ-2789 -->
+            <div class="modal-footer">
+                <input type="button" value="{{pageLabelMap 'Component_SiteHeader_CheckOut'}}" class="btn btn-primary" automation-id="checkOut"/>
+            </div>
+        </div>
+
+    </div>
+    <div class="phone_header_misc">
+        <div class="misc-function"></div>
+    </div>
+    {{/if}}
+</script>
+</apex:component>

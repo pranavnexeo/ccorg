@@ -1,0 +1,6 @@
+<apex:page >
+<script>
+window.open("http://dpapp1.asco.ashland.com/Data/ics/SupRef.nsf");
+parent.frames.location.replace("/home/home.jsp");
+</script>
+</apex:page>

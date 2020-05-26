@@ -1,0 +1,15 @@
+<apex:component >
+
+	<script type="text/javascript">
+      CCRZ.uiProperties.miniCartView.desktop.tmpl = 'MiniCartDesktopImp';
+      CCRZ.uiProperties.miniCartView.phone.tmpl = 'CartTemplateImp';
+   </script>
+
+	<script id="MiniCartDesktopImp" type="text/template">
+	</script>
+
+
+	<script id="CartTemplateImp" type="text/template">
+	</script>
+
+</apex:component>

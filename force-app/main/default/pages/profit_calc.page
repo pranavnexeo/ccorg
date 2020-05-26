@@ -1,0 +1,237 @@
+<apex:page sidebar="false" showheader="false" controller="gross_profit_estimator">
+    <apex:includeScript value="{!URLFOR($Resource.jquery_1_11_0_min, 'jquery-1.11.0.min.js')}" />
+    <apex:includeScript value="{!URLFOR($Resource.JQMobile, '/JQMobile/jquery.mobile-1.4.2.min.js')}" />
+    <apex:stylesheet value="{!URLFOR($Resource.JQMobile, '/JQMobile/Nexeo.min.css')}" />
+    <apex:stylesheet value="{!URLFOR($Resource.JQMobile, '/JQMobile/jquery.mobile.structure-1.4.2.min.css')}" />
+    <apex:stylesheet value="{!URLFOR($Resource.JQMobile, '/JQMobile/jquery.mobile.icons-1.4.2.min.css')}" />
+
+    <style>
+    div.ui-input-text { width: 80px !important;
+                        float: right !important; 
+                                   
+    }
+    
+    h3.ui-bar-b { text-align: center !important;
+                  
+    
+    }
+    .boldlabel{ float: left !important;
+                color: white !important; 
+                text-shadow: 0 1px 0 #111 !important;
+                font-weight: bold !important;
+     }
+
+    div.redline{ 
+                 background:white;
+                 height: 1px;
+               }
+    
+
+    </style>
+    <script>
+    
+        var timeout;
+            if(typeof sforce == 'undefined' && '{!$CurrentPage.Parameters.nooverride}' != '1'){
+                  window.location.href = "/apex/{!$CurrentPage.Name}_i"
+            }
+        function calculateWarehouse(){
+            var sf1 = (typeof sforce != 'undefined');         
+            gross_profit_estimator.getValue(sf1, 
+                                            'Warehouse', 
+                                            $("input[name='radio-division']:checked").val(), 
+                                            $("input[name='radio-package']:checked").val(),
+                                            navigator.userAgent, 
+                                            function(result, event){   
+                if(event.type == 'exception') {
+                  alert(event.message);
+                }else{
+                   $('#w').val(result.toFixed(3));
+                   dototal();
+                }
+            });
+       }
+       
+       function calculateDelivery(){
+            var sf1 = (typeof sforce != 'undefined');
+            gross_profit_estimator.getValue(sf1, 
+                                            'Delivery', 
+                                            $("input[name='radio-carrier']:checked").val(), 
+                                            $("input[name='radio-region']:checked").val(),
+                                            navigator.userAgent, 
+                                            function(result, event){   
+                if(event.type == 'exception') {
+                  alert(event.message);
+                }else{
+                   $('#d').val(result.toFixed(3));
+                   dototal();
+                }
+            });
+       }
+
+      function clearradios(){
+         $('input[type="radio"]:checked').attr('checked', false);
+         $('input[type="radio"]').checkboxradio("refresh");
+         $('#w').val("");
+         $('#d').val("");
+         $('#t').val("");
+      }
+      
+      function dototal(){
+        if($('#w').val() != "" && $('#d').val() != ""){
+          var t = (parseFloat($('#w').val()) + parseFloat($('#d').val())).toFixed(3);
+          $('#t').val(t);
+        }
+        else
+          $('#t').val("");
+      }
+        $(document).ready(function(){
+
+           $('.delivery').change(function(){
+               if($("input[name='radio-carrier']:checked").length > 0 && 
+                  $("input[name='radio-region']:checked").length > 0){
+                      calculateDelivery();
+               }
+           });
+           
+           $('.warehouse').change(function(){
+              if($("input[name='radio-division']:checked").length > 0 && 
+                  $("input[name='radio-package']:checked").length > 0){
+                     calculateWarehouse();
+              }
+           });
+           
+           $("input[name='radio-division']").change(function(){
+               
+                var docalc = true;
+                if($("input[name='radio-division']:checked").length > 0){
+                  
+                  if($("input[name='radio-division']:checked").val() == 'Chemicals Commodity'){
+                    $('#radio-package-c').checkboxradio('enable');
+                  }else{
+                    if($("input[name='radio-package']:checked").val() == 'Nexeo Packed Blend'){
+                    $('#radio-package-c').attr('checked', false).checkboxradio("refresh");
+                    docalc = false;
+                    $('#w').val("");
+                    }
+                    $('#radio-package-c').checkboxradio('disable');
+                  }
+                }
+                
+
+                if($("input[name='radio-division']:checked").length > 0 && 
+                  $("input[name='radio-package']:checked").length > 0 && docalc){
+                     calculateWarehouse();
+              }
+                    
+           });
+        });
+
+    </script>
+
+    <head>
+        <title>GP Estimator</title>
+    </head>
+
+    <body>
+
+        <div data-role="page" data-theme="b" id="detailpage">
+            <div data-role="header" data-position="fixed">
+                 <a onclick="clearradios();" class='ui-btn-left'>Clear</a>
+                <h1>Plant GP Estimator</h1>
+            </div>
+            <div data-role="content" style="max-width:700px;margin-left: auto;margin-right: auto;">
+                <div class="ui-grid-a ui-responsive">
+                    
+                        <div class="ui-block-a" >
+                            <h3 class="ui-bar ui-bar-b">Warehouse</h3>
+                            <div class="ui-body ">
+                            <fieldset data-role="controlgroup" >
+                                <input type="radio" name="radio-division" id="radio-division-a" value="Chemicals Commodity" />
+                                <label for="radio-division-a">Chemicals Commodity</label>
+                                <input type="radio" name="radio-division" id="radio-division-b" value="Chemicals Specialty" />
+                                <label for="radio-division-b">Chemicals Specialty</label>
+                                <input type="radio" name="radio-division" id="radio-division-c" value="Plastics" />
+                                <label for="radio-division-c">Plastics</label>
+                            </fieldset>
+                                                
+                            <fieldset data-role="controlgroup" id="nexeopacked" >
+                                <input class="warehouse" type="radio" name="radio-package" id="radio-package-a" value="Bulk" />
+                                <label for="radio-package-a">Bulk</label>
+                                <input class="warehouse" type="radio" name="radio-package" id="radio-package-b" value="Nexeo Packed" />
+                                <label for="radio-package-b">Nexeo Packed</label>
+                                <input class="warehouse" type="radio" name="radio-package" id="radio-package-c" value="Nexeo Packed Blend" />
+                                <label for="radio-package-c">Nexeo Packed Blend</label>
+                                <input class="warehouse" type="radio" name="radio-package" id="radio-package-d" value="Supplier Packed" />
+                                <label for="radio-package-d">Supplier Packed</label>
+                            </fieldset>
+                          </div>
+                       </div>
+
+                        <div class="ui-block-b" >
+                             <h3 class="ui-bar ui-bar-b">Delivery</h3>
+                             <div class="ui-body ">
+                             <fieldset data-role="controlgroup" >
+                                <input class="delivery" type="radio" name="radio-carrier" id="radio-carrier-a" value="Bulk" />
+                                <label for="radio-carrier-a">Bulk</label>
+                                <input class="delivery" type="radio" name="radio-carrier" id="radio-carrier-b" value="LTL" />
+                                <label for="radio-carrier-b">LTL</label>
+                                <input class="delivery" type="radio" name="radio-carrier" id="radio-carrier-c" value="TL" />
+                                <label for="radio-carrier-c">TL</label>
+                            </fieldset>
+                            
+                            <fieldset data-role="controlgroup" >
+                                <input class="delivery" type="radio" name="radio-region" id="radio-region-a" value="Zone" />
+                                <label for="radio-region-a">Zone</label>
+                                <input class="delivery" type="radio" name="radio-region" id="radio-region-b" value="Regional" />
+                                <label for="radio-region-b">Regional</label>
+                                <input class="delivery" type="radio" name="radio-region" id="radio-region-c" value="Out of Region" />
+                                <label for="radio-region-c">Out of Region</label>
+                            </fieldset>
+
+                            </div>
+                        </div>
+                </div> <!-- End Grid -->
+                
+                <div class="ui-grid-a ui-responsive" style="background:#6A737B;border-width: 1px;border-top-style: solid;border-left-style: solid;border-right-style: solid;">
+                        <div class="ui-block-a" >
+                            <div class="ui-body" style="padding-top: .1em !important;padding-bottom: .1em !important;">
+                                <div class="ui-field-contain" >
+                                    <label class="boldlabel" for="w">Warehouse</label> 
+                                    <input data-mini="true" type="number" name="w" id="w" value="" style="text-align: right;" />
+                                </div><!--End Field Contain-->
+                            </div><!--End Body-->
+                        </div><!--End Block a-->
+                        <div class="ui-block-b" >
+                            <div class="ui-body " style="padding-top: .1em !important;padding-bottom: .1em !important;">
+                                <div class="ui-field-contain" >
+                                <label class="boldlabel" for="d" >Delivery</label>
+                                <input data-mini="true" type="number" name="d" id="d" value="" style="text-align: right;" />
+                                </div><!--End Field Contain-->
+                            </div><!--End Body-->
+                        </div><!--End Block b-->
+                   </div><!--End Grid-->
+                    <div class="ui-grid-solo" style="background:#6A737B;border-width: 1px;border-left-style: solid;border-right-style: solid;">
+                        <div class="ui-body" style="padding-top: .1em !important;padding-bottom: .1em !important;">
+                        <div class="ui-grid-solo redline"/>    
+                        </div>  
+                    </div>
+                   <div class="ui-grid-a ui-responsive" style="background:#6A737B;border-width: 1px;border-bottom-style: solid;border-left-style: solid;border-right-style: solid;">
+                        <div class="ui-block-a" />
+                        <div class="ui-block-b" >
+                            <div class="ui-body" style="padding-top: .1em !important;padding-bottom: .1em !important;">
+                                                  
+                                <div class="ui-field-contain" >
+                                        <label class="boldlabel" for="t">Total</label>
+                                        <input data-mini="true" type="number" name="t" id="t" value="" style="text-align: right;" />
+                                </div><!-- End Field Contain-->
+                            </div><!--End Body-->
+                        </div><!--End Block b-->
+                        
+                        
+               </div><!--End Grid-->
+                        
+
+            </div> <!-- End Content -->
+        </div> <!-- End Page -->
+    </body>
+</apex:page>

@@ -1,0 +1,34 @@
+<apex:page standardController="Competitive_Analysis_Report__c"  recordSetVar="testcomp"  sidebar="false" extensions="SampleManufacturer">
+ <apex:form >
+
+
+
+<apex:pageBlock title="SAMPLE NAME WITH MANUFACTURER PRESENT IN COMPETITIVE ANALYSIS REPORT" >
+   <apex:pageMessages />
+   <apex:dataTable value="{!testcomp}" var="pay" cellPadding="10" border="1" width="100" bgcolor="Pink" align="center" cellspacing="1"  >
+
+
+
+<apex:column >
+<apex:facet name="header">Sample Name</apex:facet>
+
+{!pay.Sample__c}
+
+</apex:column>
+
+<apex:column >
+<apex:facet name="header">Manufacturer</apex:facet>
+
+{!pay.Manufacturer__c}
+
+
+</apex:column>
+</apex:dataTable>
+<apex:pageBlockButtons >
+               &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<apex:commandButton action="{!next}" value="Continue" styleClass="buttonStyle"   style="background:lightblue" />
+            </apex:pageBlockButtons>
+
+   </apex:pageBlock>
+ </apex:form>
+ 
+</apex:page>

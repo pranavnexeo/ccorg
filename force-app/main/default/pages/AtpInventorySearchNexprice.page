@@ -1,0 +1,61 @@
+<apex:page standardcontroller="Account_Material__c" extensions="AtpInvSearchController"  docType="html-5.0">
+    
+  
+  <script>
+          $(document).ready(function() {
+         
+         
+         $("#checkInv").click(function(){
+         var url1 = '/apex/AtpInventorySearchNexprice?id='+ "{!Account_Material__c.Id}";
+         console.log(url1)
+         gotourl('/apex/AtpInventorySearchNexprice?id='+ "{!Account_Material__c.Id}");
+         });
+         
+         
+         });
+         
+             function gotourl(url){
+            
+                if(typeof sforce == 'undefined') 
+                    window.location.href = url
+                else
+                    sforce.one.navigateToURL(url);
+                }
+    
+        </script>
+   <apex:form id="myRerender">
+   <apex:pageMessages ></apex:pageMessages>   
+   <apex:pageBlock >
+          <apex:pageBlockSection id="pbs1" columns="1" title="Inventory Check">
+              <apex:outputfield id="Material" value="{!Account_Material__c.Material_Name__c}"/>
+              <apex:inputfield id="shipDate" value="{!Account_Material__c.Ship_Date__c}" required="true" />
+              <apex:inputfield id="Quantity" value="{!Account_Material__c.Quantity__c}" required="true"  />
+          <apex:pageblocksectionitem >
+              <apex:outputLabel for="stockingunit" value="Unit of Measure" />
+                     <apex:outputPanel styleClass="requiredInput" layout="block">
+                     <apex:outputPanel styleClass="requiredBlock" layout="block"/>
+                     <apex:selectList value="{!Account_Material__c.ATP_UOM__c}" id="stockingunit" size="1" required="true">
+                        <apex:selectOptions value="{!StockingUnitCodes}" />
+                        <apex:actionSupport event="onchange" rerender="units" />
+                     </apex:selectList>
+                     </apex:outputPanel>
+          </apex:pageblocksectionitem>
+          <apex:outputText value="Please Select Container Quantity" style="font-style:bold;margin-left:18%;color:green"/>      
+          <!---<apex:pageMessage id="pageMessageId" summary="Please select Container Quantity" severity="info" strength="0" />--->
+           <apex:outputText value="{!Account_Material__c.SAP_Material__r.Material_Number__c}" rendered="false" />
+           <apex:outputText value="{!Account_Material__c.SAP_Plant_Code__c}" rendered="false" />
+  
+        </apex:pageblocksection>
+        <apex:pageBlockSection id="pbs2" columns="1" title="Response" rendered="{!IF(response != null, true,false)}" >   
+           <apex:outputPanel > 
+              <!---<b><label for="response">Response:</label>--->
+              <b><apex:outputText value="{!response}"></apex:outputText></b>
+           </apex:outputPanel>
+         </apex:pageblocksection> 
+        <apex:pageblockbuttons location="bottom">
+           <apex:commandbutton action="{!checkInv}" value="Check Inventory" rerender="myRerender" />
+        </apex:pageblockbuttons> 
+      </apex:pageBlock>
+        
+   </apex:form> 
+</apex:page>

@@ -1,0 +1,23 @@
+<apex:component controller="CurrencyController">
+    <apex:attribute name="value" type="Decimal" description=""
+                    required="true" assignTo="{!value}"/>
+
+    <apex:attribute name="decimals" type="Integer" description="" 
+                    required="false" assignTo="{!decimals}"/>
+
+    <apex:attribute name="code" type="String" description="" 
+                    required="false" assignTo="{!code}"/>
+
+    <apex:attribute name="locale" type="String" description="" 
+                    required="false" assignTo="{!locale}"/>
+
+    <apex:outputtext value="{!currencyString}"/>
+<!--    
+    <apex:outputField value="{!c.Value__c}"/>
+    <apex:outputtext value="{0} {1,number,###,###,###.####}">
+        <apex:param value="{!c.Code__c}"/>
+        <apex:param value="{!c.Value__c}"/>
+    </apex:outputtext>
+-->
+
+</apex:component>

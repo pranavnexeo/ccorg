@@ -1,0 +1,17 @@
+<apex:page controller="cc_imp_mn_ViewProfileDoc" sidebar="false" showHeader="false" action="{!FetchProfileDoc}">
+     <apex:iframe height="700px" width="100%" src="/mynexeo/servlet/servlet.FileDownload?file={!docId}" ></apex:iframe> 
+  
+    <script>
+        //document.getElementById('frame').height = window.innerHeight;
+        var doc = '{!doc }';
+        if(doc == '')
+        {
+            alert('{!$Label.NoDocAvailable}');
+            window.close();
+        }
+        else if (doc=='negative'){
+            alert('{!$Label.DocumentDisplayIssue}');
+            window.close(); 
+        }
+      </script>
+</apex:page>

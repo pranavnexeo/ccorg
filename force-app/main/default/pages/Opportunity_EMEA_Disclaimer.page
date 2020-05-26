@@ -1,0 +1,6 @@
+<apex:page StandardController="Opportunity">
+    <apex:pageMessage id="pageMessageId" summary="Please enter all Free text Fields in English Only" severity="info" strength="3"/>
+    <!--
+    <apex:detail subject="{!Opportunity.Id}"/>
+    -->
+</apex:page>

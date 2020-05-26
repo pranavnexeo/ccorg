@@ -1,0 +1,2 @@
+<apex:page standardcontroller="Business_Contract__c" extensions="BusinessContractRedirectCntrl" tabStyle="Business_Contract__c" showheader="true" action="{!redirect}">
+</apex:page>

@@ -1,0 +1,25 @@
+<apex:page standardController="Monthly_Plant_Hour__c" extensions="monthlyPlantHoursController" id="thePage">
+<apex:sectionHeader title="Monthly Plant Hour Edit" />
+<apex:form id="myForm">
+
+<apex:pageBlock title="Monthly Plant Hour Edit" mode="edit" id="pb">
+<apex:messages />
+<apex:pageBlockButtons location="both">
+<apex:commandButton value="Save" action="{!saveCustom}"/>
+<apex:commandButton value="Cancel" action="{!cancel}"/>
+</apex:pageBlockButtons>
+
+<apex:pageBlockSection title="Information" columns="2">
+<apex:selectList id="reportmonth" value="{!Monthly_Plant_Hour__c.Reporting_Month__c}" size="1">
+<apex:selectOptions value="{!reportmonth}"></apex:selectOptions>
+</apex:selectList>
+<apex:selectList id="reportyear" value="{!Monthly_Plant_Hour__c.Reporting_Year__c}" size="1">
+<apex:selectOptions value="{!reportyear}"></apex:selectOptions>
+</apex:selectList>
+<apex:inputField id="facility" value="{!Monthly_Plant_Hour__c.Facility__c}" required="True"/>
+<apex:inputField id="employee" value="{!Monthly_Plant_Hour__c.Employee__c}"/>
+<apex:inputField id="manhour" value="{!Monthly_Plant_Hour__c.Man_hours__c}"/>
+</apex:pageBlockSection>
+</apex:pageBlock>
+</apex:form>
+</apex:page>

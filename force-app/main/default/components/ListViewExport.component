@@ -1,0 +1,38 @@
+<apex:component controller="ListViewExport" >
+<head>
+	<meta http-equiv="Content-Type" content="text/html;charset=UTF-8" />
+</head>
+<apex:attribute name="ViewId" type="string" required="true" description="View Id" assignto="{!View_Id}"/>
+<apex:attribute name="sobj_type" type="String" required="true" description="Table Name" assignto="{!sobjtype}"/>
+<apex:attribute name="instance" type="string" required="true" description="Salesforce Instance" assignto="{!inst}"/>
+
+<table>
+     <thead>
+       <tr>
+       <apex:repeat value="{!result.columns}" var="c">
+          <apex:outputpanel layout="none" rendered="{!NOT(c.hidden)}"><th><apex:outputtext value="{!c.label}"/></th></apeX:outputpanel>
+       </apex:repeat>
+       </tr>
+     </thead>
+     <tbody>
+       
+         <apex:repeat value="{!nestedrecords}" var="r">
+           <apex:repeat value="{!r}" var="r1">
+         <tr>
+           <apex:repeat value="{!result.columns}" var="c">
+           <!-- <apex:outputpanel layout="none" rendered="{!AND(NOT(c.hidden), c.type != 'reference')}"><td><apeX:outputfield value="{!IF((r1[c.fieldNameOrPath] == TRUE || r1[c.fieldNameOrPath] == FALSE),IF(r1[c.fieldNameOrPath] == TRUE , 'Yes', 'No'), r1[c.fieldNameOrPath])}"/></td></apeX:outputpanel> -->
+           <!-- <apex:outputpanel layout="none" rendered="{!AND(NOT(c.hidden), c.type = 'reference')}"><td><apeX:outputtext value="{!IF((r1[c.fieldNameOrPath] == TRUE || r1[c.fieldNameOrPath] == FALSE),IF(r1[c.fieldNameOrPath] == TRUE , 'Yes', 'No'), r1[c.fieldNameOrPath])}"/></td></apeX:outputpanel> -->
+           <apex:outputpanel layout="none" rendered="{!AND(NOT(c.hidden))}"><td><apeX:outputtext value="{!IF((r1[c.fieldNameOrPath] == TRUE || r1[c.fieldNameOrPath] == FALSE),IF(r1[c.fieldNameOrPath] == TRUE , 'Yes', 'No'), r1[c.fieldNameOrPath])}"/></td></apeX:outputpanel>
+ 
+ </apex:repeat>
+         
+         </tr>
+           </apex:repeat>
+ 		</apex:repeat>
+     
+      
+     </tbody>
+   
+   </table>
+
+</apex:component>

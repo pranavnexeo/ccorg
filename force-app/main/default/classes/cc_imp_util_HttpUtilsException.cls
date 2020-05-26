@@ -1,0 +1,1 @@
+public class cc_imp_util_HttpUtilsException extends Exception { }

@@ -1,0 +1,2 @@
+<apex:page StandardController="Opportunity_Call_Report__c" extensions="CallReportSendEmailWithActionCntrlr" action="{!redirect}">
+</apex:page>

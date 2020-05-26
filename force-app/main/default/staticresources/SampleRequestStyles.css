@@ -1,0 +1,31 @@
+textarea { width:600px;height:100px }
+.ShipToAddressType {font-weight:bold;font-size: 1.5em;text-decoration: underline;text-align: center;text-indent=100px}
+.Warning {font-weight:bold;color:red;}
+.AddressAboveButtons {font-size: 1em; font-style: italic;}
+.AddressAboveButtons_selected {font-size: 1em; font-style: italic;font-weight:bold;color: darkred;}
+.RequiredField {font-weight:bold}
+.OptionalField {}
+.OutputLabelDesc {font-weight:bold; font-size: 1em;text-align: right;}
+.OutputLabelData {font-weight:bold; font-size: 1em;}
+.OutputTableHeader {font-weight:bold; font-size: 1.5em;float: center;display: inline;text-align: center;}
+.OutputTableCellData {font-weight:bold; font-size: 1em;text-align: right;}
+.HeaderLabel {font-weight:bold; font-size: 1em;}
+.HeaderData {font-weight:bold; font-size: 1em;}
+.selectedtext {font-weight:bold; font-size: 1em;text-align: center;background-color: darkred;color: white;}
+.requiredBlock {
+    background-color: #C00;
+    position: absolute;
+    left: -4px;
+    width: 3px;
+    top: 1px;
+    bottom: 1px;
+}
+.subtitle {
+	font-weight:bold;
+	font-size:14px;
+}
+.RowLabelRJ {font-weight:bold; font-size: 1em;text-align: right}
+.DataLabelRJ {font-size: 1em;text-align: right}
+.RowLabelRJTotalLine {font-weight:bold; font-size: 1em;text-align: right}
+.DataLabelRJTotalLine {font-size: 1.5em;text-align: right;text-decoration: underline}
+ 

@@ -1,0 +1,33 @@
+<apex:page showHeader="false" sidebar="false" docType="html-5.0" standardStylesheets="false" cache="false" applyHtmlTag="false" applyBodyTag="false" controller="cc_3d_ctrl_OrderConfirmationBIE">
+
+    <script>
+     jQuery(function($) {
+        CCRZ.pubSub.once('view:OrderDetailView:refresh', function(view) {
+
+            var viewPrototype = Object.getPrototypeOf(view);
+            if (viewPrototype != null) {
+
+                var extendedDataMap = {!extendedOrderJSON};
+                console.log("*** extendedDataMap: %o", extendedDataMap);
+                //for (var i = 0; i < view.model.attributes.orderItems.length; i++) {
+                //    var orderItemId = view.model.attributes.orderItems[i].itemID;
+                //    view.model.attributes.orderItems[i] = _.extend(view.model.attributes.orderItems[i], extendedDataMap[orderItemId]);
+                //}
+                var updateSequence = {!updateSequence};
+                console.log("*** updateSequence: " + updateSequence);
+                if (updateSequence) {
+                	console.log("*** updating Sequence: " + updateSequence);
+                    cc_3d_ctrl_OrderConfirmationBIE.updateSequence(extendedDataMap, function(response) {  
+                    	console.log("*** response: %o", response);
+                    });
+                }
+                // view.render();
+            }              
+            else {
+            	console.log("*** Prototype is null");
+            }
+        });
+
+	});   
+	</script>
+</apex:page>

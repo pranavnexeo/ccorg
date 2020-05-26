@@ -1,0 +1,236 @@
+<apex:page controller="NCAR_Queue_Viewer_New" sidebar="false">
+<apex:form >
+<apex:pageblock >
+<apex:pageblockbuttons >
+<apex:outputlabel value="Approver: "/>
+<apex:selectlist value="{!selectedoption}" size="1">
+<apex:selectoptions value="{!options}"/>
+<apex:actionsupport event="onchange" action="{!queuechanged}"/>
+</apex:selectlist>
+<apex:outputlink value="/apex/NCAR_Viewer_Excel2?q={!selectedoption}"  target="_self" styleclass="myButton">Export</apex:outputlink>
+</apex:pageblockbuttons>
+<apex:pageblocktable value="{!NCARs}" var="N">
+<apex:column headervalue="Approve / Reject">
+<apex:outputlink value="/apex/NCAR2?id={!N.thecase.id}&returl=%2FApex%2FNCAR_Viewer2%3fq%3d{!selectedoption}" target="_self" rendered="{!IF(N.thecase.recordType.Name = 'Nexeo Standard Incident', true, false)}" styleclass="myButton">Go!</apex:outputlink>
+<apex:outputlink value="/apex/NCAR_Return2?id={!N.thecase.id}&returl=%2FApex%2FNCAR_Viewer2%3fq%3d{!selectedoption}" target="_self" rendered="{!IF(N.thecase.recordType.Name = 'Nexeo Return', true, false)}" styleclass="myButton">Go!</apex:outputlink>
+<apex:outputlink value="/apex/NCAR_CDC2?id={!N.thecase.id}&returl=%2FApex%2FNCAR_Viewer2%3fq%3d{!selectedoption}" target="_self" rendered="{!IF(N.thecase.recordType.Name = 'Nexeo Credit Debit Claim', true, false)}" styleclass="myButton">Go!</apex:outputlink>
+</apeX:column>
+<apex:column headervalue="Approver" rendered="{!IF(selectedoption = 'All', true, false)}">
+<apex:outputtext value="{!N.approver}"/>
+</apex:column>
+<apex:column >
+<apex:facet name="header">
+<apex:CommandLink action="{!Sort}">Case
+<apex:param assignTo="{!sortField}" value="Name" />
+<apex:image value="{!sortImage}" rendered="{!IF(sortField = 'Name', true, false)}"/>
+</apex:commandlink>
+</apex:facet>
+<apex:outputlink value="/{!N.thecase.id}">{!N.thecase.name}</apex:outputlink>
+</apex:column>
+<apex:column >
+<apex:facet name="header">
+<apex:CommandLink action="{!Sort}">Account
+<apex:param assignTo="{!sortField}" value="Account__r.Name" />
+<apex:image value="{!sortImage}" rendered="{!IF(sortField = 'Account__r.Name', true, false)}"/>
+</apex:commandlink>
+</apex:facet>
+<apex:outputlink value="/{!N.thecase.Account__c}">{!N.thecase.account__r.name}</apex:outputlink>
+</apex:column>
+<apex:column >
+<apex:facet name="header">
+<apex:CommandLink action="{!Sort}">Nexeo Plant
+<apex:param assignTo="{!sortField}" value="Nexeo_Plant__c" />
+<apex:image value="{!sortImage}" rendered="{!IF(sortField = 'Nexeo_Plant__c', true, false)}"/>
+</apex:commandlink>
+</apex:facet>
+<apex:outputtext value="{!N.thecase.Nexeo_Plant__r.Name}"/>
+</apex:column>
+<apex:column >
+<apex:facet name="header">
+<apex:CommandLink action="{!Sort}">Return Plant
+<apex:param assignTo="{!sortField}" value="Ship_To_Warehouse__c" />
+<apex:image value="{!sortImage}" rendered="{!IF(sortField = 'Ship_To_Warehouse__c', true, false)}"/>
+</apex:commandlink>
+</apex:facet>
+<apex:outputtext value="{!N.thecase.Ship_To_Warehouse__r.Name}"/>
+</apex:column>
+<apex:column >
+<apex:facet name="header">
+<apex:CommandLink action="{!Sort}">Sales Org
+<apex:param assignTo="{!sortField}" value="Account__r.SAP_Sales_Org__c" />
+<apex:image value="{!sortImage}" rendered="{!IF(sortField = 'Account__r.SAP_Sales_Org__c', true, false)}"/>
+</apex:commandlink>
+</apex:facet>
+<apex:outputtext value="{!N.thecase.account__r.SAP_Sales_Org__c} - {!N.thecase.account__r.SAP_Sales_Org_Desc__c}"/>
+</apex:column>
+<apex:column >
+<apex:facet name="header">
+<apex:CommandLink action="{!Sort}">Status
+<apex:param assignTo="{!sortField}" value="Status__c" />
+<apex:image value="{!sortImage}" rendered="{!IF(sortField = 'Status__c', true, false)}"/>
+</apex:commandlink>
+</apex:facet>
+<apex:outputtext value="{!N.thecase.Status__c}"/>
+</apex:column>
+<apex:column >
+<apex:facet name="header">
+<apex:CommandLink action="{!Sort}">Subject
+<apex:param assignTo="{!sortField}" value="subject__c" />
+<apex:image value="{!sortImage}" rendered="{!IF(sortField = 'subject__c', true, false)}"/>
+</apex:commandlink>
+</apex:facet>
+<apex:outputtext value="{!N.thecase.subject__c}"/>
+</apex:column>
+<apex:column >
+<apex:facet name="header">
+<apex:CommandLink action="{!Sort}">Record Type
+<apex:param assignTo="{!sortField}" value="RecordType.Name" />
+<apex:image value="{!sortImage}" rendered="{!IF(sortField = 'RecordType.Name', true, false)}"/>
+</apex:commandlink>
+</apex:facet>
+<apex:outputtext value="{!N.thecase.RecordType.Name}"/>
+</apex:column>
+<apex:column >
+<apex:facet name="header">
+<apex:CommandLink action="{!Sort}">Type
+<apex:param assignTo="{!sortField}" value="Type__c" />
+<apex:image value="{!sortImage}" rendered="{!IF(sortField = 'Type__c', true, false)}"/>
+</apex:commandlink>
+</apex:facet>
+<apex:outputtext value="{!N.thecase.Type__c}"/>
+</apex:column>
+<apex:column >
+<apex:facet name="header">
+<apex:CommandLink action="{!Sort}">Import / Export
+<apex:param assignTo="{!sortField}" value="Import_Export__c" />
+<apex:image value="{!sortImage}" rendered="{!IF(sortField = 'Import_Export__c', true, false)}"/>
+</apex:commandlink>
+</apex:facet>
+<apex:outputtext value="{!N.thecase.Import_Export__c}"/>
+</apex:column>
+<apex:column >
+<apex:facet name="header">
+<apex:CommandLink action="{!Sort}">Division
+<apex:param assignTo="{!sortField}" value="Account__r.SAP_Division_Desc__c" />
+<apex:image value="{!sortImage}" rendered="{!IF(sortField = 'Account__r.SAP_Division_Desc__c', true, false)}"/>
+</apex:commandlink>
+</apex:facet>
+<apex:outputfield value="{!N.thecase.Account__r.SAP_Division_Desc__c}"/>
+</apex:column>
+<apex:column >
+<apex:facet name="header">
+<apex:CommandLink action="{!Sort}">Sales Group
+<apex:param assignTo="{!sortField}" value="Account__r.SAP_Sales_Group_Desc__c" />
+<apex:image value="{!sortImage}" rendered="{!IF(sortField = 'Account__r.SAP_Sales_Group_Desc__c', true, false)}"/>
+</apex:commandlink>
+</apex:facet>
+<apex:outputtext value="{!N.thecase.Account__r.SAP_Sales_Group_Desc__c}"/>
+</apex:column>
+<apex:column >
+<apex:facet name="header">
+<apex:CommandLink action="{!Sort}">Created Date
+<apex:param assignTo="{!sortField}" value="CreatedDate" />
+<apex:image value="{!sortImage}" rendered="{!IF(sortField = 'CreatedDate', true, false)}"/>
+</apex:commandlink>
+</apex:facet>
+<apex:outputfield value="{!N.thecase.createddate}"/>
+</apex:column>
+
+<apex:column headervalue="Line Items">
+<apex:pageblocktable value="{!N.lines}" var="L">
+<apex:column headervalue="Sales Order">
+<apex:outputlink value="{!L.Open_Orders__c}">{!L.open_orders__r.Sales_Order_Number__c}</apex:outputlink>
+</apex:column>
+<apex:column headervalue="Material">
+<apex:outputfield value="{!L.open_orders__r.Material__c}"/>
+</apex:column>
+<apex:column headervalue="Supplier">
+<apex:outputfield value="{!L.open_orders__r.PH4_Supplier__c}"/>
+</apex:column>  
+
+</apex:pageblocktable>
+</apex:column>
+
+<apex:column >
+<apex:facet name="header">
+<apex:CommandLink action="{!Sort}">Memo - CSR
+<apex:param assignTo="{!sortField}" value="Memo_CSR__c" />
+<apex:image value="{!sortImage}" rendered="{!IF(sortField = 'Memo_CSR__c', true, false)}"/>
+</apex:commandlink>
+</apex:facet>
+<apex:outputfield value="{!N.thecase.Memo_CSR__c}"/>
+</apex:column>
+
+<apex:column >
+<apex:facet name="header">
+<apex:CommandLink action="{!Sort}">Memo - Plant
+<apex:param assignTo="{!sortField}" value="Memo_Plant__c" />
+<apex:image value="{!sortImage}" rendered="{!IF(sortField = 'Memo_Plant__c', true, false)}"/>
+</apex:commandlink>
+</apex:facet>
+<apex:outputfield value="{!N.thecase.Memo_Plant__c}"/>
+</apex:column>
+<apex:column >
+<apex:facet name="header">
+<apex:CommandLink action="{!Sort}">Memo - Purchasing
+<apex:param assignTo="{!sortField}" value="Memo_Purchasing__c" />
+<apex:image value="{!sortImage}" rendered="{!IF(sortField = 'Memo_Purchasing__c', true, false)}"/>
+</apex:commandlink>
+</apex:facet>
+<apex:outputfield value="{!N.thecase.Memo_Purchasing__c}"/>
+</apex:column>
+
+</apex:pageblocktable>
+</apex:pageblock>
+</apex:form>
+<style type="text/css">
+       .customPopup{
+            background-color: white;
+            border-style: solid;
+            border-width: 2px;
+            left: 50%;
+            padding:10px;
+            position: absolute;
+            z-index: 9999;
+            /* These are the 3 css properties you will need to tweak so the pop 
+            up displays in the center of the screen. First set the width. Then set 
+            margin-left to negative half of what the width is. You can also add 
+            the height property for a fixed size pop up.*/
+            width: 220px;
+            margin-left: -110px;
+            height: 120px;
+            top:100px;
+        }
+        
+     .myButton {
+    -moz-box-shadow:inset 0px 1px 0px 0px #ffffff;
+    -webkit-box-shadow:inset 0px 1px 0px 0px #ffffff;
+    box-shadow:inset 0px 1px 0px 0px #ffffff;
+    background:-webkit-gradient( linear, left top, left bottom, color-stop(0.05, #ededed), color-stop(1, #dfdfdf) );
+    background:-moz-linear-gradient( center top, #ededed 5%, #dfdfdf 100% );
+    filter:progid:DXImageTransform.Microsoft.gradient(startColorstr='#ededed', endColorstr='#dfdfdf');
+    background-color:#ededed;
+    -moz-border-radius:8px;
+    -webkit-border-radius:8px;
+    border-radius:8px;
+    border:1px solid #dcdcdc;
+    display:inline-block;
+    color:#777777;
+    font-family:arial;
+    font-size:12px;
+    font-weight:bold;
+    padding:4px 6px;
+    text-decoration:none;
+    text-shadow:1px 1px 0px #ffffff;
+}.myButton:hover {
+    background:-webkit-gradient( linear, left top, left bottom, color-stop(0.05, #dfdfdf), color-stop(1, #ededed) );
+    background:-moz-linear-gradient( center top, #dfdfdf 5%, #ededed 100% );
+    filter:progid:DXImageTransform.Microsoft.gradient(startColorstr='#dfdfdf', endColorstr='#ededed');
+    background-color:#dfdfdf;
+}.myButton:active {
+    position:relative;
+    top:1px;
+}
+    </style>
+
+</apex:page>

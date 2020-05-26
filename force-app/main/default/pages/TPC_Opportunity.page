@@ -1,0 +1,7 @@
+<apex:page standardcontroller="Opportunity" showHeader="false" sidebar="false" standardstylesheets="false">
+<c:Target_Price_Calculator type="{!IF(Opportunity.Account.Type = 'Customer', 'Customer',
+                                   IF(Opportunity.Account.Type = 'Prospect', 'Prospect',
+                                   'Default'))}" Account_Id="{!Opportunity.Account.Id}" MaterialId="{!IF(ISBLANK(Opportunity.SAP_Material__c), '', Opportunity.SAP_Material__c)}">
+                                   </c:Target_Price_Calculator> 
+                      
+</apex:page>

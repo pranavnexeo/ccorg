@@ -1,0 +1,207 @@
+<apex:component controller="Price_Request_Email_Template" access="global">
+ 
+<apex:attribute name="recordid" description="The Price Request Transaction Id"  type="Id" required="required" assignto="{!recordid}"/>
+ 
+ 
+<style type="text/css">
+
+table#thetable, tr.thetr, td.thetd ,h4
+{
+border:1px solid green;
+border-collapse:collapse;
+font-size:12px;
+}
+th.theth
+{
+background-color:green;
+color:white;
+}
+.labelFont {
+font-size:20px;
+}
+</style>
+ 
+  <apex:tabPanel switchType="client" selectedTab="name2" id="theTabPanel">
+    
+    <apex:tab label="Requested" name="name4" id="tabOne" styleClass="labelFont">
+        <table id="thetable">
+            <tr class="thetr">
+            <h4>Requested:</h4>
+            <th class="theth">Created Date</th>
+            <th class="theth">Bracket Volume</th>
+            <th class="theth">UoM</th>
+            <th class="theth">Price</th>
+            <th class="theth">UoM</th>
+            <th class="theth">Effective Date</th>
+            <th class="theth">Expiration Date</th>
+            </tr>
+        
+            <apeX:repeat value="{!Requested_Tiers}" var="b" >
+            <tr class="thetr">
+            <td class="thetd"><apex:outputfield value="{!b.createddate}"/></td>
+            <td class="thetd"><apex:outputfield value="{!b.Volume__c}"/></td>
+            <td class="thetd"><apex:outputfield value="{!b.Volume_UoM__c}"/></td>
+            <td class="thetd"><apex:outputfield value="{!b.Price__c}"/></td>
+            <td class="thetd"><apex:outputfield value="{!b.Price_UoM__c}"/></td>       
+            <td class="thetd"><apex:outputfield value="{!b.Effective_Date__c}"/></td>
+            <td class="thetd"><apex:outputfield value="{!b.Expiration_Date__c}"/></td>
+            </tr>
+            </apex:repeat>
+        </table>
+        
+        <table id="thetable">
+            <tr class="thetr">
+            <h4>Requested History:</h4>
+            <th class="theth">Created Date</th>
+            <th class="theth">Bracket Volume</th>
+            <th class="theth">UoM</th>
+            <th class="theth">Price</th>
+            <th class="theth">UoM</th>
+            <th class="theth">Effective Date</th>
+            <th class="theth">Expiration Date</th>
+            </tr>
+            <apeX:repeat value="{!Requested_History}" var="g">
+            <tr class="thetr">
+            <td class="thetd"><apex:outputfield value="{!g.createddate}"/></td>
+            <td class="thetd"><apex:outputfield value="{!g.Volume__c}"/></td>
+            <td class="thetd"><apex:outputfield value="{!g.Volume_UoM__c}"/></td>
+            <td class="thetd"><apex:outputfield value="{!g.Price__c}"/></td>
+            <td class="thetd"><apex:outputfield value="{!g.Price_UoM__c}"/></td>
+            <td class="thetd"><apex:outputfield value="{!g.Effective_Date__c}"/></td>
+            <td class="thetd"><apex:outputfield value="{!g.Expiration_Date__c}"/></td>
+            </tr>
+            </apex:repeat>
+        </table>
+    </apex:tab>
+    
+   
+    <apex:tab label="CSP" name="name2" id="tabTwo" styleClass="labelFont">
+        <table id="thetable">
+                <tr class="thetr">
+                <h4>CSP:</h4>
+                <th class="theth">Created Date</th>
+                <th class="theth">Bracket Volume</th>
+                <th class="theth">UoM</th>
+                <th class="theth">Price</th>
+                <th class="theth">UoM</th>
+                <th class="theth">Effective Date</th>
+                <th class="theth">Expiration Date</th>
+                </tr>
+                <apeX:repeat value="{!CSP_Tiers}" var="c">
+                <tr class="thetr">
+                <td class="thetd"><apex:outputfield value="{!c.createddate}"/></td>
+                <td class="thetd"><apex:outputfield value="{!c.Volume__c}"/></td>
+                <td class="thetd"><apex:outputfield value="{!c.Volume_UoM__c}"/></td>
+                <td class="thetd"><apex:outputfield value="{!c.Price__c}"/></td>
+                <td class="thetd"><apex:outputfield value="{!c.Price_UoM__c}"/></td>
+                <td class="thetd"><apex:outputfield value="{!c.Effective_Date__c}"/></td>
+                <td class="thetd"><apex:outputfield value="{!c.Expiration_Date__c}"/></td>
+                </tr>
+                </apex:repeat>
+        </table>
+        
+        <table id="thetable">
+                <tr class="thetr">
+                <h4>CSP History:</h4>
+                <th class="theth">Created Date</th>
+                <th class="theth">Bracket Volume</th>
+                <th class="theth">UoM</th>
+                <th class="theth">Price</th>
+                <th class="theth">UoM</th>
+                <th class="theth">Effective Date</th>
+                <th class="theth">Expiration Date</th>
+                </tr>
+                <apeX:repeat value="{!CSP_History}" var="m">
+                <tr class="thetr">
+                <td class="thetd"><apex:outputfield value="{!m.createddate}"/></td>
+                <td class="thetd"><apex:outputfield value="{!m.Volume__c}"/></td>
+                <td class="thetd"><apex:outputfield value="{!m.Volume_UoM__c}"/></td>
+                <td class="thetd"><apex:outputfield value="{!m.Price__c}"/></td>
+                <td class="thetd"><apex:outputfield value="{!m.Price_UoM__c}"/></td>
+                <td class="thetd"><apex:outputfield value="{!m.Effective_Date__c}"/></td>
+                <td class="thetd"><apex:outputfield value="{!m.Expiration_Date__c}"/></td>
+                </tr>
+                </apex:repeat>
+        </table>
+    </apex:tab>
+    
+    <apex:tab label="Target" name="name3" id="tabThree" styleClass="labelFont">
+        <table id="thetable">
+            <tr class="thetr">
+            <h4>Target:</h4>
+            <th class="theth">Created Date</th>
+            <th class="theth">Bracket Volume</th>
+            <th class="theth">UoM</th>
+            <th class="theth">Price</th>
+            <th class="theth">UoM</th>
+            <th class="theth">Effective Date</th>
+            <th class="theth">Expiration Date</th>
+            </tr>
+            <apeX:repeat value="{!Target_Tiers}" var="a">
+            <tr class="thetr">
+            <td class="thetd"><apex:outputfield value="{!a.createddate}"/></td>
+            <td class="thetd"><apex:outputfield value="{!a.Volume__c}"/></td>
+            <td class="thetd"><apex:outputfield value="{!a.Volume_UoM__c}"/></td>
+            <td class="thetd"><apex:outputfield value="{!a.Price__c}"/></td>
+            <td class="thetd"><apex:outputfield value="{!a.Price_UoM__c}"/></td>
+            <td class="thetd"><apex:outputfield value="{!a.Effective_Date__c}"/></td>
+            <td class="thetd"><apex:outputfield value="{!a.Expiration_Date__c}"/></td>
+            </tr>  
+            </apex:repeat>
+        </table> 
+        
+        <table id="thetable">
+            <tr class="thetr">
+            <h4>Target History:</h4>
+            <th class="theth">Created Date</th>
+            <th class="theth">Bracket Volume</th>
+            <th class="theth">UoM</th>
+            <th class="theth">Price</th>
+            <th class="theth">UoM</th>
+            <th class="theth">Effective Date</th>
+            <th class="theth">Expiration Date</th>
+            </tr>
+            <apeX:repeat value="{!Target_History}" var="n">
+            <tr class="thetr">
+            <td class="thetd"><apex:outputfield value="{!n.createddate}"/></td>
+            <td class="thetd"><apex:outputfield value="{!n.Volume__c}"/></td>
+            <td class="thetd"><apex:outputfield value="{!n.Volume_UoM__c}"/></td>
+            <td class="thetd"><apex:outputfield value="{!n.Price__c}"/></td>
+            <td class="thetd"><apex:outputfield value="{!n.Price_UoM__c}"/></td>
+            <td class="thetd"><apex:outputfield value="{!n.Effective_Date__c}"/></td>
+            <td class="thetd"><apex:outputfield value="{!n.Expiration_Date__c}"/></td>
+            </tr>
+            </apex:repeat>
+        </table>
+     </apex:tab>
+     
+     <apex:tab label="Alternate" name="name1" id="tabFour" styleClass="labelFont">
+        <table id="thetable">
+            <tr class="thetr">
+            <h4>Alternate:</h4>
+            <th class="theth">Created Date</th>
+            <th class="theth">Bracket Volume</th>
+            <th class="theth">UoM</th>
+            <th class="theth">Price</th>
+            <th class="theth">UoM</th>
+            <th class="theth">Effective Date</th>
+            <th class="theth">Expiration Date</th>
+            </tr>
+            <apeX:repeat value="{!Alternate_Tiers}" var="t" >
+            <tr class="thetr">
+            <td class="thetd"><apex:outputfield value="{!t.createddate}"/></td>
+            <td class="thetd"><apex:outputfield value="{!t.Volume__c}"/></td>
+            <td class="thetd"><apex:outputfield value="{!t.Volume_UoM__c}"/></td>
+            <td class="thetd"><apex:outputfield value="{!t.Price__c}"/></td>
+            <td class="thetd"><apex:outputfield value="{!t.Price_UoM__c}"/></td>
+            <td class="thetd"><apex:outputfield value="{!t.Effective_Date__c}"/></td>
+            <td class="thetd"><apex:outputfield value="{!t.Expiration_Date__c}"/></td>
+            </tr>
+            </apex:repeat>
+            </table>
+    </apex:tab>
+ 
+   </apex:tabPanel>
+
+
+</apex:component>

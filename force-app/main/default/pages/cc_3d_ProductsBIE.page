@@ -1,0 +1,12 @@
+<apex:page showHeader="false" sidebar="false" docType="html-5.0" standardStylesheets="false" cache="false" applyHtmlTag="false" applyBodyTag="false">
+<script type="text/javascript">
+    jQuery(function($) {
+        CCRZ.pubSub.on("view:productListView:refresh", function(view){
+            console.log(view);
+        });
+        CCRZ.pubSub.on("all", function(view){
+            console.log(view);
+        });
+    });
+</script>
+</apex:page>

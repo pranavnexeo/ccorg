@@ -1,0 +1,136 @@
+<apex:page standardcontroller="Enhancement__c" extensions="EnhancementExtension" id="enhancementPage">
+<apex:form id="theform">
+<apex:pageblock id="pageBlock" >
+<apex:pageMessages ></apex:pageMessages>
+<apex:pageblockbuttons >
+<apex:commandbutton value="Save" action="{!save}" />
+<apex:commandbutton value="Cancel" action="{!cancel}"/>
+</apex:pageblockbuttons>
+<apex:pageblocksection title="Information" >
+<apex:inputfield value="{!Enhancement__c.Name}" required="true"/>
+<apex:outputfield value="{!Enhancement__c.OwnerId}"/>
+<apex:outputfield value="{!Enhancement__c.Project_Status__c}" rendered="{!NOT(editStatus)}" />
+
+<apex:selectList id="projStatus" value="{!Enhancement__c.Project_Status__c}" rendered="{!editStatus}" size="1">
+<apex:selectOption itemValue="Open" itemLabel="Open"/>
+<!--<apex:selectOption itemValue="In Process" itemLabel="In Process"/>-->
+<apex:selectOption itemValue="Completed" itemLabel="Completed"/>
+<apex:selectOption itemValue="On Hold" itemLabel="On Hold"/>
+<apex:selectOption itemValue="Cancelled" itemLabel="Cancelled"/>
+<apex:selectOption itemValue="Confirmed" itemLabel="Confirmed"/>
+</apex:selectList>
+
+<apex:inputfield value="{!Enhancement__c.User_Contact__c}" required="true"/>
+<apex:inputfield value="{!Enhancement__c.Line_of_Business__c}" />
+<apex:inputfield value="{!Enhancement__c.BSM__c}" />
+<apex:inputfield value="{!Enhancement__c.IT_Owner__c}" required="true"/>
+
+
+<apex:selectList id="projPriority" value="{!Enhancement__c.Priority__c}" size="1">
+<apex:selectOption itemValue="Medium" itemLabel="Medium"/>
+<apex:selectOption itemValue="High" itemLabel="High"/>
+<apex:selectOption itemValue="Medium High" itemLabel="Medium High"/>
+<apex:selectOption itemValue="Medium Low " itemLabel="Medium Low "/>
+<apex:selectOption itemValue="Low" itemLabel="Low"/>
+</apex:selectList>
+
+<!--<apex:inputfield value="{!Enhancement__c.Secondary_Application__c}" />-->
+<apex:inputfield value="{!Enhancement__c.Application_Module__c}" />
+<apex:inputfield value="{!Enhancement__c.Region_Impact__c}" />
+<apex:inputfield value="{!Enhancement__c.Requested_Delivery_Date__c}" />
+<apex:inputfield value="{!Enhancement__c.Remedy_Ticket__c}" />
+</apex:pageblocksection>
+
+<apex:outputPanel id="myPanel">
+<apex:pageblocksection title="Details" id="detailsInfo" rendered="{!showDetail}">
+<apex:inputfield value="{!Enhancement__c.Estimated_Efforts__c}" />
+<apex:outputfield value="{!Enhancement__c.IT_Status__c}" rendered="{!NOT(editStatus)}" />
+<apex:selectList id="ItStatus" value="{!Enhancement__c.IT_Status__c}" rendered="{!editStatus}" size="1">
+<apex:selectOption itemValue="Open" itemLabel="Open"/>
+<apex:selectOption itemValue="In Progress" itemLabel="In Progress"/>
+<apex:selectOption itemValue="Completed" itemLabel="Completed"/>
+</apex:selectList>
+<apex:inputfield value="{!Enhancement__c.Technology_Area__c}" />
+<apex:inputfield value="{!Enhancement__c.Link_to_Sharepoint__c}" />
+<apex:inputfield value="{!Enhancement__c.Start_Date__c}" />
+<apex:inputfield value="{!Enhancement__c.Target_Date_for_Completion__c}" />
+<input type="hidden"/>
+</apex:pageblocksection>
+<apex:pageblocksection id="checkBoxInfo" rendered="{!showDetail}">
+<apex:pageblockSectionItem >
+<apex:outputLabel >Requirements Gathered</apex:outputLabel>
+<apex:actionRegion >
+<apex:inputfield id="checkboxone"  value="{!Enhancement__c.Requirements_Garthered__c}">
+<apex:actionSupport event="onchange" reRender="checkBoxInfo" action="{!enablingcheckbox2}" status="categoryAjaxStatus"/>
+</apex:inputfield>
+</apex:actionRegion>
+</apex:pageblockSectionItem>
+
+<apex:pageblockSectionItem >
+<apex:outputLabel >Requirements Gathered Date</apex:outputLabel>
+<apex:outputfield id="reqDate" value="{!Enhancement__c.Requirements_Gathered_Date__c}"/>
+</apex:pageblockSectionItem>
+
+<apex:pageblockSectionItem id="idCheckbox2">
+<apex:outputLabel >Function / Technical Design</apex:outputLabel>
+<apex:actionRegion >
+<apex:outputfield value="{!Enhancement__c.Functional_Design__c}" rendered="{!!enableCheckBox2}" / >
+<apex:inputfield id="checkboxtwo"  value="{!Enhancement__c.Functional_Design__c}" rendered="{!enableCheckBox2}" >
+<apex:actionSupport event="onchange" reRender="checkBoxInfo" action="{!enablingcheckbox2}" status="categoryAjaxStatus"/>
+</apex:inputfield>
+</apex:actionRegion>
+</apex:pageblockSectionItem>
+
+<apex:pageblockSectionItem >
+<apex:outputLabel >Function / Technical Design Date</apex:outputLabel>
+<apex:outputfield value="{!Enhancement__c.Functional_Design_Date__c}"/ >
+</apex:pageblockSectionItem>
+
+<apex:pageblockSectionItem >
+<apex:outputLabel rendered="{!showCheckBox3}">Function / Technical Design Approved</apex:outputLabel>
+<apex:actionRegion >
+<apex:outputfield value="{!Enhancement__c.Functional_Design_Approved__c}" rendered="{!showCheckBox3 && !enableCheckBox3}" / >
+<apex:inputfield id="checkboxthree" value="{!Enhancement__c.Functional_Design_Approved__c}" rendered="{!showCheckBox3 && enableCheckBox3}" >
+<apex:actionSupport event="onclick" reRender="checkBoxInfo" status="categoryAjaxStatus" action="{!enablingcheckbox2}"/>
+</apex:inputfield>
+</apex:actionRegion>
+</apex:pageblockSectionItem>
+<apex:pageblockSectionItem >
+<apex:outputLabel rendered="{!showCheckBox3}">Function / Technical Design Approve Date</apex:outputLabel>
+<apex:outputfield value="{!Enhancement__c.Functional_Design_Approved_Date__c}" rendered="{!showCheckBox3}"/>
+</apex:pageblockSectionItem>
+
+<apex:inputfield value="{!Enhancement__c.Assigned_To__c}" required="true"  rendered="{!Enhancement__c.Functional_Design_Approved__c && showCheckBox3}"/>
+
+<!--</apex:pageblocksection>
+</apex:outputPanel >-->
+</apex:pageblocksection>
+</apex:outputPanel>
+<apex:actionStatus id="categoryAjaxStatus" >
+          <apex:facet name="stop">
+              <apex:outputPanel layout="none" rendered="true" ></apex:outputPanel>
+          </apex:facet>
+          <apex:facet name="start">
+              <apex:outputPanel layout="none" style="float:center;">
+               <apex:image value="{!$Resource.spinner}" style="position:fixed;top:50%;right:50%;" />
+              </apex:outputPanel> 
+          </apex:facet>
+</apex:actionStatus>
+<apex:pageblocksection title="Description" columns="1" >
+
+<apex:inputfield value="{!Enhancement__c.Requirements__c}" />
+<apex:inputfield value="{!Enhancement__c.Impact__c}" />
+</apex:pageblocksection>
+</apex:pageblock>     
+</apex:form>
+<script>
+function init() {
+   document.getElementById("checkboxone").disabled=true;
+}
+.pbTitle {
+        white-space: nowrap;
+    }
+
+</script>
+<body onload="init()"/>
+</apex:page>

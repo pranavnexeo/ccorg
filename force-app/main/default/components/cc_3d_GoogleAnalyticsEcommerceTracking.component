@@ -1,0 +1,56 @@
+<apex:component >
+
+<script type="text/javascript">
+    jQuery(function($) {
+        console.log('google analytics ecommerce tracking');
+        CCRZ.pubSub.once('view:OrderDetailView:refresh', function(view) {
+        console.log('google analytics ecommerce tracking: push');
+            var model = view.model.toJSON();
+
+            const tagAffiliation = 'Avionos_Solution';
+    
+            if (model) {
+                var result = {
+                    'event': 'orderComplete',
+                    'transactionId': 'O-' + model.orderNumber,
+                    'transactionAffiliation': tagAffiliation,
+                    'transactionTotal': model.subTotal,
+                    'transactionTax': model.tax,
+                    'transactionShipping': model.shippingCharge,
+                };
+      
+                var transactionProducts = [];
+                var orderItems = model.orderItems;
+                var totalQuantity = 0;
+                for (var index in orderItems) {
+                    var orderItem = orderItems[index];          
+                    if (orderItem && typeof(orderItem) === 'object') {
+                        var product = orderItem.mockProduct;
+                        if (product) {
+                            totalQuantity += orderItem.quantity;
+                            var gtmProduct = {
+                                'sku': product.sku,
+                                'name': product.name,
+                                'price': orderItem.price,
+                                'quantity': orderItem.quantity
+                            };
+                            transactionProducts.push(gtmProduct);
+                        }
+                    }
+                }
+            
+                result['transactionProducts'] = transactionProducts;
+                if (!CCRZ.getQueryParam('review')) {
+                    dataLayer.push({
+                        'event': 'orderConfirmationSalesTag'
+                    });
+                    dataLayer.push(result);
+                }
+                console.log(result);
+            }
+        });
+
+    });
+</script>
+
+</apex:component>

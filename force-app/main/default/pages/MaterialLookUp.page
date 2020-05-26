@@ -1,0 +1,43 @@
+<apex:page id="materiallookuppage" sidebar="false" showheader="false" controller="MaterialLookupcontroller">
+    <body class="lookupTab  LookupSearchFrame" style="margin: 10px;">
+        <apex:sectionHeader title="Lookup" /><br/>
+        <apex:form id="newMaterialForm">
+            <apex:outputPanel id="searchmaterial" layout="block" rendered="true">
+                <apex:outputLabel value="Search" for="txtsearch" StyleClass="labelCol"/>
+                <apex:inputText value="{!searchtext}" id="txtsearch"/>
+                <apex:Commandbutton StyleClass="btn" id="cmdsearch" value="Go" action="{!fetchMaterials}"></apex:Commandbutton><br />
+                <apex:outputText value="Enter your Search criteria in the above textbox for searching a record" StyleClass="dataCol col02"/>
+            </apex:outputPanel>
+            <apex:outputPanel id="resultSets" layout="block" rendered="{!renderResultSets}">
+                    <apex:Pageblock id="pbmaterial">
+                        <apex:pageBlockTable value="{!theseMaterials}" var="mat">
+                            <apex:column headerValue="Material Number">
+                                <a href="#" onClick="redirect('{!mat.thisMaterial.Id}','{!mat.matNumber}');">
+                                {!mat.matNumber}
+                                </a>
+                            </apex:column>
+                            <apex:column headerValue="Material Desc">
+                                {!mat.thisMaterial.Material_Desc__c}
+                            </apex:column>
+                            <apex:column headerValue="SalesOrg Desc">
+                                {!mat.thisMaterial.SalesOrg_Desc__c}
+                            </apex:column>
+                            <apex:column headerValue="DistChannel Desc">
+                                {!mat.thisMaterial.DistChannel_Desc__c}
+                             </apex:column>
+                        </apex:pageBlockTable>
+                        <apex:outputLabel rendered="{!NOT(hasResults)}" StyleClass="labelCol">
+                            <p>No matches found.</p>
+                        </apex:outputLabel>
+                    </apex:Pageblock>
+            </apex:outputPanel>
+        </apex:form>
+    </body>
+    <script>
+    function redirect(materialid,materialname)
+    {
+        top.window.opener.materiallookupval(materialid,materialname);
+        top.window.close();
+    } 
+    </script>
+</apex:page>

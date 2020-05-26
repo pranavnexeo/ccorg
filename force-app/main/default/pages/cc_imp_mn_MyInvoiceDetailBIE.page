@@ -1,0 +1,4 @@
+<apex:page applyHtmlTag="false" sidebar="false" showHeader="false" standardStylesheets="false">
+	
+	<c:cc_imp_mn_InvoiceDetail />
+</apex:page>

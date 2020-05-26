@@ -1,0 +1,37 @@
+<apex:page StandardController="CAPA__c" extensions="CAPAwrapperClassController">
+<script type="text/javascript">
+
+        function RefreshPrimaryTab(id) 
+        {
+                  window.top.location.href = '/' + id;
+        }
+
+
+    </script>
+    <apex:form >   
+       
+        <apex:pageBlock title="{!IF(ncarList!= NULL && ncarList.size > 0,'Available NCARs','No NCARs Related to this CAPA')}">
+            <apex:pageBlockButtons location="Top" >             
+                <apex:commandButton value="Remove NCAR"  action="{!processSelected}" rerender="table" disabled="{!If(ncarList!= null && ncarList.size > 0,false, true)}" oncomplete="RefreshPrimaryTab('{!CAPA__c.id}'); return true;" status="waitStatus"/>
+            </apex:pageBlockButtons>
+              <div style="display:{!if(checklist,"block","none")};">        
+            <apex:pageBlockTable value="{!NCARs}" var="c" id="table">
+                <apex:column >                    
+                    <apex:inputCheckbox value="{!c.selected}"/>
+                </apex:column>
+                <apex:column >
+                <apex:facet name="header">Name</apex:facet>
+                <apex:outputLink value="/{!c.con.Id}" target="_blank"> {!c.con.Name} </apex:outputLink>
+                </apex:column>
+               <apex:column value="{!c.con.Recordtypeid}" />
+               <apex:column value="{!c.con.Account__c}" />
+               <apex:column value="{!c.con.SAP_Division_Desc__c}" />
+               <apex:column value="{!c.con.Status__c }" />
+               <apex:column value="{!c.con.SAP_CSR__c}"/>
+               <apex:column value="{!c.con.Nexeo_Plant__c}"/>               
+            </apex:pageBlockTable>  
+            </div>             
+        </apex:pageBlock>
+       
+    </apex:form>
+</apex:page>

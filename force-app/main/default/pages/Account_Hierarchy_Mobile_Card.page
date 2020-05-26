@@ -1,0 +1,44 @@
+<apex:page standardcontroller="Account" extensions="Account_Hierarchy_Mobile_Card">
+<div class="well">
+<c:importvisualstrap />
+<c:visualstrapblock style="padding:5px">
+
+<c:row >
+    <c:column type="col-md-4">
+        
+        <c:panel title="This Account" type="primary">
+            <apex:repeat value="{!$ObjectType.Account.FieldSets.SF1_Account_Hierarchy}" var="f"> 
+                <c:row >
+                    <c:column type="col-md-4"><b><apex:outputText value="{!f.Label}"/></b></c:column>
+                    <c:column type="col-md-8"><apex:outputText value="{!thisAccount[f]}" /></c:column>                                 
+                </c:row>
+            </apex:repeat>
+        </c:panel>
+    </c:column>
+    <c:column type="col-md-4" rendered="{!NOT(ISNULL(sold_to.id))}">
+        <c:panel title="Sold To" type="primary"> 
+                <apex:repeat value="{!$ObjectType.Account.FieldSets.SF1_Account_Hierarchy}" var="f"> 
+                <c:row >
+                    <c:column type="col-md-4"><b><apex:outputText value="{!f.Label}"/></b></c:column>
+                    <c:column type="col-md-8"><apex:outputText value="{!sold_to[f]}" /></c:column>                              
+                </c:row>
+            </apex:repeat>
+        </c:panel>
+    </c:column>
+    <c:column type="col-md-4" rendered="{!NOT(ISNULL(corp.id))}">
+        <c:panel title="Corporate" type="primary" >
+                <apex:repeat value="{!$ObjectType.Account.FieldSets.SF1_Account_Hierarchy}" var="f"> 
+                <c:row >
+                    <c:column type="col-md-4"><b><apex:outputText value="{!f.Label}"/></b></c:column>
+                    <c:column type="col-md-8"><apex:outputText value="{!corp[f]}" /></c:column>                                 
+                </c:row>
+            </apex:repeat>
+        </c:panel>
+    </c:column>
+    
+</c:row>
+
+</c:visualstrapblock>
+</div>
+
+</apex:page>

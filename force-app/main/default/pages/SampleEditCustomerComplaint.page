@@ -1,0 +1,105 @@
+<apex:page standardController="Sample_Analysis_Request__c" extensions="SampleButtonHide" id="thepage">
+<apex:pageMessages />
+<script src="../../soap/ajax/24.0/connection.js" type="text/javascript"></script>
+<script>
+function fetchCustomerDetails(){ 
+var custId = document.getElementById('thepage:theform:pageblock:salesinfo:customer_lkid').value;
+customerDetails(custId);
+}
+function fetchMaterialDetails(){ 
+var matId = document.getElementById('thepage:theform:pageblock:sampleinfo:materialid_lkid').value;
+materialDetails(matId);
+
+}
+</script>
+<apex:form id="theform">
+ 
+<apex:actionFunction name="customerDetails" action="{!getCustomerDetails}" rerender="custnumber,markettag" status="busyStatus" immediate="true">
+<apex:param name="customerId" value="" />
+</apex:actionFunction>
+
+<apex:actionFunction name="materialDetails" action="{!getMaterialDetails}" rerender="materialnumber" status="busyStatus" immediate="true">
+<apex:param name="materialId" value="" />
+</apex:actionFunction>
+
+<apex:ActionStatus id="busyStatus">
+<apex:facet name="start">
+<c:BusyStatusComp height="300px" width="300px" Message="Please Wait..." />
+</apex:facet>
+</apex:ActionStatus>
+
+<apex:pageBlock title="Sample Analysis Request Details" id="pageblock">
+<apex:pageblockButtons >
+<apex:commandButton action="{!cancel}" value="Cancel" />
+<apex:commandButton action="{!customsave}" value="Save" />
+<apex:commandButton action="{!doSaveAndNew}" value="Save And New" />
+</apex:pageblockButtons>
+
+<br></br>
+<font size="3" color="Brown"><b>SAMPLE REQUESTER</b></font>
+
+<apex:pageBlockSection title="Sales Information" columns="1" id="salesinfo">
+<apex:inputField value="{!Sample_Analysis_Request__c.Date__c}" required="true"/>
+<apex:inputField value="{!Sample_Analysis_Request__c.Requested_by__c}" required="true"/>
+<apex:pageBlocksectionItem >
+<apex:outputLabel value="Business Group"/>
+<apex:panelgroup >
+<div class="requiredInput">
+<div class="requiredBlock"></div>
+<apex:selectList size="1" value="{!Sample_Analysis_Request__c.Buisness_Group__c}" required="true">
+<apex:selectOption itemValue="" itemLabel="--Select--"/>
+<apex:selectOptions value="{!BusinessGroup}" />
+</apex:selectList>
+</div>
+</apex:panelgroup>
+</apex:pageBlocksectionItem>
+<!--<apex:inputField value="{!Sample_Analysis_Request__c.Buisness_Group__c}" required="true"/>-->
+<apex:inputField value="{!Sample_Analysis_Request__c.Customer__c}" id="customer" onchange="fetchCustomerDetails();" required="true"/>
+<apex:outputField value="{!Sample_Analysis_Request__c.Customer_Account_new__c}" id="custnumber"/>
+<apex:outputField value="{!Sample_Analysis_Request__c.Market_Tag_new__c}" id="markettag"/>
+<apex:inputField value="{!Sample_Analysis_Request__c.NCAR__c}"/>
+<apex:inputField value="{!Sample_Analysis_Request__c.Batch__c}" required="true"/>
+</apex:pageBlockSection>
+
+<apex:pageBlockSection title="Sample Information" columns="1" id="sampleinfo">
+<apex:inputField value="{!Sample_Analysis_Request__c.Sample_Name__c}"/>
+<apex:inputField value="{!Sample_Analysis_Request__c.Manufacturer1__c}"/>
+<apex:inputField value="{!Sample_Analysis_Request__c.Material__c}" required="true" id="materialid" onchange="fetchMaterialDetails();"/>
+<apex:outputField value="{!Sample_Analysis_Request__c.Material_NumberNew__c}" id="materialnumber"/>
+<apex:inputField value="{!Sample_Analysis_Request__c.Number_of_Samples__c}" required="true"/>
+<apex:inputField value="{!Sample_Analysis_Request__c.Samples_Obtained_From__c}" required="true"/>
+<apex:pageBlocksectionItem >
+<apex:outputLabel value="Analysis Type"/>
+<apex:panelgroup >
+<div class="requiredInput">
+<div class="requiredBlock"></div>
+<apex:selectList size="1" value="{!Sample_Analysis_Request__c.Analysis_Type__c}" required="true">
+<apex:selectOption itemValue="" itemLabel="--Select--"/>
+<apex:selectOptions value="{!AnalysisType}" />
+</apex:selectList>
+</div>
+</apex:panelgroup>
+</apex:pageBlocksectionItem>
+</apex:pageBlockSection>
+
+<apex:pageBlockSection columns="1">
+<apex:pageBlockSectionitem >
+<apex:outputLabel value="Comments" />
+<apex:panelgroup >
+<div class="requiredInput">
+<div class="requiredBlock"></div>
+<apex:inputtextarea value="{!Sample_Analysis_Request__c.CommentsNew__c}" cols="100"/>
+</div>
+</apex:panelgroup>
+</apex:pageBlockSectionitem>
+
+</apex:pageBlockSection>
+<apex:pageBlockSection title="Charge Data" columns="2">
+<apex:inputField value="{!Sample_Analysis_Request__c.Customer_Service_Charge__c}" required="true"/>
+<apex:inputField value="{!Sample_Analysis_Request__c.Charge_Status__c}" required="true"/>
+<apex:inputField value="{!Sample_Analysis_Request__c.Retention_Date__c}" rendered="{!showButton}"/>
+</apex:pageBlockSection>
+
+</apex:pageBlock>
+</apex:form>
+</apex:page>

@@ -1,0 +1,658 @@
+<apex:page standardcontroller="Account_Material__c" extensions="nexprice_mobileSetPrice" standardstylesheets="false" sidebar="false" showheader="false">
+<head>
+
+<link href="{!URLFOR($Resource.bootstrap, '/bootstrap-3.1.1-dist/css/bootstrap.min.css')}" rel="stylesheet" />
+        <script src="{!URLFOR($Resource.JQuery_Pricing, '/JQuery_Pricing/js/jquery-1.8.3.min.js')}" type="text/javascript"/> 
+        <script src="{!URLFOR($Resource.JQuery_Pricing, '/JQuery_Pricing/js/jquery.validate.js')}" type="text/javascript"/>
+        <script src="{!URLFOR($Resource.bootstrapwizard, '/twitter-bootstrap-wizard-master/bootstrap/js/bootstrap.min.js')}" type="text/javascript"/>
+        <script src="{!URLFOR($Resource.JQuery_Pricing, '/JQuery_Pricing/js/jquery.form.js')}" type="text/javascript"/>
+        <script src="{!URLFOR($Resource.bootstrapwizard, '/twitter-bootstrap-wizard-master/jquery.bootstrap.wizard.js')}" type="text/javascript"/>
+
+
+        
+        <!-- <script src="{!URLFOR($Resource.JQuery_Pricing, '/JQuery_Pricing/js/jquery-ui-1.9.2.custom.js')}" type="text/javascript"/>
+        <script src="{!URLFOR($Resource.JQuery_Pricing, '/JQuery_Pricing/js/jquery-ui.toggleSwitch.js')}" type="text/javascript"/>
+        -->
+        
+
+       <script>
+               
+                     
+                     
+                    
+            $(document).ready(function() { 
+             fnInitForm(); 
+             var $validator = $("#setpriceform").validate({
+                   errorPlacement: function(error, element){
+                      error.insertAfter(element.parent().find('.error_container'));
+                      error.css('color', 'red');  
+                   },
+                   onfocusout: function (element) {
+                       var search = 'This field is required.'; 
+                   }
+               });
+               
+             $.validator.addMethod("currency", function(value, element) { 
+                  return this.optional(element) || /^([1-9]{1}[0-9]{0,2}(\,[0-9]{3})*(\.[0-9]{2,4})?|[1-9]{1}[0-9]{0,}(\.[0-9]{2,4})?|0(\.[0-9]{2,4})?|(\.[0-9]{2,4})?)$/.test(value); 
+               }, "Please enter a valid number.");
+             
+             $.validator.addMethod("futureDate", function() {
+                var today = new Date();
+                var day = ("0" + today.getDate()).slice(-2);
+                var month = ("0" + (today.getMonth() + 1)).slice(-2);
+                today = today.getFullYear() + "-" + (month) + "-" + (day);
+                
+                var edate = $('#edate').val() ;
+               
+                if( edate >= today )
+                    return true;
+                return false;
+            }, "Please specify a date greater than or equal to today");
+            
+            $.validator.addMethod("dateRange", function() {
+                var edate = $("#edate").val();
+                var exdate = $("#exdate").val();
+                
+                return ( edate <= exdate );
+            }, "Please check your dates. Expiration date should be greater than Start date");
+        
+            $.validator.addMethod("dateValidation", function() {
+                var validDate = new Date($("#edate").val());
+                                
+                var day = ("0" + validDate.getUTCDate()).slice(-2);
+                var month = ("0" + (validDate.getUTCMonth()+1)).slice(-2);
+                var year = validDate.getUTCFullYear() + 1;
+
+                validDate = (year)+"-"+(month)+"-"+(day) ;
+                var exdate = $("#exdate").val();
+                
+                return ( exdate <= validDate );
+            }, "Please check your dates. Expiration date should not be after one year of Start Date");
+             
+               
+             $('#rootwizard').bootstrapWizard({
+                    'tabClass': 'nav nav-pills',
+                    'onTabClick': function(tab, navigation, index){ 
+                    
+                    return false; },
+                    'onNext': function(tab, navigation, index) {
+                    
+                       return onNext($validator, tab, navigation, index);
+                     },
+                    'onPrevious': function(tab, navigation, index) {
+                         $('#rootwizard').find('.pager .next').show();
+                        $('#rootwizard').find('.pager .finish').hide();
+                    },
+                    
+                    'onTabShow': function(tab, navigation, index) {
+                        var $total = navigation.find('li').length;
+                        var $current = index+1;
+                        var $percent = ($current/$total) * 100;
+                        $('#rootwizard').find('.bar').css({width:$percent+'%'});
+                
+                       
+                        if($current >= $total) {
+                            $('#rootwizard').find('.pager .next').hide();
+                            $('#rootwizard').find('.pager .finish').show();
+                            $('#rootwizard').find('.pager .finish').removeClass('disabled');
+                        } else {
+                            $('#rootwizard').find('.pager .next').show();
+                            $('#rootwizard').find('.pager .finish').hide();
+                        }
+                
+                    }
+                     
+                    });
+             
+             $('#rootwizard .finish').click(function() {
+                $('#rootwizard').find('.pager .finish').addClass('disabled');
+                fnShowFog();
+                $('#operation').val('savesubmit');  
+                fnSimulate();
+                
+            });
+             
+             $('#copyTier').click(function(){
+            
+             var count = $('.bracketcontainer').size();
+            
+             if(count > 1){
+                 for(i=1; i<=count-1; i++)
+                     $('.removeRow').click();
+            }
+            
+            if($("#rdb1").attr("checked") == "checked"){
+            
+             $('#targettable_body').find('tr').each(function(i, r){
+                              
+                  if(i == 0){
+                       $('#bracketvolume_0').val(Number($('#' + i + '_vol').html()));
+                       $('#bracketprice_0').val(Number($('#' + i + '_price').html()));
+                       var tarpriceuom = $('#tarpriceuom').html();
+                       var tarvoluom = $('#tarvoluom').html();
+                                             
+                       $("#brvoluom option").each(function () {
+                        var thisval = $(this).html();
+                            if(thisval.trim() == tarvoluom.trim()) {
+                                $(this).attr("selected", "selected");
+                                return;
+                            }
+                        });
+                        
+                       $("#brpriceuom option").each(function () {
+                        var thisval = $(this).html();
+                            if(thisval.trim() == tarpriceuom.trim()) {
+                                $(this).attr("selected", "selected");
+                                return;
+                            }
+                        });
+                       }
+                  else{
+                  
+                   $('.addRow').click();
+                   $('#bracketvolume_'+ i).val(Number($('#' + i + '_vol').html()));
+                   $('#bracketprice_'+ i).val(Number($('#' + i + '_price').html()));
+                  }
+             
+               });
+             }else{
+             
+             $('#csptable_body').find('tr').each(function(i, r){
+                              
+                  if(i == 0){
+                       $('#bracketvolume_0').val(Number($('#' + i + '_cspvol').html()));
+                       $('#bracketprice_0').val(Number($('#' + i + '_cspprice').html()));
+                       
+                       var csppriceuom = $('#csppriceuom').html();
+                       var cspvoluom = $('#cspvoluom').html();
+                                             
+                       $("#brvoluom option").each(function () {
+                        var thisval = $(this).html();
+                            if(thisval.trim() == cspvoluom.trim()) {
+                                $(this).attr("selected", "selected");
+                                return;
+                            }
+                        });
+                        
+                       $("#brpriceuom option").each(function () {
+                        var thisval = $(this).html();
+                            if(thisval.trim() == csppriceuom.trim()) {
+                                $(this).attr("selected", "selected");
+                                return;
+                            }
+                        }); 
+                      }
+                  else{
+                  
+                   $('.addRow').click();
+                   $('#bracketvolume_'+ i).val(Number($('#' + i + '_cspvol').html()));
+                   $('#bracketprice_'+ i).val(Number($('#' + i + '_cspprice').html()));
+                  }
+             
+               });
+             }
+             });
+           
+             });               
+           
+           function onNext(validator, tab, navigation, index){
+           
+                      if(index===1 ){
+               
+                        
+                        if(validator.element("#edate") == false || validator.element("#ordervol") == false || validator.element("#exdate") == false || validator.element("#Competitors") == false || validator.element("#currencies") == false || validator.element("#pricetype") == false || validator.element("#compprice") == false || validator.element("#priceprot") == false)
+                                return false;
+                     }    
+                     if(index===2 ) {
+                            if($("#setpriceform").valid() == false)
+                                return false;
+                     }
+                     if(index===3 ) {
+                            
+                                $('#operation').val('simulate');  
+                                fnSimulate();  
+                            
+                        
+                     }
+                 }
+           
+           function fnSimulate(){
+                   
+                                     
+                    
+                    if($("#setpriceform").valid() == true){ 
+                        
+                        $('#setpriceform').ajaxSubmit({  
+                        dataType:  'json', 
+                        beforeSubmit: beforeSubmit
+                    }); }
+           }
+           
+           
+            
+            function beforeSubmit(formData, jqForm, options){
+              $(formData).each(function(i, data){ 
+                       if(data.name == 'effdate'){
+                         data.value = Date.parse($('#edate').val());
+                         
+                         }
+                       if(data.name == 'exdate')
+                         data.value = Date.parse($('#exdate').val());
+                     });
+              fnProcessForm(formData);
+              return false;
+            }
+          
+          
+            
+          function fnProcessForm(formData){
+                  var sData = new Array();
+                  var amId = "{!amid}";
+                  sData.push("{!amid}");
+                  
+                  var operation = $('#operation').val();
+                  var sforcecheck;
+                  
+                  if(typeof sforce.one == 'undefined')
+                      sforcecheck = false;
+                  else 
+                      sforcecheck = true;
+                      
+                  nexprice_mobileSetPrice.SubmitForm12(sforcecheck, navigator.userAgent, sData, formData, $('#operation').val(), function(result, event){
+                     
+                      if(event.type == 'exception') {
+                        alert(event.message);
+                           
+                      } else if(result.length > 0){ 
+                      
+                      
+                      if($('#operation').val() == 'simulate'){                     
+                         if(result[0].TPI_below_threshold__c == true){
+                                 alert('TPI is below 10% or above 200%. Please check the UoMs.');
+                              }
+                              
+                      
+                          var simulateWindow = '';
+                          
+                          simulatewindow = '<div class="row" ><div class="col-sm-4"><Label>Ship To</Label><br>';
+                          simulatewindow += '<span style="font-style:italic">'+ result[0].Account_Material__r.Account_Name__c +'</span></div>';
+                          simulatewindow += '<div class="col-sm-4"><Label>Material</Label><br>';
+                          simulatewindow += '<span style="font-style:italic">'+ result[0].Account_Material__r.Material_Name__c +'</span></div>';
+                          simulatewindow += '<div class="col-sm-4"><Label>Base Code</Label><br>';
+                          simulatewindow += '<span style="font-style:italic">'+ result[0].Account_Material__r.Material_Base_Code__c +'</span></div></div><br></br>';
+                          
+                          
+                          var ReqDate = new Date(result[0].Requested_Effective_Date__c);
+                          var ReqexpDate = new Date(result[0].Requested_Expiration_Date__c);  
+                                
+                          
+                          simulatewindow += '<div class="row" ><div class="col-sm-4"><Label>Start Date</Label><br>';
+                          
+                          if('{!DateFormat}' == 'mm/dd/yy')
+                              simulatewindow += '<span style="font-style:italic">'+ (ReqDate.getUTCMonth()+1) + "/" + ReqDate.getUTCDate() + "/" + ReqDate.getUTCFullYear() +'</span></div>';
+                          else
+                              simulatewindow += '<span style="font-style:italic">'+ ReqDate.getUTCDate() + "/" + (ReqDate.getUTCMonth()+1) + "/" + ReqDate.getUTCFullYear() +'</span></div>';    
+                              
+                              
+                          simulatewindow += '<div class="col-sm-4"><Label>Expiration Date</Label><br>';
+                          if('{!DateFormat}' == 'mm/dd/yy')
+                              simulatewindow += '<span style="font-style:italic">'+ (ReqexpDate.getUTCMonth()+1) + "/" + ReqexpDate.getUTCDate() + "/" + ReqexpDate.getUTCFullYear() +'</span></div>';
+                          else
+                              simulatewindow += '<span style="font-style:italic">'+ ReqexpDate.getUTCDate() + "/" + (ReqexpDate.getUTCMonth()+1) + "/" + ReqexpDate.getUTCFullYear() +'</span></div>';    
+                              
+                          simulatewindow += '<div class="col-sm-4"><Label>Approver</Label><br>';
+                          simulatewindow += '<span style="font-style:italic">'+ result[0].Approver__r.Name +'</span></div></div><br></br>';
+                          
+                          
+                          simulatewindow += '<div class="row"><div class="col-sm-4"><Label >Approval Level</Label><br>';
+                          if(result[0].Approval_Level__c == 'Auto-Approved')
+                              simulatewindow += '<span style="color:white;font-weight:bold;font-style:italic;background-color:rgb(0,255,0)" id="level">'+ result[0].Approval_Level__c +'</span></div>';
+                          else if(result[0].Approval_Level__c == 'Exception 1')
+                              simulatewindow += '<span style="color:black;font-weight:bold;font-style:italic;background-color:rgb(255,255,0)" id="level">'+ result[0].Approval_Level__c +'</span></div>';
+                          else if(result[0].Approval_Level__c == 'Exception 2')
+                              simulatewindow += '<span style="color:white;font-weight:bold;font-style:italic;background-color:rgb(255,0,0)" id="level">'+ result[0].Approval_Level__c +'</span></div>';
+                          else
+                              simulatewindow += '<span style="font-style:italic" id="level">'+ result[0].Approval_Level__c +'</span></div>';
+                          
+                          simulatewindow += '<div class="col-sm-4"><Label>Drum Deposite</Label><br>';
+                          simulatewindow += '<span style="font-style:italic">'+ result[0].Requested_Drum_Deposit__c +'</span></div>';
+                          
+                          simulatewindow += '<div class="col-sm-4"><Label>Price Protection</Label><br>';
+                          simulatewindow += '<span style="font-style:italic">'+ result[0].Requested_Price_Protection__c +'</span></div></div><br></br>';
+                                                    
+                          
+                          simulatewindow += '<div class="row" ><div class="col-sm-6">';
+                          simulatewindow += $('<div/>').html(result[0].SimulateTable_ReqTiers__c).text();
+                          simulatewindow += '</div><div class="col-sm-6">';
+                          simulatewindow += $('<div/>').html(result[0].SimulateTable_TarTiers__c).text();
+                          simulatewindow += '</div></div>';
+                          
+                                                
+                          
+                          
+                          $('#resultset').html(simulatewindow);
+                       
+                          
+                      }
+                                                    
+                       
+                       else{
+                           
+                           gotourl('/apex/Account_Material_Search?id='+ result[0].Ship_To__c);
+                           fnHideFog();
+                           
+                       }
+                       
+                       }
+                  }, {buffer: true, escape: true, timeout:120000});
+                  
+                                   
+        }
+           
+           function fnShowFog(){
+              $('#loadingbanner').show();
+           }
+           
+           function fnHideFog(){
+              $('#loadingbanner').hide();
+           }
+          
+           function fnInitForm(){
+           fnHideFog();
+           var CSPExist = "{!CSPExist}";
+           var TargetExist = "{!TargetExist}";
+            
+           if(CSPExist == 'true'){
+               $("#rdb2").attr("checked",true);
+               $("#blk-CSP").show('slow');
+           } 
+           else if(TargetExist == 'true'){
+               $("#rdb1").attr("checked",true);
+               $("#blk-target").show('slow');
+           }
+           
+           
+           
+          
+             $('.addRow').click(function(){ fnAddRow();});
+               $('.removeRow').click(function(){
+      
+                 var rowcount = $(this).attr('id');
+                 $(this).parent().parent().remove();
+                 rowcount = rowcount.replace('removeRow_','');
+                                             
+                 $('.bracketcontainer').each(function(i, bc){
+                     $(this).find('.bracketvolume').attr('name', 'bracketvolume_' + i);
+                     $(this).find('.bracketprice').attr('name', 'bracketprice_' + i);
+                   });
+               });
+               
+             $("[name=toggler]").click(function(){
+                
+                        $('.toHide').hide();
+                        $("#blk-"+$(this).val()).show('slow');
+              });
+             
+             
+             $( "#edate" ).change(function() {
+              var date = new Date($('#edate').val());              
+              var day = ("0" + date.getUTCDate()).slice(-2);
+              var month = ("0" + (date.getUTCMonth()+1)).slice(-2);
+              var year = date.getUTCFullYear() + 1;
+
+              var newdate = (year)+"-"+(month)+"-"+(day) ;
+               
+              $('#exdate').val(newdate);
+             
+
+           }); 
+      
+       
+           
+       }
+       
+       function gotourl(url){
+        if(typeof sforce == 'undefined') 
+            window.location.href = url
+        else
+            sforce.one.navigateToURL(url);
+        }
+       
+       function fnAddRow(){
+          var count = $('.bracketcontainer').size();
+          var newRow = '<tr class="bracketcontainer" style="height:10px;"><td style="vertical-align:top;padding-right:1px;">';
+              newRow += '<input class="bracketvolume required number" type="number" name="bracketvolume_'+ (count)+ '" id="bracketvolume_'+ (count)+ '" style="width:100px;" />';
+              newRow += '<br/><div class="error_container"/></td><td style="vertical-align:top;padding-right:1px;"><input class="bracketprice required currency" type="number" name="bracketprice_'+ (count)+ '" id="bracketprice_'+ (count)+ '" style="width:100px;"/>';
+              newRow += '<br/><div class="error_container"/></td><td><img class="removeRow" src="{!URLFOR($Resource.JQuery_Pricing, '/JQuery_Pricing/images/details_close.png')}"/><b>&nbsp;Remove</b></td></tr>';
+        
+          $('#brackettable').append(newRow);
+          $('.removeRow').click(function(){
+              $(this).parent().parent().remove();
+              $('.bracketcontainer').each(function(i, bc){
+                 $(this).find('.bracketvolume').attr('name', 'bracketvolume_' + i);
+                 $(this).find('.bracketprice').attr('name', 'bracketprice_' + i);
+              });
+          }); 
+        
+        }
+
+
+        </script>
+        </head>
+     <div id="loadingbanner" style="position:relative;left:px;display:none;">
+            <c:EnhancedActionStatus BackColor="#efefef" borderColor="#336699" borderSize="3" height="20px" width="100px" ImageUrl="{!$Resource.spinner}" Message="Loading..." messageStyle="color:darkred;font-size:11pt;font-weight:bold;"/>
+     </div>  
+     
+     <div class="row" style="margin:0 auto;">
+        
+        <div class="span12 columns">
+        <div class="well wizard-example">
+        
+         <form id="setpriceform" styleclass="form-horizontal" action="#" method="POST">
+         <input type="hidden" id="operation" name="operation" value="simulate"/> 
+         <input type="hidden" id="formtype" name="formtype" value="create"/>
+    <div id="rootwizard">
+    <ul>
+    <li><a href="#tab1" data-toggle="tab">Start</a></li>
+    <li><a href="#tab2" data-toggle="tab">Pricing</a></li>
+    <li><a href="#tab3" data-toggle="tab">Comments</a></li>
+    <li><a href="#tab4" data-toggle="tab">Simulate</a></li>
+    </ul>
+    <br/>
+    <div class="tab-content">
+    <div class="tab-pane" id="tab1">
+        <div class="row">
+        
+         <div class="col-md-6">
+         <label for="Start Date" class="control-label">Start Date</label><br/>
+              <input id="edate" type="date" name="effdate" value="{!Date_Today}" class="required futureDate"  style="height:30px;width:200px;"></input>
+              <br/><div style="color:red;" class="error_container"/><br/></div> <!-- End Column -->             
+        
+         <div class="col-md-6">
+         <label for="Estimated Order Quantity" class="control-label">Estimated Order Quantity</label> <br/>
+              <input id="ordervol" name="ordervol" type="number" class="required number" style="height:30px;width:200px;" value="{!eoq}"/>
+                            <select id="ordervoluom" class="uom" name="ordervoluom" style="width:80px;padding-right:3px;" >
+                                <apex:outputtext value="{!sf1eoquomoptions}" escape="false" />
+                            </select><div style="color:red;" class="error_container"/><br/></div> <!-- End Column -->             
+        
+         </div>
+        
+         <div class="row">
+         <div class="col-sm-6">
+         <label for="Expiration Date" class="control-label">Expiration Date</label> <br/>
+              <input id="exdate" type="date" name="exdate" value="{!Date_One_Year}" class="required dateRange dateValidation"  style="height:30px;width:200px;"></input>
+                            <br/><div style="color:red;" class="error_container"/><br/></div> <!-- End Column -->             
+         
+         <div class="col-sm-6">
+         <label for="Competitor" class="control-label">Competitor</label> <br/>
+             <select id="Competitors" class="required" name="competitorid" style="height:30px;width:200px;" >
+                      <apex:outputtext value="{!CompetitorList}" escape="false" />
+             </select><div style="color:red;" class="error_container"/><br/>
+                            </div> <!-- End Column -->    
+         </div>
+         
+         <div class="row">
+         <div class="col-sm-6">
+         <label for="Currency" class="control-label">Currency</label> <br/>
+              <select id="currencies" class="required" name="currency" style="height:30px;width:200px;" >
+                            <apex:outputtext value="{!CurrencyOptions}" escape="false"/>
+                            </select><div/><br/></div> <!-- End Column -->             
+        
+         <div class="col-sm-6">
+         <label for="Obtained From" class="control-label">Obtained From</label> <br/>
+              <select id="obtainedfrom" name="obtainedfrom" style="height:30px;width:200px;">
+                                    <option value="Customer - Verbal" label="Customer - Verbal">Customer - Verbal</option>
+                                    <option value="Customer - Written" label="Customer - Written">Customer - Written</option>
+                                    <option value="Observed at Other Customers" label="Observed at Other Customers">Observed at Other Customers</option>
+                                </select><div/><br/></div> <!-- End Column --> 
+         </div>
+         
+         <div class="row">         
+         <div class="col-sm-6">
+         <label for="Type" class="control-label">Type</label> <br/>
+              <select id="pricetype" class="required" name="pricetype" style="height:30px;width:200px;">
+                                    <apex:outputtext value="{!typeoptions}" escape="false" /> 
+                                </select><br/><br/></div> <!-- End Column -->             
+         
+         <div class="col-sm-6">
+         <label for="Competitors Price" class="control-label">Competitors Price</label><br/>
+              <input id="compprice" type="number" class="required currency" name="compprice" style="height:30px;width:200px;"/>
+                            <select id="compuom" class="uom" name="compuom" style="height:30px;width:80px;padding-right:3px;" >
+                            <apex:outputtext value="{!sf1compuomoptions}" escape="false"/>
+                            </select>
+                            <div style="color:red;" class="error_container"/><br/></div> <!-- End Column -->             
+         </div>
+         
+         <div class="row">
+         <div class="col-sm-6">
+         <label for="Drum Deposit" class="control-label">Drum Deposit</label> <br/>
+              <select id="drumdep" name="drdep" style="height:30px;width:200px;">
+                                <option value="Default" label="Default">Default</option>
+                                <option value="No" label="No">No</option>
+                                <option value="Yes" label="Yes">Yes</option>
+                            </select><br/><br/></div> <!-- End Column -->             
+         
+         <div class="col-sm-6">
+         <label for="Price Protection" class="control-label">Price Protection</label> <br/>
+              <select id="priceprot" class="required" name="priceprot" style="height:30px;width:200px;">
+                                <apeX:outputtext value="{!PriceProtectionOptions}" escape="false" />
+                            </select><br/></div> <!-- End Column -->             
+        </div>
+     
+    
+    
+    
+    </div>
+    <div class="tab-pane" id="tab2">
+    <div class="row">
+            <div class="col-sm-4">
+                <apex:outputLabel >Ship To</apex:outputLabel>
+                <br><apex:outputText style="font-style:italic" value="{!shipto}"> </apex:outputText></br>
+            </div> <!-- End Column -->
+            
+             <div class="col-sm-4">
+                <apex:outputLabel >Material</apex:outputLabel>
+                <br><apex:outputText style="font-style:italic" value="{!material}"> </apex:outputText></br>
+            </div> <!-- End Column -->
+            
+             <div class="col-sm-4">
+                <apex:outputLabel >Base Code</apex:outputLabel>
+                <br><apex:outputText style="font-style:italic" value="{!basecode}"> </apex:outputText></br>
+            </div> <!-- End Column -->  
+            
+           </div>
+           <br/><br/>
+           <div class="row">
+           
+           <div class="col-sm-6"> 
+            <table id="brackettable">
+                    <tr style="height:10px;">
+                        <td style="vertical-align:top;padding-right:1px;">
+                            <b>Volume UoM</b>
+                        </td>
+                        <td style="vertical-align:top;padding-right:1px;">
+                            <b>Price UoM</b>
+                        </td>
+                        <td></td>
+                    </tr>
+                    <tr style="height:10px;"> <!-- class="bracketcontainer" -->
+                    <td style="vertical-align:top;">
+                            <select id="brvoluom" name="brvoluom" style="width:80px;" >
+                                <apex:outputtext value="{!sf1voluomoptions}" escape="false" />
+                            </select><br/><div style="color:red;" class="error_container"/>
+                    </td>
+                    <td style="vertical-align:top;">
+                            <select id="brpriceuom" name="brpriceuom" style="width:80px;">
+                                <apex:outputtext value="{!sf1priceuomoptions}" escape="false" />
+                            </select><br/><div style="color:red;" class="error_container"/>
+                    </td>
+                    </tr>
+                    <tr style="height:10px;">
+                    <td style="vertical-align:top;padding-right:1px;">
+                            <b>Bracket Volume</b>
+                    </td>
+                    <td style="vertical-align:top;padding-right:1px;">
+                            <b>Price</b>
+                    </td>    
+                    </tr>     
+                    <tr class="bracketcontainer" style="height:10px;">
+                        <td style="vertical-align:top;padding-right:1px;">
+                            <input class="bracketvolume required number" type="number" id="bracketvolume_0" name="bracketvolume_0"  style="width:100px;" value="{!toptier}" />
+                            <br/><div style="color:red;" class="error_container"/>
+                        </td>
+                        
+                        <td style="vertical-align:top;padding-right:1px;">
+                            <input class="bracketprice required currency"  type="number" id="bracketprice_0" name="bracketprice_0" style="width:100px;"/>
+                            <br/><div style="color:red;" class="error_container"/>
+                        </td>
+                        
+                        <td><img class="addRow" src="{!URLFOR($Resource.JQuery_Pricing, '/JQuery_Pricing/images/details_open.png')}"/><b>&nbsp;Add</b></td>
+                    </tr>
+                    
+                </table>
+                
+                 </div> <!-- End Column -->  
+                 <div class="col-sm-6">
+                <label><input id="rdb1" type="radio" name="toggler" value="target" />Target</label>
+                <label><input id="rdb2" type="radio" name="toggler" value="CSP" />Current CSP</label>
+                <input type="button" onclick="" class="toshow" id="copyTier" name="copyTier" value="Copy Tier" styleClass="btn btn-lg btn-block"></input>
+                
+                <div id="blk-target" class="toHide" style="display:none">
+                       <c:AM_Target_Tier recordid="{!amid}" tableid="targettable"/>        
+                </div>
+                <div id="blk-CSP" class="toHide" style="display:none">
+                      <c:AM_CSP_Tier recordid="{!amid}" tableid="csptable"/>    
+                </div>
+            </div> <!-- End Column -->  
+            
+               </div>
+    </div>
+    
+    <div class="tab-pane" id="tab3">
+        <div class="row">
+            <div class="col-sm-12">
+                <label for="Comments" class="control-label">Comments</label><br/>
+                <textarea id="comments" type="textarea" name="comments" style="height:80px;width:400px;"></textarea>
+              
+            </div> <!-- End Column -->
+        </div> 
+    </div>
+    
+    
+    <div class="tab-pane" id="tab4">
+    <div class="list-group" id="resultset"></div>
+    </div>
+    <ul class="pager wizard">
+    <li class="previous first" style="display:none;"><a href="#">First</a></li>
+    <li class="previous"><a href="#">Previous</a></li>
+    <!-- <li class="next last" style="display:none;"><a href="#">Last</a></li> -->
+    <li class="next"><a href="#">Next</a></li>
+    <li class="finish" style="display:none;padding-left:800px;"><a href="#">Submit</a></li>
+    </ul>
+    </div>  
+    </div>
+    </form>
+    </div>
+    </div>
+    </div>
+</apex:page>

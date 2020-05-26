@@ -1,0 +1,9 @@
+<apex:page contentType="text/plain" showHeader="false">
+User-agent: *
+Disallow: /*MyAccount?
+Disallow: /*Cart?
+Disallow: /*CCForgotPassword?
+Disallow: /*CCSiteRegister?
+Sitemap: {!$Setup.Nexeo3dSettings__c.Nexeo_3D_Robots_URL__c}{!$Page.ccrz__CCSiteIndex}
+Sitemap: {!$Setup.Nexeo3dSettings__c.Nexeo_3D_Robots_URL__c}{!$Page.sitemap}
+</apex:page>

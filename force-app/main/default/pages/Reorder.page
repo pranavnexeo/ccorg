@@ -1,0 +1,214 @@
+<apex:page standardController="Reorder__c" extensions="ReorderController" id="myPage">
+<script language="javascript">
+function li_checkAll(frm, acb, id) {
+// https://cs3.salesforce.com/apex/Reorder?Id=a47Q000000000BY
+    for (var i = 0; i < frm.elements.length; i++) {
+        var e = frm.elements[i];
+        if (e.id.indexOf(id) != -1 && 
+            e.disabled == false) {
+            e.checked = acb.checked;
+        }
+    }
+}
+
+//To open the Material lookup dialog box  
+function materiallookup()
+{
+    var shipToId = "{!orderMaster.ShipTo__c}";
+    //alert(document.getElementById('myPage:actionForm:myBlock:material').value);
+    var searchtext = document.getElementById('myPage:actionForm:myBlock:material').value;
+    window.open("/apex/MaterialLookUp?accountId="+shipToId+"&stext="+searchtext+"","_blank","width=700,height=500,scrollbars=yes");
+}
+
+//Get the value of Material name and Id   
+function materiallookupval(materialid,materialname)
+{
+    document.getElementById('myPage:actionForm:myBlock:hidmaterialid').value=materialid;
+    document.getElementById('myPage:actionForm:myBlock:material').value=materialname;
+}
+
+    window.onload=function() {
+        document.getElementById('myPage:actionForm:myBlock:material').focus();
+    }
+   
+</script>
+
+<apex:form id="actionForm">
+<apex:pageBlock Title="{!$Label.Order_Details}" id="myBlock">
+    <apex:pageBlockButtons id="myButtons1">
+        <!--apex:commandButton value="Back" rendered="{!isMultiReorder}" action="{!callIntermediatePage}"/-->
+        <apex:commandButton value="{!$Label.Previous}" action="{!callIntermediatePage}" immediate="true"/>
+        <apex:commandButton value="{!$Label.Cancel}" action="{!gotoAccountPage}" immediate="true"/>
+    </apex:pageBlockButtons>
+<apex:pageMessages />
+    <apex:pageBlockSection columns="2">
+        <apex:pageBlockSectionItem >
+            <apex:outputLabel value="{!$Label.Sold_To}" for="order_SoldTo"/>
+            <apex:outputField value="{!orderMaster.SoldTo__c}" id="order_SoldTo"/>
+        </apex:pageBlockSectionItem>    
+        <apex:pageBlockSectionItem >
+            <apex:outputLabel value="{!$Label.Ship_To}" for="order_ShipTo"/>
+            <apex:outputField value="{!orderMaster.ShipTo__c}" id="order_ShipTo"/>
+        </apex:pageBlockSectionItem>    
+        <apex:pageBlockSectionItem >
+        </apex:pageBlockSectionItem>
+        <apex:pageBlockSectionItem >
+            <apex:outputLabel value="{!$Label.Street}" for="order_ShipStreet"/>
+            <apex:outputField value="{!orderMaster.ShipTo__r.ShippingStreet}" id="order_ShipStreet"/>
+        </apex:pageBlockSectionItem>
+        <apex:pageBlockSectionItem >
+        </apex:pageBlockSectionItem>
+        <apex:pageBlockSectionItem >
+            <apex:outputLabel value="{!$Label.City}" for="order_ShipCity"/>
+            <apex:outputField value="{!orderMaster.ShipTo__r.ShippingCity}" id="order_ShipCity"/>
+        </apex:pageBlockSectionItem>
+        <apex:pageBlockSectionItem >
+        </apex:pageBlockSectionItem>
+        <apex:pageBlockSectionItem >
+            <apex:outputLabel value="{!$Label.Postal_Zip}" for="order_ShipZIP"/>
+            <apex:outputField value="{!orderMaster.ShipTo__r.ShippingPostalCode}" id="order_ShipZIP"/>
+        </apex:pageBlockSectionItem>
+        <apex:pageBlockSectionItem >
+        </apex:pageBlockSectionItem>
+        <apex:pageBlockSectionItem >
+            <apex:outputLabel value="{!$Label.Country}" for="order_ShipCountry"/>
+            <apex:outputField value="{!orderMaster.ShipTo__r.ShippingCountry}" id="order_ShipCountry"/>
+        </apex:pageBlockSectionItem>
+    </apex:pageBlockSection>
+
+    <apex:pageBlockSection id="orderHeaderSection" columns="2" 
+                           Title="{!$Label.Order_Header}" collapsible="false">
+        <apex:pageBlockSectionItem >
+            <apex:outputLabel value="{!$Label.Order_Type}"/>
+<!--            
+            <apex:inputField value="{!reorderHeader.ReOrder_Type__c}" required="true"/>
+-->            
+            <apex:actionRegion >
+                <apex:actionStatus id="statusMsg">
+                    <apex:facet name="start">
+                        <apex:outputText escape="false" style="font-weight: bold;" 
+                                         value="&nbsp;{!$Label.Please_Wait}...">
+                            <apex:image value="{!$Resource.spinner}"/>
+                        </apex:outputText>
+                    </apex:facet>
+                    <apex:facet name="stop">
+                        <apex:inputField value="{!reorderHeader.ReOrder_Type__c}" required="true">
+                            <apex:actionSupport event="onchange"
+                                                action="{!updateOrderType}"
+                                                immediate="false"
+                                                rerender="orderHeaderSection" 
+                                                status="statusMsg" />
+                       </apex:inputField>
+                    </apex:facet>
+                </apex:actionStatus>
+            </apex:actionRegion>
+        </apex:pageBlockSectionItem>
+        <apex:pageBlockSectionItem rendered="{!isContractType}" id="contractNumberField">
+            <apex:outputLabel escape="false" value="{!$Label.Contract_Number_must_be_numeric})" 
+                              title="{!$Label.Must_Be_Numeric_Max_10}"/>
+            <apex:inputField value="{!reorderHeader.Contract_Number__c}" required="false"/>
+        </apex:pageBlockSectionItem>
+    </apex:pageBlockSection>
+    
+    <apex:pageBlockSection columns="1" Title="{!$Label.Requested_Delivery_Dates}" collapsible="false">
+        <apex:pageBlockTable value="{!newOrders}" var="rO" cellpadding="0" cellspacing="0">
+            <apex:column >
+                <apex:facet name="header">
+                    <apex:inputCheckbox id="selectAll" value="{!allDateSelected}" onclick="li_checkAll(this.form, this, 'selectDateRow')"/>
+                </apex:facet>
+                <apex:inputCheckbox id="selectDateRow" value="{!rO.selected}"/>
+            </apex:column>      
+            <apex:column >
+                <apex:facet name="header">{!$Label.Date}</apex:facet><apex:inputField value="{!rO.reOrder.Requested_Delivery_Date__c}"/>
+            </apex:column>      
+            <apex:column >
+                <apex:facet name="header">{!$Label.PO_Number}</apex:facet><apex:inputField value="{!rO.reOrder.Customer_PO_Number__c}"/>
+            </apex:column>
+            <apex:column >
+                <apex:facet name="header">{!$Label.Special_Instructions}</apex:facet><apex:inputTextArea cols="80" rows="4" value="{!rO.reOrder.Special_Instructions__c}"/>
+            </apex:column>      
+        </apex:pageBlockTable>
+    </apex:pageBlockSection>
+    <div width="100%" style="text-align: left;">
+        <apex:commandButton value="{!$Label.Request_Additional_Date}" id="addReqDate" action="{!addReorder}"/>
+        <apex:commandButton value="{!$Label.Remove_Selected_Dates}" id="delReqDate" action="{!delReorder}"/>
+    </div>
+    
+    <apex:pageBlockSection columns="1" Title="{!$Label.Line_Items}" collapsible="false" id="lineItemTable">
+        <apex:pageBlockTable value="{!LineItems}" var="li" cellpadding="0" cellspacing="0">
+            <apex:column >
+                <apex:facet name="header">
+                    <apex:inputCheckbox id="selectAll" value="{!allMatsSelected}" onclick="li_checkAll(this.form, this, 'selectLiRow')"/>
+                </apex:facet>
+                <apex:inputCheckbox id="selectLiRow" value="{!li.selected}"/>
+            </apex:column>      
+            <apex:column >
+                <apex:facet name="header">{!$Label.Quantity}</apex:facet><apex:inputField value="{!li.lineItem.Quantity__c}" onChange="if(this.value.length==0) { this.value='0'; }"/>
+            </apex:column>
+            <apex:column >
+                <apex:facet name="header">{!$Label.UOM}</apex:facet><apex:outputText value="{!li.UoM}"/>
+            </apex:column>
+            <apex:column >
+                <apex:facet name="header">{!$Label.Material_Number}</apex:facet> <apex:outputLink value="/{!li.lineItem.Material2__c}"><apex:outputText value="{!li.matNumber}"/></apex:outputLink>
+            </apex:column>
+            <apex:column >
+                <apex:facet name="header">{!$Label.Material_Description}</apex:facet><apex:outputText value="{!li.matDesc}"/>             
+            </apex:column>
+            <apex:column >
+                <apex:facet name="header">{!$Label.Tank_Number}</apex:facet>
+                <apex:inputField value="{!li.lineItem.Tank_Number__c}"/>             
+            </apex:column>
+        </apex:pageBlockTable>
+    </apex:pageBlockSection>
+    <div width="100%" style="text-align: left;">
+        <apex:commandButton value="{!$Label.Add_New_Material}" id="addMatBtn" action="{!addMat}" onClick="return validateAddMat();"/>
+    <!--    <apex:inputField value="{!newRecMat.Material2__c}" id="newMatSelector" onChange="addMatDisable()"/>    -->
+        
+                         
+         <apex:inputText id="material" value="{!materialName}"/>
+         <img id="imglead" src="/s.gif" onclick="materiallookup();" alt="Name Lookup (New Window)" 
+         class="lookupIcon" onblur="this.className = 'lookupIcon';" onfocus="this.className = 'lookupIconOn';" 
+         onmouseout="this.className = 'lookupIcon';this.className = 'lookupIcon';" 
+         onmouseover="this.className = 'lookupIconOn';this.className = 'lookupIconOn';" title="Name Lookup (New Window)"></img>
+         <apex:inputHidden value="{!newRecMat.Material2__c}" id="hidmaterialid"/>
+
+        
+        <apex:commandButton value="{!$Label.Remove_Selected_Materials}" id="delMatBtn" action="{!delMat}"/>
+        <script> 
+            function validateAddMat() {
+                var ret=true;
+                if(document.getElementById('{!$Component.material}').value.length == 0) {
+                    alert("{!$Label.Select_Material_Before_Clicking}");
+                    ret=false;
+                }
+                return (ret);
+            }
+        </script>
+    </div>
+    
+</apex:pageBlock>
+<apex:commandButton value="{!$Label.Submit_Orders}" id="saveMatBtn" action="{!saveReorders}" onClick="return validateSave();"/>
+        <script> /*
+            function validateSave() {
+                var ret=false;
+                var LineItemsSize = '{!LineItemsSize}';
+                var newOrdersSize = '{!newOrdersSize}';
+                
+                if(LineItemsSize != '0' && newOrdersSize != '0'){
+                    ret = true;
+                } else {
+            if (LineItemsSize == '0')
+            {
+            alert("{!$Label.At_Least_One}");
+            }
+            if (newOrdersSize == '0')
+            {
+            alert("{!$Label.At_Least_One_Date}");
+            }
+            ret = false;
+                }
+                return (ret);
+            }*/
+        </script>
+</apex:form>
+</apex:page>

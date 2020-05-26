@@ -1,0 +1,47 @@
+<apex:page standardcontroller="NCAR_Cases__c" extensions="NCAR_AssignTaskToOwnerOfAccount">
+<apex:form >
+<apex:sectionHeader title="Case: {!NCAR_Cases__c.name}" subtitle="Account: {!Account.Name}" />
+<apex:pageblock Title="Assign an Action Item to Owner of Related Account" >
+<apex:pageblockbuttons >
+<apex:commandbutton value="Create Task" action="{!AssignTask}"/>
+<apex:commandbutton value="Cancel" action="{!cancel}"/>
+</apex:pageblockbuttons>
+<apex:pageblocksection title="Action Item Information" columns="1">
+<apex:pageblocksectionitem >
+<apex:outputlabel value="Related To"/>
+<apex:selectlist value="{!RelatedTo}" size="1">
+<apex:selectoptions value="{!options}"/>
+</apex:selectlist>
+</apex:pageblocksectionitem>
+<apex:outputfield value="{!Task.ownerid}" />
+<apex:inputfield value="{!Task.Manager_Alert__c}" rendered="{!isAD}"/>
+<!--
+<apex:outputlabel value="Subject"/>
+<apex:outputPanel styleClass="requiredInput" layout="block">
+    <apex:outputPanel styleClass="requiredBlock" layout="block"/>
+           <apex:inputtext value="{!Task.Subject}" size="75" style="{!if(Task.subject = null, 'border-size:2px; border-color:red;border-style:solid;', '')}"/>
+     <apex:outputPanel styleClass="errorMsg" layout="block" rendered="{!if(Task.subject = null, true, false)}">
+            <strong>Error:</strong> You must enter a value
+     </apex:outputPanel>
+</apex:outputPanel>
+-->
+<apex:pageblocksectionitem >
+<apex:outputlabel value="Subject"/>
+<c:RequiredTextField Value="{!Task.subject}" />
+</apex:pageblocksectionitem>
+<apeX:inputfield value="{!Task.ActivityDate}"/>
+<apeX:inputfield value="{!Task.Status}"/>
+</apex:pageblocksection>
+<apex:pageblocksection title="Task Comments" columns="1">
+<apex:pageblocksectionitem >
+<apex:outputlabel value="Action Item Comments"/>
+<apex:inputtextarea value="{!taskdescription}" cols="75" rows="7"/>
+</apex:pageblocksectionitem>
+<apex:pageblocksectionitem >
+<apex:outputlabel value="Case Description"/>
+<apex:outputfield value="{!Task.Description}"/>
+</apex:pageblocksectionitem>
+</apex:pageblocksection>
+</apex:pageblock>
+</apex:form>
+</apex:page>

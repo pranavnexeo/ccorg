@@ -1,0 +1,265 @@
+<apex:component >
+
+    <script id="foot_phone" type="text/template">
+        <div id="eucookiemessage" class="cookiemsgbar yellow-alert bottom">
+            <div class="cookiemessage">{{pageLabelMap 'cc_imp_Eu_Cookie_Message'}}</div>
+            <div class="eucookieactions">
+                <a href="#" class="eucookiebutton accept-eu-cookie-msg">{{pageLabelMap 'cc_imp_Eu_Cookie_Close_Button'}}</a>
+                <a href="http://www.nexeoplastics.com/privacy-policy/" target="_blank" class="eucookiebutton">{{pageLabelMap 'cc_imp_Eu_Cookie_More_Info_Button'}}</a>
+            </div>
+        </div>  
+        {{#each this}}
+            <div>
+                <a href="{{this.href}}" target="{{this.target}}">{{pageLabelMap this.label}}</a>
+            </div>
+        {{/each}}
+            <div class="footer-image"></div>
+    </script>
+
+    <script id="foot_desktop" type="text/template">
+
+        <div id="eucookiemessage" class="cookiemsgbar yellow-alert bottom">
+            <div class="cookiemessage">{{pageLabelMap 'cc_imp_Eu_Cookie_Message'}}</div>
+            <div class="eucookieactions">
+                    <a href="#" class="eucookiebutton accept-eu-cookie-msg">{{pageLabelMap 'cc_imp_Eu_Cookie_Close_Button'}}</a>
+                    <a href="http://www.nexeoplastics.com/privacy-policy/" target="_blank" class="eucookiebutton">{{pageLabelMap 'cc_imp_Eu_Cookie_More_Info_Button'}}</a>
+            </div>
+        </div>
+
+        <div class="footer">
+            <div class="footer-links">
+                {{#each this}}
+                    <a href="{{this.href}}" target="{{this.target}}">{{pageLabelMap this.label}}</a>
+                {{/each}}
+            </div>
+            <div class="footer-image"></div>
+        </div>
+    </script>
+
+    <script type="text/javascript">
+      CCRZ.uiProperties.CCExceptionView.desktop.tmpl = 'Nexeo3d-FileNotFound-Desktop';
+      CCRZ.uiProperties.CCExceptionView.phone.tmpl   = 'Nexeo3d-FileNotFound-Mobile';
+    </script>
+
+    <script id="Nexeo3d-FileNotFound-Desktop" type="text/template">
+        <div class="row">
+            <div class="span3"></div>
+            <div class="span3">
+                <h3>{{pageLabelMap 'cc_3d_FnfMsgTop'}}</h3>
+                <p style="font-size:34px;line-height:1.05;">{{pageLabelMap 'cc_3d_FnfSecond'}}</p>
+            </div>
+            <div class="span3"><img src="{!URLFOR($Resource.CC_Theme_Nexeo3D, '/images/404Image.png')}"></div>
+            <div class="span3"></div>
+        </div>
+        <div class="row">
+            <div class="span3"></div>
+            <div class="span6">
+                
+                    <ul>{{pageLabelMap 'cc_3d_FnfOthrOptn'}}
+                        <li style="margin-left:20px;">{{pageLabelMap 'cc_3d_fnfBackTo'}}&nbsp;<span class="homelink"><a href="#">HOME</a></span></li>
+                    </ul>
+                
+            </div>
+            <div class="span3"></div>
+                            
+
+        </div>
+    </script>
+
+    <script id="Nexeo3d-FileNotFound-Mobile" type="text/template">
+        <div class="row">
+            <div class="span3"></div>
+            <div class="span3">
+                <h3>{{pageLabelMap 'cc_3d_FnfMsgTop'}}</h3>
+                <p style="font-size:34px;line-height:1.05;">{{pageLabelMap 'cc_3d_FnfSecond'}}</p>
+            </div>
+            <div class="span3"><img src="{!URLFOR($Resource.CC_Theme_Nexeo3D, '/images/404Image.png')}"></div>
+            <div class="span3"></div>
+        </div>
+        <div class="row">
+            <div class="span3"></div>
+            <div class="span6">
+                
+                    <ul>{{pageLabelMap 'cc_3d_FnfOthrOptn'}}
+                        <li>{{pageLabelMap 'cc_3d_fnfBackTo'}} <span class="homelink"><a href="#">HOME</a></span></li>
+                    </ul>
+                
+            </div>
+            <div class="span3"></div>
+                            
+
+        </div>
+    </script>
+
+    <script>
+        function createCookie(name,value,days) {
+            if (days) {
+                var date = new Date();
+                date.setTime(date.getTime()+(days*24*60*60*1000));
+                var expires = "; expires="+date.toGMTString();
+            }
+            else var expires = "";
+            document.cookie = name+"="+value+expires+"; path=/";
+        }
+
+        function readCookie(name) {
+            var nameEQ = name + "=";
+            var ca = document.cookie.split(';');
+            for(var i=0;i < ca.length;i++) {
+                var c = ca[i];
+                while (c.charAt(0)==' ') c = c.substring(1,c.length);
+                if (c.indexOf(nameEQ) == 0) return c.substring(nameEQ.length,c.length);
+            }
+            return null;
+        }
+
+        function eraseCookie(name) {
+            createCookie(name,"",-1);
+        }
+
+    </script>
+
+    <script>
+        jQuery(function($) {
+        
+            $(document).on('click','.homelink > a',function(){
+                var page = "/nexeo3d/ccrz__HomePage";
+                window.location.href = page + '?cartId=' + CCRZ.pagevars.currentCartID + getCSRQueryString() ;
+            });
+
+
+
+            CCRZ.models.footModel = Backbone.Model.extend();
+
+            CCRZ.collections.footList = Backbone.Collection.extend({
+                model : CCRZ.models.footModel
+            });
+
+            CCRZ.views.footView = Backbone.View.extend({
+                templatePhone : CCRZ.util.template('foot_phone'),
+                templateDesktop : CCRZ.util.template('foot_desktop'),
+                viewName : "footView",
+                initialize : function(){
+                    this.render();
+                },
+                events : {
+                    'click .accept-eu-cookie-msg' : 'acceptmessage'
+                },
+                render: function(){
+
+                    this.$el.html('');
+                    if(CCRZ.display.isPhone()) {
+                        this.$el = $(".footerPhone");
+                        this.$el.html(this.templatePhone(this.collection.toJSON()));
+                    }else{
+                        this.$el = $(".footerBrowser");
+                        this.$el.html(this.templateDesktop(this.collection.toJSON()));
+                    }
+                    CCRZ.pubSub.trigger("view:"+this.viewName+":refresh", this);
+
+                    var cookieVal = readCookie('eumessageack');
+                    console.log('COOKIEVAL =' + cookieVal);
+                    if(cookieVal === 'accepted'){
+                        $('#eucookiemessage').hide();
+                    }
+
+                },
+                viewChanged: function() {
+                    if(this.currentView !== CCRZ.display.currentView) {
+                        this.currentView = CCRZ.display.currentView;
+                        return true;
+                    }
+                    return false;
+                },
+                renderViewChanged: function() {
+                    CCRZ.display.setCurrentView();
+                    if(this.viewChanged()) {
+                        this.render();
+                    }
+                },
+                acceptmessage : function(){
+                    console.log('clicked close button');
+                    createCookie('eumessageack','accepted',10);
+                    $('#eucookiemessage').hide();
+                }
+            });
+
+            
+            
+                function GetURLParameter(sParam)
+{
+    var sPageURL = window.location.search.substring(1);
+    var sURLVariables = sPageURL.split('&');
+    for (var i = 0; i < sURLVariables.length; i++)
+    {
+        var sParameterName = sURLVariables[i].split('=');
+        if (sParameterName[0] == sParam)
+        {
+            return sParameterName[1];
+        }
+    }
+}
+            var link="";
+            if(GetURLParameter("cclcl")=="de_DE"){
+                link="/nexeo3d/partners/ccrz__ccpage?cclcl=de_DE";
+                }else
+                {
+                link="/nexeo3d/partners/ccrz__ccpage";
+                }
+     			if(GetURLParameter("cclcl")=="de_DE"){
+                linkContact="/nexeo3d/contact/ccrz__ccpage?mnu=true&cclcl=de_DE";
+                }else
+                {
+                linkContact="/nexeo3d/contact/ccrz__ccpage?mnu=true";
+                }
+            
+            // The URL's for these labels can be edited via the page label settings
+            var footerCollection = new CCRZ.collections.footList();
+	
+            footerCollection.add(new CCRZ.models.footModel({
+                label : "cc_imp_SiteFooter_Partners",
+                href  : link
+                           }));
+
+            footerCollection.add(new CCRZ.models.footModel({
+                label : "cc_imp_SiteFooter_Contact_Us",
+                href: linkContact
+            }));
+            footerCollection.add(new CCRZ.models.footModel({
+                label : "cc_imp_SiteFooter_Terms_Conditions",
+                href: "https://www.nexeoplastics.com/terms-of-use/",
+                target: "_blank"
+            }));
+            
+            footerCollection.add(new CCRZ.models.footModel({
+                label : "cc_imp_SiteFooter_DataPrivacy",
+                href: "https://www.nexeoplastics.com/privacy-policy/",
+                target: "_blank"
+            }));
+
+            footerCollection.add(new CCRZ.models.footModel({
+                label : "cc_imp_SiteFooter_EuPrivacyShield",
+                href: "https://www.nexeoplastics.com/privacy-policy/europe/",
+                target: "_blank"
+            }));
+
+            var footerView = new CCRZ.views.footView({
+                collection : footerCollection
+            });
+            CCRZ.dynamicViews.push(footerView);
+
+            // JOA (Cloudcraze) - Fix for unresponsive button click
+            footerView.delegateEvents();
+        });
+    </script>
+<!-- Global site tag (gtag.js) - Google Analytics -->
+<script async="async" src="https://www.googletagmanager.com/gtag/js?id=UA-77254129-1"></script>
+<script>
+  window.dataLayer = window.dataLayer || [];
+  function gtag(){dataLayer.push(arguments);}
+  gtag('js', new Date());
+ 
+  gtag('config', 'UA-77254129-1');
+</script> 
+
+</apex:component>

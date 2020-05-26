@@ -1,0 +1,198 @@
+<apex:component id="cc_imp_mn_EffectiveAccountSelector"  controller="cc_imp_ctrl_mn_EffectiveAccountSelector">
+<apex:attribute name="readOnly" description="readonly mode" type="boolean" default="false"/>
+
+        <script type="text/javascript">
+         CCRZ.uiProperties.EffAccountSelView.header.tmpl = 'EffAcctSelHeadViewDesktopImp';
+         var jsonValue = {!accountsJSON};        	
+        </script>
+
+        <script id="EffAcctSelHeadViewDesktopImp" type="text/template">
+            {{#if this.ro}}
+                <div href="#" class="effAccount">
+                    {{pageLabelMap 'SELECTED_ACCOUNT' workingEffAccount.name workingEffAccount.accountNumber workingEffAccount.shippingAddress.address1 workingEffAccount.shippingAddress.city workingEffAccount.shippingAddress.state workingEffAccount.shippingAddress.countryCode}}
+                </div>
+            {{else}}
+                <div href="#" class="effAccount" data-toggle="modal" data-target="#effAccounts" >
+                    {{#if this.workingEffAccount }}
+                        {{pageLabelMap 'SELECTED_ACCOUNT' workingEffAccount.name workingEffAccount.accountNumber workingEffAccount.shippingAddress.address1 workingEffAccount.shippingAddress.city workingEffAccount.shippingAddress.state workingEffAccount.shippingAddress.countryCode}}
+                    {{else}}
+                        {{pageLabelMap 'SELECT_ACCOUNT' }}
+                    {{/if}}
+                    <span class="launchSel" aria-hidden="true"></span>
+                </div>
+            {{/if}}
+            <div class="modal fade hide" id="effAccounts" tabindex="-1" role="dialog" aria-labelledby="effAccountsLabel" aria-hidden="true" 
+            	data-backdrop = "static"  data-keyboard = "false">
+                <div class="modal-header">
+                    <!--
+                    <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+                     -->
+                    <h3 class="modal-title" id="effAccountsLabel">{{pageLabelMap 'EFFECTIVE_ACCOUNT_TITLE'}}</h3>
+                </div>
+                <div class="modal-body">
+                    <div class="row effacc-entry header">
+                        <div class="col col-name span3">{{pageLabelMap 'Name'}}</div>
+                        <div class="col col-acctnum span2">{{pageLabelMap 'ACCOUNT_NUMBER'}}</div>
+                        <div class="col col-addr span5">{{pageLabelMap 'Address'}}</div>
+                        
+                    </div>
+                    {{#each this.effectiveList}}
+                        <div class="row effacc-entry"><span class="pickSel pickAccount" data-id="{{sfid}}" aria-hidden="true">
+                            <div class="col col-name span3">{{name}}</div>
+                            <div class="col col-acctnum span2">{{accountNumber}}</div>
+                            <div class="col col-addr span5">{{pageLabelMap 'ADDRESS_FORMAT' shippingAddress.address1 shippingAddress.city shippingAddress.state shippingAddress.postalCode shippingAddress.countryCode}}</div>                          
+                            </span>
+                        </div>
+                    {{/each}}
+                </div>
+            </div>
+        </script>
+        
+     <script type="text/javascript">    
+                              var formatter = new Intl.NumberFormat('en-US', {
+  style: 'currency',
+  currency: 'USD',
+  minimumFractionDigits: 2,
+});
+    
+    jQuery(function($) {
+
+        CCRZ.subsc = CCRZ.subsc || {};
+
+        CCRZ.subsc.myNexeoRemoteActions = _.extend(CCRZ.RemoteInvocation, {
+            className : 'cc_imp_ctrl_mn_EffectiveAccountSelector',
+            checkPricingStatus : function(callback) {
+                this.invokeCtx('checkPricingStatus',
+                    function(resp) 
+                    {
+                        callback(resp);
+                    },
+                    {
+                        buffer : false, // this call will be executed by itself
+                        nmsp   : false  // defines that this is a call to a subscriber class
+                    }
+                );
+            }
+        });
+
+
+
+         CCRZ.pubSub.on('view:EffAccountSelView:refresh', function(mnEffAccountView)
+         {  
+            
+            console.log('*** mnEffAccountView: %o', mnEffAccountView);
+            console.log('***111***');
+            mnEffAccountView.dataSet.effectiveList = jsonValue;
+            var effectiveAccountList = jsonValue;
+            mnEffAccountView.accounts.reset(jsonValue);
+            var nexeoSelectedAcct = CCRZ.getCookie('effaccNexeo');
+            if(nexeoSelectedAcct && nexeoSelectedAcct.length ){
+              console.log('***222***');
+              CCRZ.setCookie('effacc', nexeoSelectedAcct);           
+              CCRZ.pagevars.effAccountId = nexeoSelectedAcct;
+              mnEffAccountView.dataSet.workingEffAccount.sfid = nexeoSelectedAcct;              
+              mnEffAccountView.dataSet.workingEffAccount = mnEffAccountView.accounts.get(nexeoSelectedAcct).attributes;                 
+            }
+
+            mnEffAccountView.$el.html(mnEffAccountView.activeTemplate(mnEffAccountView.dataSet));
+            
+            var viewPrototype = Object.getPrototypeOf(mnEffAccountView);
+            if (viewPrototype != null) {
+              console.log('***333***');
+              viewPrototype.pickAccount = function(event){
+                console.log('***444***');
+                var selAccId = $(event.currentTarget).data("id");
+                $('#effAccounts').modal('hide');
+                mnEffAccountView.selAccId = selAccId;
+                CCRZ.setCookie('effaccNexeo', selAccId);
+                CCRZ.setCookie('effacc', selAccId);
+                var selAcc = mnEffAccountView.accounts.get(selAccId);
+                CCRZ.setCookie('effacc', selAcc);
+                CCRZ.setCookie('effaccNexeoObj', selAcc);
+                mnEffAccountView.dataSet.workingEffAccount = this.accounts.get(selAccId).toJSON();
+                mnEffAccountView.$el.html(mnEffAccountView.activeTemplate(mnEffAccountView.dataSet));
+                mnEffAccountView.processSelection(selAccId);
+
+              }
+               
+              mnEffAccountView.delegateEvents();
+
+            }
+            
+            //var effectiveAccountList = mnEffAccountView.dataSet.effectiveList;
+             console.log('*** showEffAccountSelector: {!showEffAccountSelector}');
+            try { 
+                  console.log('***555***');
+                  if(window.location.href.includes('ccrz__Cart')){
+                    var effAcctDiv = $('.top_navigation > .misc-function > .effAccount');
+                    if(effAcctDiv && effAcctDiv.length){
+                      effAcctDiv.hide();
+                    } 
+                  }
+
+            if ({!showEffAccountSelector} )                         
+             {
+                console.log('***666***');
+                console.log('*** showing selector');
+                //call back end check if update timestamp
+                CCRZ.subsc.myNexeoRemoteActions.checkPricingStatus( 
+                    function(resp){
+                    if (resp && resp.success){
+                        if(resp.updatedPricing){
+                            console.log('*** updatedPricing');
+                        }else{
+                            console.log('*** no need to update pricing'+resp.updatedPricing);
+                        }
+                    }else{
+                        console.log('*** error trying to update pricing'+resp.message);
+                        
+                    }
+                });
+                if (effectiveAccountList.length > 1)
+                {
+                    console.log('***777***');
+                    console.log('*** effective account length > 1');
+                    jQuery('#effAccounts').modal({backdrop: 'static', keyboard: false});
+                    jQuery('#effAccounts').modal('show');
+                }
+                else if (effectiveAccountList.length == 1)
+                {
+                    console.log('***888***');
+                    console.log('*** effective account length == 1');
+                    // pre-select the effective account if there is only one account
+                    var selAccId = effectiveAccountList[0].sfid;  
+
+                     var selAcc = mnEffAccountView.accounts.get(selAccId);
+
+                      CCRZ.setCookie('effacc', selAcc);
+                      CCRZ.setCookie('effacc_NexeoObj', selAcc);
+
+                     mnEffAccountView.invokeCtx('selectEffectiveAccount', selAcc.toJSON(), null, function(response) 
+                    {
+                        if (response && response.success) 
+                        {
+                            CCRZ.pagevars.effAccountId = response.data.workingEffAccount.sfid;
+
+                            if (response.data.cartBean) 
+                            {
+                                CCRZ.pagevars.currentCartID = response.data.cartBean.encryptedId;
+                                CCRZ.pubSub.trigger('cartChange', CCRZ.pagevars.currentCartID);
+                            }
+
+                             // CCRZ.homePage();
+                        }
+                    });
+                }           
+             }
+             //mnEffAccountView.delegateEvents();
+                
+             }catch(e){
+                console.log("*** Effective Account exception: %o", e);
+             }
+        }); 
+    });
+</script>
+
+
+
+</apex:component>

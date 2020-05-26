@@ -1,0 +1,6 @@
+<apex:page standardcontroller="ART_Project__c" extensions="ProjectCalendar" id="thePage"
+    showHeader="false">
+ <apex:form >
+    <c:Calendar Value="{!items}" months="1"/> 
+ </apex:form>
+</apex:page>

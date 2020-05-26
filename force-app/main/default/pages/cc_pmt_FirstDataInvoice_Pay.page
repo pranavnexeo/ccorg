@@ -1,0 +1,255 @@
+<apex:page showHeader="false" sidebar="false" docType="html-5.0" standardStylesheets="false" cache="false" applyHtmlTag="false" applyBodyTag="false" controller="cc_pmt_FirstDataInvoice">
+
+<script type="text/css">
+.divPageOuter {
+  margin-top: 0px;
+  margin-bottom: 0px;
+}
+.divPage {
+  margin-left: 0px;
+  margin-right: 0px;
+}
+.formPayment {
+  border: 0px;
+  padding: 0px;
+  width: 100%;
+  margin-left: 0px;
+  margin-right: 0px;
+}
+</script>
+
+<script name="fdiTemplate" id="fdiTemplate" type="text/template">
+    <div id="fdDiv" class="fdPaymentOuterContainer" >
+        <div class="main_content_large_right_container">
+
+            <div class="alert alert-error fdPayment-messagingSection-Error" style="display: none"></div>
+                <fieldset>
+                    <legend>{{pageLabelMap 'PMTFD_New'}}</legend>
+
+                    <div id="formdiv" class="row-fluid">
+
+                        <div class="payment_cc_instructions span10">Enter your payment information.<!--  Enter a profile name if you would like to store this payment method for later. --></div>
+                        <form method="post" id="hpfform" target="authframe" action="{{postUrl}}">
+                        <!--
+                        <form method="post" id="hpfform" target="newframe" action="{{postUrl}}">
+                        Sample to open in a new window for First Data support debugging:
+                        -->
+                            <input type="hidden" name="x_version" VALUE="3.1" />
+                            <input type="hidden" name="x_method" VALUE="CC" />
+                            <input type="hidden" name="x_type" VALUE="AUTH_ONLY" />
+                            <input type="hidden" name="x_login" VALUE="{{this.login}}" />
+                            <input type="hidden" name="x_fp_sequence" VALUE="{{this.fp_sequence}}" />
+                            <input type="hidden" name="x_fp_timestamp" VALUE="{{this.fp_timestamp}}" />
+                            <input type="hidden" name="x_amount" VALUE="{{this.amount}}" />
+                            <input type="hidden" name="x_fp_hash" VALUE="{{this.fp_hash}}" />
+                            <input type="hidden" name="x_cust_id" VALUE="{{this.invoice.contact.sfid}}" />
+                            <input type="hidden" name="x_relay_response" VALUE="TRUE" />
+                            <input type="hidden" name="x_relay_always" VALUE="TRUE" />
+                            <input type="hidden" name="x_show_form" VALUE="PAYMENT_FORM" />
+                            <input type="hidden" name="x_company" VALUE="{{this.invoice.billAddr.companyName}}" />
+                            <input type="hidden" name="x_first_name" VALUE="{{this.invoice.billAddr.firstName}}" />
+                            <input type="hidden" name="x_last_name" VALUE="{{this.invoice.billAddr.lastName}}" />
+                            <input type="hidden" name="x_address" style="width:100%" VALUE="{{this.invoice.billAddr.address1}}{{#if this.invoice.billAddr.address2}},{{this.invoice.billAddr.address2}}{{/if}}{{#if this.invoice.billAddr.address3}},{{this.invoice.billAddr.address3}}{{/if}}" />
+                            <input type="hidden" name="x_city" VALUE="{{this.invoice.billAddr.city}}" />
+                            <input type="hidden" name="x_state" VALUE="{{this.invoice.billAddr.stateCode}}" />
+                            <input type="hidden" name="x_zip" VALUE="{{this.invoice.billAddr.postalCode}}" />
+                            <input type="hidden" name="x_country" VALUE="{{this.invoice.billAddr.countryCode}}" />
+                            <input type="hidden" name="x_email" style="width:100%" VALUE="{{this.invoice.billAddr.email}}" />
+                            <input type="hidden" name="x_relay_url" VALUE="{{this.relay_url}}" />
+                            <input type="hidden" name="x_currency_code" VALUE="{{this.invoice.currencyIsoCode}}" />
+                            <input type="hidden" name="x_invoice_num" VALUE="{{this.invoice.invoiceId}}" />
+                        </form>
+                    </div>
+
+
+                    <div class="payment_cc_information">
+
+                    <!-- Real frame:
+                    <iframe id="authframe" name="authframe" width="100%" height="0px" scrolling="none" style="border:0px"></iframe>
+                    -->
+                    <!-- debug frame below -->
+                    <iframe id="authframe" name="authframe" width="100%" height="700px" scrolling="auto" style="border:0px"></iframe>
+
+
+                </div>
+            </fieldset>
+            <br/>
+   
+        </div>
+    </div>
+</script> <!-- end of Authorize.net template -->
+
+<script>
+function callParentFunction(str) {
+    console.log('callParentFunction: %o', str);
+
+    if (str && str.length > 0 && window.parent && window.parent.parent 
+        && window.parent.parent.AuthorizeNetPopup && window.parent.parent.AuthorizeNetPopup.onReceiveCommunication)
+    {
+        window.parent.parent.AuthorizeNetPopup.onReceiveCommunication(str);
+        // If you get an error with this line, it might be because the domains are not an exact match (including www).
+    }
+    return false;
+}
+
+// cancelPaymentProfileRequest() - returns back to the wallet or payment page
+// savePaymentProfileRequest() - get the profile and payment profiles for the user and make updates
+// to any stored payment profiles for the user in CloudCraze
+function receiveMessage(event) {
+    console.log('receiveMessage entry');
+    if (event && event.data) {
+        console.log('receiveMessage: %o', event);
+        console.log('receiveMessage data: %o', event.data);
+        var responseData = event.data;
+
+        Visualforce.remoting.Manager.invokeAction(
+            '{!$RemoteAction.cc_pmt_FirstDataInvoice.processResponse}',
+            CCRZ.pagevars.remoteContext,
+            responseData,
+            function(theResponse){
+                console.log('processResponse results');
+                responseData = JSON.parse(responseData);
+                console.log('Post processResponse: %o', responseData);
+                console.log('Post theResponse: %o', theResponse);
+                console.log('Bank Message: ' + responseData.Bank_Message);
+
+                var paymentData = {
+                    verificationCode : responseData.x_trans_id,
+                    transactionCode : responseData.x_auth_code,
+                    accountNumber : responseData.Card_Number,
+                    amount : responseData.x_amount,
+                    accountType : 'Credit Card',
+                    paymentType : responseData.TransactionCardType
+                };
+                console.log('JSON: ' + JSON.stringify(paymentData));
+                completeOrder(paymentData);
+            }
+        );  
+    }
+    else {
+        console.log('Error processing payment');
+        console.log('Error: ' + event);
+        console.log('Error data: ' + event.data);
+    }
+    
+    return callParentFunction(event.data);
+}
+
+if (window.addEventListener) {
+    console.log('pmt page: Adding event listener');
+    window.addEventListener("message", receiveMessage, false);
+} 
+else if (window.attachEvent) {
+    console.log('pmt page: Attaching to event onmessage');
+    window.attachEvent("onmessage", receiveMessage);
+}
+
+if (window.location.hash && window.location.hash.length > 1) {
+    console.log('Calling parent function with: ' + window.location.hash.substring(1));
+    callParentFunction(window.location.hash.substring(1));
+}
+
+
+jQuery(function($) {
+    var emptyVar = '{!emptyVar}';
+    console.log('cc_pmt_FirstData_Pay: page loading...');
+
+    CCRZ.views.FirstDataInvoiceView = CCRZ.CloudCrazeView.extend({
+        template : CCRZ.util.template('fdiTemplate'),
+        viewName : "fdiView",
+        managedSubView : true,
+        selector: ".paymentTypeContainer.fdi",
+        events: {
+            "click .showPayment" : "showPaymentForm",
+            "click .submitPayment" : "submitPayment"
+        },
+        initialize: function() {
+            console.log('Pay - initialize');
+            var view = this;
+            view.setElement(view.selector);
+            var invoicejson = JSON.stringify(view.model);
+            cc_pmt_FirstDataInvoice.getHostedPaymentFormData(CCRZ.pagevars.remoteContext, invoicejson, function(response) {
+                $.extend(view.model, response.data.hpf);
+                view.refresh(view.model);
+            });
+        },
+        init: function(options){
+            console.log('PAY - init');
+            this.refresh(this.model);
+        },
+        render: function(){
+            console.log('fd: render entry');
+            this.doRender();
+        },
+        refresh: function(thedata){
+            console.log('fd: refresh entry: %o', thedata);
+            this.doRender();
+            console.log('Going to submit');
+            $('#hpfform').submit();
+            console.log('Submitted');
+        },
+        clearView: function(theSelector){
+            console.log('PAY - clearView');
+            this.$el.html('');
+        },
+        doRender: function(){
+            console.log('PAY - doRender');
+            this.setElement(this.selector);
+            this.$el.html(this.template(this.model));
+        },
+        renderDesktop: function(){
+            console.log('PAY - renderDesktop');
+            this.doRender();
+        },
+        renderPhone: function(){
+            console.log('PAY - renderPhone');
+            this.doRender();
+        },
+        showPaymentForm: function(){
+            console.log('In showPayment');
+            $('#newPayButton').hide();
+            $('#fdDiv').show();
+            console.log('before submit');
+            $('#hpfform').submit();
+            console.log('after submit');
+        },
+        submitPayment: function(){
+            console.log('In submitPayment');
+            $('#hpfform').submit();
+            console.log('Submitted payment form');
+        }
+    });
+
+    CCRZ.pubSub.on('view:InvoicePaymentView:refresh',function(view) {
+        if (!CCRZ.fdiView) {
+            CCRZ.fdiView = new CCRZ.views.FirstDataInvoiceView({
+                model: CCRZ.invoicePaymentModel.toJSON(),
+                el: $("#formdiv")
+            });
+        }
+        else {
+            CCRZ.fdiView.refresh();
+        }
+    });
+
+});
+
+function shortenIframe(){
+    console.log("Shorten iframe entry");
+    // $("#authframe").css('height', '600px');
+    return false;
+}
+function hideSavePaymentInfo(){
+    console.log("Hide save payment info entry");
+    $("#labelSavePayment").css("display", "none");
+    $("#save_payment_info").css("display", "none");
+}
+
+function completeOrder(result) {
+    console.log("Complete Order entry");
+    console.log('Payment received. Completing order');
+    CCRZ.pubSub.trigger('action:processPayment',result);
+}
+
+</script>
+</apex:page>

@@ -1,0 +1,12 @@
+<apex:component controller="NumberController">
+    <apex:attribute name="value" type="Decimal" description=""
+                    required="true" assignTo="{!value}"/>
+
+    <apex:attribute name="decimals" type="Integer" description="" 
+                    required="false" assignTo="{!decimals}"/>
+
+    <apex:attribute name="locale" type="String" description="" 
+                    required="false" assignTo="{!locale}"/>
+
+    <apex:outputtext value="{!numberString}"/>
+</apex:component>

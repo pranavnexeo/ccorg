@@ -1,0 +1,832 @@
+<apex:page sidebar="false" controller="PriceSupportSearchController" id="pg">
+<script src="{!URLFOR($Resource.JQueryUI, 'js/jquery-1.7.2.min.js')}"/> 
+<script src="{!URLFOR($Resource.JQueryUI, 'js/jquery-ui-1.8.21.custom.min.js')}"/> 
+<style type="text/css">
+    .datePicker {
+        z-index: 9999;/*Changed this css property which was 100 prior*/
+        position: absolute;
+        display: none;
+        top: 0;
+        left: 0;
+        width: 17em;
+        background-color: #b7c6b2;
+        border-bottom: 1px solid #000;
+        border-right: 1px solid #000;
+        margin: 0;
+        padding: 1px 1px 2px 2px;
+        }
+        #sticky {
+             width: 100%;
+        }
+        #sticky.stick {
+             position: fixed;
+             top: 0;
+             left: 10px;
+             
+        }
+ 
+</style>
+
+ <script type="text/javascript">
+    var __sfdcSessionId = '{!GETSESSIONID()}';
+ </script>
+ <script src="/soap/ajax/24.0/connection.js" type="text/javascript"></script>
+ <script> var arrData = []; </script>   
+ <script type="text/javascript">
+ 
+     var j$ = jQuery.noConflict();
+     function sticky_relocate() {
+             var window_top = j$(window).scrollTop();
+             var div_top = j$('#sticky-anchor').offset().top;
+             if (window_top > div_top)
+               j$('#sticky').addClass('stick')
+             else
+               j$('#sticky').removeClass('stick');
+            }
+
+             j$(function() {
+               j$(window).scroll(sticky_relocate);
+               sticky_relocate();
+             });
+      
+      function resetArray(){
+        arrData.length =0;
+        return false;
+      }
+        
+      function doSearch() {
+        //alert(document.getElementById("pg:searchFrm:param:criteria:status").value);
+        arrData.length =0;
+        searchServer(
+          document.getElementById("pg:searchFrm:criteria:agreementId").value,
+          document.getElementById("pg:searchFrm:criteria:divisionName").value,
+          document.getElementById("pg:searchFrm:criteria:status").value,
+          document.getElementById("pg:searchFrm:criteria:sapTransfer").value,
+          document.getElementById("pg:searchFrm:criteria:salesOrg").value,
+          document.getElementById("pg:searchFrm:criteria:supportType").value,
+          document.getElementById("pg:searchFrm:criteria:nexeoGroupName").value,
+          //document.getElementById("pg:searchFrm:criteria:supplierGroupName").value,
+          document.getElementById("pg:searchFrm:criteria:customerName").value,
+          document.getElementById("pg:searchFrm:criteria:region").value,
+          document.getElementById("pg:searchFrm:criteria:customerNumber").value,
+          document.getElementById("pg:searchFrm:criteria:seller").value,
+          document.getElementById("pg:searchFrm:criteria:supplierName").value,
+          document.getElementById("pg:searchFrm:criteria:supplierNumber").value,
+          document.getElementById("pg:searchFrm:criteria:materialName").value,
+          document.getElementById("pg:searchFrm:criteria:materialCode").value,
+          document.getElementById("pg:searchFrm:criteria:expDate").value,
+          document.getElementById("pg:searchFrm:criteria:nexeoMainApprover").value,
+          document.getElementById("pg:searchFrm:criteria:mg2").value,
+           document.getElementById("pg:searchFrm:criteria:mg4").value,
+          document.getElementById("pg:searchFrm:criteria:newChanged").value,
+          document.getElementById("pg:searchFrm:criteria:materialNameBuy").value,
+          document.getElementById("pg:searchFrm:criteria:created").value
+          
+          
+          );
+          
+          return false;
+      }
+      
+      function addData(comp,id){
+      
+        if(comp.checked==true){
+                //alert('checkbox is checked');
+                arrData.push(id);
+            }else if(comp.checked==false){
+                //alert('checkbox is unchecked');
+                var indx=arrData.indexOf(id);
+                //alert('index is'+indx);
+                if(indx!=-1){
+                    arrData.splice(indx,1);
+                }
+            }
+            //alert(arrData);   
+        
+      }
+      
+      function massChange(){
+      
+        //alert('Mass Change');
+        if(arrData.length==0){
+            alert('Please select atleast one record');
+        }else{
+        
+        var flag = false;
+        try{
+        var psrecords =sforce.connection.retrieve("Id,Status__c,Support_ID__c,SAP_Transfer__c,Support_Type__c", "Price_Support__c", [arrData])
+        }
+        catch(error){
+            alert(error);
+        }
+        //alert(psrecords);
+        for(var i=0; i<psrecords.length; i++){
+        
+            var recordId =psrecords [i];
+        
+            if(recordId.Status__c != 'Approved'){
+                flag = true;
+                alert("Mass Change can be done only for Approved Price Supports");
+                break;
+            }else if(recordId.Support_Type__c=='Rebate' && recordId.Status__c == 'Approved' && recordId.SAP_Transfer__c=='Open'){
+                flag = true;
+                alert('Support # '+recordId.Support_ID__c+' is currently being transferred to SAP, therefore you cannot do a Mass Change now.');
+                break;
+            }
+         }
+            
+        }
+        if( flag == false){
+            var insert_PSIDs = new sforce.SObject("Price_Support_Ids__c"); 
+            var ids = ""; 
+            for( var i=0; i<arrData.length;i++ ){ 
+                    ids += arrData[i] +','; 
+         } 
+              insert_PSIDs.Ids__c = ids;
+            //insert_PSIDs.Ids__c = arrData;
+            var result = sforce.connection.create([insert_PSIDs]);
+            window.open("/apex/PriceSupportMassChange?selectedRecords="+result[0].id); 
+        }
+        return false;
+                        
+      }
+            
+      
+      function massExpire(){
+        
+        var error = false;
+        
+        if(arrData.length==0) { 
+        
+            alert("Please select atleast one record."); 
+        
+        } else { 
+        
+            var psrecords =sforce.connection.retrieve("Id,Support_ID__c,Status__c,Support_Type__c,SAP_Transfer__c", "Price_Support__c", [arrData]) 
+            
+            for(var i=0; i<psrecords.length; i++){ 
+            
+                var recordId =psrecords [i]; 
+                
+                if( recordId.Support_Type__c=='Rebate'){
+                
+                    if(recordId.Status__c == 'Approved' && recordId.SAP_Transfer__c=='Open'){
+                        alert('Support # '+recordId.Support_ID__c+' is currently being transferred to SAP, therefore you may not change the expiration date.Please try again in one hour');
+                        error=true;
+                        break; 
+                    }
+                    else if( (recordId.Status__c != 'Approved') ){ 
+                    
+                        alert('Support # '+recordId.Support_ID__c +' is not an active Price Support, therefore you may not change the expiration date.');
+                        error=true; 
+                        break; 
+                    }
+                }else if( (recordId.Support_Type__c=='Upfront' && recordId.Status__c != 'Approved') ){
+                
+                
+                    alert('Support # '+recordId.Support_ID__c +' is not an active Price Support, therefore you may not change the expiration date.');
+                    error=true; 
+                    break;
+                }
+            }
+            
+            if(error==false){
+                window.open("/apex/PriceSupportMassRenewExpire?selectedRecords="+arrData+"&expire=true"); 
+            }
+        }
+        //alert(error); 
+        return false;
+      }
+      
+      function massPriceChange(){
+      
+        //alert('Mass Price Change');
+        
+        if(arrData.length==0) {
+        
+            alert("Please select atleast one record.");
+        
+        } else {
+            var flag = false;
+            
+            
+            var psrecords =sforce.connection.retrieve("Id,Status__c,Support_ID__c,SAP_Transfer__c,Support_Type__c,SoldToMissingFlag__c", "Price_Support__c", [arrData])
+            
+            for(var i=0; i<psrecords.length; i++){
+            
+                var recordId =psrecords [i];
+                var soldmiss=recordId.SoldToMissingFlag__c; 
+                
+                   if(soldmiss=='true'){
+                  
+                    flag = true;
+                    alert('Please enter Customer Sold To info before doing any operation on Agreement#'+recordId.Support_ID__c +''); 
+                    break;
+                  }
+                  else if(recordId.Status__c != 'Approved'){
+                    flag = true;
+                    alert("Mass Price Change can be done only for Approved Price Supports");
+                    break;
+                
+                }else if(recordId.Support_Type__c=='Rebate' && recordId.Status__c == 'Approved' && recordId.SAP_Transfer__c=='Open'){
+                    flag = true;
+                    alert('Support # '+recordId.Support_ID__c+' is currently being transferred to SAP, therefore you cannot do a Mass Price Change now.');
+                    break;
+                }
+            }
+        }
+        
+        
+        if( flag == false){
+        
+        //alert('Else');
+        
+            window.open("/apex/PriceSupportPriceChange?selectedRecords="+arrData); 
+        }
+        
+        return false;
+      }
+      
+      function massRenew(){
+      
+        //alert('Mass Renew');
+        
+        var error = false;
+
+        if(arrData.length==0) { 
+        
+            alert("Please select atleast one record."); 
+        
+        } else { 
+        
+            var psrecords =sforce.connection.retrieve("Id,Support_ID__c,Status__c,SoldToMissingFlag__c", "Price_Support__c", [arrData]) 
+            
+            for(var i=0; i<psrecords.length; i++){ 
+            
+                var recordId =psrecords [i]; 
+                var soldmiss=recordId.SoldToMissingFlag__c; 
+                
+                if( recordId.Status__c!='Expired'){
+                    error=true;
+                    alert('Support # '+recordId.Support_ID__c +' is not an expired Price Support, therefore you cannot renew it.');
+                    break;
+                }
+                else if(soldmiss=='true'){
+                    error=true;
+                    alert('Please enter Customer Sold To info before doing any operation on Agreement#'+recordId.Support_ID__c +''); 
+                    break;
+                }
+            } 
+            if(error==false){
+                window.open("/apex/PriceSupportMassRenewExpire?selectedRecords="+arrData+"&renew=true"); 
+            }
+        }
+        
+        return false;
+      }
+      
+      function massRenewWithPriceChange(){
+      
+        //alert('Mass Renew With Price Change');
+        
+        var error = false; 
+
+        if(arrData.length==0) { 
+        
+            alert("Please select atleast one record."); 
+        
+        } else { 
+        
+            var psrecords =sforce.connection.retrieve("Id,Support_ID__c,Status__c,SoldToMissingFlag__c", "Price_Support__c", [arrData]) 
+            
+            for(var i=0; i<psrecords.length; i++){ 
+            
+                var recordId =psrecords [i]; 
+                var soldmiss=recordId.SoldToMissingFlag__c; 
+                
+                if( recordId.Status__c!='Expired'){ 
+                    error=true; 
+                    alert('Support # '+recordId.Support_ID__c +' is not an expired Price Support, therefore you cannot renew it.'); 
+                    break; 
+                } 
+                else if(soldmiss=='true'){
+                    error=true;
+                    alert('Please enter Customer Sold To info before doing any operation on Agreement#'+recordId.Support_ID__c +''); 
+                    break;
+                }
+            } 
+            if(error==false){ 
+                window.open("/apex/PriceSupportMassChange?selectedRecords="+arrData+"&renew=true"); 
+            } 
+        }
+        return false;
+      }
+      
+ </script> 
+ 
+ <script>
+    //This prototype is provided by the Mozilla foundation and
+    //is distributed under the MIT license.
+    //http://www.ibiblio.org/pub/Linux/LICENSES/mit.license
+    
+    if (!Array.prototype.indexOf)
+    {
+        Array.prototype.indexOf = function(elt /*, from*/)
+    {
+        var len = this.length;
+    
+        var from = Number(arguments[1]) || 0;
+        from = (from < 0)
+        ? Math.ceil(from)
+        : Math.floor(from);
+    if (from < 0)
+        from += len;
+    
+    for (; from < len; from++)
+    {
+        if (from in this &&
+        this[from] === elt)
+        return from;
+    }
+        return -1;
+    };
+    }
+    
+    function copyPs(){
+        if(arrData.length==0) { 
+            alert("Please select atleast one record."); 
+        }else if(arrData.length>1){
+            alert("Please select only one record."); 
+        }else{  
+            window.location.href('/apex/PriceSupport?clone=1'+'&action=renew'+'&id='+arrData[0]+'&retURL=/apex/PriceSupportSearchPage');
+        }
+        return false;
+    }
+    
+    function showUpdateNexeoGroup(){
+        if(document.getElementById("pg:searchFrm:criteria:divisionName").value==''){
+            alert("Please select a division first."); 
+        }else if(arrData.length==0) { 
+            alert("Please select atleast one record."); 
+        }else{
+            //showUpdateNG();
+            window.open("/apex/updateNexeoGroup?selectedRecords="+arrData+"&divisionName="+document.getElementById("pg:searchFrm:criteria:divisionName").value);
+        }
+        return false;
+        
+    }
+    
+   function showUpdateDebitMemo(){
+       if((document.getElementById("pg:searchFrm:criteria:divisionName").value=='') ||
+        (document.getElementById("pg:searchFrm:criteria:supplierName").value=='') ||
+        (document.getElementById("pg:searchFrm:criteria:salesOrg").value==''))
+        {    
+            alert("Please enter a Division, Suppler and Sales org to update debit memo");
+        }
+        else if(arrData.length==0) { 
+            alert("Please select atleast one record."); 
+        }else{
+            //showUpdateNG();
+            window.open("/apex/updatedebitmemo?selectedRecords="+arrData+"&divisionName="+document.getElementById("pg:searchFrm:criteria:divisionName").value+"&supplierName="+document.getElementById("pg:searchFrm:criteria:supplierName").value+"&salesOrg="+document.getElementById("pg:searchFrm:criteria:salesOrg").value);
+        }
+        return false;
+        
+    }
+    
+  </script>
+ 
+
+ <apex:form id="searchFrm">
+  <apex:pageMessages id="errors" />
+    <div id="sticky-anchor"></div>
+     <div id="sticky">
+      <apex:pageBlock title="Find Price Supports !" mode="edit" id="criteria">
+      
+      <apex:pageBlockButtons location="top">
+            
+            <apex:commandButton value="Refresh" onclick="return doSearch();"/>
+            <apex:commandButton value="Copy" onclick="return copyPs();"/>
+            <apex:commandButton value="New Support" action="{!URLFOR($Action.Price_Support__c.New)}"/>
+            <apex:commandButton value="Mass Change" onclick="return massChange();"/>
+            <apex:commandButton value="Mass Expire" onclick="return massExpire();"/>
+            <apex:commandButton value="Mass PC" onclick="return massPriceChange();"/>
+            <apex:commandButton value="Mass Renew" onclick="return massRenew();"/>
+            <apex:commandButton value="Mass Renew With PC" onclick="return massRenewWithPriceChange();"/>
+            <apex:commandButton value="Update NG" onclick="return showUpdateNexeoGroup();"/>
+            <apex:commandButton value="Update DM" onclick="return showUpdateDebitMemo();"/>
+            <apex:outputLabel value="Limit :" style="font-weight:bold;"/>
+            <apex:selectList id="limit" value="{!limitVal}" size="1" onchange="doSearch();">
+              <apex:selectOptions value="{!limitList}" />
+            </apex:selectList>
+        
+        </apex:pageBlockButtons>
+      
+      <apex:actionStatus id="busyStatus">
+        <apex:facet name="start">
+            <c:BusyStatusComp height="300px" width="300px"
+                Message="Please Wait..." />
+        </apex:facet>
+    </apex:actionStatus> 
+    
+    
+      <apex:actionFunction name="searchServer" action="{!runSearch}" rerender="results,debug,nexeoGroupName,errors" status="busyStatus">
+          <apex:param name="agreementId" value="" />
+          <apex:param name="divisionName" value="" />
+          <apex:param name="status" value="" />
+          <apex:param name="sapTransfer" value="" />
+          <apex:param name="salesOrg" value="" />
+          <apex:param name="supportType" value="" />
+          <apex:param name="nexeoGroupName" value="" />
+          <!-- <apex:param name="supplierGroupName" value="" />  -->
+          <apex:param name="customerName" value="" />
+          <apex:param name="region" value="" />
+          <apex:param name="customerNumber" value="" />
+          <apex:param name="seller" value="" />
+          <apex:param name="supplierName" value="" />
+          <apex:param name="supplierNumber" value="" />
+          <apex:param name="materialName" value="" />
+          <apex:param name="materialCode" value="" />
+          <apex:param name="expDate" value="" />
+          <apex:param name="nexeoMainApprover" value="" />
+          <apex:param name="mg2" value="" />
+          <apex:param name="mg4" value="" />
+          <apex:param name="newChanged" value="" />
+          <apex:param name="materialNameBuy" value="" />
+          <apex:param name="created" value="" />
+          
+      </apex:actionFunction>
+ 
+      <table cellpadding="2" cellspacing="2">
+      <tr>
+        
+        <td style="font-weight:bold;">Division Name<br/>
+            <div class="requiredInput">
+             <div class="requiredBlock"></div>
+              <apex:selectList id="divisionName" onchange="doSearch();" style="width:150px" value="{!divisionName}" multiselect="false" size="1">
+                <apex:selectOptions value="{!divisionList}"/>
+              </apex:selectList>
+             </div>
+          
+        </td>
+      
+        <td style="font-weight:bold;">Agreement ID<br/>
+        <apex:inputText value="{!agreementId}" id="agreementId" onchange="doSearch();"/>
+        </td>
+      
+     
+        <td style="font-weight:bold;">Status<br/>
+          <apex:selectList id="status" onchange="doSearch();" style="width:150px" value="{!status}" multiselect="false" size="1">
+            <apex:selectOptions value="{!statusList}"/>
+          </apex:selectList>
+        </td>
+      
+        <td style="font-weight:bold;">SAP Transfer<br/>
+          <apex:selectList id="sapTransfer" onchange="doSearch();" style="width:150px" value="{!sapTransfer}" multiselect="false" size="1">
+            <apex:selectOptions value="{!sapStatusList}"/>
+          </apex:selectList>
+        </td>
+      
+         <td style="font-weight:bold;">Sales Org<br/>
+          <apex:selectList id="salesOrg" onchange="doSearch();" style="width:150px" value="{!salesOrg}" multiselect="false" size="1">
+            <apex:selectOptions value="{!salesOrgList}"/>
+          </apex:selectList>
+        </td>
+      
+        <td style="font-weight:bold;">Support Type<br/>
+          <apex:selectList id="supportType" onchange="doSearch();" style="width:150px;" value="{!supportType}" multiselect="false" size="1">
+            <apex:selectOptions value="{!supportTypeList}"/>
+          </apex:selectList>
+        </td>
+      
+        <td style="font-weight:bold;">Customer<br/>
+        <apex:inputText value="{!customerName}" id="customerName" onchange="doSearch();"/>
+        </td>
+     
+        <td style="font-weight:bold;">Customer Number<br/>
+        <apex:inputText value="{!customerNumber}" id="customerNumber" onchange="doSearch();"/>
+        </td>
+        
+        <td style="font-weight:bold;">Region Description<br/>
+        <apex:inputText value="{!region}" id="region" onchange="doSearch();"/>
+        </td>
+         
+     </tr> 
+      
+      <tr>
+        
+        <td style="font-weight:bold;">Nexeo Group<br/>
+         
+          <apex:selectList id="nexeoGroupName" onchange="doSearch();" style="width:150px" onfocus="this.style.width='auto';"  label="Nexeo Group"  onblur="this.style.width='150px';" value="{!nexeoGroupName}"  size="1">
+            <apex:selectOptions value="{!nexeoGroupList}" />
+          </apex:selectList>
+          
+        </td>
+      
+         <!-- <td style="font-weight:bold;">Supplier Group<br/>
+          <apex:selectList id="supplierGroupName" onchange="doSearch();"  label="Supplier Group"  style="width:150px;" onfocus="this.style.width='auto';"   onblur="this.style.width='150px';" value="{!supplierGroupName}" multiselect="false" size="1">
+            <apex:selectOptions value="{!supplierGroupList}"/>
+          </apex:selectList>
+        </td>  -->
+      
+        <td style="font-weight:bold;">Seller<br/>
+        <apex:inputText value="{!seller}" id="seller" onchange="doSearch();"/>
+        </td>
+      
+        <td style="font-weight:bold;">Supplier<br/>
+        <apex:inputText value="{!supplierName}" id="supplierName" onchange="doSearch();"/>
+        </td>
+      
+        <td style="font-weight:bold;">Supplier Number<br/>
+        <apex:inputText value="{!supplierNumber}" id="supplierNumber" onchange="doSearch();"/>
+        </td>
+      
+        <td style="font-weight:bold;">Material Desc(Selling)<br/>
+        <apex:inputText value="{!materialName}" id="materialName" onchange="doSearch();"/>
+        </td>
+      
+        <td style="font-weight:bold;">Material Code<br/>
+        <apex:inputText value="{!materialCode}" id="materialCode" onchange="doSearch();"/>
+        </td>
+        
+        <td style="font-weight:bold;">Material Desc(Buying)<br/>
+        <apex:inputText value="{!materialNameBuy}" id="materialNameBuy" onchange="doSearch();"/>
+        </td>
+     
+        <td style="font-weight:bold;">Expiration Date<br/>
+        <apex:inputText value="{!expDate}" id="expDate" onblur="doSearch();" styleClass="cssbody" onfocus="DatePicker.pickDate(false, 'pg:searchFrm:criteria:expDate', false);"/>
+        </td>
+      </tr>
+      <tr>
+        <!-- <td style="font-weight:bold;">Material Group 2<br/>
+         <apex:inputText value="{!mg2}" id="mg2" onchange="doSearch();"/>
+        </td>  -->
+        
+        <td style="font-weight:bold;">Nexeo Main Approver<br/>
+        <apex:inputText value="{!nexeoMainApprover}" id="nexeoMainApprover" onchange="doSearch();"/>
+        </td>
+        
+        <td style="font-weight:bold;">Material Group 2<br/>
+          <apex:selectList id="mg2" onchange="doSearch();" style="width:150px;" value="{!mg2}" multiselect="false" size="1">
+            <apex:selectOptions value="{!materialGroup2List}"/>
+          </apex:selectList>
+        </td>
+        
+       <td style="font-weight:bold;">Material Group 4<br/>
+          <apex:selectList id="mg4" onchange="doSearch();" style="width:150px;" value="{!mg4}" multiselect="false" size="1">
+            <apex:selectOptions value="{!materialGroup4List}"/>
+          </apex:selectList>
+        </td>    
+        
+        <td style="font-weight:bold;">New/Changed<br/>
+          <apex:selectList id="newChanged" onchange="doSearch();" style="width:150px;" value="{!newChanged}" multiselect="false" size="1">
+            <apex:selectOptions value="{!newChangedList}"/>
+          </apex:selectList>
+        </td>
+        
+       
+        <td style="font-weight:bold;">Created<br/>
+          <apex:selectList id="created" onchange="doSearch();" style="width:150px;" value="{!created}" multiselect="false" size="1">
+             <apex:selectOption itemValue="" itemLabel=""/>
+            <apex:selectOption itemValue="Today" itemLabel="Today"/>
+            <apex:selectOption itemValue="Earlier" itemLabel="Earlier"/>
+          </apex:selectList>
+        </td>
+       
+       </tr>
+      
+      </table>
+ 
+      </apex:pageBlock>
+  </div>
+   
+ 
+    <apex:pageBlock mode="edit" id="results">
+    
+        <apex:pageBlockButtons rendered="true">
+                <apex:commandButton status="busyStatus" reRender="results" value="|<" action="{!setCon.first}" disabled="{!!setCon.hasPrevious}" title="First Page" oncomplete="return resetArray();"/>  
+
+                 <apex:commandButton status="busyStatus" reRender="results" value="<" action="{!setCon.previous}" disabled="{!!setCon.hasPrevious}" title="Previous Page" oncomplete="return resetArray();"/>  
+
+                 <apex:commandButton status="busyStatus" reRender="results" value=">" action="{!setCon.next}" disabled="{!!setCon.hasNext}" title="Next Page" oncomplete="return resetArray();"/>  
+
+                 <apex:commandButton status="busyStatus" reRender="results" value=">|" action="{!setCon.last}" disabled="{!!setCon.hasNext}" title="Last Page" oncomplete="return resetArray();"/>  
+
+                 <apex:outputText >{!(setCon.pageNumber * size)+1-size}-{!IF((setCon.pageNumber * size)>noOfRecords, noOfRecords,(setCon.pageNumber * size))} of {!noOfRecords}</apex:outputText>
+        </apex:pageBlockButtons>
+        
+        <apex:pageBlockTable value="{!priceSupports}" var="support">
+            
+            <apex:column >
+                 <apex:facet name="header">
+                    <apex:outputLabel value="Select"/>
+                 </apex:facet>
+                <apex:inputCheckbox id="ckhSelected"  onclick="addData(this,'{!support.Id}');"/>
+            </apex:column>
+            
+            <apex:column >
+                <apex:facet name="header">
+                    <apex:commandLink value="AgreementID" action="{!toggleSort}" rerender="results,debug" status="busyStatus">
+                        <apex:param name="sortField" value="Agreement_Number__c" assignTo="{!sortField}"/>
+                    </apex:commandLink>
+                </apex:facet>
+                <apex:outputLink value="/{!support.Id}"><apex:outputField value="{!support.Agreement_Number__c}"/></apex:outputLink>
+            </apex:column>
+            
+            <apex:column title="{!support.LastModifiedBy.name}">
+                <apex:facet name="header">
+                    <apex:commandLink value="LM Date" action="{!toggleSort}" rerender="results,debug" status="busyStatus">
+                        <apex:param name="sortField" value="LastModifiedDate" assignTo="{!sortField}"/>
+                    </apex:commandLink>
+                </apex:facet>
+                <apex:outputField value="{!support.LastModifiedDate}" />
+            </apex:column>
+            
+             <apex:column >
+                <apex:facet name="header">
+                    <apex:commandLink value="New/Changed" action="{!toggleSort}" rerender="results,debug" status="busyStatus">
+                        <apex:param name="sortField" value="New_or_Changed__c" assignTo="{!sortField}"/>
+                    </apex:commandLink>
+                </apex:facet>
+                <apex:outputField value="{!support.New_or_Changed__c}"/>
+            </apex:column>
+            
+            <apex:column >
+                <apex:facet name="header">
+                    <apex:commandLink value="Status" action="{!toggleSort}" rerender="results,debug" status="busyStatus">
+                        <apex:param name="sortField" value="Status__c" assignTo="{!sortField}"/>
+                    </apex:commandLink>
+                </apex:facet>
+                <apex:outputField value="{!support.Status__c}"/>
+            </apex:column>
+            
+            <apex:column >
+                <apex:facet name="header">
+                    <apex:commandLink value="SAP Trnsfr" action="{!toggleSort}" rerender="results,debug" status="busyStatus">
+                        <apex:param name="sortField" value="SAP_Transfer__c" assignTo="{!sortField}"/>
+                    </apex:commandLink>
+                </apex:facet>
+                <apex:outputField value="{!support.SAP_Transfer__c}"/>
+            </apex:column>
+ 
+            <apex:column >
+                <apex:facet name="header">
+                    <apex:commandLink value="SuppType" action="{!toggleSort}" rerender="results,debug" status="busyStatus">
+                        <apex:param name="sortField" value="Support_Type__c" assignTo="{!sortField}"/>
+                    </apex:commandLink>
+                </apex:facet>
+                <apex:outputField value="{!support.Support_Type__c}"/>
+            </apex:column>
+ 
+            <apex:column >
+                <apex:facet name="header">
+                    <apex:commandLink value="Customer" action="{!toggleSort}" rerender="results,debug" status="busyStatus">
+                        <apex:param name="sortField" value="CustomerName_Mail__c" assignTo="{!sortField}"/>
+                    </apex:commandLink>
+                </apex:facet>
+                <apex:outputField value="{!support.Customer_Name__c}"/>
+            </apex:column>
+            
+            <apex:column >
+                <apex:facet name="header">
+                    <apex:commandLink value="Region Description" action="{!toggleSort}" rerender="results,debug" status="busyStatus">
+                        <apex:param name="sortField" value="Region_Code__c" assignTo="{!sortField}"/>
+                    </apex:commandLink>
+                </apex:facet>
+                <apex:outputField value="{!support.Region_Code__c}"/>
+            </apex:column>
+            
+            <apex:column >
+                <apex:facet name="header">
+                    <apex:commandLink value="Material Desc(S)" action="{!toggleSort}" rerender="results,debug" status="busyStatus">
+                        <apex:param name="sortField" value="Material_Description_Selling__c" assignTo="{!sortField}"/>
+                    </apex:commandLink>
+                </apex:facet>
+                <apex:outputField value="{!support.Material_Description_Selling__c}"/>
+            </apex:column>
+            
+            <apex:column >
+                <apex:facet name="header">
+                    <apex:commandLink value="Material Desc(B)" action="{!toggleSort}" rerender="results,debug" status="busyStatus">
+                        <apex:param name="sortField" value="Material_Description_Buying__c" assignTo="{!sortField}"/>
+                    </apex:commandLink>
+                </apex:facet>
+                <apex:outputField value="{!support.Material_Description_Buying__c}"/>
+            </apex:column>
+            
+            <apex:column >
+                <apex:facet name="header">
+                    <apex:commandLink value="Supplier" action="{!toggleSort}" rerender="results,debug,errors" status="busyStatus">
+                        <apex:param name="sortField" value="Supplier_Name__c" assignTo="{!sortField}"/>
+                    </apex:commandLink>
+                </apex:facet>
+                <apex:outputField value="{!support.Supplier_Name__c}"/>
+            </apex:column>
+            
+            <apex:column >
+                <apex:facet name="header">
+                    <apex:commandLink value="SuppPrice" action="{!toggleSort}" rerender="results,debug" status="busyStatus">
+                        <apex:param name="sortField" value="Supplier_Supported_Price__c" assignTo="{!sortField}"/>
+                    </apex:commandLink>
+                </apex:facet>
+                <apex:outputField value="{!support.Supplier_Supported_Price__c}"/>
+            </apex:column>
+            
+            <apex:column >
+                <apex:facet name="header">
+                    <apex:commandLink value="Units" action="{!toggleSort}" rerender="results,debug" status="busyStatus">
+                        <apex:param name="sortField" value="Units__c" assignTo="{!sortField}"/>
+                    </apex:commandLink>
+                </apex:facet>
+                <apex:outputField value="{!support.Units__c}"/>
+            </apex:column>
+            
+            <apex:column >
+                <apex:facet name="header">
+                    <apex:commandLink value="Dis1(S)" action="{!toggleSort}" rerender="results,debug" status="busyStatus">
+                        <apex:param name="sortField" value="X1st_Discount_Sell__c" assignTo="{!sortField}"/>
+                    </apex:commandLink>
+                </apex:facet>
+                <apex:outputField value="{!support.Dis1_Sell__c}"/>
+            </apex:column>
+            
+            <apex:column >
+                <apex:facet name="header">
+                    <apex:commandLink value="Dis2(S)" action="{!toggleSort}" rerender="results,debug" status="busyStatus">
+                        <apex:param name="sortField" value="X2nd_Discount_Sell__c" assignTo="{!sortField}"/>
+                    </apex:commandLink>
+                </apex:facet>
+                <apex:outputField value="{!support.Dis2_Sell__c}"/>
+            </apex:column>
+            
+            <apex:column >
+                <apex:facet name="header">
+                    <apex:commandLink value="PurCost" action="{!toggleSort}" rerender="results,debug" status="busyStatus">
+                        <apex:param name="sortField" value="Purchase_Cost__c" assignTo="{!sortField}"/>
+                    </apex:commandLink>
+                </apex:facet>
+                <apex:outputField value="{!support.Purchase_Cost__c}"/>
+            </apex:column>
+            
+            <apex:column >
+                <apex:facet name="header">
+                    <apex:commandLink value="Dis1(B)" action="{!toggleSort}" rerender="results,debug" status="busyStatus">
+                        <apex:param name="sortField" value="X1st_Discount_Buy__c" assignTo="{!sortField}"/>
+                    </apex:commandLink>
+                </apex:facet>
+                <apex:outputField value="{!support.Dis1_Buy__c}"/>
+            </apex:column>
+            
+            <apex:column >
+                <apex:facet name="header">
+                    <apex:commandLink value="RqRbtAmt" action="{!toggleSort}" rerender="results,debug" status="busyStatus">
+                        <apex:param name="sortField" value="Requested_Rebate_Amount__c" assignTo="{!sortField}"/>
+                    </apex:commandLink>
+                </apex:facet>
+                <apex:outputField value="{!support.Requested_Rebate_Amount__c}"/>
+            </apex:column>
+            
+            <apex:column >
+                <apex:facet name="header">
+                    <apex:commandLink value="Net Upfront Cost" action="{!toggleSort}" rerender="results,debug" status="busyStatus">
+                        <apex:param name="sortField" value="Upfront_Cost__c" assignTo="{!sortField}"/>
+                    </apex:commandLink>
+                </apex:facet>
+                <apex:outputField value="{!support.Upfront_Cost__c}"/>
+            </apex:column>
+            
+            <apex:column >
+                <apex:facet name="header">
+                    <apex:commandLink value="EffDate" action="{!toggleSort}" rerender="results,debug" status="busyStatus">
+                        <apex:param name="sortField" value="Effective_Date__c" assignTo="{!sortField}"/>
+                    </apex:commandLink>
+                </apex:facet>
+                <apex:outputField value="{!support.Effective_Date__c}"/>
+            </apex:column>
+            
+            <apex:column >
+                <apex:facet name="header">
+                    <apex:commandLink value="ExpDate" action="{!toggleSort}" rerender="results,debug" status="busyStatus">
+                        <apex:param name="sortField" value="Expiration_Date__c" assignTo="{!sortField}"/>
+                    </apex:commandLink>
+                </apex:facet>
+                <apex:outputField value="{!support.Expiration_Date__c}"/>
+            </apex:column>
+ 
+            
+ 
+        </apex:pageBlockTable>
+        
+    </apex:pageBlock>
+ 
+
+ 
+  <apex:pageBlock title="Debug - SOQL" id="debug" rendered="false">
+      <apex:outputText value="{!debugSoql}" />           
+  </apex:pageBlock> 
+  
+ 
+  </apex:form>
+    
+      
+    
+</apex:page>

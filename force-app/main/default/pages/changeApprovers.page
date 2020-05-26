@@ -1,0 +1,96 @@
+<apex:page standardController="Authorization_for_Expenditure__c" extensions="viewApproversExtension" showHeader="true" sidebar="true"  >
+
+<apex:form id="form_id" >
+    <apex:pageBlock >
+        <apex:pageBlockButtons location="Bottom">
+        <apex:actionRegion >
+                 <apex:commandButton action="{!previousCounterSet}" value="Previous" reRender="dComponent_id,theSection" status="action_id"/>
+                 <apex:commandButton onclick="" action="{!nextCounterSet}" value="Next" reRender="dComponent_id,theSection" status="action_id"/>
+                 
+             </apex:actionRegion>
+             </apex:pageBlockButtons>
+             
+             <apex:pageBlockButtons location="Both">
+                 <apex:commandButton action="{!saveRecord}" value="Save" rendered="{!IF(Authorization_for_Expenditure__c.Div_Co_Ordinator_approved__c == true || Authorization_for_Expenditure__c.Status__c =='Approved' || Authorization_for_Expenditure__c.Status__c=='Completed & Accepted',FALSE,TRUE)}"/>
+    
+                 <apex:commandButton action="{!cancel}" value="Cancel" /> 
+             </apex:pageBlockButtons> 
+        
+        
+       
+             <apex:panelgroup >
+              
+            
+               </apex:panelgroup> 
+               
+               <apex:pageBlockSection id="theSection" columns="1">
+               <Apex:outputLabel >Current Level:  &nbsp;
+                  <apex:outputText id="counter_id"  value="{!counter}"/> </Apex:outputLabel>
+                    <apex:pageBlockSectionItem >
+                         <apex:outputLabel for="level_id" value="Levels Of Approval Required"/>
+                           <apex:actionRegion >
+                              <apex:selectList id="level_id" value="{!numberOfLevel}" size="1">
+                              <apex:selectOptions value="{!levels}"/>
+                                  <apex:actionSupport event="onchange" reRender="theSection" status="action_id"/>
+                              </apex:selectList>
+                            </apex:actionRegion>
+                          </apex:pageBlockSectionItem>
+               </apex:pageBlockSection>
+               
+             <apex:pageBlockSection id="dComponent_id" columns="1">
+       <apex:pageMessages />
+      
+   <apex:actionStatus startText="Loading..." id="action_id"/>
+     
+                          
+            <apex:pageBlockSectionItem >
+                 <apex:outputLabel value="{!$ObjectType.Authorization_for_Expenditure__c.fields.Approver1__c.label}" for="ap1_id"/>      
+                 <apex:actionRegion >
+                     <apex:inputField id="ap1_id" value="{!authForExp.Approver1__c}">
+                          <apex:actionSupport event="onchange" action="{!setChangeField}"  reRender="dComponent_id" status="action_id"/>
+                     </apex:inputField>
+                 </apex:actionRegion>
+            </apex:pageBlockSectionItem>
+            
+            <apex:pageBlockSectionItem >
+                 <apex:outputLabel value="{!$ObjectType.Authorization_for_Expenditure__c.fields.Approver2__c.label}" for="ap1_id"/>      
+                 <apex:actionRegion >
+                         <apex:inputField value="{!authForExp.Approver2__c}">
+                              <apex:actionSupport event="onchange" action="{!setChangeField}"   reRender="dComponent_id"  status="action_id"/>
+                         </apex:inputField>
+                  </apex:actionRegion>
+            </apex:pageBlockSectionItem>
+
+                          
+            <apex:pageBlockSectionItem >
+                 <apex:outputLabel value="{!$ObjectType.Authorization_for_Expenditure__c.fields.Approver3__c.label}" for="ap1_id"/>      
+                 <apex:actionRegion >
+                         <apex:inputField value="{!authForExp.Approver3__c}">
+                              <apex:actionSupport event="onchange" action="{!setChangeField}"   reRender="dComponent_id"  status="action_id"/>
+                         </apex:inputField>
+                  </apex:actionRegion>
+            </apex:pageBlockSectionItem>
+                          
+            <apex:pageBlockSectionItem >
+                 <apex:outputLabel value="{!$ObjectType.Authorization_for_Expenditure__c.fields.Approver4__c.label}" for="ap1_id"/>      
+                 <apex:actionRegion >
+                         <apex:inputField value="{!authForExp.Approver4__c}">
+                              <apex:actionSupport event="onchange" action="{!setChangeField}"   reRender="dComponent_id"  status="action_id"/>
+                         </apex:inputField>
+                  </apex:actionRegion>
+            </apex:pageBlockSectionItem>
+                          
+            <apex:pageBlockSectionItem >
+                 <apex:outputLabel value="{!$ObjectType.Authorization_for_Expenditure__c.fields.Approver5__c.label}" for="ap1_id"/>      
+                 <apex:actionRegion >
+                         <apex:inputField value="{!authForExp.Approver5__c}">
+                              <apex:actionSupport event="onchange" action="{!setChangeField}"   reRender="dComponent_id" status="action_id"/>
+                         </apex:inputField>
+                  </apex:actionRegion>
+            </apex:pageBlockSectionItem>
+                         
+        </apex:pageBlockSection>
+            
+    </apex:pageBlock>
+ </apex:form> 
+</apex:page>

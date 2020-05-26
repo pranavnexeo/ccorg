@@ -1,0 +1,87 @@
+<apex:page controller="Sample_Request_Controller" tabStyle="Sample_Request__c" action="{!init_Edit_Materials}">
+<apex:stylesheet value="{!$Resource.SampleRequestStyles}"></apex:stylesheet>
+
+        <apex:sectionHeader title="{!$Label.Edit_Materials} {!Sample_Request_Link}"/>
+        <apex:form >
+                <apex:pageBlock title="{!$Label.Material_Info}">
+                        <apex:facet name="footer">
+                                <apex:outputPanel ><center>
+                                        <apex:commandButton action="{!Edit_Materials_Save}" value="{!$Label.Save}" styleClass="btn"/>
+                                        <apex:commandButton action="{!Cancel_Save}" value="{!$Label.Cancel}" styleClass="btn"/></center>
+                                </apex:outputPanel>
+                        </apex:facet>
+
+                                <apex:pageBlockSection title="{!$Label.Insufficient_Access}" columns="1" collapsible="false" rendered="{!IF(ErrorMessage!='','True','False')}">
+                                    <apex:pageBlock title="{!$Label.Error_Messages}" rendered="{!IF(ErrorMessage!='','True','False')}">
+                                        <apex:outputText styleClass="Warning" value="{!ErrorMessage}" rendered="{!IF(ErrorMessage!='','True','False')}"/>
+                                        <apex:outputText styleClass="Warning" value="{!$Label.Current_Sample_Coordinator}: " rendered="{!IF(ErrorMessage!='','True','False')}"/>
+                                        <apex:outputField styleClass="Warning" value="{!sampleRequest.Sample_Coordinator__c}" rendered="{!IF(ErrorMessage!='','True','False')}"/>
+                                    </apex:pageBlock>
+                                </apex:pageBlockSection>
+
+
+
+                        <apex:pageBlockSection title="{!$Label.Materials_in_Sample}:" columns="1" collapsible="false">
+                                <apex:dataTable value="{!sampleMaterials}" var="lines" styleClass="list" id="MaterialGrid">
+                                   <apex:column >
+                                     <apex:facet name="header">{!$Label.Material_Name}</apex:facet>
+                                     <apex:inputField value="{!lines.name}" required="true"/>
+                                   </apex:column>
+                                   <apex:column >
+                                     <apex:facet name="header">{!$Label.Quantity} </apex:facet>
+                                     <apex:inputField value="{!lines.Sample_Quantity__c}" required="true"/>
+                                   </apex:column>
+                                   <apex:column >
+                                     <apex:facet name="header">{!$Label.UOM}</apex:facet>
+                                     <apex:inputField value="{!lines.Sample_UOM__c}" required="true"/>
+                                   </apex:column>
+                                   <apex:column >
+                                     <apex:facet name="header">{!$Label.Date_Required}</apex:facet>
+                                     <apex:inputField value="{!lines.Date_Required_By__c}" required="true"/>
+                                   </apex:column>
+                                   <apex:column >
+                                     <apex:facet name="header">{!$Label.Currency}</apex:facet>
+                                     <apex:inputField value="{!lines.CurrencyIsoCode}" required="true"/>
+                                   </apex:column>
+                                   <apex:column >
+                                     <apex:facet name="header">{!$Label.Sample_Value}</apex:facet>
+                                     <apex:inputField value="{!lines.Estimated_Sample_Value__c}" required="true"/>
+                                   </apex:column>
+                                   <apex:column rendered="{!RenderperLineItemCost}">
+                                     <apex:facet name="header">{!$Label.Line_Item}<BR/>{!$Label.Admin_Cost}</apex:facet>
+                                     <apex:outputField value="{!lines.Additional_Admin_Cost__c}"/>
+                                   </apex:column>
+                                   <apex:column >
+                                     <apex:facet name="header">{!$Label.Potential_Annual_Value}</apex:facet>
+                                     <apex:inputField value="{!lines.Potential_Annual_Value__c}" required="true"/>
+                                   </apex:column>
+                                   <apex:column >
+                                     <apex:facet name="header">{!$Label.Ship_From_Location}</apex:facet>
+                                     <apex:inputField value="{!lines.Ship_From_Location__c}" required="true"/>
+                                   </apex:column>
+                                   <apex:column rendered="{!RenderTectyl}">
+                                     <apex:facet name="header">{!$Label.Tectyl_Product}?</apex:facet>
+                                     <apex:inputField value="{!lines.Tectyl_Product__c}" required="true"/>
+                                   </apex:column>
+                                   <apex:column rendered="{!RenderADCompound}">
+                                     <apex:facet name="header">{!$Label.AD_Compound}?</apex:facet>
+                                     <apex:inputField value="{!lines.AD_Compound__c}" required="true"/>
+                                   </apex:column> 
+                                </apex:dataTable>
+                        </apex:pageBlockSection>
+
+                        <apex:pageBlockSection showHeader="False">
+                        <apex:panelGrid columns="1"> 
+                                <apex:commandButton action="{!AddNewMaterial}" value="Add Another Material" styleClass="btn" rerender="MaterialGrid" immediate="true"/>
+                        </apex:panelGrid>
+                        </apex:pageBlockSection>
+
+                        <apex:pageBlockSection title="{!$Label.Validation_Error}" columns="1" collapsible="false" rendered="{!IF(ValidationErrorMessage!='','True','False')}">
+                             <apex:pageBlock title="{!$Label.Error_Messages}" rendered="{!IF(ValidationErrorMessage!='','True','False')}">
+                                   <apex:outputText escape="False" styleClass="Warning" value="{!ValidationErrorMessage}" rendered="{!IF(ValidationErrorMessage!='','True','False')}"/>
+                             </apex:pageBlock>
+                        </apex:pageBlockSection>
+
+                    </apex:pageBlock> 
+                </apex:form>
+</apex:page>

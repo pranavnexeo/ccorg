@@ -1,0 +1,159 @@
+<apex:page showHeader="false" applyHtmlTag="false" standardStylesheets="false" controller="MSDSSiteExtMaterialDetailController">
+    <html xmlns="http://www.w3.org/1999/xhtml" lang="en">
+    <apex:stylesheet value="{!URLFOR($Resource.MSDSSiteCSS, '/bootstrap/css/bootstrap.css')}"/>
+    <apex:stylesheet value="{!URLFOR($Resource.MSDSSiteCSS, 'styles.css')}"/>
+
+    <style>
+        .table-bordered thead:first-child tr:first-child > th:first-child, .table-bordered tbody:first-child tr:first-child > td:first-child, .table-bordered tbody:first-child tr:first-child > th:first-child {
+            -webkit-border-top-left-radius: 4px;
+            -moz-border-radius-topleft: 4px;
+            border-top-left-radius: 4px;
+        }
+
+        .table-striped tbody > tr:nth-child(2n+1) > td, .table-striped tbody > tr:nth-child(2n+1) > th {
+            background-color: #f9f9f9;
+        }
+
+        .table .table {
+            background-color: #fffff;
+        }
+
+
+        .wpb_wrapper table tr:nth-child(even) {
+            background-color: #f8f8f8;
+        }
+        .wpb_wrapper table tr td {
+            line-height: 1.5;
+            padding: 6px;
+        }
+
+        .SDSContainer {
+            border: 1px solid green;
+            padding: 1px 87px;
+            margin: -14px;
+        }
+
+        .btn-outline-no-border, .btn-outline-no-border:hover, .btn-outline-no-border:active, .btn-outline-no-border:visited {
+            background-color: transparent !important;
+            border: none;
+        }
+        a {
+            text-decoration: none;
+        }
+
+        .buttonMaterialSearch {
+            background-color: #f9f9f9;
+            border-color: #f9f9f9;
+            color: #222B70;
+        }
+
+        .buttonMaterialSearch active {
+            text-decoration: underline;
+        }
+    </style>
+
+    <body>
+    <div class="container" style = "float: left;">
+        <div class="row">
+            <div class="col-8">
+                <img src="{!URLFOR($Resource.MSDSSiteCSS, 'logo.jpg')}" border="0" align="right"/>
+            </div>
+        </div>
+        <div class="row">
+            <div class="col">
+                <img src="{!URLFOR($Resource.MSDSSiteCSS, 'heading.jpg')}" alt="" border="0" />
+            </div>
+        </div>
+        <apex:form >
+        <div class="row">
+
+            <div class="col-2">
+                <br/>
+                <div style="width: 109%" class="btn-group-vertical" role="group" aria-label="Button group with nested dropdown">
+                    <button style="background-color: #00b259;border-color: #00b259;opacity: 1" type="button" class="btn btn-secondary" disabled="disabled">{!$Label.MSDSSDSTitleButtons}</button>
+                    <apex:commandButton styleClass="btn btn-secondary buttonMaterialSearch" reRender="searchResultsPanel, errorMessagePanel" value="{!$Label.MSDSMaterialSearchButton}" action="{!goToMaterialSearch}">
+                    </apex:commandButton>
+                </div>
+            </div>
+
+            <div class="col-6">
+                <apex:outputText value="{!$Label.MSDSPageTitle}" style="font-size:24px"/>
+                <br/>
+                <br/>
+                <apex:outputText value="{!$Label.MSDSIntroText}" />
+                <br/>
+                <br/>
+                <table cellpadding="0" cellspacing="0" class="table table-striped">
+                    <tbody>
+                    <tr style = "color:#222B70; font-weight:bold; ">
+                        <td style="padding: 8px 4px 8px; border-top:none">
+                            {!materialNumber}
+                        </td>
+                        <td style="padding: 8px 4px 8px; border-top:none">
+                            {!materialName}
+                        </td>
+
+                    </tr>
+
+                    <apex:repeat value="{!sdsDocuments.documents}" var="document" rendered="{!renderTable}">
+                        <tr>
+                            <td  colspan="2" style="padding: 2px 4px 2px;">
+                                <a href="#" target="_self" class="downloadDocument" style="text-decoration: none" data-id="{!document.recn_dh}" data-dockey="{!document.dockey}">
+                                    <img src="{!URLFOR($Resource.MSDSSiteCSS, 'pdf.gif')}" width="20" data-id="{!document.recn_dh}" data-dockey="{!document.dockey}" alt = "{!$Label.MSDSPageButtonDescription}" />
+                                </a>
+                                {!document.genvar_desc}
+                                {!document.langu_desc}
+
+                            </td>
+                        </tr>
+                    </apex:repeat>
+                    </tbody>
+                </table>
+
+            </div>
+        </div>
+        </apex:form>
+
+
+    </div>
+
+
+
+    </body></html>
+    <apex:includeScript value="{!URLFOR($Resource.MSDSSiteCSS, '/jquery/jquery-3.3.1.js')}"/>
+    <apex:includeScript value="{!URLFOR($Resource.MSDSSiteCSS, '/popper/popper.js')}"/>
+    <apex:includeScript value="{!URLFOR($Resource.MSDSSiteCSS, '/bootstrap/js/bootstrap.js')}"/>
+
+    <script>
+        jQuery(function($) {
+            $(document).ready(function(){
+                $(".downloadDocument").on("click", function(e) {
+                    var objLink = $(e.target);
+                    var documentRench = objLink.data("id");
+					var documentDockey = objLink.data("dockey");
+                                            console.log('{!materialNumber}');
+                        console.log('documentRench' + documentRench);
+                    	console.log('documentDockey' + documentDockey);
+                    Visualforce.remoting.Manager.invokeAction(
+                        '{!$RemoteAction.MSDSSiteExtMaterialDetailController.getSDSDocument}',
+                        {!materialNumber},
+                        documentRench,
+                        documentDockey,
+                        function(result, event){
+							console.log('result');
+                            console.log('event');
+                            if(event.status && result != null){
+                                window.open('/sdsexternal/MSDSSiteDocument?sfid='+result);
+                            } else {
+                                console.log('Error');
+                                alert('{!$Label.MSDSPageErrorGeneratingPDF}');
+                            }
+                        },
+                        {escape: true}
+                    );
+
+                });
+            });
+        });
+    </script>
+</apex:page>

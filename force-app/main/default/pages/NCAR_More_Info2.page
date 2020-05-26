@@ -1,0 +1,22 @@
+<apex:page standardcontroller="NCAR_Cases__c" extensions="NCAR_Extension_New" >
+<apeX:form >
+<apex:pageblock rendered="{!NOT(displayrequestmoreinfoerror)}">
+<apex:pageblockbuttons >
+<apex:commandbutton value="Request More Info" action="{!requestmoreinfo}"/>
+<apex:commandbutton value="Cancel" action="{!cancel}"/>
+</apex:pageblockbuttons>
+<apex:pageblocksection >
+<apex:pageblocksectionitem >
+<apex:outputlabel value="Comments"/>
+<apex:inputTextarea value="{!Comments}" cols="50" rows="10"/>
+</apex:pageblocksectionitem>
+</apex:pageblocksection>
+</apex:pageblock>
+<apex:pageblock rendered="{!displayrequestmoreinfoerror}">
+<apex:pageblockbuttons >
+<apex:commandbutton value="Cancel" action="{!cancel}" />
+</apex:pageblockbuttons>
+<apex:pageMessage summary="You are not the Approver and can not Request more Information." severity="error" strength="3" />
+</apex:pageblock>
+</apex:form>
+</apex:page>

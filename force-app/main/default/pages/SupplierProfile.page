@@ -1,0 +1,98 @@
+<apex:page standardController="Supplier_Profile__c" extensions="SupplierProfileExtension" id="profilePage">
+<apex:pageMessages id="errorMessages"> </apex:pageMessages>       
+        <script> 
+        
+            function getSupplierDetails(){
+            
+                //alert('getSupplierDeatils');
+                //alert(document.getElementById('profilePage:profileForm:profileBlock:profileGenInfo:supplierName_lkid').value);
+                var supplierId= document.getElementById('profilePage:profileForm:profileBlock:profileGenInfo:supplierName_lkid').value;
+                var purchasingOrg = document.getElementById('profilePage:profileForm:profileBlock:profileGenInfo:purchasingOrg').value;
+                var divisionName = document.getElementById('profilePage:profileForm:profileBlock:profileGenInfo:divisionName').value;
+                //alert(supplierId);
+                //alert(purchasingOrg);
+                
+                fetchSupplierDetails(supplierId,purchasingOrg,divisionName);
+            }
+            
+        
+        </script>
+         
+        <apex:sectionHeader title="{!$ObjectType.Supplier_Profile__c.label} Edit" />
+        <apex:ActionStatus id="busyStatus">
+					<apex:facet name="start">
+						<c:BusyStatusComp height="300px" width="300px"
+							Message="Please Wait..." />
+					</apex:facet>
+				</apex:ActionStatus>
+        <apex:form id="profileForm"> 
+        
+        <apex:actionFunction name="fetchSupplierDetails" action="{!getSupplierDetails}" rerender="errorMessages,vendorPi,supplierCurrency,upfrontOnly" status="busyStatus" immediate="true">
+            <apex:param name="supplierForceId" value=""/>
+            <apex:param name="purchasingOrg" value=""/>
+            <apex:param name="divisionName" value=""/>
+        </apex:actionFunction>
+        
+        <apex:pageBlock title="{!$ObjectType.Supplier_Profile__c.label} Edit" mode="edit" id="profileBlock">
+                <apex:pageBlockButtons >
+                        <apex:commandButton action="{!customSave}" value="Save"/>
+                        <apex:commandButton action="{!cancel}" value="Cancel" />
+                </apex:pageBlockButtons>
+                <apex:pageBlockSection showHeader="true" title="General Information" columns="1" id="profileGenInfo">
+                        
+                        <apex:inputField value="{!Supplier_Profile__c.Division_Name__c}" onclick="blur()" id="divisionName" style="border:0px;background-color:#F3F3EC;"/>
+                        <apex:inputField value="{!Supplier_Profile__c.Purchasing_Organization__c}" id="purchasingOrg" required="true"/>
+                        <apex:inputField value="{!Supplier_Profile__c.Supplier_Name__c}" onchange="getSupplierDetails();" id="supplierName" required="true"/>
+                        <!-- <apex:inputField value="{!Supplier_Profile__c.Supplier_Short_Name__c}"/>  -->
+                        
+                        <apex:outputField value="{!Supplier_Profile__c.Upfront_Only__c}" id="upfrontOnly"/>
+                        
+                        <apex:selectList size="1" value="{!Supplier_Profile__c.Vendor_PI__c}" id="vendorPi">
+                            <apex:selectOptions value="{!supplierPiNumberList}"/>
+                        </apex:selectList>
+                        <!-- <apex:selectList size="1" value="{!Supplier_Profile__c.Supplier_DM_Contact_Number__c}" id="dmContact">
+                            <apex:selectOptions value="{!supplierDmContactNumberList}"/>
+                        </apex:selectList>  -->
+                        <apex:inputField value="{!Supplier_Profile__c.Supplier_Currency__c}" id="supplierCurrency" required="true"/>
+                            
+                        
+                </apex:pageBlockSection>
+                <apex:pageBlockSection showHeader="true" title="Field Information" columns="2">
+                        <apex:inputField value="{!Supplier_Profile__c.Display_Supplier_Material_Info__c}"/>
+                        <apex:inputField value="{!Supplier_Profile__c.Display_Selling_Price_Field__c}"/>
+                        <apex:inputField value="{!Supplier_Profile__c.Required_Fields__c}"/>
+                        <apex:pageBlockSectionItem />
+                </apex:pageBlockSection>
+                <apex:pageBlockSection showHeader="true" title="Supplier Defaults" columns="2">
+                        <apex:inputField value="{!Supplier_Profile__c.X1st_Discount__c}" required="true"/>
+                        <apex:inputField value="{!Supplier_Profile__c.X1st_Discount_Type__c}" required="true"/>
+                        <apex:inputField value="{!Supplier_Profile__c.X2nd_Discount__c}" required="true"/>
+                        <apex:inputField value="{!Supplier_Profile__c.X2nd_Discount_Type__c}" required="true"/>
+                        <apex:inputField value="{!Supplier_Profile__c.Adjust_Rebate_based_on_Sell_Price__c}"/>
+                        <apex:inputField value="{!Supplier_Profile__c.Packaging_Allowance__c}"/>
+                        <apex:inputField value="{!Supplier_Profile__c.Potential_Applications__c}"/>
+                        <apex:inputField value="{!Supplier_Profile__c.Freight_Allowance__c}"/>
+                        <apex:pageBlockSectionItem />
+                        <apex:inputField value="{!Supplier_Profile__c.of_rows_for_Bracketed_Pricing__c}"/>
+                </apex:pageBlockSection>
+                <apex:pageBlockSection showHeader="true" title="Other Information" columns="2">
+                        <apex:inputField value="{!Supplier_Profile__c.Discount_before_Other_Costs__c}"/>
+                        <apex:inputField value="{!Supplier_Profile__c.Direct_Orders_Supported__c}"/>
+                        <apex:inputField value="{!Supplier_Profile__c.E_mail_Method__c}"/>
+                        <apex:inputField value="{!Supplier_Profile__c.PO_Received_before_Sale__c}"/>
+                        <apex:inputField value="{!Supplier_Profile__c.Price_Changes_Automatically_Approved__c}"/>
+                        <apex:inputField value="{!Supplier_Profile__c.Lot_Required__c}"/>
+                        <apex:inputField value="{!Supplier_Profile__c.Round_All_Support_Calculations_to__c}"/>
+                        <apex:inputField value="{!Supplier_Profile__c.Payment_Method__c}"/>
+                        <apex:inputField value="{!Supplier_Profile__c.Round_Final_Support_to__c}"/>
+                        <apex:inputField value="{!Supplier_Profile__c.Match_to_PO_Required__c}"/>
+                        <apex:inputField value="{!Supplier_Profile__c.Adjust_for_PO_Price_Difference__c}"/>
+                        <apex:pageBlockSectionItem />
+                </apex:pageBlockSection>
+                <apex:pageBlockSection showHeader="true" title="Comments" columns="1">
+                        <apex:inputField value="{!Supplier_Profile__c.Comments__c}"/>
+                </apex:pageBlockSection>
+                
+        </apex:pageBlock>
+        </apex:form>
+</apex:page>

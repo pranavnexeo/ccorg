@@ -1,0 +1,6 @@
+<apex:page standardcontroller="Enhancement__c" extensions="ListViewExportPage" recordsetvar="default" standardstylesheets="false" sidebar="false" contenttype="application/vnd.ms-excel#enhancements.xls">
+<head>
+       <meta http-equiv="Content-Type" content="text/html;charset=UTF-8" />
+</head>
+ <c:ListViewExport instance="na38" sobj_type="Enhancement__c" Viewid="{!ViewId}"/>
+</apex:page>

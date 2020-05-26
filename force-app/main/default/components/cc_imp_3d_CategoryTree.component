@@ -1,0 +1,11 @@
+<apex:component >
+
+<script type="text/javascript">
+    CCRZ.uiProperties.CategoryTree.tmpl = 'categoryContainerTemplateImp';
+</script>
+
+
+<script id="categoryContainerTemplateImp" type="text/template">
+</script>
+
+</apex:component>

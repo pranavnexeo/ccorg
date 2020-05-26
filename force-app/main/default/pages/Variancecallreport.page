@@ -1,0 +1,42 @@
+<apex:page StandardController="Variance_Call_Report__c" extensions="VarianceCallReportNotes" id="thepage" >
+
+<apex:sectionheader title="Call Report Edit" subtitle=""/>
+
+<apex:form id="theform">
+
+<apex:pageBlock title="Call Report Details" id="pageblock">                       
+<apex:pageblockbuttons >
+<apeX:commandbutton value="Save" action="{!Save}" />
+<apex:commandbutton value="Cancel" action="{!Cancel}" />
+</apex:pageblockbuttons>
+<apex:pagemessages />
+<apex:pageblocksection columns="1" collapsible="false">
+<apex:inputfield value="{!Variance_Call_Report__c.Name}" required="true" style="width:100%;"/>
+</apex:pageblocksection>
+<apex:pageblocksection columns="2"  collapsible="false">  
+         
+<apex:inputfield value="{!Variance_Call_Report__c.Sales_Variance__c}" required="true" />
+
+<apex:pageBlockSection > 
+<apex:pageBlockSectionItem > </apex:pageBlockSectionItem> 
+<apex:pageBlockSectionItem /> 
+</apex:pageBlockSection>
+
+
+<apex:inputfield value="{!Variance_Call_Report__c.Employee__c}" />
+
+<apex:selectList size="1" value="{!Variance_Call_Report__c.Supplier_Contact__c}" >
+<apex:selectOption itemValue="" itemLabel="--Select--"/>
+<apex:selectOptions value="{!SupplierContact}" />
+</apex:selectList>
+
+<apex:inputfield value="{!Variance_Call_Report__c.Action_Needed__c}" />
+
+<apex:inputfield value="{!Variance_Call_Report__c.Status_Update__c}" />
+ 
+</apex:pageblocksection>
+</apex:pageBlock>
+
+</apex:form>
+
+</apex:page>

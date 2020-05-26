@@ -1,0 +1,42 @@
+<apex:page controller="UserSapSellerNumbersController"
+           sidebar="false"
+           title="Update User Seller Numbers">
+
+    <script type="text/javascript">
+    
+        var previousOnload = window.onload;        
+        
+        window.onload = function() { 
+            if (previousOnload) { 
+                previousOnload();
+            }
+            initFunction();
+        }
+    
+    </script>
+
+    <apex:Form id="theForm">
+    
+        <apex:pageBlock id="thePageBlock"> 
+
+                <apex:actionStatus id="statusId">
+                    <apex:facet name="start">
+                        <apex:outputText escape="false" style="font-weight: bold;" 
+                                         value=" Submitting Batch Job to Update User SAP Seller Numbers ">
+                            <apex:image value="{!$Resource.spinner}"/>
+                        </apex:outputText>
+                    </apex:facet>
+                    <apex:facet name="stop">
+                        <apex:outputText escape="false" style="font-weight: bold;" 
+                                         value=" Submitted Batch Job to Update User SAP Seller Numbers "/>
+                    </apex:facet>
+                </apex:actionStatus>
+                
+                <apex:actionFunction name="initFunction" action="{!updateUserSellerNumbers}"
+                                     rerender="theForm" status="statusId"/>
+
+        </apex:pageBlock>
+
+    </apex:Form>
+    
+</apex:page>

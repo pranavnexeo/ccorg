@@ -1,0 +1,35 @@
+<apex:page contentType="text/xml">
+
+<urlset
+      xmlns="http://www.sitemaps.org/schemas/sitemap/0.9"
+      xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+      xsi:schemaLocation="http://www.sitemaps.org/schemas/sitemap/0.9
+      http://www.sitemaps.org/schemas/sitemap/0.9/sitemap.xsd">
+
+       
+<url>
+  <loc>{!$setup.Nexeo3dSettings__c.Nexeo_3d_Url__c}/automotive/ccrz__ccpage</loc>
+</url>
+<url>
+  <loc>{!$setup.Nexeo3dSettings__c.Nexeo_3d_Url__c}/aerospace/ccrz__ccpage</loc>
+</url>
+<url>
+  <loc>{!$setup.Nexeo3dSettings__c.Nexeo_3d_Url__c}/electronics/ccrz__ccpage</loc>
+</url>
+<url>
+  <loc>{!$setup.Nexeo3dSettings__c.Nexeo_3d_Url__c}/industrial/ccrz__ccpage</loc>
+</url>
+<url>
+  <loc>{!$setup.Nexeo3dSettings__c.Nexeo_3d_Url__c}/medical/ccrz__ccpage</loc>
+</url>
+<url>
+  <loc>{!$setup.Nexeo3dSettings__c.Nexeo_3d_Url__c}/sports/ccrz__ccpage</loc>
+</url>
+<url>
+  <loc>{!$setup.Nexeo3dSettings__c.Nexeo_3d_Url__c}/aboutus/ccrz__ccpage</loc>
+</url>
+<url>
+  <loc>{!$setup.Nexeo3dSettings__c.Nexeo_3d_Url__c}/contact/ccrz__ccpage</loc>
+</url>
+</urlset>
+</apex:page>

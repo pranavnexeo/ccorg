@@ -1,0 +1,723 @@
+<apex:component controller="cc_imp_ctrl_MyAccountOrders">
+
+	<script type="text/javascript">
+	  CCRZ.uiProperties.myOrdersView.desktop.tmpl = 'MyAccountMyOrdersDesktopImp';
+	  CCRZ.uiProperties.myOrdersView.phone.tmpl   = 'MyAccountMyOrdersMobileImp';
+	</script>
+
+ <script id="MyAccountMyOrdersDesktopImp" type="text/template">
+		<h2 class="title">{{pageLabelMap 'MyAccount_MyOrders'}}</h2>
+		<div class="alert alert-error messagingSection-orderhistory-Error" style="display: none"></div>
+		<div class="alert alert-info messagingSection-orderhistory-Info" style="display: none"></div>
+		<div>{{pageLabelMap 'MyAccount_Description'}}</div>
+		<div class="main_content_large_solo_container">
+			{{#ifDisplay 'srch.ord'}}
+			<form id="searchOrderForm" class="searchOrderForm">
+				<input type="text"  name="searchOrderInput" value="{{searchOrder}}" class="searchOrderInput input-text" placeholder="{{pageLabelMap 'MyOrdersInc_SearchOrders'}}"/>
+				<select name="searchOrderStatus" value="{{searchOrderStatus}}">
+					<option value="">{{pageLabelMap 'MyOrdersInc_AllOrderStatus'}}</option>					
+					{{#each this.orderStatusOpts}}
+						<option value="{{this.value}}" {{#ifEquals ../searchOrderStatus this.value}} selected {{/ifEquals}}>{{this.label}}</option>
+					{{/each}}
+				</select>
+				{{pageLabelMap 'MyOrdersInc_SearchFrom'}}
+				<input name="fromDateStr" value="{{this.fromDateStr}}" class="requestedDate fromDate">
+				{{pageLabelMap 'MyOrdersInc_SearchTo'}}
+				<input name="toDateStr" value="{{this.toDateStr}}" class="requestedDate toDate">
+				
+				<input type="button" class="searchOrder" value="{{pageLabelMap 'MyOrdersButton_SearchOrders'}}"/>
+				<input type="button" class="resetOrder" value="{{pageLabelMap 'MyOrdersButton_ResetOrders'}}"/>
+			</form>
+			{{/ifDisplay}}
+			<div class="orderPaginationSec" />
+			<table id="orderTable" class="shopping_cart">
+				<tr class="even">
+					<td class="right_align headerSort ordername" data-sortcriteria="ordername">{{pageLabelMap 'MyOrdersInc_OrderNumber'}}
+             		<!--<a href="javascript:void(0);" class="descSort orderSortControl {{#ifEqualsIgnoreCase this.searchFormData.sortCriteria 'Name'}}{{#ifEqualsIgnoreCase this.searchFormData.sortDir 'Desc'}}active{{/ifEqualsIgnoreCase}}{{/ifEqualsIgnoreCase}}" data-sortcriteria="OrderName" data-sortdir="Desc">{{pageLabelMap 'CommonElements_DownArrow'}}</a>-->
+                    <!--<a href="javascript:void(0);" class="ascSort orderSortControl  {{#ifEqualsIgnoreCase this.searchFormData.sortCriteria 'Name'}}{{#ifEqualsIgnoreCase this.searchFormData.sortDir 'Asc'}}active{{/ifEqualsIgnoreCase}}{{/ifEqualsIgnoreCase}}" data-sortcriteria="OrderName" data-sortdir="Asc">{{pageLabelMap 'CommonElements_UpArrow'}}</a>-->
+                    </td>
+					{{#ifDisplay 'MO.DsplExtOrderNumber'}} 
+						<td class="right_align headerSort externalOrderId" data-sortcriteria="externalOrderId">{{pageLabelMap 'ExternalOrderID'}}
+						<a href="javascript:void(0);" class="descSort orderSortControl {{#ifEqualsIgnoreCase this.searchFormData.sortCriteria 'ExternalOrderId'}}{{#ifEqualsIgnoreCase this.searchFormData.sortDir 'Desc'}}active{{/ifEqualsIgnoreCase}}{{/ifEqualsIgnoreCase}}" data-sortcriteria="ExternalOrderId" data-sortdir="Desc">{{pageLabelMap 'CommonElements_DownArrow'}}</a>
+                    	<a href="javascript:void(0);" class="ascSort orderSortControl  {{#ifEqualsIgnoreCase this.searchFormData.sortCriteria 'ExternalOrderId'}}{{#ifEqualsIgnoreCase this.searchFormData.sortDir 'Asc'}}active{{/ifEqualsIgnoreCase}}{{/ifEqualsIgnoreCase}}" data-sortcriteria="ExternalOrderId" data-sortdir="Asc">{{pageLabelMap 'CommonElements_UpArrow'}}</a></td>
+					{{/ifDisplay}}
+					{{#ifDisplay 'MO.DsplPONumber'}} 
+						<td class="right_align headerSort poNumber" data-sortcriteria="poNumber">{{pageLabelMap 'PO Number'}}
+						<a href="javascript:void(0);" class="descSort orderSortControl {{#ifEqualsIgnoreCase this.searchFormData.sortCriteria 'PONumber'}}{{#ifEqualsIgnoreCase this.searchFormData.sortDir 'Desc'}}active{{/ifEqualsIgnoreCase}}{{/ifEqualsIgnoreCase}}" data-sortcriteria="PONumber" data-sortdir="Desc">{{pageLabelMap 'CommonElements_DownArrow'}}</a>
+                    	<a href="javascript:void(0);" class="ascSort orderSortControl  {{#ifEqualsIgnoreCase this.searchFormData.sortCriteria 'PONumber'}}{{#ifEqualsIgnoreCase this.searchFormData.sortDir 'Asc'}}active{{/ifEqualsIgnoreCase}}{{/ifEqualsIgnoreCase}}" data-sortcriteria="PONumber" data-sortdir="Asc">{{pageLabelMap 'CommonElements_UpArrow'}}</a>
+                    	</td>
+					{{/ifDisplay}}
+					<td class="right_align headerSort orderDate" data-sortcriteria="orderDate">{{pageLabelMap 'MyOrdersInc_OrderDate'}}
+					<a href="javascript:void(0);" class="descSort orderSortControl {{#ifEqualsIgnoreCase this.searchFormData.sortCriteria 'OrderDate'}}{{#ifEqualsIgnoreCase this.searchFormData.sortDir 'Desc'}}active{{/ifEqualsIgnoreCase}}{{/ifEqualsIgnoreCase}}" data-sortcriteria="OrderDate" data-sortdir="Desc">{{pageLabelMap 'CommonElements_DownArrow'}}</a>
+                    <a href="javascript:void(0);" class="ascSort orderSortControl  {{#ifEqualsIgnoreCase this.searchFormData.sortCriteria 'OrderDate'}}{{#ifEqualsIgnoreCase this.searchFormData.sortDir 'Asc'}}active{{/ifEqualsIgnoreCase}}{{/ifEqualsIgnoreCase}}" data-sortcriteria="OrderDate" data-sortdir="Asc">{{pageLabelMap 'CommonElements_UpArrow'}}</a>
+					</td>
+					<td class="right_align headerSort orderAmount" data-sortcriteria="orderAmount">{{pageLabelMap 'MyOrdersInc_OrderAmount'}}
+					<a href="javascript:void(0);" class="descSort orderSortControl {{#ifEqualsIgnoreCase this.searchFormData.sortCriteria 'Amount'}}{{#ifEqualsIgnoreCase this.searchFormData.sortDir 'Desc'}}active{{/ifEqualsIgnoreCase}}{{/ifEqualsIgnoreCase}}" data-sortcriteria="OrderAmount" data-sortdir="Desc">{{pageLabelMap 'CommonElements_DownArrow'}}</a>
+                    <a href="javascript:void(0);" class="ascSort orderSortControl  {{#ifEqualsIgnoreCase this.searchFormData.sortCriteria 'Amount'}}{{#ifEqualsIgnoreCase this.searchFormData.sortDir 'Asc'}}active{{/ifEqualsIgnoreCase}}{{/ifEqualsIgnoreCase}}" data-sortcriteria="OrderAmount" data-sortdir="Asc">{{pageLabelMap 'CommonElements_UpArrow'}}</a>
+					</td>
+					<td class="right_align headerSort orderStatus"  data-sortcriteria="orderStatus">{{pageLabelMap 'MyOrdersInc_Status'}}
+					<a href="javascript:void(0);" class="descSort orderSortControl {{#ifEqualsIgnoreCase this.searchFormData.sortCriteria 'Status'}}{{#ifEqualsIgnoreCase this.searchFormData.sortDir 'Desc'}}active{{/ifEqualsIgnoreCase}}{{/ifEqualsIgnoreCase}}" data-sortcriteria="OrderStatus" data-sortdir="Desc">{{pageLabelMap 'CommonElements_DownArrow'}}</a>
+                    <a href="javascript:void(0);" class="ascSort orderSortControl  {{#ifEqualsIgnoreCase this.searchFormData.sortCriteria 'Status'}}{{#ifEqualsIgnoreCase this.searchFormData.sortDir 'Asc'}}active{{/ifEqualsIgnoreCase}}{{/ifEqualsIgnoreCase}}" data-sortcriteria="OrderStatus" data-sortdir="Asc">{{pageLabelMap 'CommonElements_UpArrow'}}</a>
+					</td>
+					{{#ifStoreSetting 'Filter_Orders_Based_on_Owner__c'}}&nbsp;{{else}}<td class="right_align ord_owner_hdr">{{pageLabelMap 'MyOrdersInc_Owner'}}</td>{{/ifStoreSetting}}
+					{{#ifDisplay 'MO.ShActOnOrd'}}
+					<td class="right_align">{{pageLabelMap 'MyCartsInc_Actions'}}</td>
+					{{/ifDisplay}}
+				</tr>
+				{{#each this.orderList}}
+					<tr class="odd myAccOrderRows myNexeoOrders" >
+						<td class="right_align"><a href="#" data-id="{{encryptedId}}" class="gotoOrderDetails">Details</a></td>
+                            <!--<td class="right_align"><a href="#" data-id="{{encryptedId}}" class="gotoOrderDetails">{{name}}</a></td> Backed Up change requested by Philip Bivens FGG-->
+						{{#ifDisplay 'MO.DsplExtOrderNumber'}} <td class="right_align">{{externalOrderId}}</td> {{/ifDisplay}}
+						{{#ifDisplay 'MO.DsplPONumber'}}
+						  <td class="right_align"  data-columnType="PONumber"></td> 
+						 {{/ifDisplay}}
+						<td class="right_align">{{orderDateStr}}</td>
+						<td class="right_align" data-columnType="totalAmount"></td>
+						<td class="right_align">{{pageLabelMap status}}</td>
+						{{#ifStoreSetting 'Filter_Orders_Based_on_Owner__c'}}&nbsp;{{else}}<td class="right_align ord_owner">{{ownerName}}</td>{{/ifStoreSetting}}
+						{{#ifDisplay 'MO.ShActOnOrd'}}
+						<td class="right_align">
+                            {{#ifDisplay 'MO.ShReOrdBt'}}
+                             {{#if this.canReOrder}}
+                            
+                            <input type="button" class="reorder" data-id="{{sfid}}" value="{{pageLabelMap 'MyOrdersInc_Reorder'}}"/>&nbsp;
+                             {{/if}}
+                             {{/ifDisplay}}
+                          
+                          {{#if this.canCancel}}
+								{{#ifDisplay 'MO.ShAmdBt'}}
+									{{#if this.canAmend}}
+										<input type="button" class="promptCancel promptAmend" data-id="{{sfid}}" data-mode="Edit" value="{{pageLabelMap 'Amend'}}"/>&nbsp;
+									{{/if}}
+								{{/ifDisplay}}
+								{{#ifDisplay 'MO.ShCanBt'}}
+									<input type="button" class="promptCancel" data-id="{{sfid}}" data-mode="Cancel" value="{{pageLabelMap 'Cancel'}}"/>
+								{{/ifDisplay}}
+							{{/if}}
+						</td>
+						{{/ifDisplay}}
+					</tr>
+				{{/each}}
+			</table>
+			<div id="modalSec"></div>
+		</div>
+	</script>
+
+	<script id="MyAccountMyOrdersMobileImp" type="text/template">
+		<div class="checkout_container">
+			<h2 class="title">{{pageLabelMap 'MyAccount_OrderHistory'}}</h2>
+			<div class="checkout_detail">
+				<div class="checkout_detail_item">
+					{{#each this}}
+						<div class="order_history_info myNexeoOrders">
+							<div class="arrow"><a href="#" data-id="{{encryptedId}}" class="gotoOrderDetails">></a></div>
+							<<div class="info"><strong>{{pageLabelMap 'MyOrdersInc_OrderNumber'}}:</strong> <a href="#" data-id="{{encryptedId}}" class="gotoOrderDetails">{{name}}</a></div>
+                                
+							{{#ifDisplay 'MO.DsplExtOrderNumber'}}
+							 <div class="info"><strong>{{pageLabelMap 'ExternalOrderID'}}:</strong> {{externalOrderId}}</div> 
+							 {{/ifDisplay}}
+							{{#ifDisplay 'MO.DsplPONumber'}}
+							 <div class="info"><strong>{{pageLabelMap 'PO Number'}}:</strong> 
+							   <span class = "poNumber"> </span>
+							 </div> 
+							 {{/ifDisplay}}
+							<div class="info"><strong>{{pageLabelMap 'MyOrdersInc_OrderDate'}}:</strong> {{orderDateStr}}</div>
+							<div class="info"><strong>{{pageLabelMap 'MyOrdersInc_Status'}}:</strong> {{pageLabelMap status}}</div>
+							<div class="info"><strong>{{pageLabelMap 'MyOrdersInc_OrderAmount'}}:</strong> <span class = "totalAmount"> </span></div>
+							{{#ifStoreSetting 'Filter_Orders_Based_on_Owner__c'}}&nbsp;{{else}}<div class="info ord_owner_hdr"><strong>{{pageLabelMap 'MyOrdersInc_Owner'}}:</strong><span class="ord_owner">{{ownerName}}</span></div>{{/ifStoreSetting}}
+							{{#ifDisplay 'MO.ShActOnOrd'}}
+							<div class="info">
+									{{#ifDisplay 'MO.ShReOrdBt'}}
+										{{#if this.canReOrder}}
+											<input type="button" class="remove reorder" data-id="{{sfid}}" value="{{pageLabelMap 'MyOrdersInc_Reorder'}}"/>&nbsp;
+										{{/if}}	
+									{{/ifDisplay}}
+									{{#if this.canCancel}}
+										{{#ifDisplay 'MO.ShAmdBt'}}
+											{{#if this.canAmend}}
+												<input type="button" class="promptCancel promptAmend" data-id="{{sfid}}" data-mode="Edit" value="{{pageLabelMap 'Amend'}}"/>&nbsp;
+											{{/if}}
+										{{/ifDisplay}}
+										{{#ifDisplay 'MO.ShCanBt'}}
+											<input type="button" class="remove promptCancel" data-id="{{sfid}}" data-mode="Cancel" value="{{pageLabelMap 'Cancel'}}"/>
+										{{/ifDisplay}}
+									{{/if}}
+							</div>
+							{{/ifDisplay}}
+						</div>
+					{{/each}}
+				</div>
+			</div>
+			<div class="orderPaginationSecPhone" />
+			<div id="modalSec"></div>
+		</div>
+	</script>
+
+	<script type="text/javascript">
+
+
+	CCRZ.MyAccount = _.extend(CCRZ.MyAccount||{},{
+	 NexeoOrders :{
+	  register : function(registrar){
+	   //My Orders stuff
+	   var orderList = new CCRZ.collections.NexeoOrderList();
+	   var useOrdPaginator = CCRZ.getPageConfig('pgbl.ord', false);
+	   if(useOrdPaginator) {
+	    CCRZ.orderPaginatorView = new CCRZ.views.navigatePaginationView({
+	     model : orderList
+	    });
+	   }
+
+	   var nexeoView = new CCRZ.views.NexeoOrdersView({
+	    model : orderList
+	   });
+	   
+	   registrar.registerNewView('myOrders', CCRZ.pagevars.pageLabels['MyAccount_MyOrders'], nexeoView );
+	   if(useOrdPaginator) {
+	    CCRZ.orderPaginatorView.listenTo(nexeoView, "pagination:host:rendered", CCRZ.orderPaginatorView.hostRendered);
+	   }
+	  }
+	 }
+	});
+
+	CCRZ.HDRMyAccount = _.extend(CCRZ.HDRMyAccount||{},{
+	 NexeoOrders :{
+	  register : function(registrar){
+	   //My Orders stuff
+	   var orderList = new CCRZ.collections.NexeoOrderList();
+	   
+	   var nexeoView = new CCRZ.views.NexeoOrdersView({
+	    model : orderList
+	   });
+	   
+	   registrar.registerNewView('myOrders', CCRZ.pagevars.pageLabels['MyAccount_MyOrders'], nexeoView );
+
+	  }
+	 }
+	});
+
+
+	jQuery(function($) 
+	{
+
+		CCRZ.subsc = CCRZ.subsc || {};
+
+		var orderIds = [];
+
+        CCRZ.subsc.myNexeoRemoteActions = _.extend(CCRZ.RemoteInvocation, {
+            className : 'cc_imp_ctrl_MyAccountOrders',
+            getExtendedOrdersList : function(orderIds, callback) {
+                this.invokeCtx('getExtendedOrdersList',
+                    orderIds,
+                    function(resp) 
+                    {
+                        callback(resp);
+                    },
+                    {
+                        buffer : false, // this call will be executed by itself
+                        nmsp   : false  // defines that this is a call to a subscriber class
+                    }
+                );
+            },
+			getAllOrdersForShipToAddress : function(callback) {
+                this.invokeCtx('getAllOrdersForShipToAddress',
+                    function(resp) 
+                    {
+                        callback(resp);
+                    },
+                    {
+                        buffer : false, // this call will be executed by itself
+                        nmsp   : false  // defines that this is a call to a subscriber class
+                    }
+                );
+            },
+            searchAllOrdersByParams : function(formData, callback) {
+				this.invokeCtx('searchAllOrdersByParams',
+					formData,
+					function(resp)
+					{
+						callback(resp);
+					},
+					{
+	                    buffer : false, // this call will be executed by itself
+	                    nmsp   : false  // defines that this is a call to a subscriber class					
+					}
+				);
+            },
+            reorderByPONumber : function(formData, callback) {
+				this.invokeCtx('reorderByPONumber',
+					formData,
+					function(resp)
+					{
+						callback(resp);
+					},
+					{
+	                    buffer : false, // this call will be executed by itself
+	                    nmsp   : false  // defines that this is a call to a subscriber class					
+					}
+				);
+            },            
+        });
+
+		CCRZ.models.NexeoOrderSummaryModel = Backbone.Model.extend({
+			idAttribute: "sfid",
+			initialize : function(orderSummary){
+				this.set(this.parse(orderSummary));
+			}
+		});
+
+		CCRZ.collections.NexeoOrderList = CCRZ.CloudCrazePageable.extend({
+		    mode: "client",
+		    state: {
+		     firstPage: 1,
+		     pageSize: parseInt(CCRZ.getPageConfig('pgbl.ord', true) ? CCRZ.getPageConfig('pgbl.pageSize', '3') : '2000'),
+		    },
+		    searchFormData :{
+		     ascending:"false"     
+		    },
+		    model : CCRZ.models.NexeoOrderSummaryModel,
+		    className : "cc_ctrl_myaccountRD",
+		    initialize : function(dataList){
+		     this.reset(dataList);
+		    },
+
+		    fetchNavData: function(state, formData, callback) {
+		     	var coll = this;
+				var formElements = JSON.parse(formData);
+
+				if(formElements.sortCriteria === 'PONumber'){
+
+					CCRZ.subsc.myNexeoRemoteActions.reorderByPONumber( 
+						formData
+						,function(resp){
+	                    if (resp && resp.success && resp.data.orders){
+	                    	for (var i = 0; i < resp.data.orders.length; i++){
+								orderIds.push(resp.data.orders[i].encryptedId);
+							}
+							coll.canPay = true;
+							callback( resp.data.orders );
+	                    };
+                	});
+				}else{
+					if(formElements.hasOwnProperty('searchOrderInput') || formElements.hasOwnProperty('sortCriteria') ){
+					CCRZ.subsc.myNexeoRemoteActions.searchAllOrdersByParams( 
+                        formData
+                        ,function(resp){
+                        if (resp && resp.success && resp.data.orders){
+	                    	for (var i = 0; i < resp.data.orders.length; i++){
+								orderIds.push(resp.data.orders[i].encryptedId);
+							}
+                            //coll.canPay = response.data.canPay;
+                            coll.canPay = true;
+                            callback(resp.data.orders);
+                        };
+                        
+                    });
+
+					}else{
+						CCRZ.subsc.myNexeoRemoteActions.getAllOrdersForShipToAddress( 
+							function(resp){
+		                    if (resp && resp.success && resp.data.orders){
+		                    	for (var i = 0; i < resp.data.orders.length; i++){
+									orderIds.push(resp.data.orders[i].encryptedId);
+								}
+								callback( resp.data.orders );
+		                    };
+	                	});
+					}
+				}
+
+
+
+		    },
+		    
+		    fetchAllNavData: function(state, formdata, callback) {
+		     	var coll = this;
+				var formElements = JSON.parse(formdata);
+				if( formElements.sortCriteria === 'PONumber' ){
+					CCRZ.subsc.myNexeoRemoteActions.reorderByPONumber( 
+						formdata
+						,function(resp){
+	                    if (resp && resp.success && resp.data.orders){
+	                    	for (var i = 0; i < resp.data.orders.length; i++){
+								orderIds.push(resp.data.orders[i].encryptedId);
+							}
+							coll.canPay = true;
+							callback( resp.data.orders );
+	                    };
+                	});
+				}else{
+					if(formElements.hasOwnProperty('searchOrderInput') || formElements.hasOwnProperty('sortCriteria') ){
+						CCRZ.subsc.myNexeoRemoteActions.searchAllOrdersByParams( 
+	                        formdata
+	                        ,function(resp){
+	                        if (resp && resp.success && resp.data.orders){
+		                    	for (var i = 0; i < resp.data.orders.length; i++){
+									orderIds.push(resp.data.orders[i].encryptedId);
+								}
+	                            //coll.canPay = response.data.canPay;
+	                            coll.canPay = true;
+	                            callback(resp.data.orders);
+	                        };
+	                        
+	                    });
+
+					}else{
+						CCRZ.subsc.myNexeoRemoteActions.getAllOrdersForShipToAddress( 
+							function(resp){
+		                    if (resp && resp.success && resp.data.orders){
+		                    	for (var i = 0; i < resp.data.orders.length; i++){
+									orderIds.push(resp.data.orders[i].encryptedId);
+								}
+								callback( resp.data.orders );
+		                    };
+	                	});
+					}
+				}
+
+		    },
+		    reorder: function(orderId, callback) {
+		       	this.invokeContainerLoadingCtx($('.deskLayout'), "handleReorder", orderId, function(response){
+                    console.log("response " + JSON.stringify(response));
+	      			if(response && response.success && response.data){
+	       				callback(response.data);
+	      			}else{
+	       				CCRZ.pubSub.trigger("pageMessage", response);
+	      			}
+     			});
+
+		    },
+		    orderCancel: function(orderId, type, callback) {
+		     var coll = this;
+		     this.invokeContainerLoading($('.deskLayout'), "handleCancel", orderId, type, CCRZ.pagevars.storefrontName, function(response){
+		      coll.fetch();
+		      callback(response);
+		     });
+		    },
+		    searchOrder: function(formdata,sortCriteria, ascending, callback) {
+		     var coll = this;
+		     	CCRZ.subsc.myNexeoRemoteActions.searchAllOrdersByParams( 
+		     		formData
+	               ,function(resp){
+	                if (resp && resp.success && resp.data.orders){
+	                	for (var i = 0; i < resp.data.orders.length; i++){
+							orderIds.push(resp.data.orders[i].encryptedId);
+						}
+						for(i = 0; i < resp.data.orders.length; i++) {
+                            ordersMapForSort[ resp.data.orders[i].name]=resp.data.orders[i];
+                        }
+						callback( resp.data.orders );
+	                };
+	            });
+	     
+		    },
+		});
+
+		CCRZ.searchForm = {};
+		CCRZ.searchForm.jsonOrderStatusOptions = [{"value":"Complete/Invoiced","label":"Complete/Invoiced"},{"value":"Confirmed","label":"Confirmed"},{"value":"In-Process","label":"In-Process"},{"value":"Order Submitted","label":"Order Submitted"},{"value":"Order Rejected","label":"Order Rejected"},{"value":"Shipping","label":"Shipping"}];
+		CCRZ.views.cancelModal = Backbone.View.extend({
+		viewName : "cancelModal",
+		templateBoth : CCRZ.util.template(CCRZ.uiProperties.myOrdersView.cancelModal.tmpl),
+		initialize: function() {
+		},
+		render : function(modelData, callback) {
+		 this.dataSet = modelData;
+		 this.setElement($(CCRZ.uiProperties.myOrdersView.cancelModal.selector));
+		 var v = this;
+		 v.$el.html(v.templateBoth(this.dataSet.toJSON()));
+		 callback();
+		 CCRZ.pubSub.trigger("view:"+this.viewName+":refresh", this);
+		}
+		});
+   
+		CCRZ.views.NexeoOrdersView = CCRZ.CloudCrazeView.extend(
+		{
+		    templatePhone : CCRZ.util.template(CCRZ.uiProperties.myOrdersView.phone.tmpl),
+		    templateDesktop : CCRZ.util.template(CCRZ.uiProperties.myOrdersView.desktop.tmpl),
+		    viewName : "myOrdersView",
+		    managedSubView : true,
+		    initialize : function(){
+		     this.listenTo(this.model, "reset", this.ready);
+		     //this.model.fetch();
+		     this.dataLoadStarted = false;
+		     this.dataReady = false;
+		     this.dataModel = this.model;
+		    },
+		    events: {
+		     "click .gotoOrderDetails" : "gotoOrderDetails",
+             "click .reorder": "reorder",
+		     "click .orderSortControl" : "doOrderSort",
+		     "click .ordercancel": "processCancelAction",
+		     "click .promptCancel": "cancelEntity",
+		     "click .closeModal": "closeModal",
+		     "click .editOrder": "editOrder",
+		     "click .searchOrder": "searchOrder",
+		     "click .resetOrder": "resetOrder",
+		     "keypress .searchOrderInput" : "doSearchEnter"
+		    },
+		    initSetup: function(callback) {
+		     //CCRZ-2335 : Different Tabs under MyAccount do not pull data real-time
+		     //reset the dataLoadStarted and dataReady flags and refresh the view
+		     this.dataLoadStarted = false;
+		     this.dataReady = false;
+		     callback();
+		    },
+		    ready : function(orderList, args) { 
+		     this.orderList = orderList;
+		     this.dataReady = true; 
+		     this.render();
+		    },
+		    renderPhone : function(){
+		     if(this.dataReady) {
+		      var v = this;
+		      v.$el.html(v.templatePhone(v.orderList.toJSON()));
+		      	CCRZ.subsc.myNexeoRemoteActions.getExtendedOrdersList(orderIds,  
+				function(resp) 
+				{
+					if (resp && resp.success && resp.data.extendedData)
+					{
+						var responseData = resp.data.extendedData;
+
+						$('.myNexeoOrders').each( function()
+							{
+							 var encryptedOrderId  =  $(this).find('a.gotoOrderDetails').attr('data-Id');
+
+							 var poNumberResponse = responseData[encryptedOrderId]["poNumber"];
+							 var currencyResponse = responseData[encryptedOrderId]["currencyCode"];	
+                             var totalAmountResponse = responseData[encryptedOrderId]["totalAmount"];
+                      	if(typeof currencyResponse!='undefined'){
+                                	var formattedPrice=currencyResponse+" "+formatter.format(totalAmountResponse);
+                                        }else{
+                                        var formattedPrice=" "+formatter.format(totalAmountResponse);
+                                        }
+                            	 if (CCRZ.display.isPhone())
+								 {
+                                      $(this).find('.totalAmount').text(formattedPrice);
+								 }
+								 else
+								 {
+                                     $(this).find('[data-columnType="totalAmount"]').text(formattedPrice);
+								 }
+							
+							 if (poNumberResponse)
+							 {
+								 if (CCRZ.display.isPhone())
+								 {
+									 $(this).find('.poNumber').text(poNumberResponse);
+								 }
+								 else
+								 {
+									$(this).find('[data-columnType="PONumber"]').text(poNumberResponse);
+								 }
+							 }
+						 });
+					}
+				});
+		     }
+		    },
+		    renderDesktop : function(){
+		     if(this.dataReady) {
+		      var v = this;
+		      v.data = {};
+		      var formData = v.orderList.searchFormData || {};
+		      //populate search order form data
+		      v.data.searchOrder = formData.searchOrderInput;
+		      v.data.searchOrderStatus = formData.searchOrderStatus;
+		      v.data.fromDateStr = formData.fromDateStr;
+		      v.data.toDateStr = formData.toDateStr;
+		      
+		      v.data.orderList = v.orderList.toJSON();
+		      v.data.orderStatusOpts = CCRZ.searchForm.jsonOrderStatusOptions;
+		     
+		      v.$el.html(v.templateDesktop(v.data));
+		      	CCRZ.subsc.myNexeoRemoteActions.getExtendedOrdersList(orderIds,  
+				function(resp) 
+				{
+                    
+					if (resp && resp.success && resp.data.extendedData)
+					{
+                        
+						var responseData = resp.data.extendedData;
+							
+
+						$('.myNexeoOrders').each( function()
+							{
+							 var encryptedOrderId  =  $(this).find('a.gotoOrderDetails').attr('data-Id');
+
+							 var poNumberResponse = responseData[encryptedOrderId]["poNumber"];							    
+                             var currencyResponse = responseData[encryptedOrderId]["currencyCode"];	
+                             var totalAmountResponse = responseData[encryptedOrderId]["totalAmount"];
+                                // var formattedPrice=formatPrice(totalAmountResponse,currencyResponse);
+                                //alert("Formatted Price "+formattedPrice +" totalAmountResponse "+totalAmountResponse+" currencyResponse "+currencyResponse);
+                                //adding this function since the one provided by Cloudcraze didnt work in French
+      								if(typeof currencyResponse!='undefined'){
+                                	var formattedPrice=currencyResponse+" "+formatter.format(totalAmountResponse);
+                                        }else{
+                                        var formattedPrice=" "+formatter.format(totalAmountResponse);
+                                        }
+                                //alert(formattedPrice);
+                                
+								 if (CCRZ.display.isPhone())
+								 {
+                                      $(this).find('.totalAmount').text(formattedPrice);
+								 }
+								 else
+								 {
+                                     $(this).find('[data-columnType="totalAmount"]').text(formattedPrice);
+								 }
+							  
+							 if (poNumberResponse)
+							 {
+								 if (CCRZ.display.isPhone())
+								 {
+									 $(this).find('.poNumber').text(poNumberResponse);
+								 }
+								 else
+								 {
+									$(this).find('[data-columnType="PONumber"]').text(poNumberResponse);
+								 }
+							 }
+						 });
+					}
+				});
+		     }
+		    },
+		    preRender: function() {
+		     if(!this.dataLoadStarted) {
+		      this.dataModel.fetch();
+		      this.dataLoadStarted=true;
+		     }
+		    },
+		    postRender: function() {
+		     if(this.dataReady) {
+		      this.updateDatePicker();
+		      this.trigger('pagination:host:rendered', this, {
+		       hostView : this.viewName
+		      });
+		     }
+		    },
+		    gotoOrderDetails: function (event) {
+		     var objLink = $(event.target);
+		     var id = objLink.data("id");
+		     orderDetails(id);
+		    },
+		    reorder: function(event) {
+ 		     var objLink = $(event.target);
+		     var id = objLink.data("id");
+                
+		     this.orderList.reorder(id, function(newCartId){
+     		      cartDetails(newCartId);
+		     });
+		    },
+		    processCancelAction: function(event) {
+		     var objLink = $(event.target);
+		     var mode = objLink.data("mode");
+		     var id = objLink.data("id");
+		     $("#cancelMod_" + id).modal("hide");
+		     if (mode == 'Edit')
+		      this.editOrder(event);
+		     else
+		      this.orderCancel(event);
+		    },
+		    orderCancel: function(event) {
+		     var objLink = $(event.target);
+		     var id = objLink.data("id");
+		     var v = this;
+		     this.orderList.orderCancel(id, 'Cancel', function(orderId) {
+		      v.orderList.fetch();
+		     });
+		    },
+		    cancelEntity: function(event) {
+		     var objLink = $(event.target);
+		     var id = objLink.data("id");
+		     var mode = objLink.data("mode");
+		     var selList = this.orderList.get(id);
+		     if (selList) {
+		      selList.set('mode', mode);
+		      this.openModal(selList);
+		     }
+		    },
+		    openModal: function(orderBean) {
+		     var modalView = new CCRZ.views.cancelModal();
+		     modalView.render(orderBean, function() {
+		      $('#cancelMod_' + orderBean.attributes.sfid).modal({ keyboard: false, backdrop: 'static', show: true });
+		     });
+		    },
+		    closeModal : function(event){
+		     var objLink = $(event.target);
+		     var id = objLink.data("id");
+		     $("#cancelMod_" + id).modal("hide");
+		    },
+		    editOrder: function(event) {
+		     var objLink = $(event.target);
+		     var id = objLink.data("id");
+		     var selList = this.orderList.get(id);
+		     var v = this;
+		     v.orderList.orderCancel(id, 'Edit', function(response) {
+		      v.reorder(event);
+		     });
+		    },
+		    searchOrder: function(event) {
+			     var v = this;
+			     v.orderList.searchFormData = _.extend({"ascending":"false"},$("#searchOrderForm").serializeObject());
+
+			     //perform the search
+			     v.orderList.fetch();
+		    },
+		    doSearchEnter: function(event) {
+		     var v = this;
+		     if (event && event.keyCode == 13 || event.which == 13) {
+		      v.searchOrder();
+		      return false;
+		     } else {
+		      return true;
+		     }
+		    },
+		    updateDatePicker: function() {
+		     var daysArray = CCRZ.pagevars.pageLabels['DaysOfWeek'].split(",");
+		     var monthsArray = CCRZ.pagevars.pageLabels['MonthsOfYear'].split(",");
+		     var dateFormat = CCRZ.pagevars.pageLabels['Date_Format'];
+		     $(".requestedDate").Zebra_DatePicker({ 
+		      show_other_months: false,
+		      readonly_element: true,
+		      show_select_today: false,
+		      days: daysArray,
+		      months: monthsArray,
+		      format: dateFormat
+		     });
+		 
+		    },
+		    resetOrder:function(){
+		     var v = this;
+		     v.orderList.searchFormData={
+		      ascending:"false"     
+		     };
+		     v.orderList.fetch();
+		    },
+		  	doOrderSort : function( event ){
+                
+                var objLink = $(event.target);
+                var sortCol = objLink.data('sortcriteria');
+                var sortDir  = objLink.data('sortdir');
+                console.log('sortcriteria:' + sortCol + ' sortdirection:' + sortDir);
+                $('#orderTable .sortControl.active').removeClass('active');
+                objLink.addClass('active');
+                $('[name="sortCriteria"]').val(sortCol);
+                $('[name="sortDir"]').val(sortDir);
+
+                this.searchFormData = _.extend({"sortCriteria": sortCol, "sortDir":sortDir},$("#searchOrderForm").serializeObject());
+                this.orderList.searchFormData = this.searchFormData;
+                console.log(this.orderList.fullCollection);
+                this.orderList.fetch();
+
+
+            }
+
+		});
+
+
+	});
+	</script>
+
+</apex:component>

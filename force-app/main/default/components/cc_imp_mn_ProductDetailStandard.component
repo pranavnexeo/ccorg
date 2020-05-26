@@ -1,0 +1,547 @@
+<apex:component controller="cc_imp_ctrl_ProductDetails">
+
+	<script type="text/javascript">
+      CCRZ.uiProperties.productDetailView.desktop.tmpl = 'ProductDetailDesktopImp';
+      CCRZ.uiProperties.productDetailView.phone.tmpl = 'ProductDetailMobileImp';
+   </script>
+
+
+<script id="ProductDetailDesktopImp" type="text/template">
+		<div class="product_detail_container product_type_standard phoneProductItem">
+			<h2 class="title">{{this.product.prodBean.name}}</h2>
+			<div class="product_detail" >
+				<div class="alert alert-error messagingSection-Error" style="display: none"></div>
+				<div class="alert alert-info messagingAction-Info" style="display: none">
+					<button type="button" class="close" data-dismiss="alert" aria-hidden="true">&times;</button>
+				</div>
+				<!--<div class="prod_media">
+					{{#if this.mediaWrappers.[SVG Interactive Diagram]}}
+						{{#each this.mediaWrappers.[SVG Interactive Diagram]}}
+							<div class="interactive">{{displaySVG this 'mainProdImage prodDetail'}}</div>
+						{{/each}}
+					{{/if}}
+					<div id="altImageModal" class="modal hide fade in" tabindex="-1" role="dialog">
+						<div class="modal-header">
+							<button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;       </button>
+							<h4 class="modal-title" id="myModalLabel"></h4>
+						</div>
+						<div class="modal-body">
+							<img class="modalImg" src=""/>
+							<p class="modalText"></p>
+						</div>
+					</div>
+					{{#if this.product.mediaWrapper }}
+						<div class="product_detail_viewport" id="photoContainer">
+							<div>{{displayImage this.product.mediaWrapper 'mainProdImage prodDetail'}}</div>
+							{{#if this.mediaWrappers.[Alternate Images]}}
+								<div class="altImages">
+									<img class="alternate" src="{{productImage ../product.mediaWrapper}}" data-id="{{../product.mediaWrapper.altMessage}}"/>
+									{{#each this.mediaWrappers.[Alternate Images]}}
+										<img class="alternate" src="{{productImage this}}" data-id="{{this.altMessage}}"/>
+									{{/each}}
+								</div>
+							{{/if}}
+						</div>
+					{{else}}
+						{{#if this.mediaWrappers.[SVG Interactive Diagram]}}
+						{{else}}
+							<div class="product_detail_viewport" id="photoContainer">
+								<div>{{displayImage this.product.mediaWrapper 'mainProdImage prodDetail'}}</div>
+							</div>
+						{{/if}}
+					{{/if}}
+				</div>-->
+				<div class="product_detail_item wishFinder" data-sku="{{this.product.prodBean.sku}}">
+					<div class="product_title">{{this.product.prodBean.name}}</div> 
+
+				  {{#ifGreater this.product.price '0' }}
+					<div>
+						<a href="#" class="msds-btn-link" data-id="{!productNumber}" data-sfid="{{this.product.prodBean.id}}">{{pageLabelMap 'cc_imp_mn_fetchSDS'}}</a>
+					</div>
+				 {{/ifGreater}} 
+					{{#ifDisplay 'PD.DsplSku'}}
+						<div class="sku"><div class="label">{{pageLabelMap 'ProductDetailsInc_SKU'}}</div>
+                       <!--<div class="value">{{this.product.prodBean.sku}}</div></div>-->
+                           <div class="value">{!productNumber}</div></div>
+					{{/ifDisplay}}
+						<div class="sku">
+							<div class="label">{{pageLabelMap 'CustomerMaterialNumber'}}</div>
+							<div class="value">{!customerMaterialNumber}</div>
+						</div>
+					{{#ifDisplay 'PD.DsplAvlb'}}
+						<div class="inventory">
+							<div class="label">{{pageLabelMap 'ProductDetails_Availability'}}</div>
+							{{#ifStoreSetting 'InventoryCheckFlag__c'}}
+								<div class="value">{{{this.product.inventory}}}</div>
+							{{else}}
+								<div class="value">{{{pageLabelMap this.product.availMsg}}}</div>
+							{{/ifStoreSetting}}
+						</div>
+					{{/ifDisplay}}
+					{{#ifDisplay 'PR.Enabled'}}
+						<div id="avgRating" class="rateit" data-rateit-value="{{this.product.avgRating}}" data-rateit-ispreset="true" data-rateit-readonly="true">
+							<div class="label">{{pageLabelMap 'NumberofReviews' this.numberOfReviews }}</div>
+						</div>
+					{{/ifDisplay}}
+					{{#ifDisplay 'PD.DsplSDesc'}}
+						<div class="shortDesc"><div class="pblock">{{{this.product.prodBean.shortDesc}}}</div></div>
+					{{/ifDisplay}}
+					{{#if this.product.showPricing}}
+						{{#ifDisplay 'PD.DsplPrc'}}
+							{{#if this.product.price}}
+								<div class="price_block">
+									{{#ifDisplay 'PD.DsplListPrc'}}
+										{{#if this.product.basePrice}}
+											<div class="baseprice"><div class="label">{{pageLabelMap 'ProductDetails_ListPrice'}}</div><div class="value">{!currencyPrice}</div></div>
+										{{/if}}
+									{{/ifDisplay}}
+									<div class="price"><div class="label">{{pageLabelMap 'Price'}}</div><div class="value">{!currencyPrice}</div></div>
+									{{#ifDisplay 'PD.DsplSvPrc'}}
+										{{#if this.product.savings}}
+											<div class="savings"><div class="label">{{pageLabelMap 'YouSave'}}</div><div class="value">{{price this.product.savings}}</div></div>
+										{{/if}}
+									{{/ifDisplay}}
+								</div>
+							{{/if}}
+						{{/ifDisplay}}
+					{{/if}}
+					<div id="pricingTiers"></div>
+					{{#if this.product.canAddtoCart}}
+						<div class="quantity_block">
+							{{#if this.product.qtySkipIncrement}}
+								<input type="button" value="{{pageLabelMap 'Prod_QtyDecrFF'}}" class="plus_minus minusFF">
+							{{/if}}
+							{{#ifNotEquals this.product.qtySingleIncrement 1}}
+								<input type="button" value="{{pageLabelMap 'Prod_QtyDecrSingle'}}" class="plus_minus minus">
+		    					<input type="text" readonly="true" name="qty" value="0" class="entry plus_minus verifyQuantity" data-minqty="{!minimumQuantity}" />
+		        				<input type="button" value="{{pageLabelMap 'Prod_QtyIncrSingle'}}" class="plus_minus plus">
+		        			{{else}}
+		        				<div class="label">{{pageLabelMap 'Qty'}}</div><input type="text" id="qty" name="qty" value="{!minimumQuantity}" class="input-text entry plus_minus verifyQuantity" data-minqty="{!minimumQuantity}" data-currency="{!currencyCode}" maxlength="7" />
+		        			{{/ifNotEquals}}
+		        			{{#if this.product.qtySkipIncrement}}
+		        				<input type="button" value="{{pageLabelMap 'Prod_QtyIncrFF'}}" class="plus_minus plusFF">
+		        			{{/if}}
+                             <input type="hidden" name="currency" value="{!currencyPrice}"/>
+		        			<input type="hidden" name="qtyIncrement" value="{{this.product.qtySingleIncrement}}" class="item_qtyIncrement" />
+		        			<input type="hidden" name="qtySkipIncrement" value="{{this.product.qtySkipIncrement}}" class="item_qtySkipIncrement" />
+		        			{{#ifDisplay 'PD.DsplUOM'}}
+							<span class="uom">&#160;<span class="label">{{pageLabelMap 'ProductDetails_UnitOfMeasure'}}</span><span class="value">&#160;{{pageLabelPrefixMap 'UOM_' this.product.prodBean.UnitOfMeasure}}</span></span>
+							{{/ifDisplay}}
+						</div>
+						{{#unless this.showNewSubscriptionSelection}}
+							{{#if this.product.prodBean.showSubscriptionSelection}}
+								<div class="subscriptionSelectionDiv">
+									<p class="subscription_selection"><span class="subscriptionLabel">{{pageLabelMap 'Subscribe_And_Save_Label'}}</span>
+									<select class="subscriptionFrequencySelection" data-subscription="{{this.product.prodBean.sku}}">
+									{{#each this.product.prodBean.subscriptionFrequencies}}
+										<option value="{{safeQuote this}}">{{pageLabelMapMultiString 'Subscribe_And_Save_' this}}</option>
+									{{/each}}
+									</select>
+									</p>
+	    						</div>
+							{{/if}}
+
+							<div class="wishButtons plus_minus"></div>
+
+							<div class="action" >
+								<button type="button" class="btn btn-primary addItem verifyQuantityOnAddToCartButton" data-sku="{{this.product.prodBean.sku}}">{{pageLabelMap 'Component_MiniwishList_AddToCart'}}</button>
+							</div>
+						{{/unless}}
+					{{/if}}
+				</div>
+			</div>
+
+			{{#if this.showNewSubscriptionSelection}}
+				{{#if this.product.canAddtoCart}}
+					<div class="subscriptionSelectionDiv clearfix">
+						<h2>{{pageLabelMap 'Subscribe_And_Save_Label'}}</h2>
+						{{#each this.subProdTerms}}
+							{{#if this.CC_NO_SUBSCRIPTION}}
+								<div class="item_container">
+									<div class="control">
+										<label class="radio name">
+										<input value="nosuboption" data-nme="nosuboption" type="radio" name="subOptionGuider{{this.productSKU}}" {{this.checked}}/>									
+										{{pageLabelMap 'Prod_NoSubscriptionOption' (price this.productPrice)}}</label>
+								</div>
+							</div>
+							{{else}}
+								<div class="item_container">
+									<div class="control">
+										<label class="radio name">
+										<input value="{{this.sfid}}" data-nme="{{this.name}}" type="radio" name="subOptionGuider{{this.productSKU}}" {{this.checked}}/>					
+										{{#if this.modifierSubscriptions}}
+											{{insertTokens this.pdpDisplayName this.displayName (price this.productPrice) (price this.subscriptionPrice) (pageLabelPrefixMap 'Subscriptions_Frequency_' this.orderFrequencyUOM) (pageLabelPrefixMap 'Subscriptions_Frequency_' this.installmentFrequencyUOM) this.orderFrequency this.installmentFrequency this.installmentCount this.orderCount (price this.modifierSubscriptions.[0].productPrice) (price this.modifierSubscriptions.[0].subscriptionPrice) this.modifierSubscriptions.[0].orderCount this.modifierSubscriptions.[0].installmentCount}}
+										{{else}}
+											{{insertTokens this.pdpDisplayName this.displayName (price this.productPrice) (price this.subscriptionPrice) (pageLabelPrefixMap 'Subscriptions_Frequency_' this.orderFrequencyUOM) (pageLabelPrefixMap 'Subscriptions_Frequency_' this.installmentFrequencyUOM) this.orderFrequency this.installmentFrequency this.installmentCount this.orderCount}}
+										{{/if}}
+										</span></label>
+									</div>
+								</div>
+							{{/if}}
+						{{/each}}	
+						<div class="action pull-right" >
+							<button type="button" class="btn btn-primary addItem verifyQuantityOnAddToCartButton" data-sku="{{this.product.prodBean.sku}}">{{pageLabelMap 'Component_MiniwishList_AddToCart'}}</button>
+						</div>							
+					</div>
+				{{/if}}
+			{{/if}}
+		</div>
+
+		<div class="tabSection"></div>
+		<div class="widgetSection"></div>
+	</script>
+
+	<script id="ProductDetailMobileImp" type="text/template">
+		<div class="product_detail_container product_type_standard_phone">
+			<h2 class="title">{{this.product.prodBean.name}}</h2>
+			<div class="product_detail">
+				<div class="alert alert-error messagingSection-Error" style="display: none"></div>
+				<div class="alert alert-info messagingAction-Info" style="display: none"></div>
+				<div class="product_detail_item phoneProductItem wishFinder" data-sku="{{this.product.prodBean.sku}}">
+					<div class="product_detail_viewport" id="photoContainer">
+						<div>{{displayImage this.product.mediaWrapper 'mainProdImage prodDetail'}}</div>
+					</div>
+					<p class="product_title">{{this.product.prodBean.name}}</p>
+					{{#ifGreater this.product.price '0' }}
+						<p><span><strong>
+							<a href="#" class="msds-btn-link" data-id="{!productNumber}" data-sfid="{{this.product.prodBean.id}}">{{pageLabelMap 'cc_imp_mn_fetchSDS'}}</a></strong></span>
+						</p>
+				 	{{/ifGreater}} 
+					{{#ifDisplay 'PD.DsplSku'}}
+						<p><span><strong>{{pageLabelMap 'ProductDetailsInc_SKU'}}:</strong>&nbsp;</span><span id="product_detail_sku">{{this.product.prodBean.sku}}</span></p>
+					{{/ifDisplay}}
+
+					{{#ifDisplay 'PD.DsplUOM'}}
+						<p><span><strong>{{pageLabelMap 'ProductDetails_UnitOfMeasure'}}:</strong>&nbsp;{{pageLabelPrefixMap 'UOM_' this.product.prodBean.UnitOfMeasure}}</span></p>
+					{{/ifDisplay}}
+						<p><span><strong>{{pageLabelMap 'CustomerMaterialNumber'}}:</strong>&nbsp;{!customerMaterialNumber}</span></p>
+					{{#ifDisplay 'PD.DsplAvlb'}}
+						<p class="spacer">
+							<span>
+								{{#ifStoreSetting 'InventoryCheckFlag__c'}}
+									<strong>{{pageLabelMap 'ProductDetails_Availability'}}:</strong>&nbsp;{{this.product.inventory}}
+								{{else}}
+									<strong>{{pageLabelMap 'ProductDetails_Availability'}}:</strong>&nbsp;{{pageLabelMap this.product.availMsg}}
+								{{/ifStoreSetting}}
+							</span>
+						</p>
+					{{/ifDisplay}}
+					{{#if this.product.showPricing}}
+						{{#ifDisplay 'PD.DsplPrc'}}
+							{{#if this.product.price}}
+								<p><span>
+									{{#ifDisplay 'PD.DsplListPrc'}}
+										{{#if this.product.basePrice}}
+											<del>{{price this.product.basePrice}}</del>&nbsp;
+										{{/if}}
+									{{/ifDisplay}}
+									<strong class="price">{{price this.product.price}}</strong>
+								</span></p>
+							{{/if}}
+						{{/ifDisplay}}
+						{{#ifDisplay 'PD.DsplSvPrc'}}
+							{{#if this.product.savings}}
+								<p><span><strong>{{pageLabelMap 'YouSave'}}:</strong>{{price this.product.savings}}</span><p>
+							{{/if}}
+						{{/ifDisplay}}
+					{{/if}}
+					{{#ifDisplay 'PR.Enabled'}}
+						<div id="avgRating" class="rateit" data-rateit-value="{{this.product.avgRating}}" data-rateit-ispreset="true" data-rateit-readonly="true">
+							{{pageLabelMap 'NumberofReviews' this.numberOfReviews }}
+						</div>
+					{{/ifDisplay}}
+					{{#if this.product.canAddtoCart}}
+						{{#ifDisplay 'PD.DsplAddCart' }}
+								<p class="plus_minus">
+									{{#if this.product.qtySkipIncrement}}
+										<input type="button" value="{{pageLabelMap 'Prod_QtyDecrFF'}}" class="plus_minus minusFF">
+									{{/if}}
+									<input type="button" value="{{pageLabelMap 'Prod_QtyDecrSingle'}}" class="plus_minus minus">
+									{{#ifNotEquals this.product.qtySingleIncrement 1}}
+			    					<input type="text" readonly="true" name="qty" value="0" class="entry plus_minus verifyQuantity" data-minqty="{!minimumQuantity}" data-currency="{!currencyCode}" maxlength="7" />
+			    	    			{{else}}
+			        				<input type="text" name="qty" value="1" class="input-text entry plus_minus verifyQuantity" data-minqty="{!minimumQuantity}" data-currency="{!currencyCode}" maxlength="7" />
+				        			{{/ifNotEquals}}
+			    	    			<input type="button" value="{{pageLabelMap 'Prod_QtyIncrSingle'}}" class="plus_minus plus">
+			        				{{#if this.product.qtySkipIncrement}}
+			        					<input type="button" value="{{pageLabelMap 'Prod_QtyIncrFF'}}" class="plus_minus plusFF">
+			        				{{/if}}
+			        				<input type="hidden" name="qtyIncrement" value="{{this.product.qtySingleIncrement}}" class="item_qtyIncrement" />
+				        			<input type="hidden" name="qtySkipIncrement" value="{{this.product.qtySkipIncrement}}" class="item_qtySkipIncrement" />
+								</p>
+                                {{#unless this.showNewSubscriptionSelection}}
+								{{#if this.product.prodBean.showSubscriptionSelection}}
+									<p class="subscription_selection">{{pageLabelMap 'Subscribe_And_Save_Label'}}
+										<select class="subscriptionFrequencySelection" data-subscription="{{this.product.prodBean.sku}}">
+											{{#each this.product.prodBean.subscriptionFrequencies}}
+											<option value="{{safeQuote this}}">{{pageLabelMapMultiString 'Subscribe_And_Save_' this}}</option>
+											{{/each}}
+										</select>
+									</p>
+    							{{/if}}
+    							<p>
+									<button type="button" class="btn btn-primary addItem verifyQuantityOnAddToCartButton" data-sku="{{this.product.prodBean.sku}}">{{pageLabelMap 'Component_MiniwishList_AddToCart'}}</button>
+								</p>
+                                {{/unless}}
+                                {{#if this.showNewSubscriptionSelection}}
+                                    {{#if this.product.canAddtoCart}}
+                                        <div class="subscriptionSelectionDiv clearfix">
+                                            <h2>{{pageLabelMap 'Subscribe_And_Save_Label'}}</h2>
+                                                {{#each this.subProdTerms}}
+                                                    {{#if this.CC_NO_SUBSCRIPTION}}
+                                                        <div class="item_container">
+                                                            <div class="control">
+                                                                <label class="radio name">
+                                                                    <input value="nosuboption" data-nme="nosuboption" type="radio" name="subOptionGuider{{this.productSKU}}" {{this.checked}}/>                                 
+                                                                    {{pageLabelMap 'Prod_NoSubscriptionOption' (price this.productPrice)}}</label>
+                                                            </div>
+                                                        </div>
+                                                    {{else}}
+                                                        <div class="item_container">
+                                                            <div class="control">
+                                                                <label class="radio name">
+                                                                    <input value="{{this.sfid}}" data-nme="{{this.name}}" type="radio" name="subOptionGuider{{this.productSKU}}" {{this.checked}}/>                 
+                                                                        {{#if this.modifierSubscriptions}}
+                                                                            {{insertTokens this.pdpDisplayName this.displayName (price this.productPrice) (price this.subscriptionPrice) (pageLabelPrefixMap 'Subscriptions_Frequency_' this.orderFrequencyUOM) (pageLabelPrefixMap 'Subscriptions_Frequency_' this.installmentFrequencyUOM) this.orderFrequency this.installmentFrequency this.installmentCount this.orderCount (price this.modifierSubscriptions.[0].productPrice) (price this.modifierSubscriptions.[0].subscriptionPrice) this.modifierSubscriptions.[0].orderCount this.modifierSubscriptions.[0].installmentCount}}
+                                                                        {{else}}
+                                                                            {{insertTokens this.pdpDisplayName this.displayName (price this.productPrice) (price this.subscriptionPrice) (pageLabelPrefixMap 'Subscriptions_Frequency_' this.orderFrequencyUOM) (pageLabelPrefixMap 'Subscriptions_Frequency_' this.installmentFrequencyUOM) this.orderFrequency this.installmentFrequency this.installmentCount this.orderCount}}
+                                                                        {{/if}}
+                                                                </span></label>
+                                                           </div>
+                                                      </div>
+                                                   {{/if}}
+                                            {{/each}}   
+                                        <p>
+                                            <button type="button" class="btn btn-primary addItem verifyQuantityOnAddToCartButton" data-sku="{{this.product.prodBean.sku}}">{{pageLabelMap 'Component_MiniwishList_AddToCart'}}</button>
+                                        <p>                         
+                                    </div>
+                                {{/if}}
+                            {{/if}}
+						{{/ifDisplay}}
+					{{/if}}
+                    {{#unless this.showNewSubscriptionSelection}}
+					<div class="wishFinder" data-sku="{{this.product.prodBean.sku}}">
+						<p class="wishButtons"></p>
+					</div>
+                    {{/unless}}
+					{{#ifDisplay 'PD.DsplSDesc'}}
+						<p class="shortDesc plus_minus"><br/>{{{this.product.prodBean.shortDesc}}}</p>
+					{{/ifDisplay}}
+				</div>
+			</div>
+		</div>
+		<div class="tabSection"></div>
+		<div class="widgetSection"></div>
+	</script>
+
+	<script id="TieredPricing" type="text/template">
+    	{{#if this.tiers}}
+    	<div class="label">{{pageLabelMap 'cc_imp_TieredPricing'}}</div>
+        <table id="tieredPricing" class="shopping_cart">
+            <tr class="even">
+                <td class="right_align">{{pageLabelMap 'cc_imp_TieredPricing_LowerBound'}}</td>
+                <td class="right_align">{{pageLabelMap 'cc_imp_TieredPricing_Amount'}}</td>
+                <td class="right_align">{{pageLabelMap 'cc_imp_TieredPricing_BaseAmount'}}</td>
+            </tr>
+            {{#each this.tiers}}
+            <tr class="odd myAccOrderRows">
+                <td class="right_align">{{this.lowerBound}}</td>
+                <td class="right_align">{{price this.amount}}</td>
+                <td class="right_align">{{this.baseAmount}}</td>
+            </tr>
+            {{/each}}
+        </table>
+    	{{/if}}
+    </script>
+
+	<script>
+		jQuery(function($) {	
+        	CCRZ.views.TieredPricingView = CCRZ.CloudCrazeView.extend({
+            	template: CCRZ.util.template('TieredPricing'),
+            	viewName : "TieredPricing",
+            	data : {"tiers" : {!tiers}},
+
+            	render: function() {
+                	this.setElement('#pricingTiers');
+                	this.$el.html(this.template(this.data));
+                	CCRZ.pubSub.trigger("view:"+this.viewName+":refresh", this);
+            	}
+        	});
+
+			CCRZ.pubSub.on('view:productDetailView:refresh', function(prodView) {
+
+			 	if (!CCRZ.subsc.tieredPricing) {
+        			CCRZ.subsc = _.extend(CCRZ.subsc||{});
+        			CCRZ.subsc.tieredPricing = new CCRZ.views.TieredPricingView();
+        		}
+        		CCRZ.subsc.tieredPricing.render();
+        	});
+
+			CCRZ.pubSub.once('view:productDetailView:refresh', function(view){
+				console.log('******* Add quantity check here');
+
+
+            	var viewPrototype = Object.getPrototypeOf(view);
+
+            	if (viewPrototype != null) {
+                	viewPrototype.events = _.extend(viewPrototype.events, {
+                		"change .verifyQuantity" : "verifyQuantity" ,
+                		// "focus .verifyQuantity" : "saveCurrentQuantity",
+                		"click .addItem" : "verifyQuantityOnAddToCartButton",
+                		"click .msds-btn-link" : "fetchMSDS"
+                	});
+
+                	viewPrototype.verifyQuantityOnAddToCartButton = function(event) {
+                        
+                		console.log("*** verifyQuantityOnAddToCartButton")
+                		var v = this;
+                		var success = true;
+
+                		$(".verifyQuantity").each(function(index, element){
+                          
+                			console.log("*** Iterating: %o", $(this));
+                			// console.log("*** Iterating: %o", this.val());
+                			if(! v.performVerifyQuantity($(element)) ){
+                				console.log("*** verification failed");
+                				success = false;
+                				return false;
+                			}
+                			else {
+                				console.log("*** verification passed");
+                			}
+
+                		});
+
+                		if(success){
+                			console.log("*** verifyQuantityOnAddToCartButton -- now submit")
+                            this.addItem(event);
+                		}
+                	};
+
+                	viewPrototype.verifyQuantity = function(event) {
+
+
+                    	var objLink = $(event.target);
+                    	this.performVerifyQuantity(objLink);
+            			return false;
+            		};
+
+                	viewPrototype.performVerifyQuantity = function(objLink) {
+                    	var qty = objLink.val();
+                    	var minqty = objLink.data("minqty");
+                        var currency = objLink.data("currency");
+                    	var prevqty = objLink.data("curqty");
+						var cartCurrency ="{!cartCurrency}";   
+                        //alert("currency "+currency);
+                        //alert("cartCurrency "+cartCurrency);
+            			console.log('*** Currency: ' + cartCurrency);
+            			console.log('*** Changed Quantity: ' + qty);
+            			console.log('*** Min Quantity: ' + minqty);
+            			console.log('*** Prevqty: ' + prevqty);
+            			if(qty < minqty){
+            				console.log("*** Minimum Quantity not met");
+                    		// objLink.data('curqty', prevqty);
+                    		objLink.val(prevqty);
+
+                            	CCRZ.pubSub.trigger('pageMessage',{
+                            		messages :      [{
+                            		type:          'CUSTOM',
+                            		severity:      'ERROR',
+                            		classToAppend: 'messagingSection-Error',
+                            		labelId:       'cc_imp_error_minQuantityError'}]
+                            	});
+                            return false;
+            			}                        
+                        if(currency!=cartCurrency && cartCurrency!=''){                        
+                        console.log("*** Cart Currency not met");
+                    		// objLink.data('curqty', prevqty);
+                    		
+
+                            	CCRZ.pubSub.trigger('pageMessage',{
+                            		messages :      [{
+                            		type:          'CUSTOM',
+                            		severity:      'ERROR',
+                            		classToAppend: 'messagingSection-Error',
+                            		labelId:       'cc_imp_error_currencyError'}]
+                            	});
+                            return false;
+                        }
+            			return true;
+                	};
+
+		            viewPrototype.fetchMSDS = function(event) {
+		              	var objLink = $(event.target);
+
+                		var materialId = objLink.data("id");	
+                		var sfid = objLink.data("sfid");	
+
+	                	Visualforce.remoting.Manager.invokeAction(
+	                    '{!$RemoteAction.cc_imp_ctrl_ProductDetails.fetchMSDS}',
+	                    CCRZ.pagevars.remoteContext,
+	                    materialId,
+	                    sfid,
+	                    function(response)
+	                    {
+	                      if (response && response.data.success)
+	                      {
+	                        if (response.data.sdsData)
+	                        {
+	                             var pdfDataAsUri = "/mynexeo/servlet/servlet.FileDownload?file=" + response.data.sdsData;
+
+	                             window.open(pdfDataAsUri);
+	                        }
+	                        else
+	                        {
+	                           /*setTimeout(function()
+	                           {
+	                               CCRZ.pubSub.trigger('pageMessage',{
+	                                   messages :      [{
+	                                       type:          'CUSTOM',
+	                                       severity:      'INFO',
+	                                       classToAppend: 'messagingAction-Info',
+	                                       labelId:       'cc_imp_no_sds_pdf'}]
+	                               });
+	                           });*/
+	                            var message = CCRZ.processPageLabelMap('cc_imp_no_cofa_pdf');
+                                    //need to add new message for the above
+                                CCRZ.pubSub.trigger('pageMessage', CCRZ.createPageMessage('ERROR', 'messagingSection-Error', message)); 
+	                        }
+	                      }
+	                      else
+	                      {		/*
+	                           setTimeout(function()
+	                           {
+	                               CCRZ.pubSub.trigger('pageMessage',{
+	                                   messages :      [{
+	                                       type:          'CUSTOM',
+	                                       severity:      'ERROR',
+	                                       classToAppend: 'messagingSection-Error',
+	                                       labelId:       'cc_imp_error_processing_sds_request'}]
+	                               });
+	                           });*/
+	                            var message = CCRZ.processPageLabelMap('cc_imp_no_svc_connection');
+                                CCRZ.pubSub.trigger('pageMessage', CCRZ.createPageMessage('ERROR', 'messagingSection-Error', message));
+	                        }      
+	                    });
+	                }; // end of FETCH MSDS
+
+	              /*
+                	viewPrototype.saveCurrentQuantity = function(event) {
+                    	var objLink = $(event.target);
+                    	var curqty = objLink.val();
+                    	var minqty = objLink.data("minqty");
+                    	if(curqty >= minqty){
+                    		objLink.data('curqty', curqty);
+                    	}
+
+            			console.log('*** Saved current quantity: ' + curqty);
+            		};
+                */
+
+	                // JOA - Fix for FETCH SDS
+	               view.delegateEvents();
+            	}// end of view prototype is not null check
+			});
+		});
+	</script>
+</apex:component>

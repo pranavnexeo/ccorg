@@ -1,0 +1,151 @@
+<!-- 
+Description: In order to support functionalities of Work Item Queue
+Date: 10 / 2 / 2017
+Developer: Ignacio Gonzalez
+-->
+<apex:page standardController="Work_Item__c" action="{!validateUserPermissions}"  extensions="WorkItemExtension" lightningStylesheets="{!$User.UIThemeDisplayed == 'Theme4d'}">
+<style>
+.sfdcBody div.autoCompleteBoxScrolling {
+	width: 28% !important;
+} 
+
+body .detailList .dataCol input[type="text"] {
+	min-width: 14rem !important;
+}   
+</style>       
+    <apex:form id="newWI">
+        <apex:pageMessages ></apex:pageMessages>
+        <apex:sectionHeader title="{!$Label.Work_Item_Header}"/>
+            <apex:pageBlock title="{!$Label.Work_Item_Detail}" mode="edit" id="proid">
+                
+                <apex:pageBlockButtons id="buttons" location="top">
+                    <apex:commandButton action="{!save}" value="Save"/>
+                    <apex:commandButton action="{!cancel}" value="Cancel"/>
+                </apex:pageBlockButtons>
+                
+              
+                <!-- Start information section -->
+                <apex:pageBlockSection showHeader="true" title="{!$Label.Work_Item_Information}" columns="2"
+                id="information">
+                    <apex:inputField value="{!Work_Item__c.Name}" required="true"/>
+                    <apex:outputField value="{!Work_Item__c.UTN__c}" />
+                    <apex:inputField value="{!Work_Item__c.Functional_Team__c}" required="true"/> 
+                    <apex:outputField value="{!Work_Item__c.RecordTypeId}" rendered="{!Work_Item__c.Id != null}"/>                     
+                    
+                </apex:pageBlockSection>
+                <!-- End information section -->
+                
+                <!-- Start FDR section -->
+                <apex:pageBlockSection showHeader="true" title="{!$Label.Work_Item_FDR_Properties}" columns="2"
+                                id="FDR2">
+                    <apex:inputField value="{!Work_Item__c.Functional_Design_Registration__c}" /> 
+                    
+                    <apex:inputField value="{!Work_Item__c.Primary_Business_Contact_FIM__c}" /> 
+                   	
+
+                    <apex:pageblockSectionItem >
+                        <apex:outputLabel for="frmRepresentative" value="{!$ObjectType.Work_Item__c.fields.FRM_Representative__c.Label}" />
+                    	<apex:inputText id="frmRepresentative" value="{!frmRepresentative}" disabled="true"/>
+                    </apex:pageblockSectionItem>	
+                        
+                    <apex:inputField value="{!Work_Item__c.Investigation_Prototype__c}" />
+                    <apex:inputField value="{!Work_Item__c.Review_Date__c}" />
+                    
+                </apex:pageBlockSection>
+                <!-- End FDR section -->
+                
+                <!-- Start ProdInc section -->
+                <apex:pageBlockSection showHeader="true" title="{!$Label.Work_Item_Incident_Properties}" columns="2"
+                                id="ProdInc"
+                                rendered="{!IF((Work_Item__c.RecordTypeId = OECustomSettings['Work_Item_PS_Record_Type_Id18__c'] || Work_Item__c.RecordTypeId = OECustomSettings['Work_Item_PS_Record_Type_Id15__c']),'true', 'false')}">
+                    <apex:inputText value="{!Work_Item__c.Incident_ID_Form__c}"  disabled="true"/>
+                    <apex:inputText value="{!Work_Item__c.Incident_Owner_Form__c}" disabled="true"/>
+
+                    <apex:pageblockSectionItem >
+                        <apex:outputLabel >{!$ObjectType.Work_Item__c.fields.Target_Go_Live_Date_For_Incident_Form__c.Label}</apex:outputLabel>
+                        <apex:inputText id="targetGoLiveIncident" value="{!targetGoLiveIncident}" disabled="true" />
+					</apex:pageblockSectionItem>
+                </apex:pageBlockSection>
+                <!-- End ProdInc section -->
+                
+                <!-- Start Enhancement section -->
+        
+                <apex:pageBlockSection showHeader="true" title="{!$Label.Work_Item_Enhancement_Properties}" columns="2"
+                                id="enhancement2"
+                                rendered="{!IF((Work_Item__c.RecordTypeId = OECustomSettings['Work_Item_Enhancement_Record_Type_Id18__c']|| Work_Item__c.RecordTypeId = OECustomSettings['Work_Item_Enhancement_Record_Type_Id15__c']),'true', 'false')}">
+                    
+                   
+                    <apex:pageblockSectionItem >
+                        <apex:outputLabel for="enhancementName" value="{!$ObjectType.Enhancement__c.fields.Name.Label}" />
+                        <apex:inputText id="enhancementName" value="{!Work_Item__c.Enhancement_Number__r.Name}" disabled="true"/>
+                    </apex:pageblockSectionItem>                    
+                    
+                    <apex:inputText value="{!Work_Item__c.Improvement_Number__c}" disabled="true"/>
+                    <apex:inputField value="{!Work_Item__c.In_Scope__c}" /> 
+                    <apex:inputText value="{!Work_Item__c.Project__c}" disabled="true"/>
+                    <apex:inputText value="{!Work_Item__c.Target_Go_live_Quarter_Form__c}" disabled="true"/>
+
+                    
+                    <apex:inputText value="{!Work_Item__c.Priority__c}" disabled="true"/> 
+                    <apex:inputField value="{!Work_Item__c.Link_to_Sharepoint__c}" />
+                    
+                    <apex:pageblockSectionItem >
+                        <apex:outputLabel for="targetGoLiveEnhancement" value="{!$ObjectType.Work_Item__c.fields.Target_Go_live_Date__c.Label}" />
+                        <apex:inputText id="targetGoLiveEnhancement" value="{!targetGoLiveEnhancement}" disabled="true"/>
+                    </apex:pageblockSectionItem>
+                    	
+					
+                </apex:pageBlockSection>
+            <!-- End Enhancement section -->
+                
+            <!-- Start Enhancement section -->
+        
+                <apex:pageBlockSection showHeader="true" title="{!$Label.Work_Item_Maintenance_Properties}" columns="2"
+                                id="maintenance"
+                                rendered="{!IF((Work_Item__c.RecordTypeId = OECustomSettings['Work_Item_Maintenance_Record_Type_Id18__c'] || Work_Item__c.RecordTypeId = OECustomSettings['Work_Item_Maintenance_Record_Type_Id15__c']),'true', 'false')}">
+                    
+                   
+                    <apex:pageblockSectionItem >
+                        <apex:outputLabel for="maintenanceName" value="{!$ObjectType.Enhancement__c.fields.Name.Label}" />
+                        <apex:inputText id="maintenanceName" value="{!Work_Item__c.Enhancement_Number__r.Name}" disabled="true"/>
+                    </apex:pageblockSectionItem>  
+                    
+                    <apex:inputText value="{!Work_Item__c.Improvement_Number__c}" disabled="true"/>
+                    <apex:inputField value="{!Work_Item__c.In_Scope__c}" /> 
+                    <apex:inputText value="{!Work_Item__c.Project__c}" disabled="true"/>
+                    <apex:inputText value="{!Work_Item__c.Target_Go_live_Quarter_Form__c}" disabled="true"/>
+                    
+                    <apex:inputText value="{!Work_Item__c.Priority__c}" disabled="true"/> 
+                    <apex:inputField value="{!Work_Item__c.Link_to_Sharepoint__c}" />
+                    
+                    <apex:pageblockSectionItem >
+                        <apex:outputLabel for="targetGoLiveEnhancement" value="{!$ObjectType.Work_Item__c.fields.Target_Go_live_Date__c.Label}" />
+                        <apex:inputText id="targetGoLiveEnhancement" value="{!targetGoLiveEnhancement}" disabled="true"/>
+                    </apex:pageblockSectionItem>
+                    
+                </apex:pageBlockSection>
+            <!-- End Enhancement section -->
+                
+            <!-- Start it information section -->
+            <apex:pageBlockSection showHeader="true" title="{!$Label.Work_IT_Information}" columns="2"
+                id="itInformation">
+                <apex:pageblocksection columns="1">
+                	<apex:inputField value="{!Work_Item__c.Technology__c}" required="true"/>
+               		<apex:inputField value="{!Work_Item__c.Assigned_Technical_Resource__c}" />
+                	<apex:inputField value="{!Work_Item__c.Status__c}" />
+                    <apex:inputField value="{!Work_Item__c.Status_Description__c}" />
+                    <apex:inputField value="{!Work_Item__c.Status_Description_Date__c}" />
+                </apex:pageblocksection>
+                <apex:pageblocksection columns="1">
+                	<apex:inputField value="{!Work_Item__c.Resource_Hours__c}" />
+                    <apex:inputField value="{!Work_Item__c.Estimate_Development_Completion_Date__c}" />
+                    <apex:inputField value="{!Work_Item__c.Actual_Development_Completion_Date__c}" />
+                	<apex:inputField value="{!Work_Item__c.Description__c}" /> 
+                    <apex:inputField value="{!Work_Item__c.Requestor__c}" /> 
+   				</apex:pageblocksection>
+            </apex:pageBlockSection>
+            <!-- End  it information  section -->
+                
+            </apex:pageBlock>
+    </apex:form>
+</apex:page>

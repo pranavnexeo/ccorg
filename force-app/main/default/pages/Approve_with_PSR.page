@@ -1,0 +1,241 @@
+<apex:page controller="Reject_Alternate_Form" Action="{!FormOnLoad}" showheader="false" sidebar="false" standardStylesheets="false">
+<div class="ui-widget-content ui-corner-all">
+<form id="psrform">
+<div id="formbuttons" class="ui-widget-header ui-corner-all">
+<a href="javascript:void(0)" id="psrSaveSubmit" class="easyui-linkbutton" data-options="iconCls:'icon-savesubmit'" >Save and Submit</a>
+<a href="javascript:void(0)" id="psrCancelForm" class="easyui-linkbutton" data-options="iconCls:'icon-cancel'" >Cancel</a>  
+</div>
+<input type="hidden" name="ids" value="{!$CurrentPage.parameters.ids}"/>
+<input type="hidden" id="psr" name="psr" value="psr"/>
+<input type="hidden" id="psId" name="psId"/>
+    <table>
+        <tr>
+            <td style="vertical-align:top;padding-right:1px;">
+                <table>
+                    <tr style="height:10px;">
+                        <td style="vertical-align:top;padding-right:1px;">
+                            <b>Approval Comments</b>
+                        </td>
+                    </tr>
+                    <tr style="height:10px;">
+                        <td style="vertical-align:top;padding-right:1px;">
+                          <textarea id="psrappcomments" name="psrappcomments" style="vertical-align:top;height:200px;width:250px;"></textarea> 
+                        </td>
+                    </tr>
+                </table>
+            </td>
+           
+          <td style="vertical-align:top;padding-right:1px;">
+           <table> 
+              
+              <tr style="height:10px;">
+                        <td style="vertical-align:top;padding-right:1px;">
+                            <b>Supplier Name and Number</b>
+                        </td>
+              </tr>
+              <tr style="height:10px;">
+                    <td style="vertical-align:top;padding-right:1px;">
+                      <input id="psrsupplier" class="required" name="psrsupplier" value="{!psrsupplier}" style="height:20px;"/>
+                      <br/><div class="error_container"/>
+                    </td>
+              </tr>
+              <tr style="height:10px;">
+                        <td style="vertical-align:top;padding-right:1px;">
+                            <b>Support Agreement Number</b>
+                        </td>
+              </tr>
+              <tr style="height:10px;">
+                    <td style="vertical-align:top;padding-right:1px;">
+                      <input id="aggrnum" name="aggrnum" value="{!aggrnum}" style="height:20px;"/>
+                      <br/><div class="error_container"/>
+                    </td>
+              </tr>
+            <tr style="height:10px;">
+                <td style="vertical-align:top;padding-right:1px;">
+                    <b>PSR Effective Date</b>
+                </td>
+            </tr>
+            <tr style="height:10px;">
+                <td style="vertical-align:top;">
+                    <input id="psreffdate" name="psreffdate" value="{!psreffdate}" class="combo required" style="height:20px;"></input>
+                    <br/><div class="error_container"/>
+                </td>
+            </tr>
+            <tr style="height:10px;">
+                <td style="vertical-align:top;padding-right:1px;">
+                    <b>PSR Expiration Date</b>
+                </td>
+            </tr>
+            <tr style="height:10px;">
+                <td style="vertical-align:top;">
+                    <input id="psrexpdate" name="psrexpdate" value="{!psrexpdate}" class="combo required" style="height:20px;"></input>
+                    <br/><div class="error_container"/>
+
+                </td>
+             </tr>
+             <tr style="height:10px;">
+                        <td style="vertical-align:top;padding-right:1px;">
+                            <b>CUPS</b>
+                        </td>
+              </tr>
+              <tr style="height:10px;">
+                    <td style="vertical-align:top;padding-right:1px;">
+                      <select id="CUPS" class="easyui-combo" name="CUPS" style="width:80px;" required="true" data-value="">
+                                <option value="Y" label="Y">Y</option>
+                                <option value="N" label="N">N</option>
+                      </select> 
+                    </td>
+             </tr>
+             <tr style="height:10px;">
+                        <td style="vertical-align:top;padding-right:1px;">
+                            <b>Plant Name and Number</b>
+                        </td>
+              </tr>
+              <tr style="height:10px;">
+                    <td style="vertical-align:top;padding-right:1px;">
+                      <div id="PlantFrame" class="frame"><input class="comboset" id="sapplant" name="sapplant" data-name="sapplant" style="height:20px;"/></div>
+                      <div style="color:red;" id="PlantError" class="error_container"/>
+                    </td>
+              </tr>
+              <tr style="height:10px;">
+                        <td style="vertical-align:top;padding-right:1px;">
+                            <b>Freight (Upfront Only)</b>
+                        </td>
+              </tr>
+              <tr style="height:10px;">
+                    <td style="vertical-align:top;padding-right:1px;">
+                      <div id="psrFreightFrame" class="frame"><select id="psrfreight" class="easyui-combo" name="psrfreight" style="width:80px;" required="true" data-value="}">
+                                <option value="FOB" label="FOB">FOB</option>
+                                <option value="Delivered" label="Delivered">Delivered</option>
+                      </select></div> 
+                      <div style="color:red;" id="psrFreightError" class="error_container"/>
+                    </td>
+              </tr>
+             <tr style="height:10px;">
+                <td style="vertical-align:top;padding-right:1px;">
+                    <b>Upfront</b>
+                </td>
+            </tr>
+            <tr style="height:10px;">
+                <td style="vertical-align:top;">
+                    <input id="upfront" name="upfront" value="" type="checkbox" style="height:20px;"></input>
+                 </td>
+             </tr>
+        </table>
+      </td>
+      
+      <td style="vertical-align:top;padding-right:1px;">
+          <table>
+              <tr style="height:10px;">
+                    <td style="vertical-align:top;padding-right:1px;">
+                        <b>Region</b>
+                    </td>
+              </tr>
+              <tr style="height:10px;">
+                    <td style="vertical-align:top;padding-right:1px;">
+                    <!-- <input id="region" class="required" name="region" value="{!psregion}" style="width:100px;height:20px;"/> -->
+                    <select id="region" class="easyui-combo required" name="region" style="width:200px;" data-value="{!psregion}">
+                        <apeX:outputtext value="{!regionoptions}" escape="false" /> 
+                    </select>
+                    </td>
+              </tr>
+              <tr style="height:10px;">
+                        <td style="vertical-align:top;padding-right:1px;">
+                            <b>Support Price ($)</b>
+                        </td>
+              </tr>
+              <tr style="height:10px;">
+                    <td style="vertical-align:top;padding-right:1px;">
+                      <input class="currency" name="psrSuppPrice" style="width:100px;height:20px;" value="{!suppPrice}"  />
+                      <br/><div class="error_container"/>
+                    </td>
+              </tr>
+              <tr style="height:10px;">
+                        <td style="vertical-align:top;padding-right:1px;">
+                            <b>UoM</b>
+                        </td>
+              </tr>
+              <tr style="height:10px;">
+                    <td style="vertical-align:top;padding-right:1px;">
+                      <!-- <select id="psruom" class="easyui-combo" name="psruom" style="width:80px;" required="true" data-value="">
+                                <option value="GAL" label="GAL">GAL</option>
+                                <option value="LB" label="LB">LB</option>
+                                <option value="KG" label="KG">KG</option>
+                      </select> -->
+                      
+                      <select id="psruom" class="easyui-combo uom" name="psruom" style="width:80px;padding-right:3px;"  data-value="{!psruom}">
+                                <apex:outputtext value="{!uomoptions}" escape="false" />
+                      </select> 
+                    </td>
+              </tr>
+              <tr style="height:10px;">
+                        <td style="vertical-align:top;padding-right:1px;">
+                            <b>Support Disc. 1</b>
+                        </td>
+                        <td style="vertical-align:top;padding-right:1px;">
+                            <b>($/%)</b>
+                        </td>
+              </tr>
+              <tr style="height:10px;">
+                    <td style="vertical-align:top;padding-right:1px;">
+                      <input class="number" name="psrdisc1" style="width:100px;height:20px;" value="{!suppdisc1}"  />
+                      <br/><div class="error_container"/>
+                    </td>
+                    <td style="vertical-align:top;padding-right:1px;">
+                        <select id="disc1type" class="easyui-combo" style="width:80px;" name="disc1type" data-value="{!disc1type}" >
+                            <option value="$">$</option>
+                            <option value="%">%</option>
+                        </select>
+                    </td>
+              </tr>
+              <tr style="height:10px;">
+                        <td style="vertical-align:top;padding-right:1px;">
+                            <b>Support Disc. 2</b>
+                        </td>
+                        <td style="vertical-align:top;padding-right:1px;">
+                            <b>($/%)</b>
+                        </td>
+              </tr>
+              <tr style="height:10px;">
+                    <td style="vertical-align:top;padding-right:1px;">
+                      <input class="number" name="psrdisc2" style="width:100px;height:20px;" value=""  />
+                      <br/><div class="error_container"/> 
+                    </td>
+                    <td style="vertical-align:top;padding-right:1px;">
+                        <select id="disc2type" class="easyui-combo" style="width:80px;" name="disc2type" data-value="{!disc2type}" >
+                            <option value="$">$</option>
+                            <option value="%">%</option>
+                        </select>
+                    </td>
+              </tr>
+           
+                    <tr style="height:10px;"><td colspan="2"><table>
+                    <tr>
+                        <td style="vertical-align:top;padding-right:1px;">
+                            <b>Additional Support Comments</b>
+                        </td>
+                    </tr>
+                    <tr style="height:10px;">
+                        <td style="vertical-align:top;padding-right:1px;">
+                          <textarea id="suppcomments" name="suppcomments" style="vertical-align:top;height:50px;width:250px;"></textarea> 
+                        </td>
+                    </tr>
+                    </table></td></tr>
+                </table>
+            </td>
+        
+    </tr></table>
+    <script>
+            var flag='{!upfront}';
+            if(flag=='true'){
+                document.getElementById('upfront').checked=true;
+                document.getElementById("CUPS").value = "N";
+            }else{
+                document.getElementById('upfront').checked=false;
+                document.getElementById("CUPS").value = "Y";
+            }
+            
+    </script>
+    </form>
+   </div>
+    </apex:page>

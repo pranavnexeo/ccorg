@@ -1,0 +1,37 @@
+<apex:page controller="ObjectPrefixListController">
+    <apex:form >
+        <apex:pageBlock >
+            <apex:pageBlockTable value="{!objRecs}" var="o" id="table" rowClasses="odd,even">
+                <apex:column >
+                    <apex:facet name="header">
+                        <apex:commandLink value="Object Prefix" action="{!doSort}" rerender="table">
+                            <apex:param name="sortField" value="prefix" assignTo="{!sortField}"/>
+                            <apex:image value="{!sortImage}" rendered="{!renderPrefixSortImage}"/>
+                        </apex:commandLink>
+                    </apex:facet>
+                    <apex:outputText value="{!o.prefix}" style="font-family:monospace; font-size:1.5em;"/>
+                </apex:column>
+                <apex:column >
+                    <apex:facet name="header">
+                        <apex:commandLink value="Object Name" action="{!doSort}" rerender="table">
+                            <apex:param name="sortField" value="name" assignTo="{!sortField}"/>
+                            <apex:image value="{!sortImage}" rendered="{!renderNameSortImage}"/>
+                        </apex:commandLink>
+                    </apex:facet>
+                    <apex:outputText value="{!o.name}" style="font-family:monospace; font-size:1.5em;"/>
+                </apex:column>
+<!--                 
+                <apex:column >
+                    <apex:facet name="header">
+                        <apex:commandLink value="Object Label" action="{!doSort}" rerender="table">
+                            <apex:param name="sortField" value="label" assignTo="{!sortField}"/>
+                            <apex:image value="{!sortImage}" rendered="{!renderLabelSortImage}"/>
+                        </apex:commandLink>
+                    </apex:facet>
+                    <apex:outputText value="{!o.label}" style="font-family:monospace; font-size:1.5em;"/>
+                </apex:column>
+-->                
+            </apex:pageBlockTable>
+        </apex:pageBlock>
+    </apex:form>
+</apex:page>

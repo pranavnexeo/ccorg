@@ -1,0 +1,79 @@
+<apex:page showHeader="false" applyHtmlTag="false" standardStylesheets="false">
+<html xmlns="http://www.w3.org/1999/xhtml" lang="en">
+<apex:stylesheet value="{!URLFOR($Resource.MSDSSiteCSS, '/bootstrap/css/bootstrap.css')}"/>
+<apex:stylesheet value="{!URLFOR($Resource.MSDSSiteCSS, 'styles.css')}"/>
+
+<style>
+.table-bordered thead:first-child tr:first-child > th:first-child, .table-bordered tbody:first-child tr:first-child > td:first-child, .table-bordered tbody:first-child tr:first-child > th:first-child {
+    -webkit-border-top-left-radius: 4px;
+    -moz-border-radius-topleft: 4px;
+    border-top-left-radius: 4px;
+}
+
+.table-striped tbody > tr:nth-child(2n+1) > td, .table-striped tbody > tr:nth-child(2n+1) > th {
+    background-color: #f9f9f9;
+}    
+    
+.table .table {
+	background-color: #fffff;
+}
+    
+    
+.wpb_wrapper table tr:nth-child(even) {
+    background-color: #f8f8f8;
+}
+.wpb_wrapper table tr td {
+    line-height: 1.5;
+    padding: 6px;
+}
+
+.SDSContainer {
+    border: 1px solid green;
+    padding: 1px 87px;
+    margin: -14px;  
+}
+    
+.btn-outline-no-border, .btn-outline-no-border:hover, .btn-outline-no-border:active, .btn-outline-no-border:visited {
+    background-color: transparent !important;
+    border: none;
+}
+a {
+    text-decoration: none;
+}
+</style>
+
+<body>
+<div class="container" style = "float: left;">
+    <div class="row">
+    	<div class="col-8">
+          	<img src="{!URLFOR($Resource.MSDSSiteCSS, 'logo.jpg')}" border="0" align="right"/> 
+        </div>
+    </div>
+    <div class="row">
+        <div class="col">
+            <img src="{!URLFOR($Resource.MSDSSiteCSS, 'heading.jpg')}" alt="" border="0" />
+        </div>
+    </div>
+    <div class="row">
+        <br/>
+        <br/>
+        <br/>
+        <div class="col-8">
+          <span style="font-size:34px;line-height:1.05">
+              {!$Label.MSDSFileNotFound}
+          </span>
+        </div>
+    </div>
+    
+
+</div>    
+       
+  
+
+</body></html>
+<apex:includeScript value="{!URLFOR($Resource.MSDSSiteCSS, '/jquery/jquery-3.3.1.js')}"/>
+<apex:includeScript value="{!URLFOR($Resource.MSDSSiteCSS, '/popper/popper.js')}"/>
+<apex:includeScript value="{!URLFOR($Resource.MSDSSiteCSS, '/bootstrap/js/bootstrap.js')}"/>
+      
+
+</apex:page>

@@ -1,0 +1,304 @@
+<apex:component >
+
+<script type="text/javascript">
+  CCRZ.uiProperties.newCustomerView.desktop.tmpl = 'SiteRegisterDesktopImp';
+  CCRZ.uiProperties.newCustomerView.phone.tmpl   = 'SiteRegisterMobileImp';
+</script>
+
+<script id="SiteRegisterDesktopImp" type="text/template">
+  <div class="alert alert-error error_messages_section" style="display:none;"></div>
+  <form id="newCustomerForm" action="" class="horizontal_form" forceSSL="true">
+    <fieldset>
+      <legend>{{pageLabelMap 'SiteRegistration_PersonalInfo'}}</legend>
+      <label>{{pageLabelMap 'Title'}}
+        <select name="salutation">
+          {{#each salutationOptions}}
+            <option value="{{this.value}}">{{this.label}}</option>
+          {{/each}}
+        </select>
+      </label>
+      <div class="clear"></div>
+      <label>{{pageLabelMap 'CheckOut_FirstName'}}*
+        <input type="text" value="{{firstName}}" name="firstName" id="#" onfocus="myFocus(this);" onblur="myBlur(this);">
+      </label>
+      <label >{{pageLabelMap 'CheckOut_LastName'}}*
+        <input type="text" value="{{lastName}}" name="lastName" id="#" onfocus="myFocus(this);" onblur="myBlur(this);">
+      </label>
+      <div class="clear"></div>
+      <label>{{pageLabelMap 'CheckOut_PrimaryPhone'}}*
+        <input type="text" value="{{primaryPhone}}" name="primaryPhone" id="#" onfocus="myFocus(this);" onblur="myBlur(this);">
+      </label>
+      <div class="clear"></div>
+      <label>{{pageLabelMap 'SiteRegistration_Language'}}
+        <select name="language">
+          {{#each languageOptions}}
+            <option value="{{this.value}}">{{this.label}}</option>
+          {{/each}}
+        </select>
+      </label>
+      <label>{{pageLabelMap 'SiteRegistration_Currency'}}
+        <select name="currencyCode">
+          {{#each currencyOptions}}
+            <option value="{{this.value}}">{{this.label}}</option>
+          {{/each}}
+        </select>
+      </label>
+      {{#ifDisplay 'reg.tmZn'}}
+      <div class="clear"></div>
+      <label>{{pageLabelMap 'SiteRegistration_TimeZone'}}
+        <select name="timeZone" class="timeZoneSelect">
+          {{#each timeZoneOptions}}
+            {{#ifEquals this.value ../timeZone}}
+              <option value="{{this.value}}" selected>{{this.label}}</option>
+            {{else}}
+            <option value="{{this.value}}">{{this.label}}</option>
+            {{/ifEquals}}
+          {{/each}}
+        </select>
+      </label>
+      {{/ifDisplay}}
+    </fieldset>
+   
+    <fieldset>
+      <legend>{{pageLabelMap 'SiteRegistration_AdditionalInfo'}}</legend>
+      <label>{{pageLabelMap 'CheckOut_CompanyName'}}*
+        <input type="text" value="{{companyName}}" name="companyName" id="#" onfocus="myFocus(this);" onblur="myBlur(this);">
+      </label>
+      <input type="hidden" value="ISP" name="companyType"/>
+      <label>{{pageLabelMap 'cc_imp_SiteRegister_IsCurrentCustomer'}}*
+        <select name="isCustomer" class="isCustomer">
+            <option value="">{{pageLabelMap 'cc_imp_SelectOne'}}</option>
+            <option value="false">{{pageLabelMap 'No'}}</option>
+            <option value="true">{{pageLabelMap 'Yes'}}</option>
+        </select>
+      </label>
+      <div class="clear"></div>
+      {{#ifDisplay 'UR.ShowCF1'}}
+      <label class="showCF1" style="display: none"> <span class='customFied1label'>{{pageLabelMap 'SiteRegistration_CustomField1'}}</span>
+        <input type="text" value="{{customField1}}" name="customField1" id="customField1" class="customField1" onfocus="myFocus(this);" onblur="myBlur(this);">
+      </label>
+      {{/ifDisplay}}
+      {{#ifDisplay 'UR.ShowCF2'}}
+      <label class="showCF2" style="display: none"> <span class='customFied2label'>{{pageLabelMap 'SiteRegistration_CustomField2'}}</span>
+        <input type="text" value="{{customField2}}" name="customField2" id="customField2" class="customField2" onfocus="myFocus(this);" onblur="myBlur(this);">
+      </label>
+      {{/ifDisplay}}
+    </fieldset>
+ 
+    <fieldset>
+      <legend>{{pageLabelMap 'SiteRegistration_LoginInfo'}}</legend>
+      <label>{{pageLabelMap 'SiteRegistration_UsernameEmail'}}*
+        <input type="text" value="{{username}}" name="username" id="#" onfocus="myFocus(this);" onblur="myBlur(this);">
+      </label>
+      {{#ifDisplay 'UR.DirLogin'}}
+        <label>
+          <span class='newpasswordLabel'>{{pageLabelMap 'SiteRegistration_NewPassword'}}</span>
+          <input type="password" id="NewPassword" name="NewPassword" onfocus="myFocus(this);" onblur="myBlur(this);"/>
+        </label>      
+        <label><span class='confirmpasswordLabel'>{{pageLabelMap 'SiteRegistration_ConfirmPassword'}}</span>
+          <input type="password" id="ConfirmPassword" name="ConfirmPassword" onfocus="myFocus(this);" onblur="myBlur(this);"/>
+        </label>
+        <p class="left passwordInstr">{{pageLabelMap 'SiteRegistration_PasswordInstr'}}</p>
+      {{/ifDisplay}}
+    </fieldset>
+    <fieldset name="billingAddress">
+      <legend>{{pageLabelMap 'CheckOut_BillingAddress'}}</legend>
+      <label>{{pageLabelMap 'CheckOut_Address'}}*
+        <input type="text" value="{{billingAddress.address1}}" name="billingAddress.address1" id="#" class="address" onfocus="myFocus(this);" onblur="myBlur(this);">
+      </label>
+      <label>{{pageLabelMap 'Profile_Address_2'}}
+        <input type="text" value="{{billingAddress.address2}}" name="billingAddress.address2" id="#" class="address" onfocus="myFocus(this);" onblur="myBlur(this);">
+      </label>
+      <div class="clear"></div>
+      <label>{{pageLabelMap 'CheckOut_City'}}*
+        <input type="text" value="{{billingAddress.city}}" name="billingAddress.city" id="#" onfocus="myFocus(this);" onblur="myBlur(this);">
+      </label>
+      <label>{{pageLabelMap 'CheckOut_State'}}
+        <div class="billingStateSection" />
+      </label>
+      <div class="clear"></div>
+      <label>{{pageLabelMap 'CheckOut_PostalCode'}}*
+        <input type="text" value="{{billingAddress.postalCode}}" name="billingAddress.postalCode" id="#" onfocus="myFocus(this);" onblur="myBlur(this);">
+      </label>
+      <label>{{pageLabelMap 'CheckOut_Country'}}
+        {{{selectGeo 'country' this.countryList billingAddress.country 'billing wide countryListing' 'billingAddress.'}}}
+      </label>
+    </fieldset>
+    <fieldset>
+      <legend>{{pageLabelMap 'CheckOut_ShippingAddress'}}</legend>
+      <label>
+        <a class="useBillingAddress">{{pageLabelMap 'Checkout_UseBillingAddress'}}</a>
+      </label>
+      <div class="clear"></div>
+      <label>{{pageLabelMap 'CheckOut_Address'}}*
+        <input type="text" value="{{shippingAddress.address1}}" name="shippingAddress.address1" id="#" class="address" onfocus="myFocus(this);" onblur="myBlur(this);">
+      </label>
+      <label>{{pageLabelMap 'Profile_Address_2'}}
+        <input type="text" value="{{shippingAddress.address2}}" name="shippingAddress.address2" id="#" class="address" onfocus="myFocus(this);" onblur="myBlur(this);">
+      </label>
+      <div class="clear"></div>
+      <label>{{pageLabelMap 'CheckOut_City'}}*
+        <input type="text" value="{{shippingAddress.city}}" name="shippingAddress.city" id="#" onfocus="myFocus(this);" onblur="myBlur(this);">
+      </label>
+      <label>{{pageLabelMap 'CheckOut_State'}}
+        <div class="shippingStateSection" />
+      </label>
+      <div class="clear"></div>
+      <label>{{pageLabelMap 'CheckOut_PostalCode'}}*
+        <input type="text" value="{{shippingAddress.postalCode}}" name="shippingAddress.postalCode" id="#" onfocus="myFocus(this);" onblur="myBlur(this);">
+      </label>
+      <label>{{pageLabelMap 'CheckOut_Country'}}
+        {{{selectGeo 'country' this.countryList shippingAddress.country 'shipping wide countryListing' 'shippingAddress.'}}}
+      </label>
+    </fieldset>
+    <div id="termsDiv"></div>
+    <p class="right clear">{{pageLabelMap 'Required_Fields'}}</p>
+    <p class="link_button"><input name="" type="button" value="{{pageLabelMap 'Site_Submit'}}" class="button submit"/></p>
+  </form>
+</script>
+
+<script id="SiteRegisterMobileImp" type="text/template">
+  <div class="alert alert-error error_messages_section" style="display:none;"></div>
+  <form id="newCustomerForm" action="" class="horizontal_form" forceSSL="true">
+    <fieldset>
+      <legend>{{pageLabelMap 'SiteRegistration_PersonalInfo'}}</legend>
+
+      <label>{{pageLabelMap 'Title'}}
+        <select name="salutation">
+          {{#each salutationOptions}}
+            <option value="{{this.value}}">{{this.label}}</option>
+          {{/each}}
+        </select>
+      </label>
+      <div class="clear"></div>
+      <label>{{pageLabelMap 'CheckOut_FirstName'}}
+        <input class="mobileInput" type="text" value="{{firstName}}" name="firstName" id="#" onfocus="myFocus(this);" onblur="myBlur(this);">
+      </label>
+      <label >{{pageLabelMap 'CheckOut_LastName'}}
+        <input class="mobileInput" type="text" value="{{lastName}}" name="lastName" id="#" onfocus="myFocus(this);" onblur="myBlur(this);">
+      </label>
+      <div class="clear"></div>
+      <label>{{pageLabelMap 'CheckOut_PrimaryPhone'}}
+        <input class="mobileInput" type="text" value="{{primaryPhone}}" name="primaryPhone" id="#" onfocus="myFocus(this);" onblur="myBlur(this);">
+      </label>
+      <div class="clear"></div>
+      <label>{{pageLabelMap 'SiteRegistration_Language'}}
+        <select name="language">
+          {{#each languageOptions}}
+            <option value="{{this.value}}">{{this.label}}</option>
+          {{/each}}
+        </select>
+      </label>
+      <label>{{pageLabelMap 'SiteRegistration_Currency'}}
+        <select name="currencyCode">
+          {{#each currencyOptions}}
+            <option value="{{this.value}}">{{this.label}}</option>
+          {{/each}}
+        </select>
+      </label>
+      {{#ifDisplay 'reg.tmZn'}}
+      <div class="clear"></div>
+      <label>{{pageLabelMap 'SiteRegistration_TimeZone'}}
+        <select name="timeZone" class="timeZoneSelect">
+          {{#each timeZoneOptions}}
+            {{#ifEquals this.value ../timeZone}}
+              <option value="{{this.value}}" selected>{{this.label}}</option>
+            {{else}}
+              <option value="{{this.value}}">{{this.label}}</option>
+            {{/ifEquals}}
+          {{/each}}
+        </select>
+      </label>
+      {{/ifDisplay}}
+    </fieldset>
+    
+    <fieldset>
+      <legend>{{pageLabelMap 'SiteRegistration_AdditionalInfo'}}</legend>
+      <label>{{pageLabelMap 'CheckOut_CompanyName'}}
+        <input class="mobileInput" type="text" value="{{companyName}}" name="companyName" id="#" onfocus="myFocus(this);" onblur="myBlur(this);">
+      </label>
+      <input type="hidden" value="ISP" name="companyType"/>
+      <label>{{pageLabelMap 'cc_imp_SiteRegister_IsCurrentCustomer'}}*
+        <select name="isCustomer" class="isCustomer">
+            <option value="">{{pageLabelMap 'cc_imp_SelectOne'}}</option>
+            <option value="false">{{pageLabelMap 'No'}}</option>
+            <option value="true">{{pageLabelMap 'Yes'}}</option>
+        </select>
+      </label>
+      <div class="clear"></div>
+      {{#ifDisplay 'UR.ShowCF1'}}
+      <label class="showCF1" style="display: none"><span class='customFied1label'>{{pageLabelMap 'SiteRegistration_CustomField1'}}</span>
+        <input class="mobileInput" type="text" value="{{customField1}}" name="customField1" id="customField1" class="customField1" onfocus="myFocus(this);" onblur="myBlur(this);">
+      </label>
+      {{/ifDisplay}}
+      {{#ifDisplay 'UR.ShowCF2'}}
+      <label class="showCF2" style="display: none"> <span class='customFied2label'>{{pageLabelMap 'SiteRegistration_CustomField2'}}</span>
+        <input class="mobileInput" type="text" value="{{customField2}}" name="customField2" id="customField2" class="customField2" onfocus="myFocus(this);" onblur="myBlur(this);">
+      </label>
+      {{/ifDisplay}}
+    </fieldset>
+   
+    <fieldset>
+      <legend>{{pageLabelMap 'SiteRegistration_LoginInfo'}}</legend>
+      <label>{{pageLabelMap 'SiteRegistration_UsernameEmail'}}
+        <input class="mobileInput" type="text" value="{{username}}" name="username" id="#" onfocus="myFocus(this);" onblur="myBlur(this);">
+      </label>
+    </fieldset>
+    <fieldset name="billingAddress">
+      <legend>{{pageLabelMap 'CheckOut_BillingAddress'}}</legend>
+      <label>{{pageLabelMap 'CheckOut_Address'}}
+        <input type="text" value="{{billingAddress.address1}}" name="billingAddress.address1" id="#" class="address" onfocus="myFocus(this);" onblur="myBlur(this);">
+      </label>
+      <label>{{pageLabelMap 'Profile_Address_2'}}
+        <input type="text" value="{{billingAddress.address2}}" name="billingAddress.address2" id="#" class="address" onfocus="myFocus(this);" onblur="myBlur(this);">
+      </label>
+      <div class="clear"></div>
+      <label>{{pageLabelMap 'CheckOut_City'}}
+        <input class="mobileInput" type="text" value="{{billingAddress.city}}" name="billingAddress.city" id="#" onfocus="myFocus(this);" onblur="myBlur(this);">
+      </label>
+      <label>{{pageLabelMap 'CheckOut_State'}}
+        <div class="billingStateSection" />
+      </label>
+      <div class="clear"></div>
+      <label>{{pageLabelMap 'CheckOut_PostalCode'}}
+        <input class="mobileInput" type="text" value="{{billingAddress.postalCode}}" name="billingAddress.postalCode" id="#" onfocus="myFocus(this);" onblur="myBlur(this);">
+      </label>
+      <label>{{pageLabelMap 'CheckOut_Country'}}
+        {{{selectGeo 'country' this.countryList billingAddress.country 'billing countryListing' 'billingAddress.'}}}
+      </label>
+    </fieldset>
+    <fieldset>
+      <legend>{{pageLabelMap 'CheckOut_ShippingAddress'}}</legend>
+      <label>
+        <a class="useBillingAddress">Use Billing Address</a>
+      </label>
+      <div class="clear"></div>
+      <label>{{pageLabelMap 'CheckOut_Address'}}
+        <input type="text" value="{{shippingAddress.address1}}" name="shippingAddress.address1" id="#" class="address" onfocus="myFocus(this);" onblur="myBlur(this);">
+      </label>
+      <label>{{pageLabelMap 'Profile_Address_2'}}
+        <input type="text" value="{{shippingAddress.address2}}" name="shippingAddress.address2" id="#" class="address" onfocus="myFocus(this);" onblur="myBlur(this);">
+      </label>
+      <div class="clear"></div>
+      <label>{{pageLabelMap 'CheckOut_City'}}
+        <input class="mobileInput" type="text" value="{{shippingAddress.city}}" name="shippingAddress.city" id="#" onfocus="myFocus(this);" onblur="myBlur(this);">
+      </label>
+      <label>{{pageLabelMap 'CheckOut_State'}}
+        <div class="shippingStateSection" />
+      </label>
+      <div class="clear"></div>
+      <label>{{pageLabelMap 'CheckOut_PostalCode'}}
+        <input class="mobileInput" type="text" value="{{shippingAddress.postalCode}}" name="shippingAddress.postalCode" id="#" onfocus="myFocus(this);" onblur="myBlur(this);">
+      </label>
+      <label>{{pageLabelMap 'CheckOut_Country'}}
+        <
+        {{{selectGeo 'country' this.countryList shippingAddress.country 'shipping countryListing' 'shippingAddress.'}}}
+      </label>
+    </fieldset>
+    <div id="termsDiv"></div>
+    <p class="right clear">{{pageLabelMap 'Required_Fields'}}</p>
+    <p class="link_button"><input name="" type="button" value="{{pageLabelMap 'Site_Submit'}}" class="button submit"/></p>
+  </form>
+</script>
+
+</apex:component>

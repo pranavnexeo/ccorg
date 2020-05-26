@@ -1,0 +1,240 @@
+@page {
+
+	/* Landscape orientation */
+	size:portrait;
+
+}
+
+.title {
+	font-size:18px;
+	font-weight:bold;
+	display:block;
+	font-family: 'Arial', 'Helvetica', sans-serif;
+	text-align:center;
+}
+
+.subtitle {
+	font-weight:bold;
+	font-size:18px;
+}
+
+.cellBorder {
+		border-top:1px solid #000;
+        border-bottom:1px solid #000;
+        border-right:1px solid #000;
+        border-left:1px solid #000;
+}
+
+.TableCaptionClass {
+		background:white;
+		font-size:140%;
+		border:1px solid #000;
+		border-bottom:none;
+		padding:5px;
+		text-align:center;
+		color:black;
+		font-weight:bold;
+	}
+
+.TableCaptionClass_ServiceProviderProfileSection {
+		background:white;
+		font-size:10px;
+		font-family: 'Arial', 'Helvetica', sans-serif;
+		padding:5px;
+		text-align:left;
+		color:black;
+		font-weight:bold;
+		text-decoration: underline
+	}
+
+.TableCaptionClass_CommentsSection {
+		background:white;
+		font-size:10px;
+		font-family: 'Arial', 'Helvetica', sans-serif;
+		padding:5px;
+		text-align:left;
+		color:black;
+		font-weight:bold;
+		text-indent:10%;
+	}
+
+.TableCaptionClass_Verification {
+		background:white;
+		font-size:9px;
+		font-family: 'Arial Narrow', 'Arial', 'Helvetica', sans-serif;
+		border:1px solid #000;
+		padding:3px;
+		text-align:center;
+		color:black;
+		font-weight:bold;
+	}
+
+.TableColumnClasses {}
+
+.TableFooterClass {text-align:right;
+		font-weight:bold;
+		background:#369;
+		}
+
+.TableFooterClass_Gold {text-align:left;
+		font-weight:bold;
+		background:#eeecd1;
+		border-top:1px solid #000;
+                    border-bottom:1px solid #000;
+                    border-right:0px solid #000;
+                    border-left:0px solid #000;
+		}
+
+
+.TableHeaderClass {
+		border:1px solid #000;
+		border-collapse:collapse;
+		padding:5px;
+		background:white;
+		text-align:center;
+		font-size:10px;
+	    font-family: 'Arial', 'Helvetica', sans-serif; 
+		vertical-align: bottom;
+		color:black;
+	}
+
+.TableRowClasses_odd {background:white;}
+.TableRowClasses_even {background:white;}
+
+.TableRowClasses_Verification {
+                    border-right:1px solid #000;
+                    border-left:1px solid #000;
+					background:#ccffcc; /* Light Green */}
+
+
+.TableStyleClass {
+			border:1px solid #000;
+			border-collapse:collapse;
+		    font-family: 'Arial', 'Helvetica', sans-serif; 
+			/* font-family: 'Verdana', 'Geneva', sans-serif; */		    
+			font-size:10px;
+			text-align:left;
+			background:#ffffff; /* White */
+			padding:3px;	
+			}
+
+.TableStyleClass_Services_Profile {
+			border:1px solid #000;
+			border-collapse:collapse;
+		    font-family: 'Arial Narrow','Arial', 'Helvetica', sans-serif; 
+			/* font-family: 'Verdana', 'Geneva', sans-serif; */		    
+			font-size:9px;
+			text-align:left;
+			background:#ffffff; /* White */
+			padding:3px;	
+			}
+
+.TableStyleClass_VerificationArea {
+			border:1px solid #000;
+			/* border-collapse:collapse; */
+		    font-family: 'Arial Narrow','Arial', 'Helvetica', sans-serif; 
+			/* font-family: 'Verdana', 'Geneva', sans-serif; */		    
+			font-size:9px;
+			text-align:left;
+			background:#ccffcc; /* Light Green */
+			padding:3px;	
+			}
+
+
+.TableStyleClass_NoBorder {
+			border:0px solid #000;
+			border-collapse:collapse;
+		    font-family: 'Arial', 'Helvetica', sans-serif; 
+			/* font-family: 'Verdana', 'Geneva', sans-serif; */		    
+			font-size:10px;
+			text-align:left;
+			background:#ffffff; /* White */
+			padding:3px;	
+			}
+
+.Serivces_Profile_Label_ColumnFormat {font-weight:bold;text-align:right;width:150px;}
+.Serivces_Profile_Data_ColumnFormat {text-align:left;border-bottom:1px solid #000;background:#ffff99; /* Yellow */}	
+
+
+.GeneralInfo_Label_ColumnFormat {font-weight:bold;text-align:right;width:150px;}
+.GeneralInfo_Label_CenterText_ColumnFormat {font-weight:bold;text-align:center;}
+.GeneralInfo_Label_LeftAlign_ColumnFormat {font-weight:bold;text-align:center;}
+.GeneralInfo_Data_ColumnFormat {text-align:left;border-bottom:1px solid #000;background:#ffff99; /* Yellow */}	
+
+.CreateNewGrid_ColumnFormat {text-align:center;padding:3px;border-top:0px solid #000;
+                    border-bottom:0px solid #000;
+                    border-right:1px solid #000;
+                    border-left:1px solid #000;}
+
+
+.ServiceProviderProfileQuestions_QuestionNumberFormat {text-align:right;width:60px}
+.ServiceProviderProfileQuestions_ColumnFormat {width:75%}
+.ServiceProviderProfilePrefix_ColumnFormat {text-align:right;vertical-align: bottom;}
+.ServiceProviderProfileAnswers_ColumnFormat {text-align:center;
+                                             width:225px;
+                                             padding:1px;
+                                             background:#ffff99; /* Yellow */
+											 border-top:1px solid #000;
+                    						 border-bottom:1px solid #000;
+                    						 border-right:0px solid #000;
+                    						 border-left:0px solid #000;}	
+.ServiceProviderProfileSuffix_ColumnFormat {text-align:left;vertical-align: bottom;}
+
+.GQ_Question_ColumnFormat {text-align:left;width:400px}
+.Buying_Valvoline_Value_ColumnFormat {text-align:center;font-style: italic;width:90px} 
+.Average_Daily_Service_Volume_Value_ColumnFormat {text-align:center;width:75px}
+.Retail_Price_Value_ColumnFormat {text-align:center;width:75px;white-space:nowrap;}
+.Current_Installer_Product_Cost_Value_ColumnFormat {text-align:center;width:75px}
+.Include_Labor_Rate_Value_ColumnFormat {text-align:center;font-style: italic;width:75px}
+.Percent_of_Hours_to_Complete_Value_ColumnFormat {text-align:center;width:100px}
+.Total_Labor_Costs_Value_ColumnFormat {text-align:center;width:75px}
+
+.Quart_Cost_Label_Value_ColumnFormat {text-align:left;}
+.Quart_Costs_Value_ColumnFormat {text-align:center;}
+
+.Comments_Format {text-align:left;width:80%;border:1px solid #000;}
+
+.FormatLogo {width:10%;}
+.CommentColumn {text-align:left;width:80%;border:1px solid #000;vertical-align:top;}
+
+
+.OCVV_Col1 {text-align:right;width:65%;}
+.OCVV_Col2 {text-align:center;width:35%;}
+.VerificationFooterLine {font-weight:bold;border:2px solid #000;background:#e8e8e8;}
+
+.column80percent {width:80%;}
+.column20percent {width:20%;}
+.column90percent {width:90%;}
+.column10percent {width:10%;}
+.column70percent {width:70%;}
+.column30percent {width:30%;}
+.column85percent {width:85%;}
+.column15percent {width:15%;}
+
+.columnAlignRight {text-align:right;}
+
+.formatBlankLine {font-size:50%;
+				  }
+				
+.formatHeaderLine {font-size:100%;
+				   font-weight:bold;
+				   text-align:left;
+				   color:black;
+				  }
+
+.formatBlankColumn {border-top:1px solid #000;
+                    border-bottom:1px solid #000;
+                    border-right:0px solid #000;
+                    border-left:0px solid #000;
+					background:#d9d9d9;	
+					}
+
+.formatHeaderColumn {border-top:1px solid #000;
+                    border-bottom:1px solid #000;
+                    border-right:0px solid #000;
+                    border-left:0px solid #000;
+					background:#eeecc1;	
+					}
+	
+}
+		

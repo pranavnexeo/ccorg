@@ -1,0 +1,24 @@
+<apex:page showHeader="false" sidebar="false" standardStylesheets="false" applyHtmlTag="false" applyBodyTag="false" docType="html-5.0" controller="cc_pmt_FirstData_Relay"  action="{!postPaymentResponse}">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<title>IFrame Communicator</title>
+<script src="https://ajax.googleapis.com/ajax/libs/jquery/2.2.2/jquery.min.js"></script>
+
+</head>
+<body>
+Completing Order. Do not navigate away from this page...
+<br />
+<hr />
+  
+<script>
+jQuery(function($){
+    console.log('Loaded FirstData_Relay results');
+
+    parent.postMessage('{!theJSON}', "{!$Site.BaseUrl}");
+});
+</script>
+</body>
+</html>
+
+
+</apex:page>

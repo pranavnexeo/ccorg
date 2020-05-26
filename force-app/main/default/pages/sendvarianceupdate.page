@@ -1,0 +1,33 @@
+<apex:page standardcontroller="Variance_Call_Report__c" extensions="SendvarianceUpdate">
+
+<apex:form >
+
+<apex:pageblock >
+
+<apeX:pageblockbuttons >
+<apex:commandbutton value="Send" action="{!sendEmail}"/>
+<apeX:commandbutton value="Cancel" action="{!cancel}"/>
+</apex:pageblockbuttons>
+
+<apex:pageblocktable value="{!contacts}" var="c">
+
+<apex:column headervalue="Select">
+<apex:inputcheckbox value="{!c.selected}"/>
+</apex:column>
+
+<apex:column headervalue="Name">
+<apex:outputtext value="{!c.sc.First_Name__c}"/>&nbsp;<apex:outputtext value="{!c.sc.Last_Name__c}"/>
+</apex:column>
+
+<apex:column headervalue="Email">
+<apex:outputtext value="{!c.sc.Email__c}"/>
+</apex:column>
+
+<apex:column headervalue="Comments">
+<apex:outputtext value="{!c.sc.Comments__c}"/>
+</apex:column>
+</apex:pageblocktable>
+</apeX:pageblock>
+</apex:form>
+
+</apex:page>

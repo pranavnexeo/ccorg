@@ -1,0 +1,399 @@
+<apex:page standardController="Price_Support__c" extensions="PriceSupportPriceChangeExtension" id="priceSuppPage" showHeader="false" sidebar="false">
+<!--
+<apex:pageMessages id="errorMessages"> </apex:pageMessages>
+<script src="{!URLFOR($Resource.JQueryUI, 'js/jquery-1.7.2.min.js')}"/>
+<script src="{!URLFOR($Resource.JQueryUI, 'js/jquery-ui-1.8.21.custom.min.js')}"/> 
+<apex:stylesheet value="{!URLFOR($Resource.JQueryUI, 'css/ui-lightness/jquery-ui-1.8.7.custom.css')}"/> 
+<script> 
+var j$ = jQuery.noConflict();
+
+function sticky_relocate() {
+             var window_top = j$(window).scrollTop();
+             var div_top = j$('#sticky-anchor').offset().top;
+             if (window_top > div_top)
+               j$('#sticky').addClass('stick')
+             else
+               j$('#sticky').removeClass('stick');
+            }
+
+             j$(function() {
+               j$(window).scroll(sticky_relocate);
+               sticky_relocate();
+             });
+             
+             
+
+
+function makeRebateEditable(){
+
+    var rebateEditable = document.getElementById('priceSuppPage:priceForm:rebateBlock:costInfoEdit:rebateEditable');
+    if(rebateEditable!=null && rebateEditable.checked){
+        document.getElementById('priceSuppPage:priceForm:rebateBlock:costInfoEdit:requestedRebateAmount').style.backgroundColor='#FFFFFF';
+        document.getElementById('priceSuppPage:priceForm:rebateBlock:costInfoEdit:requestedRebateAmount').disabled=false;
+        
+    }else{
+        document.getElementById('priceSuppPage:priceForm:rebateBlock:costInfoEdit:requestedRebateAmount').style.backgroundColor='#CCC'
+        document.getElementById('priceSuppPage:priceForm:rebateBlock:costInfoEdit:requestedRebateAmount').disabled=true;
+    }
+    
+}
+
+function doCalculation(){
+    
+    var supportType = document.getElementById('priceSuppPage:priceForm:supportType').value;
+
+    if(supportType=='Rebate'){
+        rebateCalculation();
+    }else{
+        upfrontCalculation();    
+    }
+    
+    return false;
+} 
+
+window.onload = function(){
+
+    var index = '{!finished}';
+    //alert(index);
+    if(index=='true'){
+        alert('Price Change Completed');
+        window.top.close();
+    }
+
+}
+
+function saveRecord(){
+        //alert('Save Record');
+        var supportType = document.getElementById('priceSuppPage:priceForm:supportType').value;
+        var flat = document.getElementById('priceSuppPage:priceForm:flat').value;
+        
+        if(supportType=='Rebate'){
+            var netSupportCost = document.getElementById('priceSuppPage:priceForm:rebateBlock:supportInfo:netSupportCost');
+            if(netSupportCost==null){
+                netSupportCost = document.getElementById('priceSuppPage:priceForm:rebateBlock:supportInfoView:netSupportCost');
+            }
+            var netPurchaseCost = document.getElementById('priceSuppPage:priceForm:rebateBlock:costInfoEdit:netPurchaseCost').value;
+            var requestedRebateAmount = document.getElementById('priceSuppPage:priceForm:rebateBlock:costInfoEdit:requestedRebateAmount').value;
+            var effectiveDate = document.getElementById('priceSuppPage:priceForm:rebateBlock:costInfoEdit:effectiveDate').value;
+            var expirationDate = document.getElementById('priceSuppPage:priceForm:rebateBlock:costInfoEdit:expirationDate').value;
+            //var reviewDate = document.getElementById('priceSuppPage:priceForm:rebateBlock:costInfoEdit:reviewDate').value;
+        
+            if(effectiveDate==''){
+                alert('Please enter effective date.');
+                return false;
+            }//else if(expirationDate==''&& reviewDate==''){
+                //alert('Please enter Expiration Date or Review Date');
+                //return false;
+            //}
+            
+            if(flat!='Flat'){
+                
+                 if(netSupportCost!=null && netSupportCost.value<=0){
+                   alert('Net Support Cost is less than or equal to zero.');
+                 }else if(netPurchaseCost<=0){
+                    alert('Net Purchase Cost is less than or equal to zero.');
+                 }else if(requestedRebateAmount<=0){
+                    alert('Requested Rebate Amount is less than or equal to zero.');
+                 }else{
+                    doSave();
+                 }
+                 
+            }else{
+                if(requestedRebateAmount<=0){
+                    alert('Requested Rebate Amount is less than or equal to zero.');
+                }else{
+                    doSave();
+                }
+            }
+        }else{
+            
+            var effectiveDate = document.getElementById('priceSuppPage:priceForm:upfrontBlock:costInfo:effectiveDate').value;
+            var expirationDate = document.getElementById('priceSuppPage:priceForm:upfrontBlock:costInfo:expirationDate').value;
+            //var reviewDate = document.getElementById('priceSuppPage:priceForm:upfrontBlock:costInfo:reviewDate').value;
+        
+            if(effectiveDate==''){
+                alert('Please enter effective date.');
+                return false;
+            }//else if(expirationDate==''&& reviewDate==''){
+                //alert('Please enter Expiration Date or Review Date');
+                //return false;
+            //}
+        
+            doSave();
+        }
+    
+    return false;
+
+}
+
+function getSupplierApprovers(comp){
+    
+        //alert('getSupplierApprovers');
+        //alert(comp.value);
+        fetchSupplierApprovers(comp.value);
+    }
+    
+function getNexeoApprovers(comp){
+    
+        //alert('getNexeoApprovers');
+        //alert(comp.value);
+        fetchNexeoApprovers(comp.value);
+ }
+             
+</script>
+<style>
+        #sticky {
+             width: 100%;
+        }
+        #sticky.stick {
+             position: fixed;
+             top: 0;
+             left: 10px;
+             
+        }
+</style>  
+
+<apex:form id="priceForm"> 
+
+<div id="sticky-anchor"></div>
+<div id="sticky"> 
+<apex:pageblock >
+                <apex:pageBlockButtons id="buttons" location="top" >
+                
+                        <apex:commandButton value="Save Price Change"  onclick="return saveRecord();" status="busyStatus"/>
+                        <apex:commandButton value="Recalculate"  onclick="return doCalculation();" immediate="true"/>
+                       
+                </apex:pageBlockButtons>
+                
+ </apex:pageblock> 
+ 
+  <apex:ActionStatus id="busyStatus" >
+        <apex:facet name="start" >
+            <c:BusyStatusComp height="300px" width="300px" Message="Please Wait..." />
+        </apex:facet>
+  </apex:ActionStatus>
+ 
+ </div>
+ 
+<apex:actionFunction name="rebateCalculation" action="{!doRebateCalculation}" rerender="netPurchaseCost,requestedRebateAmount,netSupportCost"  status="busyStatus"/>
+<apex:actionFunction name="upfrontCalculation" action="{!doUpfrontCalculation}" rerender="pricingBlock"  status="busyStatus"/>
+<apex:actionFunction name="doSave" action="{!customSave}"/>
+
+<apex:actionFunction name="fetchNexeoApprovers"
+            action="{!getNexeoApprovers}" rerender="nexeoApprover,nexeoGroupName"
+            status="busyStatus">
+            <apex:param name="nexeoGroup" value="" />
+</apex:actionFunction>
+
+<apex:actionFunction name="fetchSupplierApprovers"
+            action="{!getSupplierApprovers}"
+            rerender="supplierApprover,SupplierGroupName" 
+            status="busyStatus">
+            <apex:param name="supplierGroup" value="" />
+</apex:actionFunction>      
+
+<apex:inputHidden value="{!Price_Support__c.Support_Type__c}" id="supportType"/>
+<apex:inputHidden value="{!Price_Support__c.Flat_or_Purchased__c}" id="flat"/>
+<apex:inputHidden value="{!Price_Support__c.PriceChangesAutomaticallyApproved__c}"/>
+ 
+ <apex:pageBlock id="rebateBlock" rendered="{!rebateFlag}">    
+             <apex:pageBlockSection title=" General Information" id="generalInfo">
+                        
+                        <apex:outputField value="{!Price_Support__c.Order_Type__c}"/>
+                        <apex:outputField value="{!Price_Support__c.Mode__c}"/>
+                        <apex:outputField value="{!Price_Support__c.Supplier_Name__c}" />
+                        <apex:inputField value="{!Price_Support__c.Nexeo_Group__c}" onchange="getNexeoApprovers(this);" />
+                        <apex:outputField value="{!Price_Support__c.Nexeo_Group_Name__c}"  id="nexeoGroupName" />
+                        <apex:outputField value="{!Price_Support__c.Nexeo_Main_Approver__c}"  id="nexeoApprover" />
+                        <apex:inputField value="{!Price_Support__c.Supplier_Group__c}" onchange="getSupplierApprovers(this);" id="supplierGroup"/>
+                        <apex:outputField value="{!Price_Support__c.Supplier_Group_Name__c}"  id="SupplierGroupName" />
+                        <apex:outputField value="{!Price_Support__c.Supplier_Main_Approver__c}"  id="supplierApprover" />
+                        <apex:outputField value="{!Price_Support__c.Customer_Name__c}"  id="customerName" />
+                        <apex:inputField value="{!Price_Support__c.Supplier_Reference__c}" id="supplierref"/>
+                        <apex:pageBlocksectionItem >
+                        <apex:outputLabel value="Pricing Agreement" for="pricingAgreement"/>
+                        <apex:actionRegion >
+                        <apex:inputField value="{!Price_Support__c.Pricing_Agreement__c}"  id="pricingAgreement">
+                        <apex:actionSupport event="onchange" reRender="protectionPanel,supportInfoPanel" status="busyStatus"/> 
+                        </apex:inputField>
+                        </apex:actionRegion>
+                        </apex:pageBlocksectionItem>
+                     
+                        
+                  <apex:pageBlockSection id="protectionPanel"  showHeader="false">
+                       
+                        <apex:inputField value="{!Price_Support__c.Price_Protection_Length__c}"  rendered="{!Price_Support__c.Pricing_Agreement__c=='Price Protection'}" />
+                        <apex:inputField value="{!Price_Support__c.Protection_Units__c}"  rendered="{!Price_Support__c.Pricing_Agreement__c=='Price Protection'}" />
+                        </apex:pageBlockSection>
+                        <apex:pageBlocksectionItem />
+                        <apex:inputField value="{!Price_Support__c.Primary_Supplier__c}"/>
+                        <apex:outputField value="{!Price_Support__c.Material_Selling__c}"/>
+                        <apex:outputField value="{!Price_Support__c.Material_Code_Selling__c}"  id="materialCodeSelling"/>
+                        <apex:outputField value="{!Price_Support__c.Material_Description_Selling__c}" id="materialDescriptionSelling"/>
+                        <apex:outputField value="{!Price_Support__c.Material_Buying__c}" id="materialBuying" />
+                        <apex:outputField value="{!Price_Support__c.Material_Code_Buying__c}"  id="materialCodeBuying"/>
+                        <apex:outputField value="{!Price_Support__c.Material_Description_Buying__c}" id="materialDescriptionBuying"/>
+                        <apex:inputField value="{!Price_Support__c.UOM__c}" />
+                        
+                    </apex:pageBlockSection> 
+                     
+                     <apex:pageBlockSection showHeader="false"  columns="1">   
+                        <apex:inputTextArea value="{!Price_Support__c.Comments__c}" rows="5"
+                        cols="150" />
+                        <apex:inputCheckbox value="{!submitForSupplierApproval}" label="Submit For Supplier Approval"/>
+                        
+                     </apex:pageBlockSection>
+                
+                <apex:pageBlockSection title="Competitive Information" id="competitiveInfo">
+                    <apex:inputField value="{!Price_Support__c.Potential_Annual_Volume__c}" />
+                    <apex:inputField value="{!Price_Support__c.Application__c}" />
+                    <apex:inputField value="{!Price_Support__c.Competitive_Comments__c}" />
+                </apex:pageBlockSection>
+                
+                <apex:outputPanel id="supportInfoPanel">
+                    <apex:pageBlockSection title="Support Information" columns="2" id="supportInfo" rendered="{!AND(Price_Support__c.Pricing_Agreement__c!='Contract Price',Price_Support__c.Pricing_Agreement__c!='Price Protection')}">
+                    
+                            <apex:inputField value="{!Price_Support__c.Supplier_Supported_Price__c}" id="supplierSupportedPrice" />
+                            <apex:inputField value="{!Price_Support__c.Packaging_Allowance__c}" id="packagingAllowance" />
+                            <apex:inputField value="{!Price_Support__c.Freight_Allowance_Selling__c}" id="freightAllowanceSell" />
+                            <apex:inputField value="{!Price_Support__c.Other_Allowances__c}" id="otherAllowances" /> 
+                            <apex:inputField value="{!Price_Support__c.X1st_Discount_Sell__c}" id="discountOneSell" />
+                            <apex:inputField value="{!Price_Support__c.X1st_Discount_Type_Sell__c}" id="discountOneTypeSell" />
+                            <apex:inputField value="{!Price_Support__c.X2nd_Discount_Sell__c}" id="discountTwoSell" />
+                            <apex:inputField value="{!Price_Support__c.X2nd_Discount_Type_Sell__c}" id="discountTwoTypeSell" />
+                            <apex:inputField value="{!Price_Support__c.Freight_Terms_Selling__c}"/>
+                            <apex:inputField value="{!Price_Support__c.Net_Support_Cost__c}" id="netSupportCost" onfocus="blur();" style="background-color:#CCC"/>
+                             
+                    </apex:pageBlockSection>
+                    <apex:pageBlockSection title="Support Information" columns="2" id="supportInfoView" rendered="{!OR(Price_Support__c.Pricing_Agreement__c='Contract Price',Price_Support__c.Pricing_Agreement__c='Price Protection')}">
+                    
+                            <apex:outputField value="{!Price_Support__c.Supplier_Supported_Price__c}"  />
+                            <apex:outputField value="{!Price_Support__c.Packaging_Allowance__c}"  />
+                            <apex:outputField value="{!Price_Support__c.Freight_Allowance_Selling__c}"  />
+                            <apex:outputField value="{!Price_Support__c.Other_Allowances__c}"  /> 
+                            <apex:outputField value="{!Price_Support__c.X1st_Discount_Sell__c}"  />
+                            <apex:outputField value="{!Price_Support__c.X1st_Discount_Type_Sell__c}"  />
+                            <apex:outputField value="{!Price_Support__c.X2nd_Discount_Sell__c}"  />
+                            <apex:outputField value="{!Price_Support__c.X2nd_Discount_Type_Sell__c}"  />
+                            <apex:outputField value="{!Price_Support__c.Freight_Terms_Selling__c}"/>
+                            <apex:inputField value="{!Price_Support__c.Net_Support_Cost__c}" id="netSupportCost" onfocus="blur();" style="background-color:#CCC"/>
+                             
+                    </apex:pageBlockSection>
+                </apex:outputPanel>
+                
+                
+                <apex:pageBlockSection showHeader="true" title="Cost Information" columns="2" id="costInfoEdit">
+                
+                        <apex:inputField value="{!Price_Support__c.Purchase_Cost__c}" id="purchaseCost" />
+                        <apex:inputField value="{!Price_Support__c.Freight_Allowance_Buying__c}" id="freightAllowanceBuying" />
+                        <apex:inputField value="{!Price_Support__c.X1st_Discount_Buy__c}"  id="discountOneBuy" />
+                        <apex:inputField value="{!Price_Support__c.X1st_Discount_Type_Buy__c}"  id="discountOneTypeBuy" />
+                        <apex:inputField value="{!Price_Support__c.X2nd_Discount_Buy__c}"  id="discountTwoBuy" />
+                        <apex:inputField value="{!Price_Support__c.X2nd_Discount_Type_Buy__c}" id="discountTwoTypeBuy" />
+                        <apex:inputField value="{!Price_Support__c.Other__c}" id="other" />
+                        <apex:inputField value="{!Price_Support__c.Freight_Terms_Buying__c}" />
+                        <apex:pageBlockSectionItem />
+                        <apex:inputField value="{!Price_Support__c.Net_Purchase_Cost__c}" id="netPurchaseCost" onfocus="blur();" style="background-color:#CCC"/>
+                        <apex:inputField value="{!Price_Support__c.Rebate_Editable__c}" rendered="{!Price_Support__c.Flat_or_Purchased__c='Flat'}" id="rebateEditable" onclick="makeRebateEditable();"/>
+                        <apex:pageBlockSectionItem rendered="{!Price_Support__c.Flat_or_Purchased__c!='Flat'}"/>
+                        <apex:inputField value="{!Price_Support__c.Requested_Rebate_Amount__c}" id="requestedRebateAmount" onfocus="makeRebateEditable();" style="{!IF(Price_Support__c.Rebate_Editable__c==false,'background-color:#CCC','background-color:#FFFFFF')}"/>
+                        <apex:inputField value="{!Price_Support__c.Effective_Date__c}" id="effectiveDate"/>
+                        <apex:inputField value="{!Price_Support__c.Expiration_Date__c}" id="expirationDate"/>
+                        
+                        -->
+                        
+                        <!-- <apex:inputField value="{!Price_Support__c.Review_Date__c}" id="reviewDate"/>  -->
+                        <!--
+                
+                </apex:pageBlockSection>
+                        
+       
+   </apex:pageBlock>
+   
+   <apex:pageBlock id="upfrontBlock" rendered="{!NOT(rebateFlag)}">   
+             <apex:pageBlockSection title=" General Information" id="generalInfoEdit">
+                        <apex:outputField value="{!Price_Support__c.Order_Type__c}"/>
+                        <apex:outputField value="{!Price_Support__c.Mode__c}"/>
+                        <apex:outputField value="{!Price_Support__c.Supplier_Name__c}" />
+                        <apex:outputField value="{!Price_Support__c.Nexeo_Group__c}"/>
+                        <apex:outputField value="{!Price_Support__c.Nexeo_Main_Approver__c}"  id="nexeoApprover"/>
+                        <apex:outputField value="{!Price_Support__c.Supplier_Group__c}"/>
+                        <apex:outputField value="{!Price_Support__c.Supplier_Main_Approver__c}"  id="supplierApprover"/>
+                        <apex:outputField value="{!Price_Support__c.Customer_Name__c}"/>
+                        <apex:inputField value="{!Price_Support__c.Supplier_Reference__c}" />
+                        <apex:pageBlocksectionItem >
+                        <apex:outputLabel value="Pricing Agreement" for="pricingAgreement"/>
+                        <apex:actionRegion >
+                        <apex:inputField value="{!Price_Support__c.Pricing_Agreement__c}"  id="pricingAgreement">
+                        <apex:actionSupport event="onchange" reRender="protectionPanel" status="busyStatus"/> 
+                        </apex:inputField>
+                        </apex:actionRegion>
+                        </apex:pageBlocksectionItem>
+                     
+                        
+                     <apex:pageBlockSection id="protectionPanel"  showHeader="false">
+                       
+                        <apex:inputField value="{!Price_Support__c.Price_Protection_Length__c}"  rendered="{!Price_Support__c.Pricing_Agreement__c=='Price Protection'}" />
+                        <apex:inputField value="{!Price_Support__c.Protection_Units__c}"  rendered="{!Price_Support__c.Pricing_Agreement__c=='Price Protection'}" />
+                        </apex:pageBlockSection>
+                        <apex:inputField value="{!Price_Support__c.Primary_Supplier__c}"/>
+                        <apex:outputField value="{!Price_Support__c.Material_Buying__c}" id="materialBuying" />
+                        <apex:outputField value="{!Price_Support__c.Material_Code_Buying__c}"  id="materialCodeBuying"/>
+                        <apex:outputField value="{!Price_Support__c.Material_Description_Buying__c}" id="materialDescriptionBuying"/>
+
+                    </apex:pageBlockSection>
+                    
+                    <apex:pageBlockSection showHeader="false"  columns="1">   
+                        <apex:inputTextArea value="{!Price_Support__c.Comments__c}" rows="5"
+                        cols="150" />
+                        <apex:inputCheckbox value="{!submitForSupplierApproval}" label="Submit For Supplier Approval"/>
+                        <apex:inputField value="{!Price_Support__c.Auto_Email_To_Pricing_Group__c}" />
+                     </apex:pageBlockSection>
+                
+                 <apex:pageBlockSection title="Competitive Information" id="competitiveInfo">
+                    <apex:inputField value="{!Price_Support__c.Potential_Annual_Volume__c}" />
+                    <apex:inputField value="{!Price_Support__c.Application__c}" />
+                    <apex:inputField value="{!Price_Support__c.Competitive_Comments__c}" />
+                </apex:pageBlockSection>
+                
+                <apex:pageBlockSection title="Cost Information" id="costInfo">
+                    <apex:inputField value="{!Price_Support__c.Freight_Terms_Buying__c}" />
+                    <apex:inputField value="{!Price_Support__c.Effective_Date__c}" id="effectiveDate"/>
+                    <apex:inputField value="{!Price_Support__c.Expiration_Date__c}" id="expirationDate"/>
+                    -->
+                    <!-- <apex:inputField value="{!Price_Support__c.Review_Date__c}" id="reviewDate"/>  -->
+                    <!--
+                </apex:pageBlockSection>
+                
+                <BR/>
+                <apex:outputPanel id="pricingBlock">
+                        <apex:outputPanel >  
+                        
+                            <table border="1" width="100%"> 
+                                <tr><td>Product Min Qty</td><td>Price</td><td>1st Discount</td><td>1st Discount Type</td><td>2nd Discount</td><td>2nd Discount Type</td><td>Net Price</td></tr>
+        
+                                 <apex:repeat value="{!pricingList}" var="pricingObj">
+                                 <tr>
+                                    <td><apex:inputfield value="{!pricingObj.Product_Min_Qty__c}"/></td>
+                                    <td><apex:inputfield value="{!pricingObj.Price__c}" /></td>
+                    
+                                    <td><apex:inputfield value="{!pricingObj.X1st_Discount__c}" /></td>
+                                    <td><apex:inputfield value="{!pricingObj.X1st_Discount_Type__c}" /></td>
+                                    <td><apex:inputfield value="{!pricingObj.X2nd_Discount__c}" /></td>
+                                    <td><apex:inputfield value="{!pricingObj.X2nd_Discount_Type__c}" /></td>
+                                    
+                                    <td><apex:inputfield value="{!pricingObj.Net_Price__c}" onfocus="blur()" style="background-color:#CCC" /></td> 
+                    
+                                  </tr>              
+                                </apex:repeat>  
+         
+                         </table>
+                         
+                       </apex:outputPanel>
+                    </apex:outputPanel>  
+                
+         </apex:pageBlock> 
+        
+ </apex:form>
+ -->
+</apex:page>

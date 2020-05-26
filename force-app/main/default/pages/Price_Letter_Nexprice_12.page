@@ -1,0 +1,1417 @@
+<apex:page id="thepage" controller="Price_Letter_Nexprice_12" sidebar="false" >
+<meta http-equiv="X-UA-Compatible" content="chrome=1"/>
+<script src="{!URLFOR($Resource.JQuery_Pricing, '/JQuery_Pricing/js/jquery-1.8.3.min.js')}" type="text/javascript"/> 
+<script src="{!URLFOR($Resource.JQuery_Pricing, '/JQuery_Pricing/js/jquery-ui-1.9.2.custom.js')}" type="text/javascript"/>
+<script src="{!URLFOR($Resource.JQuery_Pricing, '/JQuery_Pricing/js/jquery.mobile.events.js')}" type="text/javascript"/>
+<script src="{!URLFOR($Resource.JQuery_Pricing, '/JQuery_Pricing/js/jquery.dataTables.js')}" type="text/javascript"/>
+<script src="{!URLFOR($Resource.JQuery_Pricing, '/JQuery_Pricing/js/jquery.dataTables.columnFilter.js')}" type="text/javascript"></script>
+<script src="{!URLFOR($Resource.JQuery_Pricing, '/JQuery_Pricing/js/jquery-ui.toggleSwitch.js')}" type="text/javascript"/>
+<script src="{!URLFOR($Resource.JQuery_Pricing, '/JQuery_Pricing/js/jquery.sortElements.js')}" type="text/javascript"></script>
+<script src="{!URLFOR($Resource.JQuery_Pricing, '/JQuery_Pricing/js/jquery.dataTables.extensions.js')}" type="text/javascript"></script>
+<script src="{!URLFOR($Resource.JQuery_Pricing, '/JQuery_Pricing/js/jquery.tooltip.js')}" type="text/javascript"></script>
+<script src="{!URLFOR($Resource.JQuery_Pricing, '/JQuery_Pricing/js/jquery.multiselect.min.js')}" type="text/javascript"/> 
+<script src="{!URLFOR($Resource.JQuery_Pricing, '/JQuery_Pricing/js/jquery.multiselect.filter.js')}" type="text/javascript"/>
+<script src="{!URLFOR($Resource.JQuery_Pricing, '/JQuery_Pricing/js/jquery.validate.js')}" type="text/javascript"/>
+<script src="{!URLFOR($Resource.JQuery_Pricing, '/JQuery_Pricing/js/jquery.form.js')}" type="text/javascript"/>
+<script src="{!URLFOR($Resource.JQuery_Pricing, '/JQuery_Pricing/js/jquery.bbq.js')}" type="tgetext/javascript"/>
+<script src="{!URLFOR($Resource.JQuery_Pricing, '/JQuery_Pricing/js/jquery.form.wizard.js')}" type="text/javascript"/>
+<script src="{!URLFOR($Resource.JQuery_Pricing, '/JQuery_Pricing/js/jquery.easyui.min.js')}" type="text/javascript"></script>
+
+<apex:stylesheet value="{!URLFOR($Resource.JQuery_Pricing, '/JQuery_Pricing/themes/default/easyui.css')}"/>  
+<apex:stylesheet value="{!URLFOR($Resource.JQuery_Pricing, '/JQuery_Pricing/css/jquery.tooltip.css')}"/>
+<apex:stylesheet value="{!URLFOR($Resource.JQuery_Pricing, '/JQuery_Pricing/css/start/jquery-ui-1.10.1.custom.min.css')}"/>
+<apex:stylesheet value="{!URLFOR($Resource.JQuery_Pricing, '/JQuery_Pricing/css/demo_table.css')}"/> 
+<apex:stylesheet value="{!URLFOR($Resource.JQuery_Pricing, '/JQuery_Pricing/themes/default/easyui.css')}"/>    
+<apex:stylesheet value="{!URLFOR($Resource.JQuery_Pricing, '/JQuery_Pricing/themes/icon.css')}"/> 
+<apex:stylesheet value="{!URLFOR($Resource.JQuery_Pricing, '/JQuery_Pricing/themes/default/menu.css')}"/>
+<apex:stylesheet value="{!URLFOR($Resource.JQuery_Pricing, '/JQuery_Pricing/themes/default/menubutton.css')}"/>
+<apex:stylesheet value="{!URLFOR($Resource.JQuery_Pricing, '/JQuery_Pricing/themes/default/splitbutton.css')}"/>
+<apex:stylesheet value="{!URLFOR($Resource.JQuery_Pricing, '/JQuery_Pricing/themes/icon.css')}"/>
+<apex:stylesheet value="{!URLFOR($Resource.JQuery_Pricing, '/JQuery_Pricing/css/jquery-ui.toggleSwitch.css')}"/> 
+<apex:stylesheet value="{!URLFOR($Resource.JQuery_Pricing, '/JQuery_Pricing/css/jquery.multiselect.css')}"/> 
+<apex:stylesheet value="{!URLFOR($Resource.JQuery_Pricing, '/JQuery_Pricing/css/jquery.multiselect.filter.css')}"/> 
+<script  src="/soap/ajax/25.0/connection.js" type="text/javascript"></script>
+<script  src="/soap/ajax/25.0/apex.js" type="text/javascript"></script>
+
+<script type="text/javascript" charset="utf-8">
+
+var aRecordIds = new Array();
+var aColumnIndex = new Array();
+var aColumnIndex_Draft = new Array();
+var iProcessing = 0;
+var iLimit = {!$Setup.nexPrice_Settings__c.Salesforce_Record_Limit__c};
+var sPrevAccount = '';
+var timeout;
+
+$(document).ready(function() { 
+  
+  $('#loadingbanner').show();
+  fnInitPage();
+  fnInitTable();
+  fnEvaluateTable($('#price_maintenance' ).dataTable());
+  fnPrepFilters('price_maintenance', aColumnIndex);
+  $('#loadingbanner').show();
+ 
+  if('{!$CurrentPage.parameters.id}' == '')
+    $('#loadingbanner').hide();
+ 
+  
+});
+
+
+function fixEscapedHTML(html, fieldid) {
+  var value = $("<div />").html(html).text();
+  setTimeout(function(){
+      $('#' + fieldid).combogrid('textbox').val(value);
+}, 10)
+}
+function processSerialize($form, options){
+  $('#existingids').val($('#price_maintenance').dataTable().fnGetColumnData(aColumnIndex['Id']).join('-'));
+}
+
+function startSearch(formData, jqForm, options){
+
+  fnShowFog();
+  var existingids =  $('#price_maintenance').dataTable().fnGetColumnData(aColumnIndex['Id'], true, false, true);
+  fnClearTable();
+  existingids = new Array();
+
+    Price_Letter_Nexprice_12.getData(existingids ,formData, '{!$Setup.nexPrice_Settings__c.Salesforce_Limit_Per_Call__c}', '0', function(result, event){ 
+          if(event.type == 'exception') {
+            
+            alert('GetData: ' + event.message)
+            $('#Reset').click();
+            fnHideFog();               
+            } else {
+             if(result.rows.length > 0){
+
+                if(result.rows.length == 0)
+                  fnHideFog();
+                else
+                fnAddData(result.rows, $('#price_maintenance').dataTable());
+                $('#submitsearch').find('.ui-button-text').html('Search');
+                onChangeMultiPage(formData);
+                fnCalcPages();
+                
+              }
+              else
+              { fnHideFog(); 
+
+              }
+            }
+   }, {buffer: true, escape: true, timeout:120000});
+  
+  return false;
+}
+
+function fnCalcPages(){
+Price_Letter_Nexprice_12.getDataCount($('#mimipanel').serializeArray(), function(result, event){ 
+              if(event.type == 'exception') {
+                
+                alert(event.message);         
+                } else { 
+                var pages = result / {!$Setup.nexPrice_Settings__c.Salesforce_Record_Limit__c}
+                var pageoptions = '';
+                $('#submitsearch').button('disable');
+                $('#submitsearch').attr('data-status', 'disable');
+                 $('#pageselect').find('.ui-button-text').html('Show More (' + (Math.ceil(pages)-1) + ')');
+                if(pages > 1)
+                 { $('#pageselect').attr('data-status', 'enable');
+                  $('#pageselect').button('enable');} 
+                else
+                  $('#pageselect').attr('data-status', 'disable');
+                $('#pageselect').attr('data-pages', Math.ceil(pages));
+                $('#pageselect').attr('data-page', 1);
+                }
+             }, {buffer: true, escape: true, timeout:120000});
+}
+
+function fnHideFog(){
+  $('#loadingbanner').hide();
+  if($('#submitsearch').attr('data-status') == 'enable')
+    $('#submitsearch').button('enable');
+  if($('#pageselect').attr('data-status') == 'enable')
+    $('#pageselect').button('enable'); 
+  $('#clearsearch').button('enable'); 
+  
+}
+
+function fnShowFog(){
+  $('#loadingbanner').show();
+  $('#submitsearch, #clearsearch, #pageselect').button('disable');
+}
+
+function onChangeMultiPage(formData){
+
+$('#pageselect').click(function(){
+                 
+                 var existingids =  $('#price_maintenance').dataTable().fnGetColumnData(aColumnIndex['Id'], true, false, true);
+
+                 fnShowFog();
+                 var pages = parseInt($('#pageselect').attr('data-pages'));
+                 var page = parseInt($('#pageselect').attr('data-page')) + 1;
+                 var remainder = Math.ceil(pages - page);
+                 
+                 $('#pageselect').attr('data-page', page);
+                 if(parseInt($('#pageselect').attr('data-page')) <= parseInt($('#pageselect').attr('data-pages')))
+                 {
+                 if(parseInt($('#pageselect').attr('data-page')) == parseInt($('#pageselect').attr('data-pages')))
+                 {  $('#pageselect').button('disable');
+                    $('#pageselect').attr('data-status', 'disable');
+                    $('#countbannermessage').html('All records matching the filter criteria have been added to the list.');
+                 }
+                 $('#pageselect').attr('data-page', page)
+                 $('#pageselect').find('.ui-button-text').html('Show More (' + remainder + ')');
+                 var off = {!$Setup.nexPrice_Settings__c.Salesforce_Limit_Per_Call__c} * (page-1);
+
+                 Price_Letter_Nexprice_12.getData(existingids ,formData, '{!$Setup.nexPrice_Settings__c.Salesforce_Limit_Per_Call__c}', off.toString() , function(result, event){ 
+                          if(event.type == 'exception') {
+                           fnHideFog();
+                           alert('GetData: ' + event.message)
+                           $('#Reset').click();   
+                          } else {
+
+                            if(result.length == 0)
+                              fnHideFog();
+                            else
+                            fnAddData(result.rows, $('#price_maintenance').dataTable());  
+                          } 
+                      }, {buffer: true, escape: true, timeout:120000});
+                }
+  });
+
+}
+
+function processJson(data) {
+    fnAddData(data, $('#price_maintenance').dataTable());
+}
+
+function fnFormatDetails( nTr, type )
+{
+   var aData = $('#' + type).dataTable().fnGetData( nTr);
+   var toreturn = '';
+   
+   if(type == 'price_maintenance')
+   toreturn = $("<div />").html(aData.Inner_Table__c).text();
+   else if(type == 'formtable')
+   toreturn = $("<div />").html(aData.Simulate_Table__c).text();
+   else if(type == 'audittable')
+   toreturn = $("<div />").html(aData.Inner_Table__c).text();
+   else if(type == 'quotetable')
+   toreturn = $("<div />").html(aData.Inner_Table__c).text();
+   else if(type == 'pendingtable')
+   toreturn = $("<div />").html(aData.Inner_Table__c).text();
+
+   return toreturn;
+}
+
+function fnInitPage() {
+
+
+$('.showhide').click(function(){
+    var oTable = $('#price_maintenance').dataTable();
+    oTable.fnSetColumnVis( aColumnIndex[$(this).attr('name')], $(this).prop('checked'));
+    oTable.fnDraw();
+});
+
+$('#clearsearch').click(function(){ 
+ fnClearTable();
+ $('#pageselect').find('.ui-button-text').html('Show More (0)');
+ $('#pageselect').button('disable');
+ $('#pageselect').attr('data-status', 'enable');
+ $('#submitsearch').button('enable');
+ $('#submitsearch').attr('data-status', 'enable');
+ $(".mselect").each(function(i, sel){
+ var sName = $(sel).attr('data-name');
+ 
+   $(sel).multiselect("widget").find(":checkbox").each(function(){
+     if($(this).prop('checked'))
+       this.click();  
+   });
+   
+   
+   if(sName == 'Sold To' || sName == 'Ship To' || sName == 'Material' || sName == 'Base Code' || sName == 'Corporate')
+       $(sel).empty();
+      
+     $(sel).multiselect('refresh');
+     $(sel).multiselect('widget').find('input').val('');
+   
+ });
+   
+   $('#price_maintenance').find('.textinput, .selectinput').each(function(i, ti){ $(this).val($(this).attr('name')); 
+       $('#price_maintenance').dataTable().fnFilter('', aColumnIndex[$(this).attr('data-field')]);
+       $(this).val(''); 
+   });
+   
+   $('#price_maintenance').find('.dateinputfrom, .dateinputto, .numberinputfrom, .numberinputto').each(function(){
+       $(this).val(''); 
+   }); 
+   
+   $('#price_maintenance').dataTable().fnDraw();
+   
+   refreshCount();
+ });
+ 
+ 
+ 
+ if('{!$CurrentPage.parameters.id}' != '')
+   Price_Letter_Nexprice_12.getAccount('{!$CurrentPage.parameters.id}', function(result, event){ 
+        
+                 var opt1 = '<option selected="selected" value="' + result.SAP_Corporate_Account_Id__c + '">' + result.SAP_Corporate_Account__c + '</option>';
+                 var opt2 = '<option selected="selected" value="' + result. SAP_Sold_To_Account_Id__c + '">' + result.SAP_Sold_To_Account__c + '</option>';
+                 var opt3 = '<option selected="selected" value="' + result.Id + '">' + result.Name + ' - ' + result.AccountNumber + '</option>';
+                 
+                 if(typeof result.SAP_Partner_Function__c == 'undefined' && 
+                    typeof result.SAP_Corporate_Account_Id__c != 'undefined')
+                 {  
+                     $('.advanced').show();
+                     $('#corp').empty();
+                     $('#corp').append(opt1);
+                     $('#corp').multiselect('refresh');
+                     $('#corp').multiselect('widget').find('input').val('');
+                        
+                 }
+                 else if(typeof result.SAP_Sold_To_Account_Id__c != 'undefined')
+                 {
+                     $('#sldto').empty();
+                     $('#sldto').append(opt2);
+                     $('#sldto').multiselect('refresh');
+                     $('#sldto').multiselect('widget').find('input').val('');
+                 }
+                 else
+                 {
+                     $('#shto').empty();
+                     $('#shto').append(opt3);
+                     $('#shto').multiselect('refresh');
+                     $('#shto').multiselect('widget').find('input').val('');
+                 }
+                 $('#mimipanel').submit();
+                 refreshCount();
+             }, {buffer: true, escape: true, timeout:120000});
+             
+    
+             
+  $.ech.multiselect.prototype.options.minWidth = "auto";
+  $(".mselect").each(function(i, oSel){
+           
+           var m = $(oSel).multiselect({
+            click: function(event, ui){
+             $('#pageselect').find('.ui-button-text').html('Show More (0)');
+             $('#pageselect').button('disable');
+             $('#pageselect').attr('data-status', 'enable');
+             $('#submitsearch').button('enable');
+             $('#submitsearch').attr('data-status', 'enable');
+            },
+            close: function(event, ui){
+            refreshCount();
+
+            if( $('#price_maintenance').dataTable().fnGetData().length > 0 )
+              $('#submitsearch').find('.ui-button-text').html('Search');
+            },
+            noneSelectedText: $(this).attr('data-name'), 
+            selectedText: $(this).attr('data-name') + ": # Selected"       
+            }).multiselectfilter();
+
+            var sName = $(oSel).attr('data-name');
+
+            var oWidget = $(oSel).multiselect('widget');
+   
+            if(sName == 'Material' || sName == 'Base Code' || sName == 'Sold To' || sName == 'Ship To' || sName == 'Corporate')
+            {         
+
+              $(oWidget).find('.ui-widget-header').find('.ui-multiselect-filter').append('<img class="iClear" src="{!URLFOR($Resource.JQuery_Pricing, '/JQuery_Pricing/themes/icons/no.png')}"/>');  
+              $(oWidget).find('.ui-widget-header').find('.ui-multiselect-filter').append('<img class="iSearch" src="{!URLFOR($Resource.spinner)}"/>');    
+              
+              $(oWidget).find('.iSearch').hide();
+              $(oWidget).find('.iClear').click(function(){
+              $(oSel).empty();
+              $(oSel).multiselect('refresh');
+              $(oWidget).find('input').val('');
+              });
+              
+              $(oWidget).find('input').on('keydown', function(e){
+                clearTimeout(timeout);
+                if($(this).val().length > 1)
+                   timeout = setTimeout(function(){fnInitSearchBox(oWidget, oSel, sName)},750);
+               });
+            }
+       });
+ 
+ $('.advanced').hide();
+ $('#mimi').click(function(){ 
+ 
+     if( $('.advanced').is(':visible') == false)
+     {
+       $('.advanced').show();
+       $("#shtoowners").multiselect("widget").find(":checkbox").each(function(){
+         if( $(this).val() === '{!myEmpId}')
+           this.click();
+       });
+     }
+     else
+     { $(".mselect").each(function(i, sel){
+       $(sel).multiselect("widget").find(":checkbox").each(function(){
+         if($(this).prop('checked'))
+           this.click();  
+       });
+      });
+      $('.advanced').hide();
+     }
+    });
+    
+ $('#nextoolbar2').hide();
+ $('#ClearFilters').click(function(){ 
+   $('.textinput, .selectinput').each(function(i, ti){ $(this).val($(this).attr('name')); 
+      $('#price_maintenance').dataTable().fnFilter('', aColumnIndex[$(this).attr('data-field')]);
+      $(this).val(''); 
+      
+   });
+   $('#price_maintenance').find('.dateinputfrom, .dateinputto, .numberinputfrom, .numberinputto').each(function(){
+    $(this).val(''); 
+   }); 
+   $('#price_maintenance').dataTable().fnDraw();
+   fnUpdateFilterSelect('price_maintenance', aColumnIndex);
+ });
+ 
+ $('#SelectAll').click(function(){ 
+
+     $('#price_maintenance').find('input:checkbox').not('input[disabled="disabled"]').attr('checked', 'checked');
+     fnEvaluateTable($('#price_maintenance' ).dataTable()); 
+ });
+ 
+ $('#Reset').click(function(){ 
+
+     $('#price_maintenance').find('input:checkbox').not('input[disabled="disabled"]').removeAttr('checked'); 
+     fnEvaluateTable($('#price_maintenance' ).dataTable()); 
+ });
+ 
+ $('#mimipanel').ajaxForm({  
+        dataType:  'json', 
+        beforeSubmit: startSearch,
+        beforeSerialize: processSerialize 
+  });
+ 
+ $('#clearsearch, #submitsearch, #pageselect').button();
+ $('#pageselect').button('disable');
+ $('#pageselect').attr('data-status', 'disable');
+ 
+ $('#sb1,#sb2').splitbutton({plain:false});
+
+ $('#dd3').dialog({  
+          title: 'Send Price Letter',     
+          closed: true,  
+          cache: false, 
+          modal: true,
+          width:800,  
+          height:400, 
+          collapsible: true,
+          maximizable: true,
+          maximized: true,                 
+          toolbar:[{
+                text:'Save and Send',
+                iconCls:'icon-save',
+                handler:function(){
+                var bValid = $('#plform').form('validate');
+               
+                if(bValid == true)
+                { 
+                  
+                   Price_Letter_Nexprice_12.sendpriceletter($('#plform').serialize(),$('#frameid').attr('data-page'),function(result, event){ 
+                      if(event.type == 'exception') {
+                            }  
+                      else{
+                            $('#dd3').dialog('close');}
+                             }, {buffer: true, escape: true, timeout:120000});
+                }
+              }
+            },{
+                text:'Cancel',
+                iconCls:'icon-cancel',
+                handler:function(){$('#dd3').dialog('close');}
+            },
+            {
+                text:'Add Contact',
+                iconCls:'icon-add',
+                handler:function(){
+                 fnOpenContactPanel();
+                 
+                  Price_Letter_Nexprice_12.getPLAccounts($('#hiddenplid').val(),function(result, event){ 
+                      if(event.type == 'exception') {
+                            }  
+                      else{
+                      var sAcc = '';
+                      var AccId='';
+                     
+                      $(result.rows).each(function(i, r){
+                       
+                      if(AccId != ''){
+                          if(AccId != r.Account_Material__r.Account__r.Id)
+                             sAcc += '<option value="' + r.Account_Material__r.Account__r.Id + '" data-id="' + r.Account_Material__r.Account__r.Id + '">' + r.Account_Material__r.Account__r.Name + ' - ' + r.Account_Material__r.Account__r.AccountNumber + ' / ' + r.Account_Material__r.Account__r.SAP_Sales_Org__c + ' / ' + r.Account_Material__r.Account__r.SAP_DivisionCode__c + '</option>';   
+                            }
+                           else 
+                             sAcc += '<option value="' + r.Account_Material__r.Account__r.Id + '" data-id="' + r.Account_Material__r.Account__r.Id + '">' + r.Account_Material__r.Account__r.Name + ' - ' + r.Account_Material__r.Account__r.AccountNumber + ' / ' + r.Account_Material__r.Account__r.SAP_Sales_Org__c + ' / ' + r.Account_Material__r.Account__r.SAP_DivisionCode__c + '</option>';   
+                            
+                      AccId = r.Account_Material__r.Account__r.Id;
+                      
+                      });
+                       $('#cform-acct').empty();
+                       $('#cform-acct').append(sAcc);
+                            }
+                             }, {buffer: true, escape: true, timeout:120000});
+                 
+              }
+            }]   
+ });
+        
+        
+ $('#dd4').dialog({  
+          title: 'Add New Contact',  
+          width: 425,  
+          height: 325,     
+          closed: true,  
+          cache: false, 
+          modal: true,
+          toolbar:[{
+                text:'Save',
+                iconCls:'icon-save',
+                handler:function(){
+                var bValid = $('#cform').form('validate');
+                if(bValid == true){
+               
+                
+                if($('#cform-role').val() == null)
+                    alert('Contact Role is required to save new Contact.');
+                else
+                  {
+                  Price_Letter_Nexprice_12.saveContact($('#cform').serialize(),$('#cform-role').val(),function(result, event){ 
+                      if(event.type == 'exception') {
+                            }  
+                      else{
+                            $('#dd3').dialog('open');
+                        $('#dd4').dialog('close');}}, {buffer: true, escape: true, timeout:120000});
+                  }
+                }}
+            },{
+                text:'Cancel',
+                iconCls:'icon-cancel',
+                handler:function(){
+                $('#dd3').dialog('open');
+                $('#dd4').dialog('close');}
+            }]   
+ });
+        
+ $('#savepriceletter').click(function(){
+   if($('#mm1').menu('findItem', 'Save Price Letter').disabled == false)
+   {      
+         var oTable = $('#price_maintenance').dataTable();
+         var sData = oTable.$('input').serialize();
+
+          var aaSelected = new Array();
+          $('#price_maintenance tr input').each(function(){ 
+                if($(this).prop('checked') == true){
+                    aaSelected.push($(this).val());
+                }
+          });
+          
+        Price_Letter_Nexprice_12.savepriceletter(aaSelected,function(result, event){ 
+          if(event.type == 'exception') {
+            
+          }else{
+              
+            fnOpenPriceLetter(result);
+            
+          }
+           }, {buffer: true, escape: true, timeout:120000});
+   }
+ });
+ }
+function fnInitSearchBox( oWidget, oSel, sName){
+            var oTable = $('#price_maintenance').dataTable();
+            var oInput = $(oWidget).find('input');
+            var aaSelected = new Array();
+            var aaExisting = new Array();
+            
+            
+            $(".mselect").each(function(i, mselect){
+                         aaSelected[$(mselect).attr('name')] = new Array();
+                         aaExisting[$(mselect).attr('name')] = new Array();
+                         $(mselect).multiselect("getChecked").each(function(){aaSelected[$(mselect).attr('name')].push(this.value); });     
+                         $(mselect).find("option").each(function(){aaExisting[$(mselect).attr('name')].push($(this).attr('data-id')); });            
+                       });
+            if(sName == 'Sold To' || sName == 'Ship To' || sName == 'Corporate')
+            {
+                             var excludes = '';
+                             if(sName == 'Sold To')
+                                excludes = 'SAP_Sold_To_Account__c';
+                             if(sName == 'Ship To')
+                                excludes = 'Id';
+                             
+                             var f = '((NOT NAME LIKE \'%DO NOT%\') and recordtype.Name = \'Distribution Customer\' AND Inactive_Account__c != true AND (Name LIKE \'%' + $(oInput).val() + '%\'  or AccountNumber LIKE \'%' + $(oInput).val() + '%\' ) ';
+                 
+                             if(sName != 'Corporate'){
+                                (sName == 'Sold To')? f += 'and SAP_Partner_Functions__c LIKE \'%SOLD%\')' : f += ' and SAP_Partner_Functions__c LIKE \'%SHIP%\')';
+                             }
+                             else{
+                                f += ' and SAP_Partner_Functions__c = \'\')';
+                                excludes = 'SAP_Corporate_Account_Id__c';
+                             }
+                             var j = 0;
+                             var values;
+                             $("select[data-acctfieldname]").each(function(i, mselect){
+                                if(aaSelected[$(mselect).attr('name')].length != 0 && $(mselect).attr('data-acctfieldname') != excludes){
+                                    if(j == 0) 
+                                      f += ' AND (';
+                                   values = '';
+                                   for(var k=0; k<aaSelected[$(mselect).attr('name')].length; k++)
+                                   {
+                                     values += aaSelected[$(mselect).attr('name')][k];
+                                     
+                                     if($(mselect).attr('data-acctfieldname') == 'Team_Employee_Ids__c')
+                                         f += $(mselect).attr('data-acctfieldname') + " LIKE \'%" + aaSelected[$(mselect).attr('name')][k]+ "%\'";
+                                     
+                                     if((k < aaSelected[$(mselect).attr('name')].length-1) && ($(mselect).attr('data-acctfieldname') == 'Team_Employee_Ids__c'))
+                                        f += ' OR ';
+                                     
+                                     if((k < aaSelected[$(mselect).attr('name')].length-1) && ($(mselect).attr('data-acctfieldname') != 'Team_Employee_Ids__c'))
+                                        values += ',';
+                                   }
+                                   if($(mselect).attr('data-acctfieldname') != 'Team_Employee_Ids__c')
+                                       f += $(mselect).attr('data-acctfieldname') + " in ( " + values +")";
+                                       f += ' OR ';
+                                   j++;
+                                }                
+                             }); 
+                             if(j>0)
+                                f = f.substring(0,f.length-3)+' )';
+                              
+                             $(oWidget).find('.iSearch').show();
+                             $(oWidget).find('.iClear').hide();
+                             if($(oSel).is('[data-searching]') == false)
+                              {
+                                $(oSel).attr('data-searching', 'searching');
+            
+                              Price_Letter_Nexprice_12.getSelectOptions(aaExisting[$(oSel).attr('name')], $(oInput).val(), 'Account', 'Name, AccountNumber, SAP_Sales_Org__c, SAP_DivisionCode__c, SAP_City__c', f, 'Name ASC', '100', function(result, event){
+                                $(oSel).removeAttr('data-searching');
+                                if(event.type == 'exception') {         
+                                  $(oWidget).find('.iSearch').hide(); 
+                                  $(oWidget).find('.iClear').show();  
+            
+                                  alert(event.message);
+            
+                                } else {     
+                
+                                   var sResult = '';
+                                 //  var aData = oTable.fnGetColumnData[aColumnIndex[$(oSel).attr('name')]];
+                                   var aData = new Array();
+                                   $(oSel).find('option').each(function(i, opt){ aData.push($(opt).val()); });
+                                   $(result.rows).each(function(i, r){
+                                     if(jQuery.inArray(r.Id, aData) == -1)
+                                       sResult += '<option value="' + r.Id + '" data-id="' + r.Id + '">' + r.Name + ' - ' + r.AccountNumber + ' / ' + r.SAP_Sales_Org__c + ' / ' + r.SAP_DivisionCode__c + ' / ' + r.SAP_City__c + '</option>';
+                                     
+                                       
+                                   });   
+            
+                                   $(oSel).append(sResult);
+                                   $(oSel).multiselect('refresh');  
+                                   $(oWidget).find('.iSearch').hide();   
+                                   $(oWidget).find('.iClear').show();                        
+                                }
+                              }, {buffer: true, escape: true, timeout:120000});
+                             }
+            }
+            if(sName == 'Base Code')
+            {
+                             var f = '(Material_Base_Code__c LIKE \'%G2\') AND (NOT Material_Base_Code_Description__c LIKE \'%DO NOT USE%\') and (Material_Base_Code_Description__c LIKE \'%' + $(oInput).val() + '%\' OR Material_Base_Code_w_o_G2__c LIKE \'%' + $(oInput).val() + '%\')';
+                             $(oWidget).find('.iSearch').show();
+                             $(oWidget).find('.iClear').hide();
+                              if($(oSel).is('[data-searching]') == false)
+                              {
+                                $(oSel).attr('data-searching', 'searching');
+                              Price_Letter_Nexprice_12.getSelectOptions(aaExisting[$(oSel).attr('name')],$(oInput).val(), 'Material_Base_Code__c', 'Name, Material_Base_Code_w_o_G2__c, Material_Base_Code__c,  Material_Base_Code_Description__c', f, 'Name ASC', iLimit, function(result, event){
+                                $(oSel).removeAttr('data-searching');
+                                if(event.type == 'exception') {
+                                  $(oWidget).find('.iSearch').hide();
+                                  $(oWidget).find('.iClear').show();
+                                  alert(event.message);
+                                } else {            
+                                   var sResult = '';
+                                 //  var aData = oTable.fnGetColumnData[aColumnIndex[$(oSel).attr('name')]];
+                                   var aData = new Array();
+                                   $(oSel).find('option').each(function(i, opt){ aData.push($(opt).val()); });
+                                   $(result.rows).each(function(i, r){
+                                   if(jQuery.inArray(r.Material_Base_Code__c, aData) == -1)
+                                      sResult += '<option value="' + r.Material_Base_Code__c + '" data-id="' + r.Id + '">' + r.Material_Base_Code_Description__c + ' - ' + r.Material_Base_Code_w_o_G2__c + '</option>';
+                                   });   
+            
+                                   $(oSel).append(sResult);
+                                   $(oSel).multiselect('refresh');  
+                                   $(oWidget).find('.iSearch').hide();   
+                                   $(oWidget).find('.iClear').show();                        
+                                }
+                              }, {buffer: true, escape: true, timeout:120000});
+                             }
+            }
+            
+            if(sName == 'Material')
+            {
+                             var f = '(NOT NAME LIKE \'%DO NOT USE%\') and Name LIKE \'%' + $(oInput).val() + '%\'';
+                              $("select[data-matfieldname]").each(function(i, mselect){
+            
+                                   for(var j=0; j<aaSelected[$(mselect).attr('name')].length; j++)
+                                   {
+                                      if(j == 0)
+                                        f += ' AND (';
+                                      f += $(mselect).attr('data-matfieldname') + " = \'" + aaSelected[$(mselect).attr('name')] + "\'";
+                                      if(j < aaSelected[$(mselect).attr('name')].length-1)
+                                        f += ' OR ';
+                                      else
+                                        f += ')';
+                                   }                      
+                             }); 
+                              
+                              $(oWidget).find('.iSearch').show();
+                              $(oWidget).find('.iClear').hide();
+                              
+                              if($(oSel).is('[data-searching]') == false)
+                              {
+                                $(oSel).attr('data-searching', 'searching');
+                              
+                                Price_Letter_Nexprice_12.getSelectOptions(aaExisting[$(oSel).attr('name')],$(oInput).val(), 'Material_Sales_Data2__c', 'Name, Material_Number__c,  Sales_Org_Code__c, Division_Code__c', f, 'Division_Code__c ASC, Name ASC', iLimit, function(result, event){
+                                $(oSel).removeAttr('data-searching'); 
+                                if(event.type == 'exception') {
+            
+                                   alert(event.message); 
+                                   $(oWidget).find('.iSearch').hide();   
+                                   $(oWidget).find('.iClear').show();  
+                                } else {            
+                                   var sResult = '';
+                                   //var aData = oTable.fnGetColumnData[aColumnIndex[$(oSel).attr('data-value')]];
+                                   
+                                   var aData = new Array();
+                                   $(oSel).find('option').each(function(i, opt){ aData.push($(opt).val()); });
+                                   
+                                   $(result.rows).each(function(i, r){
+                                    if(jQuery.inArray(r.Material_Base_Code__c, aData) == -1)
+                                      sResult += '<option value="' + r.Id + '" data-id="' + r.Id + '">' + r.Name + ' / ' + r.Sales_Org_Code__c + ' / ' + r.Division_Code__c + '</option>';
+                                   }); 
+                                   
+                                   $(oSel).append(sResult);
+                                   $(oSel).multiselect('refresh');  
+                                   $(oWidget).find('.iSearch').hide();   
+                                   $(oWidget).find('.iClear').show();  
+                                                    
+                                }
+                              }, {buffer: true, escape: true, timeout:120000});
+                             }
+            }
+}
+ 
+ function fnOpenPriceLetter(result){
+
+  var content = '';
+  var shtoowners = new Array();
+  shtoowners = $("#shtoowners").val();
+  var shto = new Array();
+  shto = $('#shto').val();
+  
+            
+  content += '<br/><table><tr><td style="vertical-align:top;padding-right:1px;">';
+  content += '<form id="plform"><table><tr><input type="hidden" id="hiddenplid" name="hiddenplid"/></tr><tr>';
+  content += '<td><b>Language:</b></td></tr><tr><td><Select id="pllanguage" class="easyui-combo" name="pllanguage" style="width:120px;"><option value="price_letter" label="English">English</option><option value="price_Letter_CanadianEnglish" label="Canadian English">Canadian English</option><option value="price_Letter_French" label="French">French</option></select></td></tr>';
+  content += '<tr><td><b>Contacts:</b></td></tr><tr><td><input id="plcontacts"/></td></tr>';
+  content += '<tr><td><b>To:</b></td></tr><tr><td><textarea rows="10" cols="40" id="plemails" name="plemails"/></td></tr>';
+  content += '<tr><td><b>Subject:</b></td></tr><tr><td><input style="width:400px;" id="plsubject" name="plsubject"/></td></tr>';
+  content += '<tr><td><b>Email Body:</b></td></tr><tr><td><textarea rows="10" cols="40" id="plbody" name="plbody"/></td></tr></table></form></td><td style="vertical-align:top;padding-right:1px;">';
+  content += '<iframe scrolling="auto" id="frameid" frameborder="0" style="width:800px;height:600px;"></iframe></td></tr></table>';
+  $('#dd3').dialog('open');
+  
+
+  $('#dd3container').html(content);
+  $('#frameid').attr('src', '/apex/price_letter?id=' + result);
+  $('#frameid').attr('data-page', 'price_letter'); 
+  $('#hiddenplid').attr('value', result);
+  $('#plemails').validatebox({required: true});
+  $('#plsubject').validatebox({required: true});
+  $('#plbody').validatebox({required: true});
+  $('#plcontacts').combogrid({  
+        panelWidth:450,  
+        value:'',      
+        idField:'Id',  
+        textField:'Email', 
+        keyHandler: {
+          query: function(q){
+                var g = $(this).combogrid('grid');
+                var plId = $('#hiddenplid').val();
+                Price_Letter_Nexprice_12.FetchMyContacts_12(q, plId, function(result, event){
+                    if(event.type == 'exception') {
+                      error.apply(this, arguments);         
+                    } else {      
+                      g.datagrid('loadData', result);         
+                    }
+                  }, {buffer: true, escape: true, timeout:120000});
+           }
+        },
+        
+        columns:[[  
+               {field:'Nexpriceletter',title:'Nexprice Contact', width:100},
+               {field:'ContactLastName',title:'Last Name',width:100}, 
+               {field:'ContactFirstName',title:'First Name',width:100}, 
+               {field:'Email',title:'Email Address',width:100},
+               {field:'ShipTo',title:'Ship To',width:100},
+               {field:'SoldTo',title:'Sold To',width:100},
+               {field:'Corp',title:'Corporate',width:100}
+                
+        ]],
+        loader: function(param,success,error){
+        var plId = $('#hiddenplid').val();
+        Price_Letter_Nexprice_12.FetchMyContacts_12('', plId, function(result, event){
+             if(event.type == 'exception') {
+                error.apply(this, arguments);         
+             } else {      
+               success(result);         
+             }
+             }, {buffer: true, escape: true, timeout:120000});
+        },
+        onSelect: function(param){ 
+         var sEmails = $('#plemails').val();
+         var sEm =  $('#plcontacts').combogrid('getText');
+         if(sEm != '' && sEm != undefined)
+           sEmails += $('#plcontacts').combogrid('getText') + ', ';
+         else
+         {
+           var sContact = $('#plcontacts').combogrid('getValue');
+           $('#cform-id').val(sContact);
+           Price_Letter_Nexprice_12.FetchContact(sContact, function(result, event){
+                    if(event.type == 'exception') {
+                      error.apply(this, arguments);         
+                    } else {   
+                        $('#cform-firstname').val(result.FirstName);
+                        $('#cform-lastname').val(result.LastName);
+                        $('#cform-email').val(result.Email);
+                        $('#cform-acct').combogrid(setText, result.Account.Name);
+                        $('#cform-acct').combogrid(setValue, result.accountid);         
+                    }
+                  }, {buffer: true, escape: true, timeout:120000});
+          fnOpenContactPanel();
+           
+           
+         }
+         $('#plemails').val(sEmails);
+         $('#plcontacts').combogrid('clear');
+         }
+    });
+    
+    $('#pllanguage').change(function(){
+    
+     var plLanguage = $('#pllanguage').val();
+
+    $('#frameid').attr('src', '/apex/' + plLanguage + '?id=' + result);
+    $('#frameid').attr('data-page', plLanguage);
+
+     });
+}
+
+
+function fnOpenContactPanel(){
+ $('#dd3').dialog('minimize');
+ $('#dd4').dialog('open');
+    $('#cform-email').validatebox({  
+        required: true,  
+        validType: 'email'  
+    });
+    $('#cform-firstname').validatebox({  
+        required: true 
+    }); 
+    $('#cform-lastname').validatebox({  
+        required: true 
+    }); 
+    $('#cform-acct').validatebox({  
+        required: true 
+    }); 
+    $('#cform-phone').validatebox({  
+        required: true  
+     });
+   
+    
+    
+    Price_Letter_Nexprice_12.getPLAccounts($('#hiddenplid').val(),function(result, event){ 
+    if(event.type == 'exception') {
+          }  
+    else{
+        var sAcc = '';
+       
+        $(result.rows).each(function(i, r){
+         sAcc += '<option value="' + r.Account_Material__r.Account__r.Id + '" data-id="' + r.Account_Material__r.Account__r.Id + '">' + r.Account_Material__r.Account__r.Name + ' - ' + r.Account_Material__r.Account__r.AccountNumber + ' / ' + r.Account_Material__r.Account__r.SAP_Sales_Org__c + ' / ' + r.Account_Material__r.Account__r.SAP_DivisionCode__c + '</option>';   
+        });
+        $('#cform-acct').empty();
+        $('#cform-acct').append(sAcc);
+        }
+     }, {buffer: true, escape: true, timeout:120000});
+     
+    
+}
+
+function refreshCount(){
+
+Price_Letter_Nexprice_12.getDataCount($('#mimipanel').serializeArray(), function(result, event){ 
+              if(event.type == 'exception') {
+                
+                  alert(event.message);        
+                } else { 
+                   
+                  if($('#price_maintenance').dataTable().fnGetData().length == result)
+                   $('#countbannermessage').html('All ' + result + ' records matching the filter criteria have been added to the list. Click Clear Search to start a new search.');
+                   else
+                   $('#countbannermessage').html(result + ' records match your filters. Up to {!$Setup.nexPrice_Settings__c.Salesforce_Record_Limit__c} records may be added at once. To add more, click show more.');
+                }
+            }, {buffer: true, escape: true, timeout:120000});
+}
+
+
+function fnInitTable(){
+  $('#price_maintenance').dataTable({
+                "aLengthMenu": [[100, 250, 500, 750], [100, 250, 500, 750]],
+                "iDisplayLength": 100,
+                "bDestroy": true,
+                "fnDrawCallback": function( oSettings ) {
+                   $('.row_selected').removeClass('row_selected');
+                   $('.row_error').removeClass('row_error'); 
+                },
+                "bSort": true,
+                "bJQueryUI":true,
+                "sPaginationType": "four_button",
+                "sAjaxDataProp": "accounts",
+                "sErrMode": false,
+                "sDom": 'flptir',
+                "bAutoWidth": false,
+                 "aoColumnDefs": [
+                    { "aTargets":[ "Open"], sClass:"Open" ,sWidth:"2px", "bAutoWidth": false},
+                    { "aTargets":[ "Select"], sClass:"Select", sWidth:"2px", "bAutoWidth": false },
+                    { "aTargets":[ "Seller" ], "mData": "Seller_Name__c", sClass:"Seller_Name__c",sWidth:"2px", "bAutoWidth": false },
+                    { "aTargets":[ "Sold_To" ], "mData": "Account_Sold_To__c", sClass:"Account_Sold_To__c",sWidth:"2px", "bAutoWidth": false },
+                    { "aTargets":[ "Ship_To" ], "mData": "Account_Name__c", sClass:"Account_Name__c",sWidth:"2px", "bAutoWidth": false },
+                    { "aTargets":[ "Account_City" ], "mData": "Account_City__c", sClass:"Account_City__c",sWidth:"2px", "bAutoWidth": false },
+                    { "aTargets":[ "Material" ], "mData": "Material_Name__c", sClass:"Material_Name__c",sWidth:"2px", "bAutoWidth": false },
+                    { "aTargets":[ "INCO_TERMS1" ], "mData": "Freight_Terms__c", sClass:"Freight_Terms__c",sWidth:"2px", "bAutoWidth": false },
+                    { "aTargets":[ "Customer_Material#" ], "mData": "Customer_Material_Number__c", sClass:"Customer_Material_Number__c",sWidth:"2px", "bAutoWidth": false },
+                    { "aTargets":[ "Material_Group3" ], "mData": "Material_Group_3__c", sClass:"Material_Group_3__c",sWidth:"2px", "bAutoWidth": false },
+                    { "aTargets":[ "Supplier" ], "mData": "Material_Supplier_Name__c", sClass:"Material_Supplier_Name__c",sWidth:"2px", "bAutoWidth": false}, 
+                    { "aTargets":[ "Eff_Date" ], "mData": "", sClass:"CSP_Effective_Date__c",sWidth:"2px", "bAutoWidth": false,
+                      "mData": function ( source, type, val ) {
+                          if (type === 'set') {
+                              return;
+                          }
+                          else if (type === 'display') { 
+                          if (source.CSP_Effective_Date__c != '' && source.CSP_Effective_Date__c != null){
+                             var CSPDate = new Date(source.CSP_Effective_Date__c);
+                             if('{!DateFormat}' == 'mm/dd/yy')
+                                return (CSPDate.getUTCMonth()+1) + "/" + CSPDate.getUTCDate() + "/" + CSPDate.getUTCFullYear();
+                              else{
+                                return CSPDate.getUTCDate() + "/" + (CSPDate.getUTCMonth()+1) + "/" + CSPDate.getUTCFullYear();
+                              }
+                             }
+                          else return '';}
+                          else if (type === 'filter') {  return source.CSP_Effective_Date__c; }
+                          else if (type === 'sort') { 
+                           if((typeof source.CSP_Effective_Date__c == 'undefined') || source.CSP_Effective_Date__c == null)
+                              return '';
+                            else 
+                             return new Date(source.CSP_Effective_Date__c);
+                          }
+                          return source.CSP_Effective_Date__c;
+                      }
+                    },
+                    { "aTargets":[ "Avg_Order" ], sClass:"Avg_Order__c",sWidth:"2px", "bAutoWidth": false, 
+                      "mData": function ( source, type, val ) {
+                          if (type === 'set') {
+                              return;
+                          }
+                          else if (type === 'display') { return source.Avg_Order__c;}
+                          else if (type === 'filter') {  return source.Avg_Order_Qty__c; }
+                          else if (type === 'sort') { return source.Avg_Order_Qty__c; }
+                          return source.Target__c;
+                      }
+                    },
+                    { "aTargets":[ "Est_Order" ], sClass:"Estimated_Order_Quantity__c",sWidth:"2px", "bAutoWidth": false,
+                      "mData": function ( source, type, val ) {
+                          if (type === 'set') {
+                              return;
+                          }
+                          else if (type === 'display') { return source.Estimated_Order_Qty__c;}
+                          else if (type === 'filter') {  return source.Estimated_Order_Quantity__c; }
+                          else if (type === 'sort') { return source.Estimated_Order_Quantity__c; }
+                          return source.Target__c;
+                      }
+                    },
+                    { "aTargets":[ "CSP" ], sClass:"CSP__c",sWidth:"2px", "bAutoWidth": false,
+                      "mData": function ( source, type, val ) {
+                          if (type === 'set') {
+                              return;
+                          }
+                          else if (type === 'display') { return source.CSP__c;}
+                          else if (type === 'filter') {  return source.CSP_Price__c; }
+                          else if (type === 'sort') { return source.CSP_Price__c; }
+                          return source.CSP__c;
+                      }
+                    
+                    }, 
+                    { "aTargets":[ "TPI" ], sClass:"TPI__c",sWidth:"2px", "bAutoWidth": false,
+                      "mData": function ( source, type, val ) {
+                          if (type === 'set') {
+                              return;
+                          }
+                          else if (type === 'display') { 
+                            if((typeof source.TPI__c == 'undefined') || source.TPI__c == null)
+                              return '';
+                            else 
+                              return (source.TPI__c + '%');
+                          }
+                          else if (type === 'filter') {  return source.TPI__c; }
+                          else if (type === 'sort') { return source.TPI__c; }
+                          return source.TPI__c;
+                      }
+                    },
+                    { "aTargets":[ "Target" ], sClass:"Target__c",sWidth:"2px", "bAutoWidth": false, 
+                      "mData": function ( source, type, val ) {
+                          if (type === 'set') {
+                              return;
+                          }
+                          else if (type === 'display') { return source.Target__c;}
+                          else if (type === 'filter') {  return source.Target_Price__c; }
+                          else if (type === 'sort') { return source.Target_Price__c; }
+                          return source.Target__c;
+                      }
+                    },
+                    { "aTargets":[ "Id" ],"mData": "Id", sClass:"Id", bVisible: false,sWidth:"2px", "bAutoWidth": false},
+                    { "aTargets":[ "Has_Open_PRT" ],"mData": "Has_Open_PRT__c", sClass:"Has_Open_PRT__c",sWidth:"2px", "bAutoWidth": false, "bVisible":false},
+                    { "aTargets":[ "Has_Unit_Options" ],"mData": "Has_Unit_Options__c", sClass:"Has_Unit_Options__c",sWidth:"2px", "bAutoWidth": false, "bVisible":false},
+                    { "aTargets":[ "UoMs" ], "mData":"UoMs__c", sClass:"UoMs__c", sWidth:"2px", "bAutoWidth":false, "bVisible":false},
+                    { "aTargets":[ "UoM" ], "mData":"CSP_UoM__c", saClass:"CSP_UoM__c", sWidth:"2px", "bAutoWidth":false, "bVisible":false}
+                    ],
+                  "fnInitComplete": function(oSettings) { 
+                     aColumnIndex = fnGetColumnIndex(oSettings);
+                     
+                     $('.showhide').each(function(i, bc){
+                        var oTable = $('#price_maintenance').dataTable();
+                        if( oTable.fnSettings().aoColumns[aColumnIndex[$(this).attr('name')]].bVisible==true)
+                            $(this).attr('checked', true);
+    
+                     });
+                  },
+                  "fnCreatedRow": function( nRow, aData, iDataIndex ) {
+                    
+                    $('td:eq(' + aColumnIndex['Open'] + ')', nRow).html( '<img class="details_img" src="{!URLFOR($Resource.JQuery_Pricing, '/JQuery_Pricing/images/details_open.png')}">' );
+                    fnSetImgListener(nRow, 'price_maintenance');
+
+                    
+                        $('td:eq(' + aColumnIndex['Select'] + ')', nRow).html( '<input class="select_row" type="checkbox", value="' + aData.Id + '">' );
+                    fnSetCheckboxListener(nRow, $('#price_maintenance').dataTable())
+                    aRecordIds[aData.Id] = iDataIndex;
+                  }         
+              });
+     
+}
+
+function fnSetCheckboxListener(nRow, oTable){
+  $(nRow).find('input:checkbox').click(function(){
+      fnEvaluateTable(oTable);
+  });
+}
+function fnEvaluateTable(oTable){
+
+  var sText = null;
+  var sText2 = null;
+  var bSame = true;
+  var bSame2 = true;
+  var item = $('#mm1').menu('findItem', 'Save Price Letter');
+        
+  var iSelected = 0;
+         $(".select_row").each(function(i, v){
+           if($(this).attr("checked") == "checked")
+           { iSelected ++;
+                     
+           }      
+         });
+         
+         if(iSelected == 0) 
+         {    
+              $('#mm1').menu('disableItem', item.target);
+         }
+         else
+         {   
+                $('#mm1').menu('enableItem', item.target);
+         }
+}
+function fnSetImgListener(nRow, type){
+$('.details_img', nRow).click(function(){
+        
+        if ( this.src.match('details_close') )
+        {
+           this.src = "{!URLFOR($Resource.JQuery_Pricing, '/JQuery_Pricing/images/details_open.png')}";
+           $('#' + type).dataTable().fnClose( nRow );
+        }else{
+           this.src = "{!URLFOR($Resource.JQuery_Pricing, '/JQuery_Pricing/images/details_close.png')}";
+           $('#' + type).dataTable().fnOpen( nRow, fnFormatDetails(nRow, type ), 'details' ); 
+           $('.innerTable').dataTable({
+                 "bDestroy": true,
+                 "bPaginate": false,
+                 "bLengthChange": false,
+                 "bFilter": false,
+                 "bSort": false,
+                 "bInfo": false
+            });
+         }
+  });
+}
+
+function fnGetColumnIndex(oSettings){
+    var aColumns = new Array();
+    $.each(oSettings.aoColumns, function(c){
+        var mData = oSettings.aoColumns[c].sClass;
+            aColumns[mData] = c;
+    });
+
+    return aColumns;
+}
+
+function fnClearTable(){
+  $('#price_maintenance').dataTable().fnClearTable();
+  aRecordIds = new Array();
+}
+
+
+function fnAddData(data, oTable){
+
+
+var aaIds = new Array();
+var iSets = {!$Setup.nexPrice_Settings__c.Salesforce_Record_Limit__c} / {!$Setup.nexPrice_Settings__c.SAP_Record_Limit__c};
+var iHigh = {!$Setup.nexPrice_Settings__c.Salesforce_Record_Limit__c} / iSets;
+
+var x = 0;
+var y = 0;
+aaIds[0] = new Array();
+$(data).each(function(i, e){
+   if(y<iHigh)
+   {  aaIds[x][y] = e.Id; 
+      y = y + 1;
+   }  
+   else
+   {  x = x + 1;
+      y = 0;
+      aaIds[x] = new Array();
+      aaIds[x][y] = e.Id;
+      y = y + 1;
+   }
+});
+
+var a = new Array();
+iProcessing = 0;
+
+for(var i=0; i<aaIds.length; i++)
+{   
+    if(aaIds[i].length > 0)
+    Price_Letter_Nexprice_12.getPricing( a, aaIds[i], function(result, event){   
+            if(event.type == 'exception') {
+            alert('getPricing: ' + event.message);
+            fnHideFog();
+            $('#loadingbanner').hide();
+            } else {  
+                                 
+                  oTable.fnAddData(result);  
+                  fnHideFog();
+            }
+    }, {buffer: false, escape: true, timeout:120000});
+}
+fnUpdateFilterSelect('price_maintenance', aColumnIndex);
+}
+
+function fnUpdateFilterSelect(stableid, aColIndex){
+$('#' + stableid).find('.selectinput').each(function(i, sel){
+
+  var val = $(sel).val();
+  $(sel).empty();
+  
+  var opt = '<option value=""';
+  if(val == $(sel).attr('name'))
+  opt += ' selected="selected" ';
+  opt += '>' + $(sel).attr('name') + '</option>';
+  var arr = $('#' + stableid).dataTable().fnGetColumnData(aColIndex[$(sel).attr('data-field')]);
+  $(arr).each(function(j, o){
+    opt = opt + '<option value="' + o + '"';
+    if(val == o)
+    opt += ' selected="selected" ';
+    opt += '>' + o + '</option>';
+  });
+  $(sel).append(opt);
+ 
+});
+  
+}
+function fnPrepFilters(stableid, aColIndex){
+$('#' + stableid).find('.textfilter').each(function(i, f){$(f).html('<div style="width:105px;"><input data-field="'+ $(f).attr('data-field') +'" class="textinput" placeholder="' + $(f).html() + '" name="' + $(f).html() + '" style="width:100px;"/></div>') });
+$('#' + stableid).find('.numberfilter').each(function(i, f){ $(f).html('<div class="numberinput" data-field="'+ $(f).attr('data-field') +'" style="width:105px;"><input data-field="'+ $(f).attr('data-field') +'" class="numberinputfrom" placeholder="From ' + $(f).html() + '" name="From ' + $(f).html() + '" style="width:50px;"/><b>&nbsp;To&nbsp;</b><input class="numberinputto" placeholder="To ' + $(f).html() + '" name="To ' + $(f).html() + '" style="width:50px;"/></div>') });
+$('#' + stableid).find('.datefilter').each(function(i, f){ $(f).html('<div class="dateinput" style="width:155px;" data-field="'+ $(f).attr('data-field') +'"><input class="dateinputfrom" name="From ' + $(f).html() + '" placeholder="From ' + $(f).html() + '" style="width:75px;"/><b>&nbsp;To&nbsp;</b><input class="dateinputto" placeholder="To ' + $(f).html() + '" name="To ' + $(f).html() + '" style="width:75px;"/></div>') });
+$('#' + stableid).find('.listfilter').each(function(i, f){ $(f).html('<div style="width:105px;"><select data-field="'+ $(f).attr('data-field') +'" class="selectinput" name="' + $(f).html() + '" style="width:100px;"><option selected="selected" value="' + $(f).html() + '">' + $(f).html() + '</option></select></div>') });
+$( ".dateinputfrom, .dateinputto" ).datepicker({ changeMonth:true, changeYear:true, dateFormat: "{!dateFormat}"});
+fnUpdateFilterSelect(stableid, aColIndex);
+$('.selectinput').change(function(){
+   $('#' + stableid).dataTable().fnFilter($(this).val(), aColIndex[$(this).attr('data-field')] );
+   fnUpdateFilterSelect(stableid, aColIndex);
+  });
+$(".textinput").keyup( function () { $('#' + stableid).dataTable().fnFilter( this.value, aColIndex[$(this).attr('data-field')] ); fnUpdateFilterSelect(stableid, aColIndex); });
+
+$('.numberinputfrom, .numberinputto').keyup(function(){ 
+$('#' + stableid).dataTable().fnDraw(); fnUpdateFilterSelect(stableid, aColIndex);});
+$('.dateinputfrom, .dateinputto').change(function(){ $('#' + stableid).dataTable().fnDraw(); fnUpdateFilterSelect(stableid, aColIndex); });
+$(".numberinput").each(function(i, ni){
+  $('#' + stableid).dataTable().dataTableExt.afnFiltering.push(
+    function (oSettings, aData, iDataIndex) {
+                    if ($('#' + stableid).dataTable().attr("id") != oSettings.sTableId){ return true; }
+                    var iMin = $(ni).find('.numberinputfrom').val();
+                    var iMax = $(ni).find('.numberinputto').val();
+                    var iValue = (isNaN(aData[aColIndex[$(ni).attr('data-field')]]) || aData[aColIndex[$(ni).attr('data-field')]] == null || aData[aColIndex[$(ni).attr('data-field')]] == "")? -1 : aData[aColIndex[$(ni).attr('data-field')]];
+                    if ((iMin == "" || isNaN(iMin)) && (iMax == "" || isNaN(iMax))) { return true;} 
+                    else if ((iMin == "" || isNaN(iMin)) && iValue <= iMax) { return true; }
+                    else if (iMin <= iValue && (iMax == "" || isNaN(iMax))) { return true; }
+                    else if (iMin <= iValue && iValue <= iMax) { return true; }
+                    return false;
+   });
+});
+$(".dateinput").each(function(i, di){
+  $('#' + stableid).dataTable().dataTableExt.afnFiltering.push(
+    function (oSettings, aData, iDataIndex) {
+                    if ($('#' + stableid).dataTable().attr("id") != oSettings.sTableId){ return true; }
+                    var iMin =  $(di).find('.dateinputfrom').val();
+                    if(iMin !=  $(di).find('.dateinputfrom').attr('name'))
+                      iMin = $(di).find('.dateinputfrom').datepicker( "getDate" );
+                    var iMax =  $(di).find('.dateinputto').val();
+                    if(iMax !=  $(di).find('.dateinputto').attr('name'))  
+                      iMax = $(di).find('.dateinputto').datepicker( "getDate" );
+                    
+                    var iValue = new Date( aData[aColIndex[$(di).attr('data-field')]]);
+                    if ((iMin == "" || iMin == null || iMin == $(di).find('.dateinputfrom').attr('name')) && (iMax == "" || iMax == null || iMax == $(di).find('.dateinputto').attr('name')) ) { return true;} 
+                    else if ((iMin == "" || iMin == null || iMin == $(di).find('.dateinputfrom').attr('name'))  && iValue <= iMax) { return true; }
+                    else if (iMin <= iValue && (iMax == "" || iMax == null || iMax == $(di).find('.dateinputto').attr('name'))) { return true; }
+                    else if (iMin <= iValue && iValue <= iMax) { return true; }
+                    return false;
+   });
+});
+
+}
+
+</script>
+<style>
+label.error {
+    color: red;
+}
+div.error{
+border-style:solid;
+border-width:1.5px;
+border-color:red;
+}
+input.error{
+border-style:solid;
+border-color:red;
+}
+select.error{
+border-style:solid;
+border-color:red;
+}
+</style>
+<div id="loadingbanner" style="position:relative;left:px">
+<c:EnhancedActionStatus BackColor="#efefef" borderColor="#336699" borderSize="3" height="20px" width="100px" ImageUrl="{!$Resource.spinner}" Message="Loading..." messageStyle="color:darkred;font-size:11pt;font-weight:bold;"/>
+
+</div>
+<table><tr><td>
+<div id="nextoolbar" >
+        <a href="javascript:void(0)" id="sb1" class="easyui-splitbutton" data-options="menu:'#mm1',iconCls:'icon-edit'" >Menu</a>
+        <a href="javascript:void(0)" id="sb2" class="easyui-splitbutton" data-options="menu:'#mm2',iconCls:'icon-search'" >Show / Hide</a>
+
+</div>
+<div id="nextoolbar2" >
+        <a href="javascript:void(0)" id="sb1" class="easyui-splitbutton" data-options="menu:'#mm21',iconCls:'icon-edit'" >Menu</a>
+</div>
+</td></tr></table>
+<br/>
+<!-- <div  id="main" style="width:2500px;"> -->
+<!-- <div id="maintab" title="Price Maintenance" style="padding:10px;width:2500px;"> -->
+    <div id="mm1" style="width:150px;">
+        <div id="SelectAll" >Select All</div>
+        <div id="ClearFilters">Clear Filters</div>
+        <div id="Reset" >Reset</div>            
+        <div class="savepriceletter" id="savepriceletter">Save Price Letter</div>
+        <div class="menu-sep" id="sep1"></div>
+        <div id="mimi" data-options="iconCls:'icon-search'">Multi-Search</div> 
+    </div>
+     <div id="mm2" style="width:150px;">
+        <div ><input class = "showhide" type="checkbox" name="Seller_Name__c" />&nbsp;&nbsp;Seller</div>
+        <div ><input class = "showhide" type="checkbox" name="Account_Sold_To__c" />&nbsp;&nbsp;Sold To</div>
+        <div><input class = "showhide" type="checkbox" name="Account_Name__c" />&nbsp;&nbsp;Ship To</div>
+        <!--<div><input class = "showhide" type="checkbox" name="Account_Number__c" />&nbsp;&nbsp;Account Number</div>-->
+        <div><input class = "showhide" type="checkbox" name="Account_City__c" />&nbsp;&nbsp;City</div>
+        <div ><input class = "showhide" type="checkbox" name="Material_Name__c" />&nbsp;&nbsp;Material Name</div>
+        <div><input class = "showhide" type="checkbox" name="CSP__c" />&nbsp;&nbsp;CSP</div>
+        <!--<div ><input class = "showhide" type="checkbox" name="Material_Base_Code__c" />&nbsp;&nbsp;Material Base</div>-->
+        <div ><input class = "showhide" type="checkbox" name="CSP_Effective_Date__c" />&nbsp;&nbsp;Start Date</div>
+        <div ><input class = "showhide" type="checkbox" name="Freight_Terms__c" />&nbsp;&nbsp;INCO TERMS 1</div>
+        <div ><input class = "showhide" type="checkbox" name="Customer_Material_Number__c" />&nbsp;&nbsp;Customer Material #</div>
+        <div ><input class = "showhide" type="checkbox" name="Material_Group_3__c" />&nbsp;&nbsp;Material Group 3</div>
+        <div ><input class = "showhide" type="checkbox" name="Avg_Order__c" />&nbsp;&nbsp;Average Order Qty</div>
+        <!--<div ><input class = "showhide" type="checkbox" name="Estimated_Order_Quantity__c" />&nbsp;&nbsp;Estimated Order Qty</div>-->
+        <!--<div><input class = "showhide" type="checkbox" name="CSP_Tier__c" />&nbsp;&nbsp;Tier</div>-->
+         <div ><input class = "showhide" type="checkbox" name="TPI__c" />&nbsp;&nbsp;TPI%</div>
+        <!--<div><input class = "showhide" type="checkbox" name="Target_Tier__c" />&nbsp;&nbsp;Tier</div>-->
+        <div><input class = "showhide" type="checkbox" name="Target__c" />&nbsp;&nbsp;Target</div>
+        <div ><input class = "showhide" type="checkbox" name="Material_Supplier_Name__c" />&nbsp;&nbsp;Supplier</div>
+        <!--<div><input class = "showhide" type="checkbox" name="Drum_Deposit__c" />&nbsp;&nbsp;Drum Deposit</div>-->
+        <!--<div><input class = "showhide" type="checkbox" name="Price_Protection__c" />&nbsp;&nbsp;Price Protection</div>-->
+    </div>
+
+
+<form id="mimipanel" action="/apex/Account_Material_Ajax" method="post">
+<table>
+
+<tr>
+<td><select id="sldto" class="mselect" style="width:225px;" data-label="Account_Sold_To__c" data-acctfieldname="SAP_Sold_To_Account__c" name="Account_Sold_To_Id_Ext__c" data-name="Sold To" multiple="multiple"></select></td>
+<td><select id="shto" class="mselect" style="width:225px;" data-label="Account_Name__c"  name="Account__c" data-acctfieldname="Id" data-name="Ship To" multiple="multiple"></select></td>
+<td><select id="corp" class="mselect" style="width:225px;" data-label="Account_Corp_Account_Id_Ext__c" data-acctfieldname="SAP_Corporate_Account_Id__c" name="Account_Corp_Account_Id_Ext__c" data-name="Corporate" multiple="multiple"></select></td>
+<td><select id="mat" class="mselect" style="width:225px;" data-label="Material_Name__c" name="SAP_Material__c" data-matfieldname="Name" data-name="Material" multiple="multiple"></select></td>
+
+</tr>
+<tr class="advanced">
+
+<td><select class="mselect" style="width:225px;" data-label="Account_Owner_Name__c" name="Team_Employee_Ids__c" data-acctfieldname="Team_Employee_Ids__c" data-name="Ship To Owner" multiple="multiple" id="shtoowners"><apex:outputtext value="{!OwnerOptions}" escape="false"/></select></td>
+
+<td><select id="bcode" class="mselect" style="width:225px;" data-label="Material_Base_Code__c" name="Material_Base__c"  data-matfieldname="Material_Base_Code__c" data-name="Base Code" multiple="multiple"></select></td>
+</tr>
+<td/>
+</table>
+
+<br/>
+<table>
+<tr>
+<td/>
+<td><button type="submit" id="submitsearch" data-status="enable" value="Search">Search</button></td>
+<td><button type="reset" id="clearsearch" value="Reset">Clear Search</button></td>
+<td><button type="button" id="pageselect" data-status="disable" disabled="disabled" data-pages="0" data-page="0" >Show More (0)</button></td>
+
+</tr>
+</table>
+</form>
+
+<div id="countbanner">
+<span>
+<div class="message infoM2">
+<table class="messageTable" cellspacing="0" cellpadding="0" border="0" style="padding:0px;margin:0px;">
+<tbody><tr valign="top"><td><img class="msgIcon" title="info" src="/s.gif" alt="info"></img>
+</td><td class="messageCell"><div class="messageText"><span ><h4></h4></span><span id="countbannermessage">0 records match your filters. Up to {!$Setup.nexPrice_Settings__c.Salesforce_Record_Limit__c} records may be added at once. To add more, click search again.</span>
+<br></br></div></td></tr><tr><td></td><td></td></tr></tbody></table>
+</div></span>
+</div><br/>
+
+<table id="price_maintenance" class="display" width="100%">
+<thead>
+<tr>
+<th class="Open" rowspan="2">Open</th>
+<th class="Select" rowspan="2">Select</th>
+<th class="textfilter" data-field="Seller_Name__c">Seller</th>
+<th class="textfilter" data-field="Account_Sold_To__c">Sold To</th>
+<th class="textfilter" data-field="Account_Name__c">Ship To</th>
+<!--<th class="textfilter" data-field="Account_Number__c">Account Number</th>-->
+<th class="textfilter" data-field="Account_City__c">City</th>
+<th class="textfilter" data-field="Material_Name__c">Material</th>
+<th class="textfilter" data-field="CSP__c">CSP</th>
+<!--<th class="textfilter" data-field="Material_Base_Code__c">Base Code</th>-->
+<th class="datefilter" data-field="CSP_Effective_Date__c">Eff Date (Y-M-D)</th>
+<th class="textfilter" data-field="Freight_Terms__c">INCO TERMS 1</th>
+<th class="textfilter" data-field="Customer_Material_Number__c">Customer Material #</th>
+<th class="textfilter" data-field="Material_Group_3__c">Material Group 3</th>
+<th class="numberfilter" data-field="Avg_Order__c">Avg Order</th>
+<!--<th class="numberfilter" data-field="Estimated_Order_Quantity__c">Est Order</th>-->
+<!--<th class="listfilter" data-field="CSP_Tier__c">CSP Tier</th>-->
+<th class="numberfilter" data-field="TPI__c">TPI %</th>
+<!--<th class="listfilter" data-field="Target_Tier__c">Target Tier</th>-->
+<th class="numberfilter" data-field="Target__c">Target</th>
+<th class="textfilter" data-field="Material_Supplier_Name__c">Supplier</th>
+<!--<th class="listfilter" data-field="Drum_Deposit__c">Drum Dep</th>-->
+<!--<th class="listfilter" data-field="Price_Protection__c">Price Protection</th>-->
+<th >Id</th>
+<th >Has Open PRT</th>
+<th >Has Unit Options</th>
+<th >UoMs</th>
+<th >UoM</th>
+</tr>
+<tr>
+
+<th class="Seller">Seller</th>
+<th class="Sold_To">Sold To</th>
+<th class="Ship_To">Ship To</th>
+<!--<th class="Account_Number">Account Number</th>-->
+<th class="Account_City">City</th>
+<th class="Material">Material</th>
+<th class="CSP">CSP</th>
+<!--<th class="Base_Code">Base Code</th>-->
+<th class="Eff_Date">Start Date</th>
+<th class="INCO_TERMS1">INCO TERMS 1</th>
+<th class="Customer_Material#">Customer Material #</th>
+<th class="Material_Group3">Material Group 3</th>
+<th class="Avg_Order">AOQ</th>
+<!--<th class="Est_Order">EOQ</th>-->
+<!--<th class="CSP_Tier">Tier</th>-->
+<th class="TPI">TPI %</th>
+<!--<th class="Target_Tier">Tier</th>-->
+<th class="Target">Target</th>
+<th class="Supplier">Supplier</th>
+<!--<th class="Drum_Dep">Drum Dep</th>-->
+<!--<th class="Price_Protection">Price Protection</th>-->
+<th class="Id">Id</th>
+<th class="Has_Open_PRT">Has Open PRT</th>
+<th class="Has_Unit_Options">Has Unit Options</th>
+<th class="UoMs">UoMs</th>
+<th class="UoM">UoM</th>
+</tr>
+</thead>
+<tbody></tbody>
+</table>
+<br/><br/><br/>
+<div id="loadtarget"></div>
+<!-- </div> --><!--End Price Maintenance Tab-->
+<!-- </div> -->
+<div id="dd3" class="easyui-dialog" style="width:300px;" >
+<div id="dd3container"/>
+</div>
+<div id="dd4" class="easyui-dialog" style="width:150px;" >
+<form id="cform">
+    <br/>
+    <input type="hidden" id="cform-id" name="cform-id"/>
+    <center><span>
+    <table>
+    
+    <tr><td><b>Account</b></td>
+    <td><Select id="cform-acct" class="ccacct" name="cform-acct" style="width:250px;"></Select></td>
+    </tr>
+    <tr><td><b>First Name</b></td>
+    <td><input id="cform-firstname" name="cform-firstname" style="width:200px;"/></td>
+    </tr>
+    <tr><td><b>Last Name</b></td>
+    <td><input id="cform-lastname" name="cform-lastname" style="width:200px;"/></td>
+    </tr>
+    <tr><td><b>Email</b></td>
+    <td><input id="cform-email" name="cform-email" style="width:200px;"/></td>
+     </tr>
+    
+    <tr><td><b>Phone</b></td>
+    <td><input id="cform-phone" name="cform-phone" style="width:200px;"/></td>
+    </tr>
+    <tr><td><b>Role</b></td>
+    <td><select id="cform-role" class="mselect" data-name="Contact Role" multiple="multiple" name="cform-role" style="width:200px;"> 
+    <apex:outputtext value="{!RoleOptions}" escape="false"/>
+    </select>
+    </td>
+    </tr>
+    </table>
+    </span></center>
+    </form>
+</div>
+
+</apex:page>

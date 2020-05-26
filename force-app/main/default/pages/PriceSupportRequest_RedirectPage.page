@@ -1,0 +1,1 @@
+<apex:page standardController="Price_Support_Request__c" extensions="PriceSupportRequest_Redirect" tabStyle="Price_Support_Request__c" showheader="true" action="{!redirect}" />

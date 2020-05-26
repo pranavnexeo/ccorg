@@ -1,0 +1,10 @@
+<apex:page controller="Supplier_Authorized_GeographyController" action="{!getSupplierDoument}" showHeader="false" sidebar="false">
+    <style type="text/css">
+        p12 { 
+            font-weight: bold;
+            color: #22C; 
+            font-size: x-large;
+        }
+    </style>
+    <apex:outputText ><center><p12>Unable to display map as no map is present for this supplier.</p12></center></apex:outputText>
+</apex:page>

@@ -1,0 +1,28 @@
+<apex:page controller="Sample_Request_Controller" tabStyle="Sample_Request__c" action="{!init}">
+<apex:stylesheet value="{!$Resource.SampleRequestStyles}"></apex:stylesheet>
+
+        <apex:sectionHeader title="{!$Label.New_Sample_Request} {!Sample_Request_Link}" subtitle="{!$Label.Step_1}"/>
+        <apex:form >
+                <apex:pageBlock title="{!$Label.Sample_Information}">
+                        <apex:facet name="footer">
+                                <apex:outputPanel >
+                                        <center>
+                                        <apex:commandButton action="{!step2A}" value="{!$Label.Next}" styleClass="btn"/>
+                                        </center>
+                                </apex:outputPanel>
+                                </apex:facet>
+                        <apex:pageBlockSection id="relatedParents" title="{!$Label.Sample_Related_To}" columns="1" collapsible="false">
+                                        <apex:inputField id="accountName" value="{!sampleRequest.Account__c}" required="true"/> 
+                                        <apex:inputField id="opportunityName" value="{!sampleRequest.Opportunity__c}"/> 
+                         </apex:pageBlockSection> 
+
+                        <apex:pageBlockSection title="{!$Label.Validation_Error}" columns="1" collapsible="false" rendered="{!IF(ValidationErrorMessage!='','True','False')}">
+                             <apex:pageBlock title="{!$Label.Error_Messages}" rendered="{!IF(ValidationErrorMessage!='','True','False')}">
+                                   <apex:outputText escape="False" styleClass="Warning" value="{!ValidationErrorMessage}" rendered="{!IF(ValidationErrorMessage!='','True','False')}"/>
+                             </apex:pageBlock>
+                        </apex:pageBlockSection>
+
+                    </apex:pageBlock> 
+                </apex:form>
+
+</apex:page>

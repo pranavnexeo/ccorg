@@ -1,0 +1,261 @@
+<apex:page controller="Sample_Request_Controller" tabStyle="Sample_Request__c" action="{!init_Enter_Order_Information}">
+<apex:stylesheet value="{!$Resource.SampleRequestStyles}"></apex:stylesheet>
+
+        <apex:sectionHeader title="{!EnterOrderInformationPageTitle} {!Sample_Request_Link}"/>
+        <apex:form >
+                <apex:pageBlock title="{!EnterOrderInformationPageTitle}">
+
+                        <apex:facet name="header">
+                          <apex:outputPanel >
+                            <apex:outputLink value="/{!sampleRequest.Id}/p?retURL=/{!sampleRequest.Id}" target="=_blank">{!$Label.Printable_View_of_Sample_Request}</apex:outputLink>
+                          </apex:outputPanel>
+                        </apex:facet>
+
+
+                        <apex:facet name="footer">
+                                <apex:outputPanel >
+                                        <apex:commandButton action="{!Save_Order_Information_Coordinator}" value="{!$Label.Save}" styleClass="btn" rendered="{!IF(ErrorMessage!='','False','True')}"/>
+                                        <apex:commandButton action="{!Cancel_Save}" value="{!$Label.Cancel}" immediate="true" styleClass="btn"/> 
+                                </apex:outputPanel>
+                                </apex:facet>
+
+                                <apex:pageBlockSection title="{!$Label.Prospect_Specific_Rules}" collapsible="true" columns="1" showHeader="True" rendered="{!IF(AccountType='Prospect','True','False')}">
+                                   <apex:pageBlock title="{!$Label.Prospect_Instructions}:">
+                                    <apex:outputText escape="False" styleClass="HeaderData" value="{!ProspectAccountInformation}"/>
+                                   </apex:pageBlock>
+                                </apex:pageBlockSection>
+
+
+                                <apex:pageBlockSection title="{!$Label.Insufficient_Access}" columns="1" collapsible="false" rendered="{!IF(ErrorMessage!='','True','False')}">
+                                    <apex:pageBlock title="Error Message" rendered="{!IF(ErrorMessage!='','True','False')}">
+                                        <apex:outputText styleClass="Warning" value="{!ErrorMessage}" rendered="{!IF(ErrorMessage!='','True','False')}"/>
+                                        <apex:outputText styleClass="Warning" value=" {!$Label.Current_Sample_Coordinator}: " rendered="{!IF(ErrorMessage!='','True','False')}"/>
+                                        <apex:outputField styleClass="Warning" value="{!sampleRequest.Sample_Coordinator__c}" rendered="{!IF(ErrorMessage!='','True','False')}"/>
+                                    </apex:pageBlock>
+                                </apex:pageBlockSection>
+
+                        <apex:pageBlockSection title="Summary of Sample" columns="1" collapsible="true">
+                          <apex:outputPanel id="generalInformation">
+                                <apex:pageBlock title="{!$Label.Related_to_the_Following}:">
+                                        <apex:panelGrid columns="2">
+                                                <apex:outputText value="{!$Label.Account}: " styleClass="HeaderLabel" rendered="{!IF(account.Name!='','True','False')}"/>
+                                                <apex:outputLink value="/{!account.Id}" target="=_blank" rendered="{!IF(account.Name!='','True','False')}">{!account.Name} - {!account.SAP_Customer_Number__c}</apex:outputLink>
+                                                <apex:outputText value="{!$Label.Contact}: " styleClass="HeaderLabel" rendered="{!IF(contact.Name!='','True','False')}"/>
+                                                <apex:outputLink value="/{!contact.Id}" target="_blank" rendered="{!IF(contact.Name!='','True','False')}">{!contact.Name}</apex:outputLink>
+                                                <apex:outputText value="{!$Label.Opportunity}: " styleClass="HeaderLabel" rendered="{!IF(opportunity.Name!='','True','False')}"/>
+                                                <apex:outputLink value="/{!opportunity.Id}" target="_blank" rendered="{!IF(opportunity.Name!='','True','False')}">{!opportunity.Name}</apex:outputLink>
+                                                <apex:outputText value="{!$Label.Cost_Center_Info}: " styleClass="HeaderLabel" />
+                                                <apex:inputField value="{!sampleRequest.Cost_Center__c}"/>
+                                        </apex:panelGrid>
+                          </apex:pageBlock>
+                          </apex:outputPanel>
+
+                          <apex:pageBlockSection id="Address" title="{!$Label.address} {!$Label.Information}" columns="1" showHeader="false"  rendered="{!IF(ErrorMessage!='','False','True')}">
+                              <apex:pageBlock title="{!$Label.Shipped_To}">
+                                  <apex:pageBlockSection showHeader="False" Columns="1">
+                                      <apex:outputText id="HowAddresswasEntered" style="font-weight:bold;color:red;text-decoration:underline;" escape="false" value="{!sampleRequest.Ship_To_Address_Type__c}" rendered="{!if(ShowUpdateAddressInformation='false','true','false')}"/>
+                                      <apex:outputText id="CurrentAddress" escape="false" value="{!SampleRequestAddress}" rendered="{!if(ShowUpdateAddressInformation='false','true','false')}"/>
+                                  </apex:pageBlockSection> 
+                              </apex:pageBlock>
+
+                              <apex:pageBlock id="AddressInfo" rendered="{!IF(ErrorMessage!='','False','True')}">
+                                <apex:pageBlockSection id="AddressSection1" showHeader="False" Columns="1">
+                                    <apex:commandButton id="UpdateAddressButton" value="{!$Label.Update_Shipping_Address}" action="{!UpdateAddressInformation_Button}" rendered="{!if(ShowUpdateAddressInformation='false','true','false')}" rerender="Section2,AddressSection1,AddressSection2,AddressSection3,AddressSection4,AddressSection5,AddressSection6,AddressInfo,AddressSection,StreetLabel,StreetData,CityLabel,CityData,StateLabel,StateData,PostalCodeLabel,PostalCodeData,CountryLabel,CountryData,UpdateAddressButton,SaveAddressChangeButton,CancelAddressChangeButton,CurrentAddress"/>
+                                        
+                                    <apex:outputText id="AddressChangeDesc1" value="{!$Label.Address_Change_Desc_1}" rendered="{!if(ShowUpdateAddressInformation='true','true','false')}"/>
+                                    <apex:outputText id="AddressChangeDesc2" value="{!$Label.Address_Change_Desc_2}" rendered="{!if(ShowUpdateAddressInformation='true','true','false')}"/>
+                                    <apex:outputText id="AddressChangeDesc3" value="{!$Label.Address_Change_Desc_3}" rendered="{!if(ShowUpdateAddressInformation='true','true','false')}"/>
+
+                                    <apex:pageBlockSectionItem >  
+                                        <apex:outputText id="StreetLabel" value="{!$Label.Street}:" rendered="{!if(ShowUpdateAddressInformation='true','true','false')}"/>
+                                        <apex:inputTextArea id="StreetData" value="{!Street}" style="width:200px;height:80px" rendered="{!if(ShowUpdateAddressInformation='true','true','false')}"/>
+                                    </apex:pageBlockSectionItem>
+                                    <apex:pageBlockSectionItem >
+                                        <apex:outputText id="CityLabel" value="{!$Label.City}:" rendered="{!if(ShowUpdateAddressInformation='true','true','false')}"/>
+                                        <apex:inputText id="CityData" value="{!City}" rendered="{!if(ShowUpdateAddressInformation='true','true','false')}"/>
+                                    </apex:pageBlockSectionItem>
+                                    <apex:pageBlockSectionItem >
+                                        <apex:outputText id="StateLabel" value="{!$Label.State_Province}:" rendered="{!if(ShowUpdateAddressInformation='true','true','false')}"/>
+                                        <apex:inputText id="StateData" value="{!State}" rendered="{!if(ShowUpdateAddressInformation='true','true','false')}"/>
+                                    </apex:pageBlockSectionItem>
+                                    <apex:pageBlockSectionItem >
+                                        <apex:outputText id="PostalCodeLabel" value="{!$Label.Postal_Zip}:" rendered="{!if(ShowUpdateAddressInformation='true','true','false')}"/>
+                                        <apex:inputText id="PostalCodeData" value="{!PostalCode}" rendered="{!if(ShowUpdateAddressInformation='true','true','false')}"/>
+                                    </apex:pageBlockSectionItem>
+                                    <apex:pageBlockSectionItem >
+                                        <apex:outputText id="CountryLabel" value="{!$Label.Country}:" rendered="{!if(ShowUpdateAddressInformation='true','true','false')}"/>
+                                        <apex:inputText id="CountryData" value="{!Country}" rendered="{!if(ShowUpdateAddressInformation='true','true','false')}"/>
+                                    </apex:pageBlockSectionItem>
+
+                                    <apex:pageBlockSectionItem >
+                                        <apex:commandButton id="SaveAddressChangeButton" action="{!SaveAddressChanges}" value="{!$Label.Save}" styleClass="btn" rendered="{!if(ShowUpdateAddressInformation='true','true','false')}" rerender="AddressInfo,AddressSection,StreetLabel,StreetData,CityLabel,CityData,StateLabel,StateData,PostalCodeLabel,PostalCodeData,CountryLabel,CountryData,UpdateAddressButton,SaveAddressChangeButton,CancelAddressChangeButton,CurrentAddress"/>
+                                        <apex:commandButton id="CancelAddressChangeButton" action="{!CancelAddressChanges}" value="{!$Label.Cancel}" styleClass="btn" rendered="{!if(ShowUpdateAddressInformation='true','true','false')}" rerender="AddressInfo,AddressSection,StreetLabel,StreetData,CityLabel,CityData,StateLabel,StateData,PostalCodeLabel,PostalCodeData,CountryLabel,CountryData,UpdateAddressButton,SaveAddressChangeButton,CancelAddressChangeButton,CurrentAddress"/>
+                                    </apex:pageBlockSectionItem>
+
+                                    <apex:pageBlockSection title="{!$Label.Address_Change_Error}" columns="1" showHeader="False" rendered="{!IF(AddressChangeError!='','True','False')}">
+                                        <apex:pageBlock title="{!$Label.Error_Messages}:">
+                                            <apex:outputText escape="False" styleClass="Warning" value="{!AddressChangeError}"/>
+                                        </apex:pageBlock>
+                                    </apex:pageBlockSection>
+
+                                </apex:pageBlockSection> 
+                             </apex:pageBlock>
+                          </apex:pageBlockSection>
+
+                          <apex:pageBlock title="{!$Label.Reason_for_Request}:">
+                                        <apex:outputText value="{!sampleRequest.Reason_for_Sample__c}"/>
+                          </apex:pageBlock>
+
+                        </apex:pageBlockSection>
+
+                        <apex:pageBlockSection title="{!$Label.Sample_Notes}:" columns="2" collapsible="true" rendered="{!IF(SampleNotesSize==0,'false','true')}">
+                          <apex:dataTable value="{!sampleNotes}" var="lines" styleClass="list" id="NotesGrid" rendered="{!IF(SampleNotesSize==0,'false','true')}">
+                            <apex:column >
+                                <apex:facet name="header">{!$Label.Created_Date}</apex:facet>
+                                <apex:outputField value="{!lines.CreatedDate}"/>
+                            </apex:column>
+                            <apex:column >
+                                <apex:facet name="header">{!$Label.Title}</apex:facet>
+                                <apex:outputField value="{!lines.Title}"/>
+                            </apex:column>
+                            <apex:column >
+                                <apex:facet name="header">{!$Label.Body}</apex:facet>
+                                <apex:outputField value="{!lines.body}"/>
+                            </apex:column>
+                            <apex:column >
+                                <apex:facet name="header">{!$Label.Created_by}</apex:facet>
+                                <apex:outputField value="{!lines.CreatedBy.Name}"/>
+                            </apex:column>
+                          </apex:dataTable>
+                        </apex:pageBlockSection>
+ 
+                                <apex:pageBlockSection title="{!$Label.Enter_the_Order_Info}:" columns="1" collapsible="false" rendered="{!IF(ErrorMessage!='','False','True')}">
+                                     <apex:pageBlockSectionItem >
+                                        <apex:outputText escape="False" value="{!SAP_Order_Number_Label}"/>
+                                        <apex:InputField value="{!sampleRequest.SAP_Order_Number__c}" rendered="{!IF(ErrorMessage!='','False','True')}"/>
+                                     </apex:pageBlockSectionItem>
+                                </apex:pageBlockSection>
+
+<!--
+                        <apex:pageBlockSection id="AllInfo" title="Apply the follow to All Material(s) in Sample Request:" columns="1" collapsible="false" rendered="{!IF(ErrorMessage!='','False','True')}">
+                                <apex:inputField id="All1" value="{!sampleMaterial_All.Ship_From_Location__c}"/>
+                                <apex:inputField id="All2" value="{!sampleMaterial_All.Estimated_Ship_Date__c}"/>
+                                <apex:inputField id="All3" value="{!sampleMaterial_All.Estimated_Arrival_Date__c}"/>
+                        </apex:pageBlockSection>
+                        <apex:pageBlockSection id="AllInfoApplyButton" showHeader="False" columns="1" collapsible="false" rendered="{!IF(ErrorMessage!='','False','True')}">
+                             <apex:pageBlockSectionItem >
+                                <apex:commandButton value="Apply Changes to All Materials below" action="{!ApplyChangesToAllMaterials}" status="ApplyAll" rendered="{!IF(ErrorMessage!='','False','True')}" rerender="MaterialGrid,AllInfo,All1,All3,All3,All4,All5"/>
+                                <apex:actionStatus id="ApplyAll" startText="Applying..." stopText=""/>
+                             </apex:pageBlockSectionItem>
+                        </apex:pageBlockSection>
+-->
+                        <apex:pageBlockSection title="{!$Label.Materials_in_Sample}" collapsible="false" rendered="{!IF(ErrorMessage!='','False','True')}">
+
+                        <apex:pageBlock id="AllInfo" title="{!$Label.Mass_Update_Materials}:" rendered="{!IF(ErrorMessage!='','False','True')}">
+                                <apex:pageBlockSection showHeader="False" Columns="1">
+                                        <apex:commandButton id="ToggleButton" value="{!if(ShowMaterials='true','Hide','Show')}" action="{!ToggleShowMaterials}" rendered="{!IF(ErrorMessage!='','False','True')}" rerender="MaterialGrid,AllInfo,All1,All3,All3,All4,All5,ToggleButton" />
+                                        <apex:inputField id="All1" value="{!sampleMaterial_All.Ship_From_Location__c}" rendered="{!if(ShowMaterials='true','true','false')}"/>
+                                        <apex:inputField id="All2" value="{!sampleMaterial_All.Estimated_Ship_Date__c}" rendered="{!if(ShowMaterials='true','true','false')}"/>
+                                        <apex:inputField id="All3" value="{!sampleMaterial_All.Estimated_Arrival_Date__c}" rendered="{!if(ShowMaterials='true','true','false')}"/>
+                                        <apex:pageBlockSectionItem > 
+                                                <apex:commandButton value="{!$Label.Mass_Update_Materials}" action="{!ApplyChangesToAllMaterials}" status="ApplyAll" rendered="{!if(showMaterials='true','true','false')}" rerender="MaterialGrid,AllInfo,All1,All3,All3,All4,All5" />
+                                                <apex:actionStatus id="ApplyAll" startText="Applying..." stopText=""/> 
+                                        </apex:pageBlockSectionItem>
+                                </apex:pageBlockSection> 
+                        </apex:pageBlock>
+
+                                <apex:dataTable value="{!sampleMaterials}" var="lines" styleClass="list" id="MaterialGrid" rendered="{!IF(ErrorMessage!='','False','True')}">
+                                   <apex:column >
+                                     <apex:facet name="header">{!$Label.Material_Name}<FONT COLOR="red" SIZE="4">*</FONT></apex:facet>
+                                     <apex:inputField value="{!lines.name}" />
+                                   </apex:column>
+                                   <apex:column >
+                                     <apex:facet name="header">{!$Label.Existing_in_SAP}?</apex:facet>
+                                     <apex:inputField value="{!lines.Existing_Material_in_SAP__c}"/>
+                                   </apex:column>
+                                   <apex:column >
+                                     <apex:facet name="header">{!$Label.SAP_Material}</apex:facet>
+                                     <apex:inputField value="{!lines.SAP_Material_MSD2__c}"/>
+                                   </apex:column>
+                                   <apex:column >
+                                     <apex:facet name="header">
+                                       <apex:commandButton action="{!Populate_SAP_Material_Numbers}" value="{!$Label.SAP_Material} {!$Label.Number}" immediate="false" rerender="MaterialGrid" status="RetrievingSAPMaterialNumbers" styleClass="btn"/>
+                                     </apex:facet>
+                                     <center>
+                                     <!-- <apex:outputField value="{!lines.SAP_Material_Number__c}"/> -->
+                                     <apex:actionStatus id="RetrievingSAPMaterialNumbers" startText="{!$Label.Retrieving_Please_Wait}" stopText="{!lines.SAP_Material_Number__c}"/></center>
+
+                                   </apex:column>
+                                   <apex:column >
+                                     <apex:facet name="header">{!$Label.Ship_From_Location}<FONT COLOR="red" SIZE="4">*</FONT></apex:facet>
+                                     <apex:inputField value="{!lines.Ship_From_Location__c}" />
+                                   </apex:column>
+                                   <apex:column >
+                                     <apex:facet name="header">{!$Label.Material_Must_Ship_From}</apex:facet>
+                                     <apex:inputField value="{!lines.Material_Must_Ship_From_Location__c}"/>&nbsp;
+                                   </apex:column>
+                                   <apex:column >
+                                     <apex:facet name="header">{!$Label.Estimated_Ship_Date}<FONT COLOR="red" SIZE="4">*</FONT></apex:facet>
+                                     <apex:inputField value="{!lines.Estimated_Ship_Date__c}" />
+                                   </apex:column>
+                                   <apex:column >
+                                     <apex:facet name="header">{!$Label.Estimated_Arrival_Date}<FONT COLOR="red" SIZE="4">*</FONT></apex:facet>
+                                     <apex:inputField value="{!lines.Estimated_Arrival_Date__c}" />
+                                   </apex:column>
+
+
+                                   <apex:column >
+                                     <apex:facet name="header">{!$Label.Quantity}</apex:facet>
+                                     <apex:outputField value="{!lines.Sample_Quantity__c}"/>
+                                   </apex:column>
+                                   <apex:column >
+                                     <apex:facet name="header">{!$Label.UOM}</apex:facet>
+                                     <apex:outputField value="{!lines.Sample_UOM__c}"/>
+                                   </apex:column>
+                                   <apex:column >
+                                     <apex:facet name="header">{!$Label.Date_Required}</apex:facet>
+                                     <apex:outputField value="{!lines.Date_Required_By__c}"/>
+                                   </apex:column>
+                                   <apex:column >
+                                     <apex:facet name="header">{!$Label.Currency}</apex:facet>
+                                     <apex:outputField value="{!lines.CurrencyIsoCode}"/>
+                                   </apex:column>
+                                   <apex:column >
+                                     <apex:facet name="header">{!$Label.Sample_Value}</apex:facet>
+                                     <apex:outputField value="{!lines.Estimated_Sample_Value__c}"/>
+                                   </apex:column>
+                                   <apex:column >
+                                     <apex:facet name="header">{!$Label.Potential_Annual_Value}</apex:facet>
+                                     <apex:outputField value="{!lines.Potential_Annual_Value__c}"/>
+                                   </apex:column>
+                                   <apex:column rendered="{!RenderTectyl}">
+                                     <apex:facet name="header">{!$Label.Tectyl_Product}?</apex:facet>
+                                     <apex:outputField value="{!lines.Tectyl_Product__c}"/>
+                                   </apex:column>
+                                   <apex:column rendered="{!RenderADCompound}">
+                                     <apex:facet name="header">{!$Label.AD_Compound}?</apex:facet>
+                                     <apex:outputField value="{!lines.AD_Compound__c}"/>
+                                   </apex:column> 
+                                </apex:dataTable>
+
+
+                        </apex:pageBlockSection>
+
+                        <apex:pageBlockSection title="{!$Label.Questions}" collapsible="false" columns="1" showHeader="False" rendered="{!RenderMarkOrderCreatedCheckbox}">
+                           <apex:pageBlockSectionItem >
+                            <apex:outputText value="{!$Label.Sample_Completed}?"/>
+                            <apex:inputCheckbox value="{!SampleRequestOrderEntered}" id="SampleRequestOrderEntered"/>
+                           </apex:pageBlockSectionItem>
+                        </apex:pageBlockSection>
+
+                                <apex:pageBlockSection title="{!$Label.Validation_Error}" columns="1" collapsible="false" rendered="{!IF(ValidationErrorMessage!='','True','False')}">
+                                    <apex:pageBlock title="{!$Label.Error_Messages}" rendered="{!IF(ValidationErrorMessage!='','True','False')}">
+                                        <apex:outputText escape="False" styleClass="Warning" value="{!ValidationErrorMessage}" rendered="{!IF(ValidationErrorMessage!='','True','False')}"/>
+                                    </apex:pageBlock>
+                                </apex:pageBlockSection>
+
+                    </apex:pageBlock> 
+
+                </apex:form>
+
+</apex:page>

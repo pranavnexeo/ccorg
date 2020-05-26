@@ -1,0 +1,59 @@
+<apex:page standardcontroller="NCAR_Cases__c" extensions="NCAR_PDF_Template" renderas="pdf" showHeader="false" sidebar="false">
+<apex:image value="{!$Resource.Nexeo_Letterhead}"/>
+<table>
+<tr><td>
+<table align="right">
+<tr><td>
+<apex:outputlabel value="INCIDENT REPORT: "/><apex:outputlabel value="{!mycase.Name}"/><br/>
+<apex:outputlabel value="{!MONTH(TODAY())}/{!DAY(TODAY())}/{!YEAR(TODAY())}"/>
+</td></tr>
+</table>
+</td></tr>
+<tr><td>
+<apex:outputfield value="{!mycase.Account__r.Name}"/><br/>
+<apex:outputlabel value="ATTN: "/><apex:outputfield value="{!mycase.Contact__r.Name}"/><br/>
+<apex:outputtext value="{!full_address}" escape="false"/><br/>
+</td></tr>
+<tr><td>
+Dear {!mycase.Contact__r.Name},<br/><br/>
+Thank you for alerting us to the nonconformance on your recent order. We regret the
+inconvenience this has caused. However, we view this as an opportunity to improve our
+processes that will enable us to serve you better in the future. <br/><br/>
+
+Our Quality of Service team has reviewed the information you sent and has conducted
+a full investigation. Corrective actions have been taken and can be reviewed below. <br/><br/>
+
+<b><apex:outputtext value="Problem Statement"/></b><br/>
+<table style="width:650px;"><tr><td></td></tr><apex:outputtext value="{!mycase.Problem_Statement_Customer_Facing__c}" escape="false"/></table><br/><br/>
+<b><apex:outputtext value="Immediate Action"/></b><br/>
+<table style="width:650px;"><tr><td><apex:outputtext value="{!mycase.Immediate_Action_Customer_Facing__c}" escape="false"/></td></tr></table><br/><br/>
+<b><apex:outputtext value="Root Cause"/></b><br/>
+<table style="width:650px;"><tr><td><apex:outputtext value="{!mycase.Root_Cause_Customer_Facing__c}" escape="false"/></td></tr></table><br/><br/>
+<b><apex:outputtext value="Actions Taken"/></b><br/>
+<table style="width:650px;"><tr><td><apex:outputtext value="{!mycase.Action_Taken_Customer_Facing__c}" escape="false"/></td></tr></table><br/><br/>
+<apex:outputtext value="{!mycase.Email_Comments__c}"/>
+<br/>
+If you need further assistance, you may contact us at:<br/>
+Ph: {!mycase.Account__r.SAP_CSR_Phone__c}<br/>
+Email: {!mycase.Account__r.SAP_CSR_Email__c}<br/><br/>
+
+Sincerely,<br/>
+{!$User.FirstName} {!$User.LastName}<br/><br/>
+<u><b>Order Information is Listed Below</b></u><br/>
+<apex:datatable cellpadding="5" border="1px" value="{!lines}" var="cl">
+<apex:column headervalue="Sales Order ">
+<apex:outputfield value="{!cl.Open_Orders__r.Sales_Order_Number__c}"/>
+</apex:column>
+<apex:column headervalue="PO Number ">
+<apex:outputfield value="{!cl.Open_Orders__r.Customer_PO_Number__c}"/>
+</apex:column>
+<apex:column headervalue="Ordered Qty in LB">
+<apex:outputfield value="{!cl.Open_Orders__r.Ordered_Qty_in_LB__c}"/>
+</apex:column>
+<apex:column headervalue="Material">
+<apex:outputfield value="{!cl.Open_Orders__r.Material_Desc__c}"/>
+</apex:column>
+</apex:datatable>
+</td></tr>
+</table>
+</apex:page>

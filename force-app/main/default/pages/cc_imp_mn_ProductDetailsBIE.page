@@ -1,0 +1,5 @@
+<apex:page showHeader="false" sidebar="false" docType="html-5.0" standardStylesheets="false" cache="false" applyHtmlTag="false" applyBodyTag="false" controller="cc_imp_ctrl_ProductDetails">
+
+	<c:cc_imp_mn_ProductDetailStandard rendered="{!productType == 'Product'}"/>
+
+</apex:page>

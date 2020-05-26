@@ -1,0 +1,6 @@
+<apex:page standardController="Price_Support_Request__c">
+  <!-- Begin Default Content REMOVE THIS -->
+  <h1>You can not create a new Price Support Request from here!</h1>
+  
+  <!-- End Default Content REMOVE THIS -->
+</apex:page>

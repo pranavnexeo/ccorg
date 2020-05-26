@@ -1,0 +1,28 @@
+<apex:page StandardController="Case" extensions="Approval_Section_Controller" showHeader="false" sidebar="false"  >
+<br/>
+<apex:pageblock >
+<apex:repeat first="0" value="{!ApprovalHistory}" var="AH">
+<apex:pageblocksection columns="1" title="Status: {!AH.PI.Status}"  collapsible="false">
+<apex:pageblocktable value="{!AH.steps}" var="s">
+
+<apex:column headervalue="Date" width="15%">
+<apex:outputlabel value="{!s.createddate}"/>
+</apex:column>
+<apex:column headervalue="Status" width="15%">
+<apex:outputlabel value="{!s.Status}" style="{!IF(s.status = 'Rejected', 'color:red;font-weight: bolder;', '')}{!IF(s.status = 'Approved', 'color:green;font-weight: bolder;font-weight: bolder;', '')}"/>
+</apex:column>
+<apex:column headervalue="Assigned To" width="15%">
+<apex:outputlink value="/{!s.originalactorlink}" target="_top"><apex:outputlabel value="{!s.originalactorname}"/></apex:outputlink>
+</apex:column>
+<apex:column headervalue="Actual Approver" width="15%">
+<apex:outputlink value="/{!s.actorlink}" target="_top"><apex:outputlabel value="{!s.actorname}"/></apex:outputlink>
+</apex:column>
+<apex:column headervalue="Comments" width="40%">
+<apex:outputlabel value="{!s.comments}"/>
+</apex:column>
+
+</apex:pageblocktable>
+</apex:pageblocksection>
+</apex:repeat>
+</apex:pageblock>
+</apex:page>

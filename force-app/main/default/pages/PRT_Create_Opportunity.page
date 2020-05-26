@@ -1,0 +1,76 @@
+<apex:page controller="PRT_Request_Controller" >
+<apex:stylesheet value="{!$Resource.SampleRequestStyles}" ></apex:stylesheet>
+
+        <apex:sectionHeader title="{!$Label.Relate_an_Opportunity} {!Price_Request_Link}" />
+        <apex:form >
+
+                <apex:pageBlock title="Which Opportunity would you like to relate to this Price Request?">
+                        <apex:facet name="footer">
+                                <apex:outputPanel >
+                                        <center>
+                                        <apex:commandButton action="{!Save_Price_Request_with_New_Opportunity}" value="Save" styleClass="btn" />
+                                        <apex:commandButton action="{!Cancel_Save}" value="Cancel" styleClass="btn"/>
+                                        </center>
+                                </apex:outputPanel>
+                                </apex:facet>
+
+                        <apex:pageBlockSection title="{!$Label.Sample_Request_has_Opportunity}" columns="1" collapsible="false" rendered="{!IF(AlreadyHaveOpportunityMessage!='','True','False')}">
+                             <apex:pageBlock title="{!$Label.Warning}" rendered="{!IF(AlreadyHaveOpportunityMessage!='','True','False')}">
+                                   <apex:outputText escape="False" value="{!AlreadyHaveOpportunityMessage}" rendered="{!IF(AlreadyHaveOpportunityMessage!='','True','False')}"/>
+                             </apex:pageBlock>
+                        </apex:pageBlockSection>
+
+                        <apex:pageBlockSection title="{!$Label.Parent_Account_no_Opportunities}" columns="1" collapsible="false" rendered="{!IF(OpportunityRelatedtoParentAccount_Count = 0,'true','false')}">
+                             <apex:pageBlock title="{!$Label.Error_Messages}" rendered="{!IF(OpportunityRelatedtoParentAccount_Count = 0,'true','false')}">
+                                   <apex:outputText escape="False" styleClass="Warning" value="{!$Label.Error}: {!$Label.Parent_Account_no_Opportunities}" rendered="{!IF(OpportunityRelatedtoParentAccount_Count = 0,'true','false')}"/>
+                             </apex:pageBlock>
+                        </apex:pageBlockSection>
+
+                        <apex:pageBlockSection id="relatedOpportunities" title="{!$Label.Open_Opportunities}" columns="1" collapsible="false" rendered="{!IF(OpportunityRelatedtoParentAccount_Count > 0,'true','false')}">
+                                <apex:dataTable value="{!opportunities}" var="opportunityList" cellPadding="4" border="1" styleClass="list">
+                                        <apex:column >
+                                                <apex:facet name="header">&nbsp;</apex:facet>
+                                                <input type="radio" name="Select" value="{!opportunityList.Id}" id="selectopp"  onclick="selectOpportunity(this.value)"/>    
+                                                
+                                        </apex:column>
+                                        <apex:column >
+                                                <apex:facet name="header">{!$Label.Opportunity}</apex:facet>
+                                                <apex:outputLink value="/{!opportunityList.Id}" target="_blank">{!opportunityList.Name}</apex:outputLink>&nbsp;
+                                        </apex:column>
+                                        <apex:column >
+                                                <apex:facet name="header">{!$Label.Description}</apex:facet>
+                                                <apex:outputText value="{!opportunityList.Description}"></apex:outputText>&nbsp;
+                                        </apex:column>
+                                        <apex:column >
+                                                <apex:facet name="header">{!$Label.Stage_Name}</apex:facet>
+                                                <apex:outputText value="{!opportunityList.StageName}"></apex:outputText>&nbsp;
+                                        </apex:column>
+                                        <apex:column >
+                                                <apex:facet name="header">{!$Label.Type}</apex:facet>
+                                                <apex:outputText value="{!opportunityList.RecordType.Name}"></apex:outputText>&nbsp;
+                                        </apex:column>
+                                        <apex:column >
+                                                <apex:facet name="header">{!$Label.Close_Date}</apex:facet>
+                                                <apex:outputText value="{!opportunityList.CloseDate}"></apex:outputText>&nbsp;
+                                        </apex:column>
+                                </apex:dataTable>
+
+                                <apex:inputHidden value="{!opportunitySelected}" id="SelectedOpportunity"/> 
+
+                                <script language="javascript">
+                                        function selectOpportunity(selectedId)
+                                            {
+                                            document.getElementById('{!$Component.SelectedOpportunity}').value=selectedId;
+                                            }
+                                </script>
+
+                        <apex:pageBlockSection title="{!$Label.Validation_Error}" columns="1" collapsible="false" rendered="{!IF(ValidationErrorMessage!='','True','False')}">
+                             <apex:pageBlock title="{!$Label.Error_Messages}" rendered="{!IF(ValidationErrorMessage!='','True','False')}">
+                                   <apex:outputText escape="False" styleClass="Warning" value="{!ValidationErrorMessage}" rendered="{!IF(ValidationErrorMessage!='','True','False')}"/>
+                             </apex:pageBlock>
+                        </apex:pageBlockSection> 
+
+                        </apex:pageBlockSection> 
+                    </apex:pageBlock> 
+                </apex:form>  
+</apex:page>

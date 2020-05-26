@@ -1,0 +1,554 @@
+<!-- 
+Description: Update Medical CAM and Plastics CAM labels [Enhancement Number Enh Res-7125]
+Date: 9 / 21 / 2017
+Developer: Ignacio Gonzalez
+-->
+<apex:page StandardController="Opportunity" extensions="OpportunityNewPlasticExtension" showHeader="true" id="thepage">
+<script type="text/javascript"> 
+    window.onload = function() {
+        onloadShowOrHide();
+        stagechangedjs(document.getElementById('thepage:oppPlas:pbblock:ContactInfo:stage').value);
+    };
+    
+    function onloadShowOrHide(){
+        var autoval = document.getElementById('thepage:oppPlas:pbblock:IdSecondBlockA:IdMarketSec:IdMarket').value;
+        var corporateBidval = document.getElementById('thepage:oppPlas:pbblock:IDTeam:Id_Corporate_Bid_Sec1:Id_Corporate_Bid').value;
+        
+        if(autoval == 'Automotive'){
+            document.getElementById('thepage:oppPlas:pbblock:IdSecondBlockA:IdOEM').style.display = 'none'; 
+            document.getElementById('thepage:oppPlas:pbblock:IdSecondBlockA3').style.display = 'block'; 
+        }else{
+            document.getElementById('thepage:oppPlas:pbblock:IdSecondBlockA:IdOEM').style.display = 'block';
+            document.getElementById('thepage:oppPlas:pbblock:IdSecondBlockA3').style.display = 'none'; 
+        }
+        if(corporateBidval == 'Yes'){
+            document.getElementById('thepage:oppPlas:pbblock:IDTeam:IDAutoCam:IDAutoCAM1').style.display = 'block';
+            document.getElementById('thepage:oppPlas:pbblock:IDTeam:IDPlasticsCAM:IDPlasticsCAM1').style.display = 'block';
+            document.getElementById('thepage:oppPlas:pbblock:IDTeam:IDPlasticsCAM2:IDPlasticsCAM21').style.display = 'block'; 
+        }else{
+            document.getElementById('thepage:oppPlas:pbblock:IDTeam:IDAutoCam:IDAutoCAM1').style.display = 'none';
+            document.getElementById('thepage:oppPlas:pbblock:IDTeam:IDPlasticsCAM:IDPlasticsCAM1').style.display = 'none';
+            document.getElementById('thepage:oppPlas:pbblock:IDTeam:IDPlasticsCAM2:IDPlasticsCAM21').style.display = 'none';
+        }
+    }
+</script>
+<script type="text/javascript"> 
+  function openLookup(baseURL, width, modified, searchParam){
+    var originalbaseURL = baseURL;
+    var originalwidth = width;
+    var originalmodified = modified;
+    var originalsearchParam = searchParam;
+ 
+    var lookupType = baseURL.substr(baseURL.length-3, 3);
+    if (modified == '1') baseURL = baseURL + searchParam;
+ 
+    var isCustomLookup = false;
+ 
+    // Following "a0Y" is the lookup type for Account object so change this as per your standard or custom object
+       if(lookupType == "a0Y"){
+ 
+      var urlArr = baseURL.split("&");
+      var txtId = '';
+      if(urlArr.length > 2) {
+        urlArr = urlArr[1].split('=');
+        txtId = urlArr[1];
+      }
+ 
+      // Following is the url of Custom Lookup page. You need to change that accordingly
+      baseURL = "/apex/CustomBaseLookup?txt=" + txtId;
+      
+      // Following is the id of apex:form control "myForm". You need to change that accordingly
+      baseURL = baseURL + "&frm=" + escapeUTF("{!$Component.myForm}");
+      if (modified == '1') {
+        baseURL = baseURL + "&lksearch=" + searchParam;
+      }
+      
+ 
+      // Following is the ID of inputField that is the lookup to be customized as custom lookup
+      if(txtId.indexOf('Base') > -1 ){
+        isCustomLookup = true;
+      }
+    }
+    if(lookupType == "001"){
+ 
+      var urlArr = baseURL.split("&");
+      var txtId = '';
+      if(urlArr.length > 2) {
+        urlArr = urlArr[1].split('=');
+        txtId = urlArr[1];
+      }
+ 
+      // Following is the url of Custom Lookup page. You need to change that accordingly
+      baseURL = "/apex/CustomAccountLookup?txt=" + txtId;
+      
+      // Following is the id of apex:form control "myForm". You need to change that accordingly
+      baseURL = baseURL + "&frm=" + escapeUTF("{!$Component.myForm}");
+      if (modified == '1') {
+        baseURL = baseURL + "&lksearch=" + searchParam;
+        width = 750;
+      }
+      
+ 
+      // Following is the ID of inputField that is the lookup to be customized as custom lookup
+      if(txtId.indexOf('Account') > -1 ){
+        isCustomLookup = true;
+      }
+      if(txtId.indexOf('HQ') > -1){
+        isCustomLookup = true;
+      }
+    }
+    if(lookupType == "a0e"){
+ 
+      var urlArr = baseURL.split("&");
+      var txtId = '';
+      if(urlArr.length > 2) {
+        urlArr = urlArr[1].split('=');
+        txtId = urlArr[1];
+      }
+ 
+      // Following is the url of Custom Lookup page. You need to change that accordingly
+      baseURL = "/apex/CustomMSD2Lookup?txt=" + txtId;
+ 
+      // Following is the Id of the Account on the Page.
+        
+         baseURL = baseURL + "&aid={!aid}";
+      // Following is the id of apex:form control "myForm". You need to change that accordingly
+      baseURL = baseURL + "&frm=" + escapeUTF("{!$Component.myForm}");
+      if (modified == '1') {
+        baseURL = baseURL + "&lksearch=" + searchParam;
+      }
+ 
+      // Following is the ID of inputField that is the lookup to be customized as custom lookup
+      if(txtId.indexOf('Material') > -1 ){
+        isCustomLookup = true;
+      }
+    }
+ 
+ 
+    if(isCustomLookup == true){
+      openPopup(baseURL, "lookup", width, 480, "width="+width+",height=480,toolbar=no,status=no,directories=no,menubar=no,resizable=yes,scrollable=no", true);
+    }
+    else {
+      if (modified == '1') originalbaseURL = originalbaseURL + originalsearchParam;
+      openPopup(originalbaseURL, "lookup", 350, 480, "width="+originalwidth+",height=480,toolbar=no,status=no,directories=no,menubar=no,resizable=yes,scrollable=no", true);
+    } 
+  }
+  function updateRequiredFields(stage){
+    stagechangedjs(document.getElementById(stage).value);
+  }
+
+  function setreqd(reasonwonlost){
+    fieldrequiredjs(document.getElementById(reasonwonlost).value);
+  }
+  
+  function updateMarketVal(market){
+      var autoval = document.getElementById(market).value;
+      if(autoval == 'Automotive'){
+          document.getElementById('thepage:oppPlas:pbblock:IdSecondBlockA:IdOEM').style.display = 'none'; 
+          document.getElementById('thepage:oppPlas:pbblock:IdSecondBlockA3').style.display = 'block'; 
+      }else{
+          document.getElementById('thepage:oppPlas:pbblock:IdSecondBlockA:IdOEM').value = '';
+          document.getElementById('thepage:oppPlas:pbblock:IdSecondBlockA:IdOEM').style.display = 'block';
+          document.getElementById('thepage:oppPlas:pbblock:IdSecondBlockA3').style.display = 'none'; 
+      }
+      //updateMarketVal1();
+  }
+  
+  function updateCorporateBidVal(corporateBid){
+      var corporateBidval = document.getElementById(corporateBid).value;
+      if(corporateBidval == 'Yes'){
+          document.getElementById('thepage:oppPlas:pbblock:IDTeam:IDAutoCam:IDAutoCAM1').style.display = 'block';
+          document.getElementById('thepage:oppPlas:pbblock:IDTeam:IDPlasticsCAM:IDPlasticsCAM1').style.display = 'block';
+          document.getElementById('thepage:oppPlas:pbblock:IDTeam:IDPlasticsCAM2:IDPlasticsCAM21').style.display = 'block'; 
+      }else{
+          document.getElementById('thepage:oppPlas:pbblock:IDTeam:IDAutoCam:IDAutoCAM1').style.display = 'none';
+          document.getElementById('thepage:oppPlas:pbblock:IDTeam:IDPlasticsCAM:IDPlasticsCAM1').style.display = 'none';
+          document.getElementById('thepage:oppPlas:pbblock:IDTeam:IDPlasticsCAM2:IDPlasticsCAM21').style.display = 'none';
+      }
+      //updateMarketVal1();
+  }
+</script>
+
+<apex:sectionheader title="Opportunity Edit" subtitle="{!OppSubtitle}"/>
+<apex:pagemessages />
+
+<apex:form id="oppPlas">
+
+<apex:actionFunction name="updateMarketVal1" action="{!changeMarket}" immediate="true" rerender="IDTeam, IdSecondBlockA3, IdSecondBlockA4">
+    <!--<apex:param name="autoval" value="autoval" assignTo="{!AutomotiveFlagval}"/> updateCorporateBidVal-->
+    <apex:actionSupport event="oncomplete" reRender="IDTeam, IdSecondBlockA3, IdSecondBlockA4" />
+</apex:actionfunction>
+<apex:actionfunction name="fieldrequiredjs" action="{!fieldrequired}" immediate="true" rerender="thepanel" status="stageChangeStatus" >
+    <apex:param name="reasonwonlost" value=""/>
+</apex:actionfunction>
+<apex:actionfunction name="stagechangedjs" action="{!stagechanged}" immediate="true" rerender="thepanel" status="stageChangeStatus" >
+    <apex:param name="stage" value=""/>
+</apex:actionfunction>
+<apex:actionregion >
+<apex:outputpanel id="thepanel">
+<apex:pageblock id="pbblock">
+<apex:actionStatus id="stageChangeStatus">
+<apex:facet name="start">
+<c:EnhancedActionStatus BackColor="#efefef" borderColor="#336699" borderSize="2" height="20px" width="100px" ImageUrl="{!$Resource.spinner}" Message="Loading..." messageStyle="color:darkred;font-size:11pt;font-weight:bold;"/>
+</apex:facet>
+</apex:actionStatus>   
+                       
+<apex:pageblockbuttons >
+
+<apeX:commandbutton value="Save" action="{!Save}" />
+<apex:commandbutton value="Cancel" action="{!Cancel}" />
+
+</apex:pageblockbuttons>
+<apex:actionregion >          
+<apex:pageblocksection title="1. Identify" id="ContactInfo" columns="2" collapsible="false">
+    <apex:inputfield value="{!Opp.Name}" required="true" />
+    <apex:inputfield value="{!Opp.StageName}" required="true" id="stage" onchange="updateRequiredFields('{!$Component.stage}')"/>
+    <apex:inputfield value="{!Opp.CloseDate}" required="true"/>
+    <apex:inputfield value="{!Opp.Annual_Usage__c}" required="{!makeConceptFieldsrequired}"/>
+    <apex:inputfield value="{!Opp.Probability_picklist__c}" required="{!makeConceptFieldsrequired}"/>
+    <apex:pageblocksectionitem >
+        <apex:outputlabel value="Estimated Price"/>
+        <apex:outputpanel >
+            <apex:inputfield value="{!Opp.Transaction_Approved_price__c}" required="{!makeConceptFieldsrequired}"/>
+        </apex:outputpanel>
+    </apex:pageblocksectionitem>
+    <apex:pageblocksectionitem >
+        <apex:outputlabel value="Account"/>
+        <apex:outputpanel >
+            <apex:inputfield value="{!Opp.AccountId}"  required="true" id="Account">
+                <apex:actionsupport event="onchange" action="{!accountchanged}" rerender="ContactInfo, type" />
+            </apex:inputfield>    
+        </apex:outputpanel>
+    </apex:pageblocksectionitem>
+    <!--<apex:outputfield value="{!Opp.Opportunity_Revenue__c}"/>-->
+    <apex:panelgroup > 
+<span style="color: #4a4a56;white-space: normal;margin-left: 15%;font-weight: bold;font-size: 11.3px;">Opportunity Revenue <img src="/img/s.gif" alt="" style="margin-right: 33%;" class="helpOrb" title=""/></span>
+
+<apex:outputtext value="{!opp.CurrencyISOCode}" />
+ <apex:outputText value="{0, number, ###,###,###.00}"> 
+ <apex:param value="{!Opp.Opportunity_Revenue__c}" /> 
+ </apex:outputText> 
+ </apex:panelgroup>
+    <apex:pageblocksectionitem id="type">
+        <apex:outputlabel value="Account Type"/>
+        <apex:outputfield value="{!Acc.Type}"/>
+    </apex:pageblocksectionitem>
+    <apex:pageblocksectionitem helptext="Name of Contact that is directly involved in this Opportunity">
+        <apex:outputlabel value="Primary Contact"/>
+        <apex:outputPanel layout="block" >
+            <apex:outputPanel styleClass="requiredBlock" layout="block"/>
+            <apex:selectlist id="contact" value="{!cid}" size="1" style="{!if(errorContact, 'border-size:2px; border-color:#CC0000;border-style:solid;', '')}" required="true">
+                <apex:selectoptions value="{!contacts}"/>
+                <apex:actionsupport event="onchange" action="{!accountchanged}" rerender="email,Phone"/>
+            </apex:selectlist>
+            <apex:outputPanel styleClass="errorMsg" layout="block" rendered="{!errorContact}">
+                <strong>Error:</strong> You Must Enter a Value.
+            </apex:outputPanel>
+        </apex:outputPanel>     
+    </apex:pageblocksectionitem>
+    <apex:inputfield value="{!Opp.Price_Unit_of_Measure__c}" required="{!makeConceptFieldsrequired}"/>
+    <apex:outputfield value="{!Contact.phone}" id="Phone"/>
+    <apex:inputfield value="{!opp.CurrencyIsoCode}" required="{!makeConceptFieldsrequired}"/>    
+    <apex:outputfield value="{!Contact.email}" id="email" />
+    <apex:inputfield value="{!Opp.LeadSource}"/>
+    <apex:inputfield value="{!Opp.CampaignId}"/>
+    <apex:inputfield value="{!Opp.LeadSource_User__c}"/>
+    <apex:inputfield value="{!Opp.Sample_Sent__c}"/>
+    <apex:inputfield value="{!Opp.Opportunity_Type__c}" required="{!makeConceptFieldsrequired}"/>
+    
+</apex:pageblocksection>
+   
+
+    <apex:pageblocksection columns="1">
+         <apex:inputtextarea value="{!opp.Description}" cols="75" rows="8"/>
+    </apex:pageBlockSection>
+    <apex:outputPanel id="IDTeam1">
+    <apex:pageblocksection title="Team (click magnifying glass icons below to search/see full list of personnel)" collapsible="false" columns="2" id="IDTeam">
+        
+        <apex:pageblocksectionitem id="Id_Corporate_Bid_Sec1">
+            <apex:outputlabel value="Corporate Account Bid"/>
+                <apex:outputPanel styleClass="{!IF(isstage3&&makerequired, 'requiredInput', '')}" layout="block" >
+                    <apex:outputPanel styleClass="requiredBlock" layout="block"/>
+                     <apex:inputfield id="Id_Corporate_Bid" value="{!Opp.Corporate_Bid__c}" onchange="updateCorporateBidVal('{!$Component.Id_Corporate_Bid}')" style="{!if(errorCorpBid, 'border-size:2px; border-color:#CC0000;border-style:solid;', '')}"/>
+                     <apex:outputPanel styleClass="errorMsg" layout="block" rendered="{!errorCorpBid}">
+                    <strong>Error:</strong> You Must Enter a Value.
+                </apex:outputPanel>
+            </apex:outputPanel>
+        </apex:pageblocksectionitem>
+        
+        <apex:pageblocksectionitem helptext="Select the Corporate Account Manager if the material/customer application is within the Automotive Industry" id="IDAutoCam">
+            <apex:outputlabel value="Auto CAM"/>
+            <apex:outputPanel style="{!if(Opp.Corporate_Bid__c=='Yes', 'display:block', 'display:none')}" id="IDAutoCAM1">
+                <apex:outputPanel styleClass="requiredBlock" layout="block"/>
+                   <apex:inputfield value="{!opp.Auto_CAM1__c}" style="{!if(errorCAM, 'border-size:2px; border-color:#CC0000;border-style:solid;', '')}"/>
+                 <apex:outputPanel styleClass="errorMsg" layout="block" rendered="{!errorCAM}">
+                        <strong>Error:</strong> Please enter any one value in Auto CAM or Plastics CAM1 or Plastics CAM2.
+                 </apex:outputPanel>
+            </apex:outputPanel>     
+        </apex:pageblocksectionitem>
+        
+        <apex:pageblocksectionitem helptext="Select the Corporate Account Manager if the material/customer application is within the Medical Industry" id="IDPlasticsCAM">
+            <apex:outputlabel value="{!$ObjectType.Opportunity.fields.Plastics_CAM1__c.Label}"/>
+            <apex:outputPanel style="{!if(Opp.Corporate_Bid__c=='Yes', 'display:block', 'display:none')}" id="IDPlasticsCAM1">
+                <apex:outputPanel styleClass="requiredBlock" layout="block"/>
+                   <apex:inputfield value="{!opp.Plastics_CAM1__c}" style="{!if(errorCAM, 'border-size:2px; border-color:#CC0000;border-style:solid;', '')}"/>
+                 <apex:outputPanel styleClass="errorMsg" layout="block" rendered="{!errorCAM}">
+                        <strong>Error:</strong> Please enter any one value in Auto CAM or Plastics CAM1 or Plastics CAM2.
+                 </apex:outputPanel>
+            </apex:outputPanel>     
+        </apex:pageblocksectionitem>
+        
+        <apex:pageblocksectionitem helptext="Select the Technical Representative who will support this Opportunity">
+            <apex:outputlabel value="Technical Representative"/>
+            <apex:outputPanel >
+                <apex:outputPanel />
+                 <apex:inputfield value="{!Opp.Technical_Representative1__c}" /> <!--style="{!if(errorTechRep, 'border-size:2px; border-color:#CC0000;border-style:solid;', '')}"/> -->
+                 <!--
+                 <apex:outputPanel styleClass="errorMsg" layout="block" rendered="{!errorTechRep}">
+                        <strong>Error:</strong> You Must Enter a Value.
+                 </apex:outputPanel>
+                 -->
+            </apex:outputPanel>
+        </apex:pageblocksectionitem>
+        
+        <apex:pageblocksectionitem helptext="Select the Corporate Account Manager if the material/customer application is within the Plastics Industry" id="IDPlasticsCAM2">
+            <apex:outputlabel value="{!$ObjectType.Opportunity.fields.Plastics_CAM2__c.Label}"/>
+            <apex:outputPanel style="{!if(Opp.Corporate_Bid__c=='Yes', 'display:block', 'display:none')}" id="IDPlasticsCAM21">
+                <apex:outputPanel styleClass="requiredBlock" layout="block"/>
+                   <apex:inputfield value="{!opp.Plastics_CAM2__c}" style="{!if(errorCAM, 'border-size:2px; border-color:#CC0000;border-style:solid;', '')}"/>
+                 <apex:outputPanel styleClass="errorMsg" layout="block" rendered="{!errorCAM}">
+                        <strong>Error:</strong> Please enter any one value in Auto CAM or Plastics CAM1 or Plastics CAM2.
+                 </apex:outputPanel>
+            </apex:outputPanel>     
+        </apex:pageblocksectionitem>
+        
+        <apex:pageblocksectionitem helptext="Select the Application Design Engineer who will provide strategic formulations / customer solutions for this Opportunity">
+            <apex:outputlabel value="ADE Technical Representative"/>
+            <apex:outputPanel >
+                <!--
+                <apex:outputPanel styleClass="requiredBlock" layout="block"/>
+                <apex:inputfield value="{!Opp.ADE_Technical_Representative1__c}" style="{!if(errorADERep, 'border-size:2px; border-color:#CC0000;border-style:solid;', '')}"/>
+                <apex:outputPanel styleClass="errorMsg" layout="block" rendered="{!errorADERep}">
+                        <strong>Error:</strong> You Must Enter a Value.
+                </apex:outputPanel>
+                -->
+                <apex:inputfield value="{!Opp.ADE_Technical_Representative1__c}" />
+                 
+            </apex:outputPanel>
+        </apex:pageblocksectionitem>
+        
+    </apex:pageblocksection> 
+    </apex:outputPanel>       
+</apex:actionregion>
+        
+        <!-- Section 2. Qualify -->
+        <apex:outputPanel id="IdSecondBlockA1">
+        
+        <apex:pageblocksection title="2. Qualify" collapsible="false" id="IdSecondBlockA">
+            
+            <apex:inputfield value="{!opp.Related_HQ_Account__c}" id="HQ" />
+            
+            <apex:pageblocksectionitem helptext="Search for and select the Supplier that will be requested for this Nexeo Material / Service">
+                <apex:outputlabel value="Requested Supplier"/>
+                    <apex:outputPanel styleClass="{!IF(isstage2&&makerequired, 'requiredInput', '')}" layout="block" >
+                        <apex:outputPanel styleClass="requiredBlock" layout="block"/>
+                            <apex:inputfield value="{!Opp.Requested_Supplier_PL__c}" style="{!if(errorRequestedSupplier, 'border-size:2px; border-color:#CC0000;border-style:solid;', '')}" />
+                        <apex:outputPanel styleClass="errorMsg" layout="block" rendered="{!errorRequestedSupplier}">
+                                <strong>Error:</strong> You Must Enter a Value.
+                    </apex:outputPanel>
+                </apex:outputPanel>     
+            </apex:pageblocksectionitem>
+            
+            <apex:pageblocksectionitem helptext="Select the Market as determined by material/customer application" id="IdMarketSec">
+                <apex:outputlabel value="Market"/>
+                <apex:outputPanel styleClass="{!IF(isstage2&&makerequired, 'requiredInput', '')}" layout="block" >
+                    <apex:outputPanel styleClass="requiredBlock" layout="block"/>
+                    <apex:inputfield value="{!Opp.Market__c}" onchange="updateMarketVal('{!$Component.IdMarket}')" style="{!if(errormarket, 'border-size:2px; border-color:#CC0000;border-style:solid;', '')}" id="IdMarket" />
+                    <apex:outputPanel styleClass="errorMsg" layout="block" rendered="{!errormarket}">
+                            <strong>Error:</strong> You Must Enter a Value.
+                    </apex:outputPanel>
+                </apex:outputPanel>
+            </apex:pageblocksectionitem>
+            
+            <apex:inputfield value="{!opp.Application__c}" id="IdApplication1"  style="display:block" />
+
+            <apex:pageblocksectionitem helptext="Select the Sub Market as determined by material/customer application">
+                <apex:outputlabel value="Sub Market"/>
+                <apex:outputPanel styleClass="{!IF(isstage2&&makerequired, 'requiredInput', '')}" layout="block" >
+                    <apex:outputPanel styleClass="requiredBlock" layout="block"/>
+                     <apex:inputfield value="{!Opp.Submarket__c}" style="{!if(errorsubmarket, 'border-size:2px; border-color:#CC0000;border-style:solid;', '')}"/>
+                     <apex:outputPanel styleClass="errorMsg" layout="block" rendered="{!errorsubmarket}">
+                            <strong>Error:</strong> You Must Enter a Value.
+                     </apex:outputPanel>
+                </apex:outputPanel>
+            </apex:pageblocksectionitem>
+            <apex:inputfield value="{!opp.OEM__c}" id="IdOEM"  style="display:block" />
+        </apex:pageblocksection>
+        </apex:outputPanel>
+        <!-- Section 2a. Qualify-Automotive Specific  rendered="{!(Opp.Market__c=='Automotive' || IsAutomotiveFlag==true)}" style="display:none"-->
+        <apex:outputPanel id="IdSecondBlockA4">
+        <apex:outputPanel id="IdSecondBlockA3" style="{!if(Opp.Market__c=='Automotive', 'display:block', 'display:none')}"  > <!--  -->
+        <apex:pageblocksection title="2a. Qualify-Automotive Specific" collapsible="false">
+            <apex:pageblocksectionitem helptext="Indicate how the material will be applied">
+                <apex:outputlabel value="Automotive Application"/>
+                    <apex:outputPanel >
+                        <apex:outputPanel />
+                        <apex:inputfield value="{!Opp.Automotive_Application__c}" style="{!if(error_Automotive_Application_Error_flag, 'border-size:2px; border-color:#CC0000;border-style:solid;', '')}" />
+                        <apex:outputPanel styleClass="errorMsg" layout="block" rendered="{!error_Automotive_Application_Error_flag}">
+                            <strong>Error:</strong> You Must Enter a Value.
+                        </apex:outputPanel>
+                </apex:outputPanel>     
+            </apex:pageblocksectionitem>
+            
+            <apex:pageblocksectionitem helptext="Value between 0000.01 and 9999.99 representing the weight of the part in kilograms." >
+                <apex:outputlabel value="Part Weight (lbs)"/>
+                    <apex:outputPanel > <!-- styleClass="{!IF(isstage2&&makerequired, 'requiredInput', '')}" layout="block"  -->
+                        <apex:outputPanel />
+                         <apex:inputfield value="{!Opp.Part_Weight_kg__c}" style="{!if(error_Part_Weight_flag, 'border-size:2px; border-color:#CC0000;border-style:solid;', '')}"/>
+                         <apex:outputPanel styleClass="errorMsg" layout="block" rendered="{!error_Part_Weight_flag}">
+                        <strong>Error:</strong> You Must Enter a Value.
+                    </apex:outputPanel>
+                </apex:outputPanel>
+            </apex:pageblocksectionitem>
+            
+            <apex:pageblocksectionitem helptext="Search for and select the Supplier that will be requested for this Nexeo Material / Service">
+                <apex:outputlabel value="OEM"/>
+                <apex:outputPanel > <!-- styleClass="{!IF(isstage2&&makerequired, 'requiredInput', '')}" layout="block"  -->
+                    <apex:outputPanel styleClass="requiredBlock" layout="block"/>
+                      <apex:inputfield value="{!opp.OEM_1__c}" style="{!if(errorOEM, 'border-size:2px; border-color:#CC0000;border-style:solid;', '')}"/>
+                     <apex:outputPanel styleClass="errorMsg" layout="block" rendered="{!errorOEM}">
+                            <strong>Error:</strong> You Must Enter a Value.
+                     </apex:outputPanel>
+                </apex:outputPanel>     
+            </apex:pageblocksectionitem>
+            
+            <apex:pageblocksectionitem helptext="Value between 1 and 9999 representing the number of parts in one vehicle">
+                <apex:outputlabel value="Parts/Vehicle"/>
+                <apex:outputPanel >
+                    <apex:outputPanel />
+                     <apex:inputfield value="{!Opp.Parts_Vehicle__c}" style="{!if(error_Parts_Vehicle_flag, 'border-size:2px; border-color:#CC0000;border-style:solid;', '')}"/>
+                     <apex:outputPanel styleClass="errorMsg" layout="block" rendered="{!error_Parts_Vehicle_flag}">
+                            <strong>Error:</strong> You Must Enter a Value.
+                     </apex:outputPanel>
+                </apex:outputPanel>
+            </apex:pageblocksectionitem>
+            
+            <apex:pageblocksectionitem helptext="Model of the vehicle for which the part is being manufactured">
+                <apex:outputlabel value="Vehicle"/>
+                <apex:outputPanel >
+                    <apex:outputPanel />
+                     <apex:inputfield value="{!Opp.Vehicle_US__c}" style="{!if(error_Vehicle_US_flag, 'border-size:2px; border-color:#CC0000;border-style:solid;', '')}"/>
+                     <apex:outputPanel styleClass="errorMsg" layout="block" rendered="{!error_Vehicle_US_flag}">
+                            <strong>Error:</strong> You Must Enter a Value.
+                     </apex:outputPanel>
+                </apex:outputPanel>
+            </apex:pageblocksectionitem>
+
+           <!--<apex:pageblocksectionitem helptext="Value between 0 and 100 representing the portion of the vehicle trim to be made of the material">
+                <apex:outputlabel value="% of Trim Level"/>
+                <apex:outputPanel >
+                    <apex:outputPanel />
+                       <apex:inputfield value="{!opp.of_Trim_Level__c}" style="{!if(error_of_Trim_Level_flag, 'border-size:2px; border-color:#CC0000;border-style:solid;', '')}"/>
+                     <apex:outputPanel styleClass="errorMsg" layout="block" rendered="{!error_of_Trim_Level_flag}">
+                            <strong>Error:</strong> You Must Enter a Value.
+                     </apex:outputPanel>
+                </apex:outputPanel>    
+            </apex:pageblocksectionitem>-->
+          
+            <apex:pageblocksectionitem helptext="Name of account providing specifications for the part">
+                <apex:outputlabel value="Specifier Tier"/>
+                <apex:outputPanel >
+                    <!--
+                    <apex:outputPanel styleClass="requiredBlock" layout="block"/>
+                    <apex:inputfield value="{!opp.Specifier_Tier__c}" style="{!if(errorCAM, 'border-size:2px; border-color:#CC0000;border-style:solid;', '')}"/>
+                    <apex:outputPanel styleClass="errorMsg" layout="block" rendered="{!errorCAM}">
+                        <strong>Error:</strong> You Must Enter a Value.
+                    </apex:outputPanel>
+                    -->
+                    <apex:inputfield value="{!opp.Specifier_Tier__c}" />
+                </apex:outputPanel>     
+            </apex:pageblocksectionitem>
+            
+        </apex:pageblocksection>
+        </apex:outputPanel>
+        </apex:outputPanel>
+        <!-- Section 3 -->
+        <apex:pageblocksection title="3. Negotiate" collapsible="false" id="stage4" columns="2">
+            <apex:pageblocksectionitem helptext="Search for and locate the material / service from within the SAP Material database for this Opportunity">
+                <apex:outputlabel value="SAP Material"/>
+                <apex:outputPanel >
+                    <apex:outputPanel styleClass="requiredBlock" layout="block"/>
+                     <apex:inputfield value="{!Opp.SAP_Material__c}" style="{!if(errorSAPMaterial, 'border-size:2px; border-color:#CC0000;border-style:solid;', '')}" id="Material">
+
+                     </apex:inputfield>
+                     <apex:outputPanel styleClass="errorMsg" layout="block" rendered="{!errorSAPMaterial}">
+                            <strong>Error:</strong> SAP Material, Base Code, or Material (Not in SAP) is Required.
+                     </apex:outputPanel>
+                </apex:outputPanel>     
+            </apex:pageblocksectionitem>
+            
+            <apex:pageblocksectionitem helpText="Product / Material customer is interested in.">
+                <apex:outputlabel value="Material (Not in SAP)"/>
+                <apex:outputPanel >
+                    <apex:outputPanel styleClass="requiredBlock" layout="block"/>
+                     <apex:inputfield value="{!Opp.Material_of_Interest__c}" style="{!if(errorSAPMaterial, 'border-size:2px; border-color:#CC0000;border-style:solid;', '')}"/>
+                     <apex:outputPanel styleClass="errorMsg" layout="block" rendered="{!errorSAPMaterial}">
+                            <strong>Error:</strong> SAP Material, Base Code, or Material (Not in SAP) is Required.
+                     </apex:outputPanel>
+                </apex:outputPanel>
+            </apex:pageblocksectionitem>
+
+            <apex:pageblocksectionitem helptext="Search for and select the Primary competitor who sells / bids for the same material / service">
+                <apex:outputlabel value="Nexeo Primary Competitor"/>
+                <apex:outputPanel styleClass="{!IF(isstage3&&makerequired, 'requiredInput', '')}" layout="block" >
+                    <apex:outputPanel styleClass="requiredBlock" layout="block"/>
+                      <apex:inputfield value="{!opp.Nexeo_Primary_Competitor_PL__c}"  style="{!if(errorCompetitor, 'border-size:2px; border-color:#CC0000;border-style:solid;', '')}"/>
+                     <apex:outputPanel styleClass="errorMsg" layout="block" rendered="{!errorCompetitor}">
+                            <strong>Error:</strong> You Must Enter a Value.
+                     </apex:outputPanel>
+                </apex:outputPanel>     
+            </apex:pageblocksectionitem>
+            
+          <apex:pageblocksectionitem >
+             <apex:outputlabel value="Product Line Manager"/>
+             <apex:outputfield value="{!Opp.SAP_Material__r.Material_Group2_Desc__c}"/>
+          </apex:pageblocksectionitem>
+        </apex:pageblocksection>
+        
+        <!-- Section Closed -->
+        <apex:pageblocksection title="4. Closed" collapsible="false" >
+            <apex:pageblocksectionitem >
+                <apex:outputlabel value="Won / Lost Reason"/>
+                <apex:outputPanel styleClass="{!IF(AND(NOT(isquotevalue),isstage3), 'requiredInput', '')}" layout="block" >
+                    <apex:outputPanel styleClass="{!IF(AND(NOT(isquotevalue),isclosed), 'requiredBlock', '')}" layout="block"/>
+                      <apex:inputfield value="{!Opp.T_Reason_Won_Lost__c}" id="reasonwonlost" required="true" rendered="{!AND(NOT(isquotevalue),isclosed)}" Onchange="setreqd('{!$Component.reasonwonlost}');"/>
+                      <apex:selectlist value="{!Opp.T_Reason_Won_Lost__c}" size="1" rendered="{!NOT(isclosed)}" disabled="true" >
+                        <apex:selectoption itemlabel="--None--" itemvalue=""/>
+                      </apex:selectlist>  
+                     <apex:outputPanel styleClass="errorMsg" layout="block" rendered="{!errorCompetitor}">
+                            <strong>Error:</strong> You Must Enter a Value.
+                     </apex:outputPanel>
+                </apex:outputPanel>     
+            </apex:pageblocksectionitem>
+        </apex:pageblocksection>
+            
+        <apex:pageblocksection >
+            <apex:pageblocksectionitem helptext="Enter additional details regarding the reason this Opportunity has become Closed-Won or Closed-Lost">
+                <apex:outputlabel value="Won / Lost Comments"/>
+                <apex:outputPanel >
+                    <apex:outputPanel styleClass="requiredBlock" layout="block"/>
+                     <apex:inputtextarea value="{!opp.Won_Lost_Comments__c}" cols="100" rows="8" style="{!if(errorWonLostComments, 'border-size:2px; border-color:#CC0000;border-style:solid;', '')}"/>
+                     <apex:outputPanel styleClass="errorMsg" layout="block" rendered="{!errorWonLostComments}">
+                            <strong>Error:</strong> Length Must Be less than 255 Characters. 
+                     </apex:outputPanel>
+                </apex:outputPanel>     
+            </apex:pageblocksectionitem>
+        </apex:pageblocksection>
+
+    </apex:pageblock>
+    </apex:outputpanel>
+</apex:actionregion>
+
+</apex:form>
+
+</apex:page>

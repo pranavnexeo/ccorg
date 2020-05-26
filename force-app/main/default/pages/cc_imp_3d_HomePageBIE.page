@@ -1,0 +1,7 @@
+<apex:page showHeader="false" sidebar="false" docType="html-5.0" standardStylesheets="false" cache="false" applyHtmlTag="false" applyBodyTag="false">
+	<c:cc_imp_3d_CategoryTree />
+	<c:cc_imp_3d_SpotlightProducts />
+    <c:cc_imp_3d_ProductSearchWidgetNav />
+    <c:cc_imp_3d_MiniCartDetails />
+    <c:cc_3d_Promo />
+</apex:page>

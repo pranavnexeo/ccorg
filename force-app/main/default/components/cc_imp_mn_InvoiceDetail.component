@@ -1,0 +1,683 @@
+<apex:component >
+
+	<script type="text/javascript">
+	  CCRZ.uiProperties.InvoiceDetailView.desktop.tmpl = 'InvoiceDetailDesktopImp';
+	  CCRZ.uiProperties.InvoiceDetailView.phone.tmpl   = 'InvoiceDetailMobileImp';
+	</script>
+
+   <script id="InvoiceDetailDesktopImp" type="text/template">
+        <div class="invoiceOuterContainer">
+            <div class="alert alert-error messagingSection-invoice-Error" style="display: none"></div>
+            <div class="alert alert-warning messagingSection-invoice-Warning" style="display: none"></div>
+            <div class="alert alert-info messagingSection-invoice-Info" style="display: none"></div>
+            {{#if this.loaded}}
+            <div class="main_content_large_solo_container">
+                <div class="invoiceContainer invoiceActionContainer invoiceActionContainerTop">
+                    <div class="actionButtonsStart">
+                        {{#ifEquals this.status 'Open'}}
+                        {{#ifNotEquals this.type 'Credit'}}
+                            <button type="button" class="btn btn-primary wide makePayment">{{pageLabelMap 'MyInvoices_MakePaymentBtn'}}</button>
+                        {{/ifNotEquals}}
+                        {{/ifEquals}}
+                    </div>
+                    <div class="actionButtonsEnd">
+                        <a href="javascript:void(0);" class="myInvoices">{{pageLabelMap 'MyInvoices_MyInvoicesBtn'}}</a>
+                    </div>
+                    <div class="clear"></div>
+                </div>
+                <div class="invoiceContainer invoiceDetailContainer">
+                    <h2 class="title">{{pageLabelMap 'MyInvoices_HeaderDetailHdr'}}</h2>
+                    <div class="invoiceHeaderContainer">
+                        <div class="invoiceHeaderCol">
+                        <!--
+                            <div class="invoiceField name">
+                                <div class="headerLabel name">{{pageLabelMap 'cc_imp_MyInvoices_InvoiceNumberLabel'}}</div>
+                                <div class="headerValue name">{{this.name}}</div>
+                            </div>
+                        -->
+                            {{#if this.parent}}
+                            <div class="invoiceField parent">
+                                <div class="headerLabel parent">{{pageLabelMap 'MyInvoices_ParentInvoiceLabel'}}</div>
+                                <div class="headerValue parent"><a href="javascript:void(0);" data-id="{{this.parent.sfid}}" class="gotoInvoiceDetails">{{this.parent.name}}</a></div>
+                            </div>
+                            {{/if}}
+                             <!--NEX-60
+                            {{#if this.invoiceId}}
+                            <div class="invoiceField invoiceId">
+                                <div class="headerLabel invoiceId">{{pageLabelMap 'MyInvoices_InvoiceIdLabel'}}</div>
+                                <div class="headerValue invoiceId">{{this.invoiceId}}</div>
+                            </div>
+                            {{/if}}
+                            -->
+                            {{#if this.dateIssuedStr}}
+                            <div class="invoiceField dateIssued">
+                                <div class="headerLabel dateIssued">{{pageLabelMap 'MyInvoices_DateLabel'}}</div>
+                                <div class="headerValue dateIssued">{{this.dateIssuedStr}}</div>
+                            </div>
+                            {{/if}}
+                            {{#if this.dueDateStr}}
+                            <div class="invoiceField dueDate">
+                                <div class="headerLabel dueDate">{{pageLabelMap 'MyInvoices_DueDateLabel'}}</div>
+                                <div class="headerValue dueDate">{{this.dueDateStr}}</div>
+                            </div>
+                            {{/if}}
+                            {{#if this.amount}}
+                            <div class="invoiceField amount {{this.currencyIsoCode}}">
+                                <div class="headerLabel amount {{this.currencyIsoCode}}">{{pageLabelMap 'MyInvoices_AmountLabel'}}</div>
+                                <div class="headerValue amount {{this.currencyIsoCode}}">{{price this.amount this.currencyIsoCode}}</div>
+                            </div>
+                            {{/if}}
+                            {{#if this.amount}}
+                            <div class="invoiceField paidAmount {{this.currencyIsoCode}}">
+                                <div class="headerLabel paidAmount {{this.currencyIsoCode}}">{{pageLabelMap 'MyInvoices_PaidAmountLabel'}}</div>
+                                <div class="headerValue paidAmount {{this.currencyIsoCode}}">{{price this.paidAmount this.currencyIsoCode}}</div>
+                            </div>
+                            {{/if}}
+                            {{#if this.amount}}
+                            <div class="invoiceField remainingAmount {{this.currencyIsoCode}}">
+                                <div class="headerLabel remainingAmount {{this.currencyIsoCode}}">{{pageLabelMap 'MyInvoices_RemainingAmountLabel'}}</div>
+                                <div class="headerValue remainingAmount {{this.currencyIsoCode}}">{{price this.remainingAmount this.currencyIsoCode}}</div>
+                            </div>
+                            {{/if}}
+                            {{#if this.type}}
+                            <div class="invoiceField type">
+                                <div class="headerLabel type">{{pageLabelMap 'MyInvoices_TypeLabel'}}</div>
+                                <div class="headerValue type">{{pageLabelMapMultiString 'MyInvoices_Type_' this.type}}</div>
+                            </div>
+                            {{/if}}
+                            {{#if this.status}}
+                            <div class="invoiceField status">
+                                <div class="headerLabel status">{{pageLabelMap 'MyInvoices_StatusLabel'}}</div>
+                                <div class="headerValue status">{{pageLabelMapMultiString 'MyInvoices_Status_' this.status}}</div>
+                            </div>
+                            {{/if}}
+                            {{#if this.terms}}
+                            <div class="invoiceField terms">
+                                <div class="headerLabel terms">{{pageLabelMap 'MyInvoices_TermsLabel'}}</div>
+                                <div class="headerValue terms">{{this.terms}}</div>
+                            </div>
+                            {{/if}}
+                            {{#if this.ccOrder}}
+                            <div class="invoiceField ccOrder">
+                                <div class="headerLabel ccOrder">{{pageLabelMap 'MyInvoices_OrderLabel'}}</div>
+                                <div class="headerValue ccOrder"><a href="javascript:void(0);" data-id="{{this.ccOrder.encryptedId}}" class="gotoOrderDetails">{{this.ccOrder.name}}</a></div>
+                            </div>
+                            {{/if}}
+                        </div>
+                        <div class="invoiceHeaderCol">
+                            {{#if this.billTo}}
+                            <div class="invoiceField billTo">
+                                <div class="headerLabel billTo">{{pageLabelMap 'MyInvoices_BillToLabel'}}</div>
+                                <div class="headerValue billTo">{{this.billTo.name}}</div>
+                            </div>
+                            {{/if}}
+                            {{#if this.soldTo}}
+                            <div class="invoiceField soldTo">
+                                <div class="headerLabel soldTo">{{pageLabelMap 'MyInvoices_SoldToLabel'}}</div>
+                                <div class="headerValue soldTo">{{this.soldTo.name}}</div>
+                            </div>
+                            {{/if}}
+                            {{#if this.billAddr}}
+                            <div class="invoiceField billToAddress">
+                                <div class="headerLabel billToAddress">{{pageLabelMap 'MyInvoices_BillToAddressLabel'}}</div>
+                                <div class="headerValue billToAddress">{{> addressDisplay this.billAddr}}</div>
+                            </div>
+                            {{/if}}
+                            {{#if this.comments}}
+                            <div class="invoiceField comments">
+                                <div class="headerLabel comments">{{pageLabelMap 'MyInvoices_CommentsLabel'}}</div>
+                                <div class="headerValue comments">{{this.comments}}</div>
+                            </div>
+                            {{/if}}
+                        </div>
+                    </div>
+                </div>
+                {{#if this.childInvoices}}
+                <div class="invoiceContainer childInvoicesContainer">
+                    <h2 class="title">{{pageLabelMap 'MyInvoices_ChildInvoicesHdr'}}</h2>
+                    <table id="invoiceTable" class="shopping_cart invoices">
+                        <tr class="even">
+                        <!--
+                            <td class="invoiceHeader name">
+                                {{pageLabelMap 'cc_imp_MyInvoices_InvoiceNumber'}}
+                            </td>
+                        -->
+                             <!--NEX-60
+                            <td class="invoiceHeader invoiceId">
+                                {{pageLabelMap 'MyInvoices_InvoiceId'}}
+                            </td>
+                            -->
+                            <td class="invoiceHeader dateIssued">
+                                {{pageLabelMap 'MyInvoices_Date'}}
+                            </td>
+                            <td class="invoiceHeader dueDate">
+                                {{pageLabelMap 'MyInvoices_DueDate'}}
+                            </td>
+                            <td class="invoiceHeader amount">
+                                {{pageLabelMap 'MyInvoices_Amount'}}
+                            </td>
+                            <td class="invoiceHeader paidAmount">
+                                {{pageLabelMap 'MyInvoices_PaidAmount'}}
+                            </td>
+                            <td class="invoiceHeader type">
+                                {{pageLabelMap 'MyInvoices_Type'}}
+                            </td>
+                            <td class="invoiceHeader status">
+                                {{pageLabelMap 'MyInvoices_Status'}}
+                            </td>
+                            <td class="invoiceHeader actions">
+                                {{pageLabelMap 'MyInvoices_Actions'}}
+                            </td>
+                        </tr>
+                        {{#each this.childInvoices}}
+                            <tr class="odd myAccInvoiceRows invoiceItemRows {{this.status}} {{this.type}} {{this.sfid}}">
+                                <td class="invoiceRow name"><a href="javascript:void(0);" data-id="{{this.sfid}}" class="gotoInvoiceDetails">{{this.name}}</a></td>
+
+                                <!-- NEX-60 
+                                <td class="invoiceRow invoiceId">{{this.invoiceId}}</td>
+                                -->
+                                <td class="invoiceRow dateIssued">{{this.dateIssuedStr}}</td>
+                                <td class="invoiceRow dueDate">{{this.dueDateStr}}</td>
+                                <td class="invoiceRow amount {{this.currencyIsoCode}}">{{price this.amount this.currencyIsoCode}}</td>
+                                <td class="invoiceRow paidAmount {{this.currencyIsoCode}}">{{price this.paidAmount this.currencyIsoCode}}</td>
+                                <td class="invoiceRow type">
+                                    {{pageLabelMapMultiString 'MyInvoices_Type_' this.type}}<br/>
+                                </td>
+                                <td class="invoiceRow status">{{pageLabelMapMultiString 'MyInvoices_Status_' this.status}}</td>
+                                <td class="invoiceRow actions">
+                                    {{#ifEquals this.status 'Open'}}
+                                    {{#ifNotEquals this.type 'Credit'}}
+                                        <a href="javascript:void(0);" class="payLink" data-id="{{this.sfid}}">{{pageLabelMap 'MyInvoices_MakePayment'}}</a>
+                                    {{/ifNotEquals}}
+                                    {{/ifEquals}}
+                                </td>
+                            </tr>
+                        {{/each}}
+                    </table>
+                </div>
+                {{/if}}
+                {{#if this.invoiceItems}}
+                <div class="invoiceContainer invoiceItemsContainer">
+                    <h2 class="title">{{pageLabelMap 'MyInvoices_InvoiceItemsHdr'}}</h2>
+                    <table id="invoiceTable" class="shopping_cart invoiceItems">
+                        <tr class="even">
+                        <!--
+                            <td class="invoiceHeader invoiceItemHeader name">
+                                {{pageLabelMap 'cc_imp_MyInvoices_InvoiceItemNumber'}}
+                            </td>
+                        -->
+                            <!-- NEX-60
+                            <td class="invoiceHeader invoiceItemHeader invoiceItemId">
+                                {{pageLabelMap 'MyInvoices_InvoiceItemId'}}
+                            </td>
+                            -->
+                            <td class="invoiceHeader invoiceItemHeader amount">
+                                {{pageLabelMap 'MyInvoices_ItemAmount'}}
+                            </td>
+                            <td class="invoiceHeader invoiceItemHeader type">
+                                {{pageLabelMap 'MyInvoices_ItemType'}}
+                            </td>
+                            <td class="invoiceHeader invoiceItemHeader status">
+                                {{pageLabelMap 'MyInvoices_ItemStatus'}}
+                            </td>
+                            <td class="invoiceHeader invoiceItemHeader item">
+                                {{pageLabelMap 'MyInvoices_ItemItem'}}
+                            </td>
+                            <td class="invoiceHeader invoiceItemHeader comments">
+                                {{pageLabelMap 'MyInvoices_Comments'}}
+                            </td>
+                        </tr>
+                        {{#each this.invoiceItems}}
+                            <tr class="odd myAccInvoiceRows {{this.status}} {{this.type}} {{this.sfid}}">
+                                <td class="invoiceItemRow name">{{this.name}}</td>
+                                <!--NEX-60
+                                <td class="invoiceItemRow invoiceItemId">{{this.invoiceItemId}}</td>
+                                -->
+                                <td class="invoiceItemRow amount {{this.currencyIsoCode}}">{{price this.amount this.currencyIsoCode}}</td>
+                                <td class="invoiceItemRow type">
+                                    {{pageLabelMapMultiString 'MyInvoices_ItemType_' this.type}}<br/>
+                                </td>
+                                <td class="invoiceItemRow status">{{pageLabelMapMultiString 'MyInvoices_ItemStatus_' this.status}}</td>
+                                <td class="invoiceItemRow item">
+                                    <a href="javascript:void(0);" class="prodLink {{this.ccOrderItem.product.sfid}}" data-id="{{this.ccOrderItem.product.sku}}">
+                                        {{this.ccOrderItem.product.sku}}
+                                    </a>
+                                </td>
+                                <td class="invoiceItemRow comments">{{this.comments}}</td>
+                            </tr>
+                        {{/each}}
+                    </table>
+                </div>
+                {{/if}}
+                {{#ifEquals this.type 'Summary'}}
+                {{#if this.invoicePaymentsFor}}
+                <div class="invoiceContainer invoicePaymentsContainer invoicePaymentsForContainer">
+                    <h2 class="title">{{pageLabelMap 'MyInvoices_InvoicePaymentsForHdr'}}</h2>
+                    <table id="invoiceTable" class="shopping_cart invoicePayments">
+                        <tr class="even">
+                            <td class="invoiceHeader invoicePaymentHeader name">
+                                {{pageLabelMap 'MyInvoices_PaymentName'}}
+                            </td>
+                            <td class="invoiceHeader invoicePaymentHeader accountNumber">
+                                {{pageLabelMap 'MyInvoices_PaymentAccount'}}
+                            </td>
+                            <td class="invoiceHeader invoicePaymentHeader amount">
+                                {{pageLabelMap 'MyInvoices_PaymentAmount'}}
+                            </td>
+                            <td class="invoiceHeader invoicePaymentHeader paymentTS">
+                                {{pageLabelMap 'MyInvoices_PaymentTS'}}
+                            </td>
+                            <td class="invoiceHeader invoicePaymentHeader against">
+                                {{pageLabelMap 'MyInvoices_PaymentAgainst'}}
+                            </td>
+                        </tr>
+                        {{#each this.invoicePaymentsFor}}
+                            <tr class="odd myAccInvoiceRows invoicePaymentRows {{this.sfid}}">
+                                <td class="invoicePaymentRow name"><a href="javascript:void(0);" data-id="{{this.sfid}}" class="gotoPaymentDetails">{{this.name}}</a></td>
+                                <td class="invoicePaymentRow accountNumber">{{pageLabelMapMultiString 'PaymentDisplay_' this.accountType this.accountType this.accountNumber this.subAccountNumber (pageLabelMapMultiString 'PaymentType_' this.paymentType) (pageLabelMapMultiString 'PaymentExpMonth_' this.expirationMonth) (pageLabelMap this.expirationYear)}}</td>
+                                <td class="invoicePaymentRow amount {{this.currencyIsoCode}}">{{price this.amount this.currencyIsoCode}}</td>
+                                <td class="invoicePaymentRow paymentTS">{{this.paymentTSStr}}</td>
+                                <td class="invoicePaymentRow against">
+                                    <a href="javascript:void(0);" data-id="{{this.invoiceAppliedTo.sfid}}" class="gotoInvoiceDetails">{{this.invoiceAppliedTo.name}}</a>
+                                </td>
+                            </tr>
+                        {{/each}}
+                    </table>
+                </div>
+                {{/if}}
+                {{/ifEquals}}
+                {{#ifNotEquals this.type 'Summary'}}
+                {{#if this.invoicePaymentsTo}}
+                <div class="invoiceContainer invoicePaymentsContainer invoicePaymentsToContainer">
+                    <h2 class="title">{{pageLabelMap 'MyInvoices_InvoicePaymentsToHdr'}}</h2>
+                    <table id="invoiceTable" class="shopping_cart invoicePayments">
+                        <tr class="even">
+                            <td class="invoiceHeader invoicePaymentHeader name">
+                                {{pageLabelMap 'MyInvoices_PaymentName'}}
+                            </td>
+                            <td class="invoiceHeader invoicePaymentHeader accountNumber">
+                                {{pageLabelMap 'MyInvoices_PaymentAccount'}}
+                            </td>
+                            <td class="invoiceHeader invoicePaymentHeader amount">
+                                {{pageLabelMap 'MyInvoices_PaymentAmount'}}
+                            </td>
+                            <td class="invoiceHeader invoicePaymentHeader paymentTS">
+                                {{pageLabelMap 'MyInvoices_PaymentTS'}}
+                            </td>
+                        </tr>
+                        {{#each this.invoicePaymentsTo}}
+                            <tr class="odd myAccInvoiceRows invoicePaymentRows {{this.sfid}}">
+                                <td class="invoicePaymentRow name"><a href="javascript:void(0);" data-id="{{this.sfid}}" class="gotoPaymentDetails">{{this.name}}</a></td>
+                                <td class="invoicePaymentRow accountNumber">{{pageLabelMapMultiString 'PaymentDisplay_' this.accountType this.accountType this.accountNumber this.subAccountNumber (pageLabelMapMultiString 'PaymentType_' this.paymentType) (pageLabelMapMultiString 'PaymentExpMonth_' this.expirationMonth) (pageLabelMap this.expirationYear)}}</td>
+                                <td class="invoicePaymentRow amount {{this.currencyIsoCode}}">{{price this.amount this.currencyIsoCode}}</td>
+                                <td class="invoicePaymentRow paymentTS">{{this.paymentTSStr}}</td>
+                            </tr>
+                        {{/each}}
+                    </table>
+                </div>
+                {{/if}}
+                {{/ifNotEquals}}
+                <div class="invoiceContainer invoiceActionContainer invoiceActionContainerBottom">
+                    <div class="actionButtonsStart">
+                        {{#ifEquals this.status 'Open'}}
+                        {{#ifNotEquals this.type 'Credit'}}
+                            <button type="button" class="btn btn-primary wide makePayment">{{pageLabelMap 'MyInvoices_MakePaymentBtn'}}</button>
+                        {{/ifNotEquals}}
+                        {{/ifEquals}}
+                    </div>
+                    <div class="actionButtonsEnd">
+                        <a href="javascript:void(0);" class="myInvoices">{{pageLabelMap 'MyInvoices_MyInvoicesBtn'}}</a>
+                    </div>
+                    <div class="clear"></div>
+                </div>
+            </div>
+            {{/if}}
+        </div>
+    </script>
+
+
+   <script id="InvoiceDetailMobileImp" type="text/template">
+        <div class="invoiceOuterContainer">
+            <div class="alert alert-error messagingSection-invoice-Error" style="display: none"></div>
+            <div class="alert alert-warning messagingSection-invoice-Warning" style="display: none"></div>
+            <div class="alert alert-info messagingSection-invoice-Info" style="display: none"></div>
+            {{#if this.loaded}}
+            <div id="accordion" class="accordion clear">
+                <div class="invoiceContainer invoiceActionContainer invoiceActionContainerTop">
+                    <div class="actionButtonsStart">
+                        {{#ifEquals this.status 'Open'}}
+                        {{#ifNotEquals this.type 'Credit'}}
+                            <button type="button" class="btn btn-primary wide makePayment">{{pageLabelMap 'MyInvoices_MakePaymentBtn'}}</button>
+                        {{/ifNotEquals}}
+                        {{/ifEquals}}
+                    </div>
+                    <div class="actionButtonsEnd">
+                        <a href="javascript:void(0);" class="myInvoices">{{pageLabelMap 'MyInvoices_MyInvoicesBtn'}}</a>
+                    </div>
+                    <div class="clear"></div>
+                </div>
+                <div class="accordion-group invoiceDetailContainer">
+                    <div class="accordion-heading">
+                        <a href="#collapseHeader" data-parent="#accordion" data-toggle="collapse" class="accordion-toggle">{{pageLabelMap 'MyInvoices_HeaderDetailHdr'}}</a>
+                    </div>
+                    <div class="accordion-body in collapse" id="collapseHeader" style="height: auto;">
+                        <div class="accordion-inner">    
+                            <div class="invoice_info">
+                                <div class="invoiceField info name">
+                                    <span class="infoLabel">{{pageLabelMap 'cc_imp_MyInvoices_InvoiceNumberLabel'}}</span>
+                                    <span class="infoValue">{{this.name}}</span>
+                                </div>
+                                {{#if this.parent}}
+                                <div class="invoiceField info parent">
+                                    <span class="infoLabel">{{pageLabelMap 'MyInvoices_ParentInvoiceLabel'}}</span>
+                                    <span class="infoValue"><a href="javascript:void(0);" data-id="{{this.parent.sfid}}" class="gotoInvoiceDetails">{{this.parent.name}}</a></span>
+                                </div>
+                                {{/if}}
+                                 <!--NEX-60
+                                {{#if this.invoiceId}}
+                                <div class="invoiceField info invoiceId">
+                                    <span class="infoLabel">{{pageLabelMap 'MyInvoices_InvoiceIdLabel'}}</span>
+                                    <span class="infoValue">{{this.invoiceId}}</span>
+                                </div>
+                                {{/if}}
+                                -->
+                                {{#if this.dateIssuedStr}}
+                                <div class="invoiceField info dateIssued">
+                                    <span class="infoLabel">{{pageLabelMap 'MyInvoices_DateLabel'}}</span>
+                                    <span class="infoValue">{{this.dateIssuedStr}}</span>
+                                </div>
+                                {{/if}}
+                                {{#if this.dueDateStr}}
+                                <div class="invoiceField info dueDate">
+                                    <span class="infoLabel">{{pageLabelMap 'MyInvoices_DueDateLabel'}}</span>
+                                    <span class="infoValue">{{this.dueDateStr}}</span>
+                                </div>
+                                {{/if}}
+                                {{#if this.amount}}
+                                <div class="invoiceField info amount {{this.currencyIsoCode}}">
+                                    <span class="infoLabel">{{pageLabelMap 'MyInvoices_AmountLabel'}}</span>
+                                    <span class="infoValue">{{price this.amount this.currencyIsoCode}}</span>
+                                </div>
+                                {{/if}}
+                                {{#if this.amount}}
+                                <div class="invoiceField info paidAmount {{this.currencyIsoCode}}">
+                                    <span class="infoLabel">{{pageLabelMap 'MyInvoices_PaidAmountLabel'}}</span>
+                                    <span class="infoValue">{{price this.paidAmount this.currencyIsoCode}}</span>
+                                </div>
+                                {{/if}}
+                                {{#if this.amount}}
+                                <div class="invoiceField info remainingAmount {{this.currencyIsoCode}}">
+                                    <span class="infoLabel">{{pageLabelMap 'MyInvoices_RemainingAmountLabel'}}</span>
+                                    <span class="infoValue">{{price this.remainingAmount this.currencyIsoCode}}</span>
+                                </div>
+                                {{/if}}
+                                {{#if this.type}}
+                                <div class="invoiceField info type">
+                                    <span class="infoLabel">{{pageLabelMap 'MyInvoices_TypeLabel'}}</span>
+                                    <span class="infoValue">{{pageLabelMapMultiString 'MyInvoices_Type_' this.type}}</span>
+                                </div>
+                                {{/if}}
+                                {{#if this.status}}
+                                <div class="invoiceField info status">
+                                    <span class="infoLabel">{{pageLabelMap 'MyInvoices_StatusLabel'}}</span>
+                                    <span class="infoValue">{{pageLabelMapMultiString 'MyInvoices_Status_' this.status}}</span>
+                                </div>
+                                {{/if}}
+                                {{#if this.terms}}
+                                <div class="invoiceField info terms">
+                                    <span class="infoLabel">{{pageLabelMap 'MyInvoices_TermsLabel'}}</span>
+                                    <span class="infoValue">{{this.terms}}</span>
+                                </div>
+                                {{/if}}
+                                {{#if this.ccOrder}}
+                                <div class="invoiceField info ccOrder">
+                                    <span class="infoLabel">{{pageLabelMap 'MyInvoices_OrderLabel'}}</span>
+                                    <span class="infoValue"><a href="javascript:void(0);" data-id="{{this.ccOrder.encryptedId}}" class="gotoOrderDetails">{{this.ccOrder.name}}</a></span>
+                                </div>
+                                {{/if}}
+                                {{#if this.billTo}}
+                                <div class="invoiceField info billTo">
+                                    <span class="infoLabel">{{pageLabelMap 'MyInvoices_BillToLabel'}}</span>
+                                    <span class="infoValue">{{this.billTo.name}}</span>
+                                </div>
+                                {{/if}}
+                                {{#if this.soldTo}}
+                                <div class="invoiceField info soldTo">
+                                    <span class="infoLabel">{{pageLabelMap 'MyInvoices_SoldToLabel'}}</span>
+                                    <span class="infoValue">{{this.soldTo.name}}</span>
+                                </div>
+                                {{/if}}
+                                {{#if this.billAddr}}
+                                <div class="invoiceField info billToAddress">
+                                    <span class="infoLabel">{{pageLabelMap 'MyInvoices_BillToAddressLabel'}}</span><br/>
+                                    <span class="infoValue">{{> addressDisplay this.billAddr}}</span>
+                                </div>
+                                {{/if}}
+                                {{#if this.comments}}
+                                <div class="invoiceField info comments">
+                                    <span class="infoLabel">{{pageLabelMap 'MyInvoices_CommentsLabel'}}</span>
+                                    <span class="infoValue">{{this.comments}}</span>
+                                </div>
+                                {{/if}}
+                            </div>
+                        </div>
+                    </div>                  
+                </div>
+                {{#if this.childInvoices}}
+                <div class="accordion-group childInvoicesContainer">
+                    <div class="accordion-heading">
+                        <a href="#collapseChildren" data-parent="#accordion" data-toggle="collapse" class="accordion-toggle collapsed">{{pageLabelMap 'MyInvoices_ChildInvoicesHdr'}}</a>
+                    </div>
+                    <div class="accordion-body collapse collapsed" id="collapseChildren">
+                        <div class="accordion-inner">    
+                        {{#each this.childInvoices}}
+                            <div class="invoice_info {{this.sfid}} {{this.status}} {{this.type}}">
+                                <div class="arrow"><a href="#" data-id="{{this.sfid}}" class="gotoInvoiceDetails">{{pageLabelMap 'CommonElements_RightArrow'}}</a></div>
+                                <div class="childInvoiceFieldField info name">
+                                    <span class="infoLabel">{{pageLabelMap 'cc_imp_MyInvoices_InvoiceNumber'}}</span>
+                                    <span class="infoValue"><a href="javascript:void(0);" data-id="{{this.sfid}}" class="gotoInvoiceDetails">{{this.name}}</a></span>
+                                </div>
+                                 <!--NEX-60
+                                {{#if this.invoiceId}}
+                                <div class="childInvoiceFieldField info invoiceId">
+                                    <span class="infoLabel">{{pageLabelMap 'MyInvoices_InvoiceId'}}</span>
+                                    <span class="infoValue">{{this.invoiceId}}</span>
+                                </div>
+                                {{/if}}
+                                -->
+                                {{#if this.dateIssuedStr}}
+                                <div class="childInvoiceField info dateIssued">
+                                    <span class="infoLabel">{{pageLabelMap 'MyInvoices_Date'}}</span>
+                                    <span class="infoValue">{{this.dateIssuedStr}}</span>
+                                </div>
+                                {{/if}}
+                                {{#if this.dueDateStr}}
+                                <div class="childInvoiceField info dueDate">
+                                    <span class="infoLabel">{{pageLabelMap 'MyInvoices_DueDate'}}</span>
+                                    <span class="infoValue">{{this.dueDateStr}}</span>
+                                </div>
+                                {{/if}}
+                                <div class="childInvoiceField info amount {{this.currencyIsoCode}}">
+                                    <span class="infoLabel">{{pageLabelMap 'MyInvoices_Amount'}}</span>
+                                    <span class="infoValue">{{price this.amount this.currencyIsoCode}}</span>
+                                </div>
+                                <div class="childInvoiceField info paidAmount {{this.currencyIsoCode}}">
+                                    <span class="infoLabel">{{pageLabelMap 'MyInvoices_PaidAmount'}}</span>
+                                    <span class="infoValue">{{price this.paidAmount this.currencyIsoCode}}</span>
+                                </div>
+                                {{#if this.type}}
+                                <div class="childInvoiceField info type">
+                                    <span class="infoLabel">{{pageLabelMap 'MyInvoices_Type'}}</span>
+                                    <span class="infoValue">
+                                        {{pageLabelMapMultiString 'MyInvoices_Type_' this.type}}
+                                    </span>
+                                </div>
+                                {{/if}}
+                                {{#if this.status}}
+                                <div class="childInvoiceField info status">
+                                    <span class="infoLabel">{{pageLabelMap 'MyInvoices_Status'}}</span>
+                                    <span class="infoValue">{{pageLabelMapMultiString 'MyInvoices_Status_' this.status}}</span>
+                                </div>
+                                {{/if}}
+                                <div class="childInvoiceField info actions">
+                                {{#ifEquals status 'Open'}}
+                                    {{#ifNotEquals type 'Credit'}}
+                                        <a href="javascript:void(0);" class="payLink" data-id="{{this.sfid}}">{{pageLabelMap 'MyInvoices_Pay'}}</a>
+                                    {{/ifNotEquals}}
+                                {{/ifEquals}}
+                                </div>
+                            </div>
+                        {{/each}}
+                    </div>
+                </div>
+                {{/if}}
+                {{#if this.invoiceItems}}
+                <div class="accordion-group invoiceItemsContainer">
+                    <div class="accordion-heading">
+                        <a href="#collapseItems" data-parent="#accordion" data-toggle="collapse" class="accordion-toggle collapsed">{{pageLabelMap 'MyInvoices_InvoiceItemsHdr'}}</a>
+                    </div>
+                    <div class="accordion-body collapse collapsed" id="collapseItems">
+                        <div class="accordion-inner">    
+                        {{#each this.invoiceItems}}
+                            <div class="invoice_info {{this.sfid}} {{this.status}} {{this.type}}">
+                                <div class="invoiceItemField info name">
+                               <span class="infoLabel">{{pageLabelMap 'cc_imp_MyInvoices_InvoiceItemNumber'}}</span>
+                                <span class="infoValue">{{this.name}}</span>
+                                </div>
+                                 <!--NEX-60
+                                {{#if this.invoiceItemId}}
+                                <div class="invoiceItemField info invoiceItemId">
+                                    <span class="infoLabel">{{pageLabelMap 'MyInvoices_InvoiceItemId'}}</span>
+                                    <span class="infoValue">{{this.invoiceItemId}}</span>
+                                </div>
+                                {{/if}}
+                                -->
+                                <div class="invoiceItemField info amount {{this.currencyIsoCode}}">
+                                    <span class="infoLabel">{{pageLabelMap 'MyInvoices_ItemAmount'}}</span>
+                                    <span class="infoValue">{{price this.amount this.currencyIsoCode}}</span>
+                                </div>
+                                {{#if this.type}}
+                                <div class="invoiceItemField info type">
+                                    <span class="infoLabel">{{pageLabelMap 'MyInvoices_ItemType'}}</span>
+                                    <span class="infoValue">{{pageLabelMapMultiString 'MyInvoices_ItemType_' this.type}}</span>
+                                </div>
+                                {{/if}}
+                                {{#if this.status}}
+                                <div class="invoiceItemField info status">
+                                    <span class="infoLabel">{{pageLabelMap 'MyInvoices_ItemStatus'}}</span>
+                                    <span class="infoValue">{{pageLabelMapMultiString 'MyInvoices_ItemStatus_' this.status}}</span>
+                                </div>
+                                {{/if}}
+                                {{#if this.ccOrderItem}}
+                                <div class="invoiceItemField info item">
+                                    <span class="infoLabel">{{pageLabelMap 'MyInvoices_ItemItem'}}</span>
+                                    <span class="infoValue">
+                                        <a href="javascript:void(0);" class="prodLink {{this.ccOrderItem.product.sfid}}" data-id="{{this.ccOrderItem.product.sku}}">
+                                            {{this.ccOrderItem.product.sku}}
+                                        </a>                                    
+                                    </span>
+                                </div>
+                                {{/if}}
+                                {{#if this.comments}}
+                                <div class="invoiceItemField info comments">
+                                    <span class="infoLabel">{{pageLabelMap 'MyInvoices_Comments'}}</span>
+                                    <span class="infoValue">{{this.comments}}</span>
+                                </div>
+                                {{/if}}
+                            </div>
+                        {{/each}}
+                    </div>
+                </div>
+                {{/if}}
+                {{#ifEquals this.type 'Summary'}}
+                {{#if this.invoicePaymentsFor}}
+                <div class="accordion-group invoicePaymentsContainer invoicePaymentsForContainer">
+                    <div class="accordion-heading">
+                        <a href="#collapsePaymentsFor" data-parent="#accordion" data-toggle="collapse" class="accordion-toggle collapsed">{{pageLabelMap 'MyInvoices_InvoicePaymentsForHdr'}}</a>
+                    </div>
+                    <div class="accordion-body collapse collapsed" id="collapsePaymentsFor">
+                        <div class="accordion-inner">
+                            {{#each this.invoicePaymentsFor}}
+                            <div class="invoice_info {{this.sfid}} {{this.accountType}} {{this.paymentType}}">
+                                <div class="paymentField info name">
+                                    <span class="infoLabel">{{pageLabelMap 'MyInvoices_PaymentName'}}</span>
+                                    <span class="infoValue"><a href="javascript:void(0);" data-id="{{this.sfid}}" class="gotoPaymentDetails">{{this.name}}</a></span>
+                                </div>
+                                <div class="paymentField info accountNumber">
+                                    <span class="infoLabel">{{pageLabelMap 'MyInvoices_PaymentAccount'}}</span>
+                                    <span class="infoValue">
+                                        {{pageLabelMapMultiString 'PaymentDisplay_' this.accountType this.accountType this.accountNumber this.subAccountNumber (pageLabelMapMultiString 'PaymentType_' this.paymentType) (pageLabelMapMultiString 'PaymentExpMonth_' this.expirationMonth) (pageLabelMap this.expirationYear)}}
+                                    </span>
+                                </div>
+                                <div class="paymentField info amount {{this.currencyIsoCode}}">
+                                    <span class="infoLabel">{{pageLabelMap 'MyInvoices_PaymentAmount'}}</span>
+                                    <span class="infoValue">{{price this.amount this.currencyIsoCode}}</span>
+                                </div>
+                                <div class="paymentField info paymentTS">
+                                    <span class="infoLabel">{{pageLabelMap 'MyInvoices_PaymentTS'}}</span>
+                                    <span class="infoValue">{{this.paymentTSStr}}</span>
+                                </div>
+                                <div class="paymentField info against">
+                                    <span class="infoLabel">{{pageLabelMap 'MyInvoices_PaymentAgainst'}}</span>
+                                    <span class="infoValue"><a href="javascript:void(0);" data-id="{{this.invoiceAppliedTo.sfid}}" class="gotoInvoiceDetails">{{this.invoiceAppliedTo.name}}</a></span>
+                                </div>
+                            </div>                            
+                            {{/each}}
+                        </div>
+                    </div>
+                </div>
+                {{/if}}
+                {{/ifEquals}}
+                {{#ifNotEquals this.type 'Summary'}}
+                {{#if this.invoicePaymentsTo}}
+                <div class="accordion-group invoicePaymentsContainer invoicePaymentsToContainer">
+                    <div class="accordion-heading">
+                        <a href="#collapsePaymentsTo" data-parent="#accordion" data-toggle="collapse" class="accordion-toggle collapsed">{{pageLabelMap 'MyInvoices_InvoicePaymentsForHdr'}}</a>
+                    </div>
+                    <div class="accordion-body collapse collapsed" id="collapsePaymentsTo">
+                        <div class="accordion-inner">
+                            {{#each this.invoicePaymentsTo}}
+                            <div class="invoice_info {{this.sfid}} {{this.accountType}} {{this.paymentType}}">
+                                <div class="paymentField info name">
+                                    <span class="infoLabel">{{pageLabelMap 'MyInvoices_PaymentName'}}</span>
+                                    <span class="infoValue"><a href="javascript:void(0);" data-id="{{this.sfid}}" class="gotoPaymentDetails">{{this.name}}</a></span>
+                                </div>
+                                <div class="paymentField info accountNumber">
+                                    <span class="infoLabel">{{pageLabelMap 'MyInvoices_PaymentAccount'}}</span>
+                                    <span class="infoValue">
+                                        {{pageLabelMapMultiString 'PaymentDisplay_' this.accountType this.accountType this.accountNumber this.subAccountNumber (pageLabelMapMultiString 'PaymentType_' this.paymentType) (pageLabelMapMultiString 'PaymentExpMonth_' this.expirationMonth) (pageLabelMap this.expirationYear)}}
+                                    </span>
+                                </div>
+                                <div class="paymentField info amount {{this.currencyIsoCode}}">
+                                    <span class="infoLabel">{{pageLabelMap 'MyInvoices_PaymentAmount'}}</span>
+                                    <span class="infoValue">{{price this.amount this.currencyIsoCode}}</span>
+                                </div>
+                                <div class="paymentField info paymentTS">
+                                    <span class="infoLabel">{{pageLabelMap 'MyInvoices_PaymentTS'}}</span>
+                                    <span class="infoValue">{{this.paymentTSStr}}</span>
+                                </div>
+                            </div>                            
+                            {{/each}}
+                        </div>
+                    </div>
+                </div>
+                {{/if}}
+                {{/ifNotEquals}}
+                <div class="invoiceContainer invoiceActionContainer invoiceActionContainerBottom">
+                    <div class="actionButtonsStart">
+                        {{#ifEquals this.status 'Open'}}
+                        {{#ifNotEquals this.type 'Credit'}}
+                            <button type="button" class="btn btn-primary wide makePayment">{{pageLabelMap 'MyInvoices_MakePaymentBtn'}}</button>
+                        {{/ifNotEquals}}
+                        {{/ifEquals}}
+                    </div>
+                    <div class="actionButtonsEnd">
+                        <a href="javascript:void(0);" class="myInvoices">{{pageLabelMap 'MyInvoices_MyInvoicesBtn'}}</a>
+                    </div>
+                    <div class="clear"></div>
+                </div>
+            </div>
+            {{/if}}
+        </div>
+    </script>
+  </apex:component>

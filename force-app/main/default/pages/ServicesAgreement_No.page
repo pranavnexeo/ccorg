@@ -1,0 +1,958 @@
+<apex:page standardController="Procurement_Contract__c" renderAs="PDF">
+<html>
+    <head>
+        
+    </head>
+    <body>
+        <h2>
+            <span _fck_bookmark="1" style="display: none">&nbsp;</span></h2>
+        <p align="center">
+            <apex:image url="{!$Resource.Nexeo_Logo}" width="144" height="50" /></p>
+        <p align="center">
+            <strong>Nexeo Solutions, LLC&nbsp; </strong>-&nbsp;P. O.&nbsp; BOX 2219&nbsp; -&nbsp; COLUMBUS,&nbsp; OHIO&nbsp; 43216&nbsp; -&nbsp; PHONE&nbsp; (614) 790-3333</p>
+        <p align="center">
+            &nbsp;</p>
+        <p>
+            PURCHASING DEPARTMENT</p>
+        <p>
+            Fax: (614) 790-3784</p>
+        <p>
+             Date : </p>
+        <p>
+            <apex:outputText value=" {!Procurement_Contract__c.Vendor__r.Name}" /></p>
+        <p>
+             <apex:outputText value=" {!Procurement_Contract__c.Vendor_Contacts__r.name}" /></p>
+        <p>
+            <apex:outputText value="{!Procurement_Contract__c.Vendor_Address__c}" /></p>
+        
+                <p>
+            Dear &nbsp;&nbsp;<apex:outputText value=" {!Procurement_Contract__c.Vendor_Contacts__r.name}" />:</p>
+        <p>
+            &nbsp;</p>
+        <p>
+            We wish to establish a Services Agreement between your company and Nexeo Solutions, LLC.&nbsp; This agreement must be completed and on file before any work can be performed by your company.</p>
+                <p>
+            Please sign and return (2) complete copies <strong>(include all pages)</strong> to the address below:</p>
+                <p>
+            Nexeo Solutions, LLC</p>
+        <p>
+            P.O. Box2219</p>
+        <p>
+            Columbus, OH 43216</p>
+               <p>
+            Attention:&nbsp; &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</p>
+        <p>
+            e-mail : &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</p>
+                <p>
+            You must provide a copy of your company&#39;s certificate of insurance naming Nexeo Solutions, LLC additional insured.&nbsp;</p>
+        <p>
+            Following signature by an Nexeo Solutions, LLC corporate officer, one (1) copy of each will be returned to you.</p>
+                <p>
+            If you have any questions, please do not hesitate to call ______________________________ regarding the contracts at ____________________.</p>
+        <p>
+            Sincerely,</p>
+         <p>
+            {!$User.FirstName}</p>
+        <p>
+            Enc.</p>
+        <p align="center">
+            &nbsp;</p>
+        <p align="center">
+            <strong><u>SERVICES AGREEMENT</u></strong></p>
+        <p align="center">
+            &nbsp;</p>
+        <p>
+            &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; THIS SERVICES AGREEMENT (&ldquo;<u>Agreement</u>&rdquo;) made and entered this {!DAY(TODAY())}
+            day of "{!CASE(MONTH(TODAY()),
+1,"January",
+2,"February",
+3,"March",
+4,"April",
+5,"May",
+6,"June",
+7,"July",
+8,"August",
+9,"September",
+10,"October",
+11,"November",
+"December")}  {!YEAR(TODAY())}  (the &ldquo;<u>Effective Date</u>&rdquo;), by and between Nexeo Solutions, LLC a Delaware limited liability company (hereinafter referred to as &ldquo;<u>Nexeo Solutions, LLC</u>&rdquo;) with offices at 5200 Paul G. Blazer Memorial Parkway, Dublin, Ohio 43017 and <apex:outputText value=" {!Procurement_Contract__c.Vendor__r.name}" /> (hereinafter referred to as &ldquo;<u>Contractor</u>&rdquo;) with offices at <apex:outputText value="{!Procurement_Contract__c.Vendor_Address__c}" />.</p>
+        <p>
+            &nbsp;</p>
+        <p>
+            1.&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; <u>SCOPE OF WORK</u>.</p>
+        <p>
+            &nbsp;</p>
+        <p>
+            &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; During the term of this Agreement, Contractor will provide services to Nexeo Solutions, LLC, its subsidiaries and/or affiliates, in accordance with the description of work attached as Exhibit A (the &ldquo;<u>Services</u>&rdquo;), which shall be incorporated therein and made a part thereof.&nbsp; Exhibit A may be updated as necessary by the parties, provided such changes/additions are agreed upon by all parties, in writing.</p>
+        <p>
+            &nbsp;</p>
+        <p>
+            2.&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; <u>TERM AND TERMINATION</u>.</p>
+        <p>
+            &nbsp;</p>
+        <p>
+            2.1&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; This Agreement shall commence on the Effective Date {!CASE(MONTH(TODAY()),
+             1,"January",
+2,"February",
+3,"March",
+4,"April",
+5,"May",
+6,"June",
+7,"July",
+8,"August",
+9,"September",
+10,"October",
+11,"November",
+"December")} {!DAY(TODAY())} 
+, {!YEAR(TODAY())} Page 9</p>
+        <p>
+            and shall continue for a period of two (2) years unless sooner terminated as provided herein (the &ldquo;<u>Initial Term</u>&rdquo;).&nbsp; Thereafter, this Agreement shall automatically renew for successive one (1) year periods (each, a &ldquo;<u>Renewal Term</u>&rdquo;) unless either party gives the other party at least ninety (90) days prior written notice of termination prior to the expiration of the Initial Term or any Renewal Term (the Initial Term and the Renewal Term(s) being sometimes hereinafter collectively referred to as the &ldquo;<u>Term</u>&rdquo;).&nbsp; The termination will be effective upon receipt of such notice or such later date as may be stated in such notice.</p>
+        <p>
+            &nbsp;</p>
+        <p>
+            2.2&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; Nexeo Solutions, LLC may terminate this Agreement for any reason upon prior written notice.</p>
+        <p>
+            &nbsp;</p>
+        <p>
+            3.&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; <u>COMPENSATION</u>.</p>
+        <p>
+            &nbsp;</p>
+        <p>
+            &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; Nexeo Solutions, LLC shall compensate Contractor for Services in the amounts set forth on Exhibit A, as follows: (i) all valid invoices that are paid by Nexeo Solutions, LLC within ten (10) days of receipt shall be paid at a discounted amount equal to the invoice total less two percent (2%), and (ii) if not paid within such ten (10) day period then all valid invoices shall be paid by Nexeo Solutions, LLC within such time period as may be specified within Contractor&#39;s Purchase Order (or if none then within sixty (60) days of Nexeo Solutions, LLC&#39;s receipt of the invoice), in accordance with Nexeo Solutions, LLC&#39;s twice per month payment policy.&nbsp; Payment shall be via Electronic Funds Transfer (EFT).</p>
+        <p>
+            &nbsp;</p>
+        <p>
+            &nbsp;</p>
+        <p>
+            &nbsp;</p>
+        <p>
+            4.&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; <u>INDEPENDENT CONTRACTOR</u>.</p>
+        <p>
+            &nbsp;</p>
+        <p>
+            &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; Contractor, as an independent contractor and not as an agent or employee of Nexeo Solutions, LLC, shall have right of control over its employees and shall at its expense, be responsible for hiring, training, paying (in Contractor&rsquo;s name), supervising, directing and discharging all personnel subject to Nexeo Solutions, LLC&rsquo;s authority over the assignments for which the personnel are engaged.&nbsp; Nexeo Solutions, LLC is to exercise, and have no control, over the method and means of accomplishing the Services other than to see that the desired results are achieved at the lowest possible cost to Nexeo Solutions, LLC.</p>
+        <p>
+            &nbsp;</p>
+        <p>
+            5.&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; <u>CONTRACTOR&rsquo;S WARRANTIES</u>.&nbsp; Contractor represents, warrants and agrees that:</p>
+        <p>
+            &nbsp;</p>
+        <p>
+            &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; (a)&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; it has the right to enter into this Agreement, and there is no agreement or restriction which would interfere with or prevent Contractor from entering into this Agreement or rendering the Services or performing &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; the other obligations contemplated hereunder;</p>
+        <p>
+            &nbsp;</p>
+        <p>
+            &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; (b) &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; each employee assigned by Contractor to perform the Services is an employee of Contractor and shall have the proper skill, training and background so as to be able to perform in a competent and professional&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; &nbsp;&nbsp;&nbsp;&nbsp;&nbsp; &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; manner;</p>
+        <p>
+            &nbsp;</p>
+        <p>
+            &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; (c)&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; Contractor shall comply fully with all applicable laws, rules, and regulations applicable to the Services, including without limitation, obtaining at Contractor&rsquo;s own expense any necessary permits;</p>
+        <p>
+            &nbsp;</p>
+        <p>
+            &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; (d)&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; none of the Services or work product will have been developed or will be performed or delivered (if applicable) in violation of any intellectual property right or contractual right of any third party, including &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; without limitation, patent, copyright, trademark, or trade secrets of any third party;</p>
+        <p>
+            &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</p>
+        <p>
+            &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; (e)&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; no employee assigned by Contractor to perform the Services is a party to a contract or agreement that contains any restraint on Contractor&rsquo;s present or future Services that has or will have any material effect on &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; Nexeo Solutions, LLC or on such Contractor personnel&rsquo;s performance of the Services; and</p>
+        <p>
+            &nbsp;</p>
+        <p>
+            &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; (f)&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; none of the Services to be performed hereunder, nor any part of such Services, shall be performed outside of the United States and Canada.&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</p>
+        <p>
+            &nbsp;</p>
+        <p>
+            6.&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; <u>CONTRACTOR&rsquo;S LIABILITY</u>.</p>
+        <p>
+            &nbsp;</p>
+        <p>
+            &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; If the Services are not performed to the reasonable satisfaction of Nexeo Solutions, LLC, such Services will be re-performed at no cost to Nexeo Solutions, LLC.&nbsp; The remedies set forth herein shall be cumulative and in addition to the other remedies available to Nexeo Solutions, LLC at law or equity.&nbsp;</p>
+        <p>
+            &nbsp;</p>
+        <p>
+            7.&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; <u>INDEMNIFICATION</u>.</p>
+        <p>
+            &nbsp;</p>
+        <p>
+            &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; Contractor agrees and binds itself to forever defend and hold harmless Nexeo Solutions, LLC, its affiliates and subsidiaries, from any and all losses, costs, actions, damages and liabilities including, but no limited to, cost of investigation and attorney&rsquo;s fees, (a) arising from Contractor&rsquo;s failure to comply with any of its obligations hereunder, or (b) resulting from bodily injury (including death at anytime arising therefrom) to any person or persons including, but not limited to, employees of Contractor and Nexeo Solutions, LLC, including its affiliates and subsidiaries, or damage to or destruction of property in any manner, arising out of the performance of this Agreement by Contractor, its agents, servants and employees or the presence of Contractor, its agents, servants and employees&nbsp; on Nexeo Solutions, LLC&rsquo;s and/or its affiliates&#39; and/or subsidiaries&#39; premises unless caused by the sole negligence of Nexeo Solutions, LLC.</p>
+        <p>
+            &nbsp;</p>
+        <p>
+            8.&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; <u>INSURANCE</u>.</p>
+        <p>
+            &nbsp;</p>
+        <p>
+            &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; Contractor agrees to the provisions set forth on Exhibit B.</p>
+        <p>
+            &nbsp;</p>
+        <p>
+            9.&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; <u>CARE OF NEXEO SOLUTIONS, LLC PROPERTY</u>.</p>
+        <p>
+            &nbsp;</p>
+        <p>
+            &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; Contractor&rsquo;s personnel shall take proper care of any facilities and equipment provided by Nexeo Solutions, LLC and shall comply with such rules and regulations and polices as Nexeo Solutions, LLC may adopt from time to time relating to: (i)&nbsp; Nexeo Solutions, LLC&rsquo;s work place, (ii) the use of Nexeo Solutions, LLC&rsquo;s facilities and equipment (including without limitation, use of Nexeo Solutions, LLC&rsquo;s computers and computer networks) and (iii) the Services.</p>
+        <p>
+            &nbsp;</p>
+        <p>
+            10.&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; <u>CONFIDENTIAL INFORMATION</u>.</p>
+        <p>
+            &nbsp;</p>
+        <p>
+            &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; In connection with the work hereunder, Nexeo Solutions, LLC and/or its affiliates and/or&nbsp; subsidiaries may disclose to Contractor or Contractor may become aware of information concerning Nexeo Solutions, LLC and/or its affiliates and subsidiaries, its and/or their products, personnel, business plans and interests.&nbsp; Contractor agrees that such information shall be deemed confidential information and Contractor agrees not to disclose such information to third parties without the prior written approval of Nexeo Solutions, LLC and not to use such information except for the purpose of providing the Services.&nbsp; Contractor shall limit internal dissemination of such confidential information to those needing to know the information for the Services, and then only if there is a clear understanding by such individuals of their obligation to maintain the trade-secret status of such information and to restrict its use solely to performing professional services for Nexeo Solutions, LLC.&nbsp; Where the individual is a contract employee of Contractor, Nexeo Solutions, LLC reserves the right to request such contract employee enter into a confidentiality agreement directly with Nexeo Solutions, LLC in a form acceptable to Nexeo Solutions, LLC and containing terms no less strict that required hereunder. No other right or license to use confidential information disclosed hereunder is granted hereby.&nbsp; However, Contractor shall be under no obligation with respect to any information (1) that is, at the time of disclosure, available to the general public as evidenced by generally available documents or publications; (2) that becomes at a later date available to the general public through no fault of Contractor, and then only after said later date; (3) that Contractor can demonstrate was in Contractor&rsquo;s possession before receipt from Nexeo Solutions, LLC; or (4) that is disclosed to Contractor without restriction on disclosure by a third party, other than Nexeo Solutions, LLC&#39;s affiliates and/or subsidiaries, who has the lawful right to disclose such information. This covenant shall survive the termination of this Agreement for the period of five (5) years.</p>
+        <p>
+            &nbsp;</p>
+        <p>
+            11.&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; <u>OWNERSHIP OF WORK PRODUCT</u>.</p>
+        <p>
+            &nbsp;</p>
+        <p>
+            11.1&nbsp;&nbsp;&nbsp;&nbsp; Contractor is hereby assigning and transferring to Nexeo Solutions, LLC (or its designee) any and all rights, title and interest to and ownership of copyrights and works within the scope of the copyright laws produced by Contractor or under Contractor&rsquo;s direction under this Agreement.&nbsp; Contractor further agrees to execute any documents which may be necessary or appropriate to allow Nexeo Solutions, LLC to protect its interest in the copyright for such works.&nbsp; Contractor shall not be entitled to any additional payment or compensation for assisting and cooperating with Nexeo Solutions, LLC in obtaining these copyrights.</p>
+        <p>
+            &nbsp;</p>
+        <p>
+            11.2&nbsp;&nbsp;&nbsp;&nbsp; It is understood that any inventions which are made by Contractor or under Contractor&rsquo;s direction in the course of carrying out the services provided for by this Agreement shall become the property of Nexeo Solutions, LLC.&nbsp; The decision to seek patent protection thereon shall be made by Nexeo Solutions, LLC, and the cost and burden of prosecution of such patent applications, domestic or foreign, as may be filed on such inventions shall be for the account of Nexeo Solutions, LLC.&nbsp; In this regard, Contractor agrees to execute such papers as are necessary or desirable in such prosecution and otherwise assist Nexeo Solutions, LLC therein, without cost to Contractor.</p>
+        <p>
+            &nbsp;</p>
+        <p>
+            11.3&nbsp;&nbsp;&nbsp;&nbsp; It is understood and agreed that any and all intellectual property, including trademarks, which is created by Contractor or under Contractor&rsquo;s direction in the course of carrying out the Services provided for by this Agreement shall become the property of Nexeo Solutions, LLC (or its designee).&nbsp; The decision to seek protection thereon, such as filing trademark applications, shall be made by Nexeo Solutions, LLC, and the cost and burden of prosecution of seeking such protection, domestic or foreign, shall be for the account of Nexeo Solutions, LLC (or its designee). In this regard, Contractor agrees to execute such papers as are necessary or desirable in such prosecution and otherwise assist Nexeo Solutions, LLC (or its designee) therein, without cost to Contractor.</p>
+        <p>
+            &nbsp;</p>
+        <p>
+            This Section 11 shall survive termination of this Agreement.</p>
+        <p>
+            &nbsp;</p>
+        <p>
+            12.&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; <u>COMPLIANCE WITH THE LAW</u>.</p>
+        <p>
+            &nbsp;</p>
+        <p>
+            &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; Contractor shall comply with all laws and regulations relative to the performance of the Agreement, particularly the Federal Social Security Act, State and Federal Unemployment Insurance Act, and Wage and Hour laws.&nbsp; Further, Contractor states that it is an equal opportunity employer and, it represents and warrants to Nexeo Solutions, LLC that it maintains a policy that no person shall be discriminated against because of age, disability, gender, national origin, race, color, religion, sexual orientation, veteran status or other personal characteristics that are protected by law. &nbsp;Contractor further represents and warrants that this policy applies to all personnel actions and terms and conditions of employment (including recruitment, employment, promotion, transfer, layoffs, opportunities for professional improvement and any action related to the determination of compensation and benefits), and all such actions and terms and conditions will be provided in a non-discriminatory manner, in compliance with Nexeo Solutions, LLC&rsquo;s policies and local, state and federal laws; and, to the administration of employer-sponsored training, education, tuition assistance, and social programs.&nbsp; Upon request, Contractor agrees to execute and deliver to Nexeo Solutions, LLC, Nexeo Solutions, LLC&rsquo;s forms covering certain Equal Employment Opportunity Provisions and Certificate of Non-segregated Facilities applicable to its business and operations.&nbsp;</p>
+        <p>
+            &nbsp;</p>
+        <p>
+            13.&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; <u>CONTROLLING LAW</u>.</p>
+        <p>
+            &nbsp;</p>
+        <p>
+            &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; This Agreement shall be construed in accordance with the laws of the State of&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; Ohio, without reference to its conflicts of laws principles.&nbsp; The parties hereby agree and consent to the jurisdiction and venue of the State of Ohio, including any state or federal court sitting therein, and all court rules thereof, with respect to any litigation that may be brought by one party against the other arising out of or relating to this Agreement or the breach thereof.&nbsp; The parties specifically waive their right to challenge the procedural or subject matter of this tribunal, venue in this tribunal, or that there is a more convenient forum. &nbsp;If any section, subsection, or other provision of this Agreement shall hereafter be determined to be unlawful and unenforceable, such section, subsection, or other provisions shall be severed from this Agreement, but every other section, subsection, and provision of this Agreement shall remain in full force and effect.</p>
+        <p>
+            &nbsp;</p>
+        <p>
+            14.&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; <u>NOTICES</u>.</p>
+        <p>
+            &nbsp;</p>
+        <p>
+            &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; Any notice expressly provided for under this Agreement shall be in writing, shall be given either manually or by mail or facsimile, and shall be deemed sufficiently given if and when received by the party to be notified at its address or facsimile number set forth below, or if and when mailed by registered mail, postage prepaid, addressed to such party at such address. Notice by mail will be deemed delivered upon the earlier of receipt by the addressee or the fifth (5<sup>th</sup>) business day following the date such notice was deposited in the mail.&nbsp; Facsimile transmission will be deemed to have occurred at the time that the machine transmitting such facsimile verifies a successful transmission of said facsimile.</p>
+        <p>
+            &nbsp;</p>
+        <p>
+            &nbsp;</p>
+        <table border="0" cellpadding="0" cellspacing="0">
+            <tbody>
+                <tr>
+                    <td style="width: 303px">
+                        <p>
+                            If to Nexeo Solutions, LLC:</p>
+                    </td>
+                    <td style="width: 268px">
+                        <p>
+                            If to Contractor:</p>
+                    </td>
+                </tr>
+                <tr>
+                    <td style="width: 303px">
+                        <p>
+                            Nexeo Solutions, LLC</p>
+                    </td>
+                    <td style="width: 268px">
+                        <p>
+                            &nbsp;</p>
+                    </td>
+                </tr>
+                <tr>
+                    <td style="width: 303px">
+                        <p>
+                            5200 Paul G. Blazer Memorial Parkway&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</p>
+                    </td>
+                    <td style="width: 268px">
+                        <p>
+                            &nbsp;</p>
+                    </td>
+                </tr>
+                <tr>
+                    <td style="width: 303px">
+                        <p>
+                            Dublin, OH&nbsp; 43017</p>
+                    </td>
+                    <td style="width: 268px">
+                        <p>
+                            &nbsp;</p>
+                    </td>
+                </tr>
+                <tr>
+                    <td style="width: 303px">
+                        <p>
+                            Attention: Contracts</p>
+                    </td>
+                    <td style="width: 268px">
+                        <p>
+                            Attention:&nbsp; ______________</p>
+                    </td>
+                </tr>
+                <tr>
+                    <td style="width: 303px">
+                        <p>
+                            Facsimile No.: (614) 790-3784</p>
+                    </td>
+                    <td style="width: 268px">
+                        <p>
+                            Facsimile</p>
+                        <p>
+                            No.: ____________</p>
+                    </td>
+                </tr>
+            </tbody>
+        </table>
+        <p>
+            &nbsp;</p>
+        <p>
+            Either party may, by notice to the other, change its address for receiving such notices.</p>
+        <p>
+            &nbsp;</p>
+        <p>
+            15.&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; <u>SUBCONTRACTS; ASSIGNMENT BY CONTRACTOR</u></p>
+        <p>
+            &nbsp;</p>
+        <p>
+            &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; Contractor shall not assign or give rights to this Agreement or any funds due hereunder or sublet the Services as a whole or part without the prior written consent of Nexeo Solutions, LLC.&nbsp;</p>
+        <p>
+            &nbsp;</p>
+        <p>
+            16.&nbsp; &nbsp;&nbsp;&nbsp;&nbsp; <u>CONFLICTING PROVISIONS</u>.</p>
+        <p>
+            &nbsp;</p>
+        <p>
+            &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; The terms, provisions, covenants, or conditions herein shall control in the event of any conflict with any provision, term, covenant or condition in any of the documents attached hereto and made a part hereof, or any work orders, purchase orders, invoices, bills of lading, requisitions, or any other forms or documents.</p>
+        <p>
+            &nbsp;</p>
+        <p>
+            17.&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; <u>NO WAIVER</u>.</p>
+        <p>
+            &nbsp;</p>
+        <p>
+            &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; The failure of either party to insist in any one or more instances upon performance of any terms and conditions of this Agreement shall not be construed as a waiver of future performance of any such term, covenant, or condition, but the obligations of either party with respect thereto shall continue in full force and effect.</p>
+        <p>
+            &nbsp;</p>
+        <p>
+            18.&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; <u>USE OF NAME AND RELEASE OF INFORMATION</u>.</p>
+        <p>
+            &nbsp;</p>
+        <p>
+            18.1&nbsp;&nbsp;&nbsp;&nbsp; Contractor shall not use the name or trademarks of Nexeo Solutions, LLC or any of its or their subsidiaries, divisions or affiliated companies, as a reference in any sales materials, presentations, or on sales calls, or in any of Contractor&rsquo;s customer lists or in any publicity, news release, company biography or advertisement, or in any other written materials or any promotion or other activity of any kind, without Nexeo Solutions, LLC&rsquo;s prior written consent.&nbsp;</p>
+        <p>
+            &nbsp;</p>
+        <p>
+            18.2&nbsp;&nbsp;&nbsp;&nbsp; Nexeo Solutions, LLC specifically prohibits the photographing of any portion of the Services or other Nexeo Solutions, LLC property (or Nexeo Solutions, LLC&#39;s affiliates and/or subsidiaries&#39; property) by Contractor or its personnel for publicity and advertising or for any other purpose without the written permission of Nexeo Solutions, LLC.&nbsp; Contractor shall not release information on the Services, site or subject matter of this Agreement to the public without prior written consent of Nexeo Solutions, LLC.&nbsp;</p>
+        <p>
+            &nbsp;</p>
+        <p>
+            19.&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; <u>ENTIRE AGREEMENT</u>.</p>
+        <p>
+            &nbsp;</p>
+        <p>
+            &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; The terms hereof represent the entire Agreement between Contractor and Nexeo Solutions, LLC, superseding any prior discussion, understandings or agreements and no alterations or modifications shall be effective unless in writing signed by an authorized representative of the party to be bound.</p>
+        <p>
+            &nbsp;</p>
+        <p>
+            20.&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; <u>RIGHT TO AUDIT</u>.</p>
+        <p>
+            &nbsp;</p>
+        <p>
+            &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; Contractor will maintain for a period of three (3) years after final payment is made under this Agreement those books and records, including correspondence, receipts, vouchers, memoranda, etc., relating to or affecting the Services to be performed hereunder, and Nexeo Solutions, LLC (or its designated representative) will be allowed reasonable access in which to audit and otherwise examine such books and records.</p>
+        <p>
+            &nbsp;</p>
+        <p>
+            21.&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; <u>FORCE MAJEURE</u>.</p>
+        <p>
+            &nbsp;</p>
+        <p>
+            &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; Fire, flood, epidemic or other causes beyond the reasonable control of the parties which prevent any party from performing any obligation hereunder or Nexeo Solutions, LLC from receiving or using the Services will suspend the affected party&rsquo;s obligation to perform hereunder during the period required to remove such cause.&nbsp; The party suffering such event will promptly notify the other party and if the period of suspension lasts longer than 60 days, then the non-suffering party may at any time thereafter, while such suspension continues, terminate this Agreement with immediate effect.</p>
+        <p>
+            &nbsp;</p>
+        <p>
+            22.&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; <u>WITHHOLDING AND RIGHT TO SET OFF</u>.</p>
+        <p>
+            &nbsp;</p>
+        <p>
+            &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; Nexeo Solutions, LLC may at its option set off any amounts otherwise due from Nexeo Solutions, LLC to Contractor under this Agreement against any delinquent amounts or liabilities which are due to Nexeo Solutions, LLC and or its commonly controlled affiliates from Contractor, whether arising under this Agreement or otherwise.&nbsp; Nexeo Solutions, LLC may also, at its option, withhold sums due Contract under this Agreement for cause including, but not limited to (a) nonconforming Services not remedies, (b) damage caused by the Contractor, its subcontractors or agents during the performance of the Services to the property of the Nexeo Solutions, LLC, another contractor or other third party, (c) a breach of any provisions of this Agreement , or (d) for claims made by Contractor&rsquo;s subcontractors or agents for amounts due but not paid by Contractor, or for which a lien has been filed against Nexeo Solutions, LLC&rsquo;s property. Upon removal of such cause, sums withheld shall be paid to Contractor.</p>
+        <p>
+            &nbsp;</p>
+        <p>
+            23.&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; <u>DISPUTES</u>.</p>
+        <p>
+            &nbsp;</p>
+        <p>
+            23.1&nbsp;&nbsp;&nbsp;&nbsp; The parties shall attempt in good faith to resolve any dispute arising out of or relating to this Agreement promptly by negotiation between the management of each party.&nbsp; If the matter has not been resolved within sixty (60) days of a party&rsquo;s request for negotiation, either party may initiate arbitration as provided herein.&nbsp; &nbsp;</p>
+        <p>
+            &nbsp;</p>
+        <p>
+            23.2&nbsp;&nbsp;&nbsp;&nbsp; Any controversy or claim arising out of or relating to this Agreement, or breach thereof, shall be settled by arbitration administered by the American Arbitration Association under its Commercial Arbitration Rules, and judgment on the award rendered by the arbitrator may be entered in any court having jurisdiction thereof.</p>
+        <p>
+            &nbsp;</p>
+        <p>
+            23.3&nbsp;&nbsp;&nbsp;&nbsp; Either party may make a demand for binding arbitration by filing with the American Arbitration Association a demand in writing signed by an officer of the complaining party.&nbsp; The parties shall agree upon one arbitrator which will be selected and appointed in accordance with the Commercial Rules of the American Arbitration Association.&nbsp; The arbitration shall take place in Columbus, Ohio.</p>
+        <p>
+            &nbsp;</p>
+        <p>
+            24.&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; <u>TAXES</u>.</p>
+        <p>
+            &nbsp;</p>
+        <p>
+            &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; (a)&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; If any law or regulation positively requires Nexeo Solutions, LLC to withhold any taxes, duties, or other charges (including late payment penalties) (&quot;Taxes&quot;) on the payments to be or that have been made under this Agreement or make any other deductions from payments, then the said payments shall be reduced by such amounts.&nbsp; Nexeo Solutions, LLC shall provide to Contractor a copy of the withholding tax certificate as evidence that the withholding tax has been paid and other documentation reasonably necessary for Contractor to apply for any available Tax credits relating to Nexeo Solutions, LLC&#39;s payment of such Taxes.&nbsp;</p>
+        <p>
+            &nbsp;</p>
+        <p>
+            IN WITNESS WHEREOF, the parties hereto have duly executed the Agreement, in duplicate, by the respective representatives thereunto duly authorized, to be effective as of the Effective Date.</p>
+        <p>
+            &nbsp;</p>
+        <p>
+            &nbsp;</p>
+        <p>
+            <strong>CONTRACTOR&#39;S NAME&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; NEXEO SOLUTIONS, LLC</strong></p>
+        <p>
+            &nbsp;</p>
+        <p>
+            &nbsp;</p>
+        <p>
+            By: &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; By: &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</p>
+        <p>
+            &nbsp;</p>
+        <p>
+            Print Name: &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; Print Name: &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</p>
+        <p>
+            &nbsp;</p>
+        <p>
+            Title: &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; Title: &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</p>
+        <p align="center">
+            &nbsp;</p>
+        <p align="center">
+            &nbsp;</p>
+        <p align="center">
+            <strong><u>EXHIBIT A</u></strong></p>
+        <p align="center">
+            <strong><u>STATEMENT OF WORK</u></strong></p>
+        <p align="center">
+            <strong>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; (Note:&nbsp; Use this SOW for work valued under $50,000</strong>)&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</p>
+        <p align="center">
+            &nbsp;</p>
+        <p align="center">
+            DATE: <u>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; __________________________&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; </u></p>
+        <p>
+            1.&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; <strong><em>DESCRIPTION AND SCOPE:</em></strong></p>
+        <p>
+            &nbsp;</p>
+        <p>
+            1.1&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; Summary of Work Requested:</p>
+        <p>
+            &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; (Please provide a detailed summary of work being performed)</p>
+        <p>
+            &nbsp;</p>
+        <p>
+            _______________________________________________________________________</p>
+        <p>
+            _______________________________________________________________________</p>
+        <p>
+            _______________________________________________________________________</p>
+        <p>
+            &nbsp;</p>
+        <p>
+            2.&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; <em>METHOD OF COMPENSATION: </em></p>
+        <p>
+            &nbsp;</p>
+        <p>
+            2.2&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; Summary of Pricing and method of Compensation:</p>
+        <p>
+            &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; (Please provide pricing information (bid, proposal) and compensation method, i.e. p-card, invoice, etc.)</p>
+        <p>
+            &nbsp;</p>
+        <p>
+            ______________________________________________________________________</p>
+        <p>
+            _______________________________________________________________________</p>
+        <p>
+            _______________________________________________________________________</p>
+        <p>
+            &nbsp;</p>
+        <p>
+            3.&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; <em>NEXEO TRAVEL POLICY</em></p>
+        <p>
+            <strong>Travel and Expenses</strong></p>
+        <p>
+            &nbsp;</p>
+        <p>
+            Reasonable and customary room rates and meals per Diem (<a href="http://www.gsa.gov/">www.gsa.gov</a>)</p>
+        <p>
+            Non-reimbursable expenses include, but are not limited to:</p>
+        <p style="margin-left: 1.5in">
+            In-room movies</p>
+        <p style="margin-left: 1.5in">
+            Workout facility fees</p>
+        <p style="margin-left: 76.5pt">
+            Laundry/dry cleaning expenses (reimbursable, for trips exceeding six (6) days length)</p>
+        <p style="margin-left: 1.5in">
+            Mini bar room expenses</p>
+        <p>
+            &nbsp;</p>
+        <p>
+            Rental Vehicles and Business Use of Personal Vehicles:</p>
+        <p style="margin-left: 1.5in">
+            IRS Reimburse rates apply for personal vehicle usage on Nexeo Solutions, LLC business.</p>
+        <p style="margin-left: 1.5in">
+            Reimbursement for mid-size or intermediate cars only.</p>
+        <p style="margin-left: 1.5in">
+            Rental car refueling charges are reimbursable if refueled prior to their return.</p>
+        <p>
+            &nbsp;</p>
+        <p>
+            The following optional charges are not reimbursable when renting a vehicle:</p>
+        <p style="margin-left: 81pt">
+            Fuel Service Option (FSO), i.e., the pre-purchase of a full tank of gas</p>
+        <p style="margin-left: 81pt">
+            Navigation devices or any other optional equipment offered at additional cost</p>
+        <p style="margin-left: 1.5in">
+            Frequent Flyer Affiliation Program charges</p>
+        <p style="margin-left: 81pt">
+            Parking and/or traffic violations for either rental vehicles or personal vehicles</p>
+        <p>
+            &nbsp;</p>
+        <p>
+            Travel arrangements should not be influenced by personal incentives offered by travel providers, such as frequent traveler airline, hotel and car rental loyalty programs.</p>
+        <p>
+            &nbsp;</p>
+        <p>
+            <strong>Airline Travel (Domestic and International)</strong></p>
+        <p>
+            &nbsp;</p>
+        <p>
+            Air travel is reimbursable if the lowest available coach class for all flight segments.&nbsp; Tickets issued more than fourteen (14) days in advance should be used whenever possible. In addition, the &quot;lowest logical airfare&quot; offered within one hour of traveler&#39;s preferred arrival and/or departure times.&nbsp; When possible, consider alternative airports within 75 miles from their residence or destination.&nbsp;</p>
+        <p>
+            &nbsp;</p>
+        <p>
+            Air travel should not be used for trips less than 200 miles one-way.&nbsp; Personal vehicle mileage reimbursement is the posted IRS Reimbursable rate.&nbsp; Other transportation (e.g., train or ship) not specifically outlined herein may be acceptable as long as excessive expense or business time is not required to accommodate employee preference.</p>
+        <p>
+            &nbsp;</p>
+        <p style="margin-left: 1in">
+            Invoices supporting such reimbursement must include all receipts for expenses in excess of $25.&nbsp;</p>
+        <p style="margin-left: 1in">
+            There will be no mark up allow for travel related expenses.</p>
+        <p style="margin-left: 1in">
+            The maximum reimbursable billing time per day is (12) hours (including any travel time).&nbsp; Prior written approval required for any deviation.</p>
+        <p style="margin-left: 1in">
+            Contractor retains liability for the payment of wages to its employees in accordance with the requirements of state and federal wage and hour laws.&nbsp;</p>
+        <p style="margin-left: 1in">
+            Nexeo Solutions, LLC will reimburse reasonable travel expenses incurred according to this policy or upon prior written authorization from Nexeo Solutions, LLC Manager.&nbsp;</p>
+        <p>
+            &nbsp;</p>
+        <p>
+            &nbsp;</p>
+        <p>
+            &nbsp;</p>
+        <p align="center">
+            <strong><u>EXHIBIT A</u></strong></p>
+        <p align="center">
+            <strong><u>STATEMENT OF WORK</u></strong></p>
+        <p align="center">
+            <strong>(Note:&nbsp; Use this SOW for work valued over $50,000)</strong></p>
+        <p>
+            &nbsp;</p>
+        <p align="center">
+            DATE: _______________________</p>
+        <p>
+            &nbsp;</p>
+        <p>
+            1.&nbsp; <strong><em>DESCRIPTION AND SCOPE:</em></strong></p>
+        <p>
+            &nbsp;</p>
+        <p>
+            Summary of Work Requested:</p>
+        <p>
+            (Please provide a detailed summary of work being performed)</p>
+        <p>
+            &nbsp;</p>
+        <p>
+            _______________________________________________________________________</p>
+        <p>
+            _______________________________________________________________________</p>
+        <p>
+            _______________________________________________________________________</p>
+        <p>
+            _______________________________________________________________________</p>
+        <p>
+            &nbsp;</p>
+        <p>
+            2.&nbsp; <strong><em>APPLICABLE design criteria, drawings, specifications and documents</em></strong></p>
+        <p>
+            &nbsp;</p>
+        <p>
+            All Services are being provided in accordance with the following:</p>
+        <p>
+            &nbsp;</p>
+        <p>
+            2.1&nbsp; Applicable Design Criteria (if any)</p>
+        <p>
+            &nbsp;</p>
+        <p>
+            _______________________________________________________________________</p>
+        <p>
+            _______________________________________________________________________</p>
+        <p>
+            &nbsp;</p>
+        <p>
+            2.2&nbsp; Nexeo Solutions, LLC Drawings or Diagrams Applicable (if any)</p>
+        <p>
+            _______________________________________________________________________</p>
+        <p>
+            _______________________________________________________________________</p>
+        <p>
+            &nbsp;</p>
+        <p>
+            2.3 Specifications Applicable (if any)</p>
+        <p>
+            _______________________________________________________________________</p>
+        <p>
+            _______________________________________________________________________</p>
+        <p>
+            &nbsp;</p>
+        <p>
+            2.4&nbsp; Applicable Documents or Other Materials:</p>
+        <p>
+            &nbsp;</p>
+        <p>
+            _______________________________________________________________________</p>
+        <p>
+            _______________________________________________________________________</p>
+        <p>
+            &nbsp;</p>
+        <p>
+            3.&nbsp; <strong><em>DELIVERABLES</em></strong>:</p>
+        <p>
+            &nbsp;</p>
+        <p>
+            The Contractor shall provide the following documents or other items as part of the Services.&nbsp; The services shall not be considered complete unless&nbsp; _____ copies of the deliverables are provided to Nexeo Solutions, LLC.</p>
+        <p>
+            <em>{List Contractor Deliverables}</em></p>
+        <p>
+            _______________________________________________________________________</p>
+        <p>
+            _______________________________________________________________________</p>
+        <p>
+            &nbsp;</p>
+        <p>
+            4.&nbsp; <strong><em>METHOD OF COMPENSATION:</em></strong></p>
+        <p>
+            <br />
+            Summary of&nbsp; Pricing and method of Compensation:</p>
+        <p>
+            (Please provide pricing information (bid, proposal) and compensation method, i.e.</p>
+        <p>
+            p-card, invoice etc.)</p>
+        <p>
+            &nbsp;_______________________________________________________________________</p>
+        <p>
+            _______________________________________________________________________</p>
+        <p>
+            _______________________________________________________________________</p>
+        <p>
+            _______________________________________________________________________</p>
+        <p>
+            &nbsp;</p>
+        <p>
+            &nbsp;</p>
+        <p>
+            5.&nbsp; <strong><em>Time of Performance and Completion:</em></strong></p>
+        <p>
+            &nbsp;</p>
+        <p>
+            Provide and attach a Schedule of Work.&nbsp; Where a Schedule of Work is provided, Contractor shall perform and complete all Services in accordance with said Schedule of Work.&nbsp; If a Schedule of Work is not provided, the following will be applicable:</p>
+        <p>
+            &nbsp;</p>
+        <p>
+            Contractor shall commence work on ______________________ and shall complete all Services by _______________.</p>
+        <p>
+            &nbsp;</p>
+        <p>
+            6. <strong><em>Special Terms and Conditions</em></strong></p>
+        <p>
+            &nbsp;</p>
+        <p>
+            Identify any special terms and conditions applicable to the Service not covered under the Agreement or this Statement of Work:</p>
+        <p>
+            &nbsp;</p>
+        <p>
+            _______________________________________________________________________</p>
+        <p>
+            _______________________________________________________________________</p>
+        <p>
+            &nbsp;</p>
+        <p>
+            7.&nbsp; <strong><em>NEXEO TRAVEL POLICY</em></strong></p>
+        <p>
+            <strong>Travel and Expenses</strong></p>
+        <p>
+            &nbsp;</p>
+        <p>
+            Reasonable and customary room rates and meals per Diem (<a href="http://www.gsa.gov/">www.gsa.gov</a>)</p>
+        <p>
+            Non-reimbursable expenses include, but are not limited to:</p>
+        <p style="margin-left: 1.5in">
+            In-room movies</p>
+        <p style="margin-left: 1.5in">
+            Workout facility fees</p>
+        <p style="margin-left: 76.5pt">
+            Laundry/dry cleaning expenses (reimbursable, for trips exceeding six (6) days length)</p>
+        <p style="margin-left: 1.5in">
+            Mini bar room expenses</p>
+        <p>
+            &nbsp;</p>
+        <p>
+            Rental Vehicles and Business Use of Personal Vehicles:</p>
+        <p style="margin-left: 1.5in">
+            IRS Reimburse rates apply for personal vehicle usage on Nexeo Solutions, LLC business.</p>
+        <p style="margin-left: 1.5in">
+            Reimbursement for mid-size or intermediate cars only.</p>
+        <p style="margin-left: 1.5in">
+            Rental car refueling charges are reimbursable if refueled prior to their return.</p>
+        <p>
+            &nbsp;</p>
+        <p>
+            The following optional charges are not reimbursable when renting a vehicle:</p>
+        <p style="margin-left: 81pt">
+            Fuel Service Option (FSO), i.e., the pre-purchase of a full tank of gas</p>
+        <p style="margin-left: 81pt">
+            Navigation devices or any other optional equipment offered at additional cost</p>
+        <p style="margin-left: 1.5in">
+            Frequent Flyer Affiliation Program charges</p>
+        <p style="margin-left: 81pt">
+            Parking and/or traffic violations for either rental vehicles or personal vehicles</p>
+        <p>
+            &nbsp;</p>
+        <p>
+            Travel arrangements should not be influenced by personal incentives offered by travel providers, such as frequent traveler airline, hotel and car rental loyalty programs.</p>
+        <p>
+            &nbsp;</p>
+        <p>
+            <strong>Airline Travel (Domestic and International)</strong></p>
+        <p>
+            &nbsp;</p>
+        <p>
+            Air travel is reimbursable if the lowest available coach class for all flight segments.&nbsp; Tickets issued more than fourteen (14) days in advance should be used whenever possible. In addition, the &quot;lowest logical airfare&quot; offered within one hour of traveler&#39;s preferred arrival and/or departure times.&nbsp; When possible, consider alternative airports within 75 miles from their residence or destination.&nbsp;</p>
+        <p>
+            &nbsp;</p>
+        <p>
+            Air travel should not be used for trips less than 200 miles one-way.&nbsp; Personal vehicle mileage reimbursement is the posted IRS Reimbursable rate.&nbsp; Other transportation (e.g., train or ship) not specifically outlined herein may be acceptable as long as excessive expense or business time is not required to accommodate employee preference.</p>
+        <p>
+            &nbsp;</p>
+        <p style="margin-left: 1in">
+            Invoices supporting such reimbursement must include all receipts for expenses in excess of $25.&nbsp;</p>
+        <p style="margin-left: 1in">
+            There will be no mark up allow for travel related expenses.</p>
+        <p style="margin-left: 1in">
+            The maximum reimbursable billing time per day is (12) hours (including any travel time).&nbsp; Prior written approval required for any deviation.</p>
+        <p style="margin-left: 1in">
+            Contractor retains liability for the payment of wages to its employees in accordance with the requirements of state and federal wage and hour laws.&nbsp;</p>
+        <p style="margin-left: 1in">
+            Nexeo Solutions, LLC will reimburse reasonable travel expenses incurred according to this policy or upon prior written authorization from Nexeo Solutions, LLC Manager.&nbsp;</p>
+        <p>
+            &nbsp;</p>
+        <p align="center">
+            &nbsp;</p>
+        <p align="center">
+            EXHIBIT B</p>
+        <p align="center">
+            &nbsp;</p>
+        <p align="center">
+            EXHIBIT B</p>
+        <p align="center">
+            &nbsp;</p>
+        <p align="center">
+            NEXEO SOLUTIONS, LLC</p>
+        <p align="center">
+            CONTRACTORS AND VENDOR INSURANCE REQUIREMENTS</p>
+        <p>
+            &nbsp;</p>
+        <p>
+            Unless otherwise agreed to in writing, the Contractor or Vendor shall, at its sole expense, maintain in effect at all times during the performance of work&nbsp; and completed operations, insurance coverage with limits, not less than those set forth below with insurers and policy forms satisfactory to Nexeo Solutions, LLC The insurance companies must have <strong>A.M. Best ratings of at least A-VII or better.</strong> Contractor or Vendor shall cause its subcontractors at the jobsite or premise to obtain and maintain insurance policies to protect Nexeo Solutions, LLC in accordance with the same insurance requirements.&nbsp; All insurance provided by the Contractor or Vendor and its subcontractors shall be primary and any similar insurance maintained by Nexeo Solutions, LLC shall be excess thereof and not contributory with Contractor&rsquo;s or its subcontractor&rsquo;s insurance. Nexeo Solutions, LLC shall be given thirty (30) days written notice in the event of cancellation, non-renewal or material alteration of any policy. All insurance other than for Workers&rsquo; Compensation and Employer liability provided by Contractor shall name Nexeo Solutions, LLC and its subsidiaries and affiliates as an &ldquo;additional insured&rdquo;.&nbsp; All Workers&rsquo; Compensation and Employer&rsquo;s Liability Insurance shall expressly provide that all rights of subrogation, where permitted by law, are waived.&nbsp; In addition, to the extent Contractor&rsquo;s or Vendor&rsquo;s services include services for or benefiting Nexeo Solutions, LLC&rsquo;s customer&rsquo;s or a third party property owner, said Nexeo Solutions, LLC Customer or third party property owner shall be an &ldquo;additional insured&rdquo; to the same extent as provided above upon request of Nexeo Solutions, LLC.</p>
+        <p>
+            &nbsp;</p>
+        <p>
+            <strong>MINIMUM COVERAGE</strong></p>
+        <p>
+            &nbsp;</p>
+        <p>
+            All contracts for work on behalf of Nexeo Solutions, LLC must contain the following minimum coverage; however, such limits shall not limit Contractor or Vendor&rsquo;s liability hereunder.</p>
+        <p>
+            &nbsp;</p>
+        <p>
+            <strong>A.&nbsp; Workers&rsquo; Compensation and Employers&rsquo; Liability</strong></p>
+        <p>
+            1.&nbsp;&nbsp;&nbsp;&nbsp; Coverage &quot;A&quot; &ndash; Statutory coverage in all states, including all areas involved in operations covered under this contract/work order.</p>
+        <p>
+            2.&nbsp;&nbsp;&nbsp;&nbsp; Coverage &ldquo;B&rdquo;-Employer&rsquo;s Liability</p>
+        <p style="margin-left: 1in">
+            a.&nbsp;&nbsp;&nbsp;&nbsp; Limit $500,000 each accident</p>
+        <p style="margin-left: 1in">
+            b.&nbsp;&nbsp;&nbsp;&nbsp; Limit $500,000&nbsp; bodily injury by disease (policy limit)</p>
+        <p style="margin-left: 1in">
+            c.&nbsp;&nbsp;&nbsp;&nbsp; Limit $500,000 bodily injury by disease (each person)</p>
+        <p>
+            &nbsp;</p>
+        <p>
+            &nbsp;</p>
+        <p>
+            <strong>B.&nbsp;&nbsp; Commercial General Liability</strong></p>
+        <p>
+            1.&nbsp;&nbsp;&nbsp;&nbsp; Limits of liability $1,000,000 Per Occurrence/ $2,000,000 General Aggregate&nbsp;&nbsp;&nbsp;</p>
+        <p>
+            2.&nbsp;&nbsp;&nbsp;&nbsp; Products- Completed Operations Aggregate $2,000,000 limit</p>
+        <p>
+            3.&nbsp;&nbsp;&nbsp;&nbsp; Personal and Advertising Injury $1,000,000 limit</p>
+        <p>
+            4.&nbsp;&nbsp;&nbsp;&nbsp; Commercial General liability Coverage.</p>
+        <p>
+            5.&nbsp;&nbsp;&nbsp;&nbsp; Broad Form Contractor&rsquo;s Protective liability / Independent Contractors Liability</p>
+        <p>
+            6.&nbsp;&nbsp;&nbsp; Additional Insured form CG 20 10</p>
+        <p>
+            7.&nbsp;&nbsp;&nbsp;&nbsp; Waiver of Subrogation in favor of Nexeo Solutions, LLC</p>
+        <p>
+            &nbsp;</p>
+        <p>
+            &nbsp;</p>
+        <p>
+            <strong>C.&nbsp; Automobile Liability</strong></p>
+        <p>
+            &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; 1.&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; Limits of Liability $1,000,000 Combined Single Limit Each Accident / Loss</p>
+        <p>
+            &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; 2.&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; Covered Autos:&nbsp; Owned, Non-Owned, Hired or Leased</p>
+        <p>
+            &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; 3.&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; If a Contractor transports hazardous materials they shall have an MCS-90 endorsement and endorsement CA 9948 if the materials are pollutants</p>
+        <p>
+            &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; 3.&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; Waiver of Subrogation in favor of Nexeo Solutions, LLC</p>
+        <p>
+            &nbsp;</p>
+        <p>
+            <strong>D.&nbsp; Umbrella Liability</strong></p>
+        <p style="margin-left: 51pt">
+            &middot;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; Limit of Liability $1,000,000 Combined Single Limit per Occurrence / Aggregate*&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</p>
+        <p>
+            &nbsp;</p>
+        <p>
+            <strong>*Any Contractor working in industrial areas of a plant or site, e.g. hot work, lock out/tag out, around tanks, manufacturing equipment, major capital construction projects, Common Carrier&rsquo;s and Environmental Remediation, etc, will be required to carry $5 MM Excess/Umbrella Liability</strong>.</p>
+        <p>
+            &nbsp;</p>
+        <p>
+            A current certificate of insurance must be supplied naming Nexeo Solutions, LLC and those parties required hereunder as additional insured indicating the above coverage prior to execution of the Contract, Agreement, Purchase Order and/or commencement of work.</p>
+        <p>
+            &nbsp;</p>
+        <p>
+            &nbsp;</p>
+        <p>
+            <strong>ADDITIONAL COVERAGE</strong></p>
+        <p>
+            &nbsp;</p>
+        <p>
+            The following additional insurance coverage may be required for specific projects, to be determined by Contractor Administrator or Party requesting the services.&nbsp;&nbsp; Examples of projects that may require additional insurance coverage are Cap X projects, environmental remediation and other types of work described below.&nbsp; If Contract Administrator is unsure as to which&nbsp;&nbsp; additional coverage maybe needed for a project, they should contact Risk Management for help.</p>
+        <p>
+            &nbsp;</p>
+        <p style="margin-left: 45pt">
+            1.&nbsp;&nbsp;&nbsp;&nbsp; If any cranes are used, Riggers&rsquo; Liability will be required with a $2,000,000 limit.</p>
+        <p>
+            &nbsp;</p>
+        <p style="margin-left: 45pt">
+            2.&nbsp;&nbsp;&nbsp;&nbsp; Performance bond may be requested for specific projects.</p>
+        <p>
+            &nbsp;</p>
+        <p style="margin-left: 45pt">
+            3.&nbsp;&nbsp;&nbsp;&nbsp; Cargo Policy showing value of materials furnished by contractor.</p>
+        <p>
+            &nbsp;</p>
+        <p style="margin-left: 45pt">
+            4.&nbsp;&nbsp;&nbsp;&nbsp; Certain environmental projects may require Environmental Impairment Liability limits of $5,000,000. Coverage must be maintained without interruption form date of commencement of the work and until five (5) years following the date of final payment.</p>
+        <p>
+            &nbsp;</p>
+        <p style="margin-left: 45pt">
+            5.&nbsp;&nbsp;&nbsp;&nbsp; On certain jobs. Contract Administrator may require general contractors to carry Builders&rsquo; Risks &ldquo;All Risk&rdquo; coverage for the full replacement value of the projects to include fire, theft, and transit coverage.&nbsp; Any polices maintained by the contractor on their own and/or rental equipment and materials shall contain a provision requiring the insurance carriers to waive their rights to subrogation against Nexeo Solutions, LLC</p>
+        <p>
+            &nbsp;</p>
+        <p style="margin-left: 45pt">
+            6.&nbsp;&nbsp;&nbsp;&nbsp; In the event this agreement requires the contractor to provide professional services such as but not limited to, architectural engineering, construction management, surveying, design, IT Services, etc., a certificate of insurance must be provided evidencing Professional Liability coverage with a limit of not less than $5,000,000.&nbsp; Any material change in limits, coverages or loss of aggregate limit due to outstanding claims must be reported to Nexeo Solutions, LLC Risk Management within thirty (30) days of any such event.&nbsp; Coverage must be maintained without interruption from date of commencement of the work and until five (5) years following the date of final payment.</p>
+        <p>
+            &nbsp;</p>
+        <p style="margin-left: 45pt">
+            7.&nbsp;&nbsp;&nbsp;&nbsp; IT services providers will be require to carry Cyberisk Insurance providing first and third party coverage for damage to or destruction of the Nexeo Solutions, LLC System and/or the Data and for invasion of privacy claims arising out of or related to unauthorized access and/or disclosure of the Nexeo Solutions, LLC System and/or the Data in the minimum amount of $5,000,000.</p>
+        <p>
+            &nbsp;</p>
+        <p style="margin-left: 27pt">
+            8.&nbsp; For services involving Asbestos Containing materials or related services, the following additional provisions shall be applicable to the Contractor&rsquo;s Commercial General Liability: policies</p>
+        <p>
+            &nbsp;</p>
+        <p>
+            &nbsp;</p>
+        <p style="margin-left: 27pt">
+            The General Commercial liability policy shall also include coverage for claims arising out of handling and disposal of asbestos and/or materials containing asbestos, as specified:</p>
+        <p>
+            &nbsp;</p>
+        <p>
+            &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; a)&nbsp; Coverage shall include asbestos abatement operations including resultant pollution damage.</p>
+        <p>
+            &nbsp;</p>
+        <p>
+            &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; b)&nbsp; Coverage shall not contain a sunset provision or other limitations.</p>
+        <p>
+            &nbsp;</p>
+        <p>
+            &nbsp;</p>
+        <p>
+            c)&nbsp; Coverage shall include contractual liability coverage in accordance with ISO policy form GG&nbsp;&nbsp; 00 01 85 (without modifications reducing coverage).</p>
+        <p>
+            &nbsp;</p>
+        <p>
+            d)&nbsp; The policy shall not exclude asbestos injury to employees of the owner, General Contractor, lessee, real estate manager, and subcontractor so long as their job duties do not require them to be in the regulated asbestos abatement area.</p>
+        <p>
+            &nbsp;</p>
+        <p>
+            e)&nbsp;&nbsp;&nbsp; If the policy or any endorsement contains a provision which limits or eliminates bodily injury or property damage coverage on final air clearance levels, the policy shall be modified so that it is consistent with applicable regulatory requirements governing asbestos abatement and the appropriate analytical testing protocols contained in the project specifications.</p>
+        <p>
+            &nbsp;</p>
+        <p>
+            f)&nbsp;&nbsp; The policy shall not exclude coverage for claims in which it is alleged that the licensed Asbestos Contractor unintentionally failed to comply with the most stringent regulations governing the work.</p>
+        <p>
+            &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</p>
+        <p style="margin-left: 27pt">
+            &nbsp;</p>
+        <p>
+            Maintenance of said minimum insurance shall be a condition precedent to the payment of Contractor for compensation of the work or services provided to Nexeo Solutions, LLC&nbsp; Failure to maintain said insurance, as required shall constitute a material breach and shall be sufficient grounds for immediate cancellation of Contract.</p>
+        <p>
+            &nbsp;</p>
+        <p>
+            Certificate Holder:</p>
+        <p>
+            Nexeo Solutions, LLC</p>
+        <p>
+            Attention: Corporate Purchasing</p>
+        <p>
+            P.O.Box1063</p>
+        <p>
+            Columbus, OH 43216</p>
+        <p>
+            Fax: 614-790-3784</p>
+        <p>
+            &nbsp;</p>
+        <p>
+            If you have any question with Nexeo Solutions, LLC insurance requirements, please contact Felix Brobbey, Risk Mgt. Dept. at (859) 815-3037 or Thomas Martinelli, Global Procurement at (302) 995-3429.</p>
+        <p align="center">
+            &nbsp;</p>
+        <p>
+            &nbsp;</p></body>
+</html>
+</apex:page>

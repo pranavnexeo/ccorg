@@ -1,0 +1,94 @@
+<apex:page controller="cc_mn_ctrl_MyAccountBIE" applyHtmlTag="false" applyBodyTag="false" sidebar="false" showHeader="false" standardStylesheets="false">
+
+<c:cc_imp_ma_UploadFiles />
+<c:cc_imp_ma_ViewCredit />
+<c:cc_imp_ma_UserAdmin />
+<c:cc_imp_mn_MyAccountInvoices />
+
+<c:cc_imp_mn_MyAccountOrders />
+<apex:outputPanel rendered="{!isES}">
+<c:cc_imp_mn_MyAccountESOrders /> 
+</apex:outputPanel>
+<c:cc_imp_mn_ContactUs />
+
+
+<script type="text/javascript">
+
+  jQuery(function($){
+    var admin = {!isAdmin};
+    var isES ={!isES};
+   
+    //pubSub listener, called when My Account view needs to initialize the side menu
+    CCRZ.pubSub.on('view:myaccountView:awaitingSubViewInit', function(viewRef){
+
+        console.log('in myaccountView:awaitingSubViewInit - 6 6');
+        //New section
+        if(CCRZ.MyAccount.SubscUploadFiles){
+            CCRZ.MyAccount.SubscUploadFiles.register(viewRef);
+        }
+        if(CCRZ.MyAccount.NexeoInvoices){
+            CCRZ.MyAccount.NexeoInvoices.register(viewRef);
+        }
+       
+        if(isES){
+             if(CCRZ.MyAccount.MyorderES){
+                 CCRZ.MyAccount.MyorderES.register(viewRef);
+            }
+        }else{
+             if(CCRZ.MyAccount.NexeoOrders){
+             CCRZ.MyAccount.NexeoOrders.register(viewRef);
+        } 
+        }
+        if(CCRZ.MyAccount.SubscViewCredit){
+            CCRZ.MyAccount.SubscViewCredit.register(viewRef);
+        }
+        if(admin && CCRZ.MyAccount.SubscUserAdmin){
+            CCRZ.MyAccount.SubscUserAdmin.register(viewRef);
+        }
+        if(CCRZ.MyAccount.SubscContactUs){
+            CCRZ.MyAccount.SubscContactUs.register(viewRef);
+        }
+
+    //Tell the My Account view that it should proceed with rendering the view
+        CCRZ.pubSub.trigger("view:myaccountView:subViewInit", true);
+    });
+
+    // Tell CC to render the header since it won't when the MA flow is overridden.
+    CCRZ.pubSub.on('view:myaccountHDRView:awaitingSubViewInit', function(view) {
+
+        console.log('in myaccountView:awaitingSubViewInit - 6 6 - HEADER');
+        //added 6/6/17 for NCC-18
+        if(CCRZ.HDRMyAccount.SubscUploadFiles){
+            CCRZ.HDRMyAccount.SubscUploadFiles.register(view);
+        }
+        if(CCRZ.HDRMyAccount.NexeoInvoices){
+            CCRZ.HDRMyAccount.NexeoInvoices.register(view);
+        }
+        if(isES){
+            if(CCRZ.HDRMyAccount. MyorderES){
+                 CCRZ.HDRMyAccount. MyorderES.register(view);
+            }
+        }else{
+            if(CCRZ.HDRMyAccount.NexeoOrders){
+                 CCRZ.HDRMyAccount.NexeoOrders.register(view);
+            } 
+        }
+        if(CCRZ.HDRMyAccount.SubscViewCredit){
+            //commenting as this is not being use on the header menu
+            // CCRZ.HDRMyAccount.SubscViewCredit.register(view);
+        }
+        if(admin && CCRZ.HDRMyAccount.SubscUserAdmin){
+            CCRZ.HDRMyAccount.SubscUserAdmin.register(view);
+        }
+        if(CCRZ.HDRMyAccount.SubscContactUs){
+            CCRZ.HDRMyAccount.SubscContactUs.register(view);
+        }
+
+        CCRZ.pubSub.trigger("view:myaccountHDRView::subViewInit", true);
+        //end added 6/6/17 for NCC-18
+        
+        view.prepAndRender();
+    });
+});
+</script>
+</apex:page>

@@ -1,0 +1,119 @@
+<apex:page standardcontroller="Account" extensions="Sample_Request_Controller" tabStyle="Sample_Request__c" >
+<apex:stylesheet value="{!$Resource.SampleRequestStyles}"></apex:stylesheet>
+
+        <apex:sectionHeader title="{!$Label.New_Sample_Request} {!Sample_Request_Link}" subtitle="{!$Label.Step_2A}"/>
+        <apex:form >
+
+                <apex:pageBlock title="{!$Label.Who_Requested}">
+                        <apex:facet name="footer">
+                                <apex:outputPanel >
+                                        <center>
+                                        <apex:commandButton action="{!step1}" value="{!$Label.Previous}" styleClass="btn"/>
+                                        <apex:commandButton action="{!step3}" value="{!$Label.Next}" styleClass="btn"/>
+                                        </center>
+                                </apex:outputPanel>
+                                </apex:facet>
+
+                        <apex:outputPanel id="generalInformation">
+                                <apex:pageBlockSection title="{!$Label.Related_to_the_Following}" columns="1" showHeader="true" collapsible="false">
+                                        <apex:panelGrid columns="2">
+                                                <apex:outputText value="{!$Label.Account}" styleClass="HeaderLabel" rendered="{!GotAccount}"/>
+                                                <apex:outputLink value="/{!account.Id}" target="=_blank">{!account.Name}</apex:outputLink>
+                                                <apex:outputText value="{!$Label.Contact}: " styleClass="HeaderLabel" rendered="{!GotContact}"/>
+                                                <apex:outputLink value="/{!contact.Id}" target="_blank">{!contact.Name}</apex:outputLink>
+                                                <apex:outputText value="{!$Label.Contact}: " styleClass="HeaderLabel" rendered="{!CreatingContact}"/>
+                                                <apex:outputText value="{!$Label.New_Contact}" styleClass="HeaderData" rendered="{!CreatingContact}"/>
+                                                <apex:outputText value="{!$Label.Opportunity}: " styleClass="HeaderLabel" rendered="{!GotOpportunity}"/>
+                                                <apex:outputLink value="/{!opportunity.Id}" target="_blank">{!opportunity.Name}</apex:outputLink>
+                                        </apex:panelGrid>
+                                </apex:pageBlockSection>
+                        </apex:outputPanel> 
+
+                        <apex:pageBlockSection id="relatedContacts" title="{!$Label.Contacts_Related_to_Account}:" columns="1" collapsible="false">
+                                <apex:dataTable value="{!contacts}" var="contactList" cellPadding="4" border="1" styleClass="list">
+
+                                        <apex:column >
+                                                <apex:facet name="header">
+                                                        &nbsp;
+                                                </apex:facet>
+<!--  {!IF (contact.Id=contactList.Id,'CHECKED', '')} -->
+                                                <input type="radio" name="{!account.name}" value="{!contactList.Id}" id="{!account.name}" onclick="selectContact(this.value)"/> 
+                                        </apex:column>
+                                        <apex:column >
+                                                <apex:facet name="header">
+                                                        <strong>{!$Label.Contact_Name_with_Instructions}</strong>
+                                                </apex:facet>
+                                                <apex:outputLink value="/{!contactList.Id}" target="_blank">{!contactList.Name}</apex:outputLink>&nbsp;
+                                        </apex:column>
+                                        <apex:column >
+                                                <apex:facet name="header">
+                                                        <strong>{!$Label.Phone}</strong>
+                                                </apex:facet>
+                        <apex:outputText value="{!contactList.Phone}"></apex:outputText>&nbsp;
+                                        </apex:column>
+                                        <apex:column >
+                                                <apex:facet name="header">
+                                                        <strong>Email</strong>
+                                                </apex:facet>
+                        <apex:outputText value="{!contactList.Email}"></apex:outputText>&nbsp;
+                                        </apex:column>
+                                        <apex:column >
+                                                <apex:facet name="header">
+                                                        <strong>{!$Label.Mailing_Street}</strong>
+                                                </apex:facet>
+                        <apex:outputText value="{!contactList.MailingStreet}"></apex:outputText>&nbsp;
+                    </apex:column>
+                                        <apex:column >
+                                                <apex:facet name="header">
+                                                        <strong>{!$Label.Mailing_City}</strong>
+                                                </apex:facet>
+                        <apex:outputText value="{!contactList.MailingCity}"></apex:outputText>&nbsp;
+                    </apex:column>
+                                        <apex:column >
+                                                <apex:facet name="header">
+                                                        <strong>{!$Label.Mailing_State}</strong>
+                                                </apex:facet>
+                        <apex:outputText value="{!contactList.MailingState}"></apex:outputText>&nbsp;
+                                        </apex:column>
+                                        <apex:column >
+                                                <apex:facet name="header">
+                                                        <strong>{!$Label.Mailing_Postal_Code}</strong>
+                                                </apex:facet>
+                        <apex:outputText value="{!contactList.MailingPostalCode}"></apex:outputText>&nbsp;
+                    </apex:column>
+                                        <apex:column >
+                                                <apex:facet name="header">
+                                                        <strong>{!$Label.Mailing_Country}</strong>
+                                                </apex:facet>
+                                                <apex:outputText value="{!contactList.MailingCountry}"></apex:outputText>&nbsp;
+                                        </apex:column>
+                                </apex:dataTable>
+
+                                <apex:inputHidden value="{!contactSelected}" id="SelectedContact"/>
+
+<!-- {!IF (contactSelected='New Contact','CHECKED', '')}  -->
+
+                <input type="radio" name="{!account.name}" id="New Contact" value="New Contact" onclick="selectContact(this.value)"/>&nbsp;&nbsp;<B>{!$Label.Create_Contact}</B> 
+
+                                <script language="javascript">
+                                        function selectContact(selectedId)
+                                            {
+                                            document.getElementById('{!$Component.SelectedContact}').value=selectedId;
+                                            }
+                                </script>
+
+                                &nbsp;&nbsp;
+<!--
+                <apex:outputText styleClass="Warning" value="{!ErrorMessage_MissingContact}" rendered="{!Render_Step1b_MissingContact_ErrorMessages}"/>
+-->
+                        </apex:pageBlockSection> 
+
+                        <apex:pageBlockSection title="{!$Label.Validation_Error}" columns="1" collapsible="false" rendered="{!IF(ValidationErrorMessage!='','True','False')}">
+                             <apex:pageBlock title="{!$Label.Error_Messages}" rendered="{!IF(ValidationErrorMessage!='','True','False')}">
+                                   <apex:outputText escape="False" styleClass="Warning" value="{!ValidationErrorMessage}" rendered="{!IF(ValidationErrorMessage!='','True','False')}"/>
+                             </apex:pageBlock>
+                        </apex:pageBlockSection>
+&nbsp;&nbsp;&nbsp;
+                    </apex:pageBlock> 
+                </apex:form>
+</apex:page>

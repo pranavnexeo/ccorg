@@ -1,0 +1,72 @@
+<apex:page standardcontroller="Account_Material__c" extensions="AtpInvSearchController" standardstylesheets="false" sidebar="false" showheader="false"  docType="html-5.0">
+    
+  <link href="{!URLFOR($Resource.bootstrap, '/bootstrap-3.1.1-dist/css/bootstrap.min.css')}" rel="stylesheet" />
+  
+  <script src="{!URLFOR($Resource.bootstrap, '/bootstrap-3.1.1-dist/js/jquery.js')}"></script>
+  <script src="{!URLFOR($Resource.bootstrap, '/bootstrap-3.1.1-dist/js/bootstrap.min.js')}" />
+  <script>
+          $(document).ready(function() {
+         
+         
+         $("#checkInv").click(function(){
+         var url1 = '/apex/Atp_Inventory_search?id='+ "{!Account_Material__c.Id}";
+         console.log(url1)
+         gotourl('/apex/Atp_Inventory_search?id='+ "{!Account_Material__c.Id}");
+         });
+         
+         
+         });
+         
+             function gotourl(url){
+            
+                if(typeof sforce == 'undefined') 
+                    window.location.href = url
+                else
+                    sforce.one.navigateToURL(url);
+                }
+    
+        </script>
+   <apex:form id="myRerender">
+   <apex:pageMessages ></apex:pageMessages>   
+  <div id="loadingbanner" style="position:relative;left:px;display:none;">
+      <c:EnhancedActionStatus BackColor="#efefef" borderColor="#336699" borderSize="3" height="20px" width="100px" ImageUrl="{!$Resource.spinner}" Message="Loading..." messageStyle="color:darkred;font-size:11pt;font-weight:bold;"/>
+  </div>
+          
+        <div class="col-md-6">
+        <label for="Material" class="control-label">Material</label><br/>
+              <apex:outputfield id="Material" value="{!Account_Material__c.Material_Name__c}"  style="height:30px;width:200px;"/>
+                  <br/><br/>
+              
+              <label for="date" class="control-label">Requested Delivery Date</label><br/>
+              <apex:inputfield type="date" id="shipDate" value="{!Account_Material__c.Ship_Date__c}" required="true" style="height:30px;width:200px;"/>
+                  <br/>
+              <label for="Quantity" class="control-label">Quantity</label><br/>
+              <apex:inputfield id="Quantity" value="{!Account_Material__c.Quantity__c}" required="true" style="height:30px;width:200px;" />
+                  <br/>
+              <label for="uom" class="control-label">Unit Of Measure</label><br/>
+              <!---<apex:inputfield id="uom" value="{!Account_Material__c.ATP_UOM__c}" required="true" style="height:30px;width:200px;"/>--->
+              <apex:selectList value="{!Account_Material__c.ATP_UOM__c}" id="stockingunit" size="1" required="true">
+                        <apex:selectOptions value="{!StockingUnitCodes}" />
+                        <apex:actionSupport event="onchange" rerender="units" />
+                    </apex:selectList>
+              <br/>
+                 
+          <font color="green"><apex:pageMessage id="pageMessageId" summary="Please select Container Quantity" severity="info" strength="1" /></font>
+           <br/>
+           <apex:outputText value="{!Account_Material__c.SAP_Material__r.Material_Number__c}" rendered="false" />
+           <apex:outputText value="{!Account_Material__c.SAP_Plant_Code__c}" rendered="false" />
+           <br/>
+         
+            <Center>
+            <!---<input type="button" onclick="testinputJS()"  id="checkInv"  value="Check Inventory" styleClass="btn btn-lg btn-block" rerender="myRerender"></input>---->
+             <apex:commandbutton action="{!checkInv}" value="Check Inventory" rerender="myRerender"/>
+             <br/><br/>
+             <apex:outputPanel rendered="{!IF(response != null, true,false)}" > 
+                 <label for="response" class="control-label">Response:</label><br/>
+                <b><apex:outputText value="{!response}"></apex:outputText></b>
+            </apex:outputPanel>
+            </Center>
+        </div> 
+        
+   </apex:form> 
+</apex:page>

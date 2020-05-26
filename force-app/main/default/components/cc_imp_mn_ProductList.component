@@ -1,0 +1,471 @@
+<apex:component controller="cc_mn_ctrl_ProductList">
+
+  <script type="text/javascript">
+    CCRZ.uiProperties.productListView.desktop.tmpl = 'MyNexeoProductListBrowserImp';
+    CCRZ.uiProperties.productListView.phone.tmpl   = 'MyNexeoProductListPhoneImp';
+  </script>
+
+
+<script id="MyNexeoProductListPhoneImp" type="text/template">
+  <h2 class="title">{{pageLabelMap 'ProductsInc_ProductList'}}</h2>
+  <div class="products_1_row_medium">
+   {{#each this.prods}}
+    <div class="products_1_row_medium_item {{this.prodBean.id}}">
+     <div class="alert alert-error messagingSection-{{this.prodBean.id}}-Error" style="display: none"></div>
+     <div class="alert alert-info messagingSection-{{this.prodBean.id}}-Info" style="display: none"></div>
+    <div class="product_listing_viewport">
+      <a href="javascript:void(0);" class="productName" data-sku="{{this.prodBean.sku}}">
+      <!-- {{displayImage this.mediaWrapper 'prodList' alt=this.prodBean.name}}-->
+          {{pageLabelMap 'ProductList_TierPricing'}}
+      </a>
+     </div>
+     <p>
+      <a href="javascript:void(0);" class="productName" data-sku="{{this.prodBean.sku}}">{{this.prodBean.name}}</a>
+     </p>
+     {{#ifDisplay 'PL.DsplAddtInfo'}}
+      <p>
+       <a class="included_items" href="#additional_info{{this.prodBean.sku}}" id="additionalInfoLink" data-toggle="modal">{{pageLabelMap 'ProductsInc_AdditionalInfo'}}</a>
+       <div id="additional_info{{this.prodBean.sku}}" class="modal hide fade in" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
+        <div class="modal-header">
+         <button type="button" class="close" data-dismiss="modal" aria-hidden="true">x</button>
+         <h3 id="myModalLabel">{{this.prodBean.name}} {{pageLabelMap 'ProductsInc_MiscDetails'}}</h3>
+        </div>
+        <div class="modal-body">
+         {{#if this.miscDetails}}
+          {{this.miscDetails}}<br/><br/>
+         {{/if}}
+         {{#ifDisplay 'PL.DsplAddtlSku'}}
+          <strong>{{pageLabelMap 'SKU'}}</strong>&#160;{{this.prodBean.sku}}<br/><br/>
+         {{/ifDisplay}}
+         {{#ifDisplay 'PL.DsplAddtlShortDesc'}}
+          {{unescape this.prodBean.shortDesc}}<br/><br/>
+         {{/ifDisplay}}
+        </div>
+       </div>
+      </p>
+     {{/ifDisplay}}
+      <p><strong>{{pageLabelMap 'CustomerMaterialNumber'}}</strong>&#160;{{this.customerMaterialNumber}}</p>
+     {{#ifDisplay 'PL.DsplUOM'}}x
+      <p><strong>{{pageLabelMap 'ProductDetails_UnitOfMeasure'}}</strong>&#160;{{pageLabelPrefixMap 'UOM_' this.prodBean.UnitOfMeasure}}</p>
+     {{/ifDisplay}}
+      {{#ifDisplay 'PL.DsplListPrc'}}
+                            {{#if this.showPricing}}
+           {{#if this.basePrice}}
+            <p><span><del>{{price this.basePrice}}</del></span></p>
+           {{/if}}
+                            {{/if}}
+      {{/ifDisplay}}
+      {{#ifDisplay 'PL.DsplPrc'}}
+                            {{#if this.showNewSubscriptionSelection}}
+                                    <p><span><strong class="price priceSubscription">{{pageLabelMap 'Prod_SubsListPrice' (price this.price) (price this.minSubPrice) (price this.maxSubPrice)}}</strong></span></p>
+                            {{else}}
+                                <!--********************************************************-->
+                                {{#if this.maxPrice}}
+                                    <p><span><strong class="price">{{displayRangePrice 'ProductDetails_PriceRangeFormat' this.minPrice this.maxPrice}}</strong></span></p>
+                                {{else}}
+                                    {{#if this.displayPrice}}
+                                        <p class="price displayPrice">
+                                            {{pageLabelPrefixMap 'DisplayPrice_' this.displayPrice}}
+                                        </p>
+                                    {{else}}
+                                        {{#if this.showPricing}}
+                                            {{#if this.price}}
+                                                <p><span><strong class="price">{{this.priceCurrency}}</strong></span></p>
+                                            {{/if}}
+                                        {{/if}}
+                                    {{/if}}
+                                {{/if}}
+                            {{/if}}
+      {{/ifDisplay}}
+      {{#ifDisplay 'PL.DsplSvPrc'}}
+                            {{#if this.showPricing}}
+           {{#if this.savings}}
+            <p><span><strong>{{pageLabelMap 'YouSave'}}</strong>{{price this.savings}}</span><p>
+           {{/if}}
+                            {{/if}}
+      {{/ifDisplay}}
+                    {{#unless this.showNewSubscriptionSelection}}
+     {{#if this.canAddtoCart}}
+      {{#ifDisplay 'PL.DsplAddCart' }}
+       <p class="plus_minus">
+        {{#if this.qtySkipIncrement}}
+         <input type="button" value="{{pageLabelMap 'Prod_QtyDecrFF'}}" class="plus_minus minusFF">
+        {{/if}}
+        <input type="button" value="{{pageLabelMap 'Prod_QtyDecrSingle'}}" class="plus_minus minus">
+        {{#ifNotEquals this.qtySingleIncrement 1}}
+         <input type="text" readonly="true" name="qty" value="d" class="plus_minus entry" maxlength="7" />
+        {{else}}
+         <input type="text" name="qty" value="{{this.minimumQuantity}}" data-minqty="{{this.minimumQuantity}}" data-itemcu="{{this.currencyCode}}" data-errsection="messagingSection-{{this.prodBean.id}}-Error" class="input-text plus_minus entry verifyQuantity" maxlength="7" />
+        {{/ifNotEquals}}
+        <input type="button" value="{{pageLabelMap 'Prod_QtyIncrSingle'}}" class="plus_minus plus">
+        {{#if this.qtySkipIncrement}}
+         <input type="button" value="{{pageLabelMap 'Prod_QtyIncrFF'}}" class="plus_minus plusFF">
+        {{/if}}
+        <input type="hidden" name="qtyIncrement" value="{{this.qtySingleIncrement}}" class="item_qtyIncrement" />
+        <input type="hidden" name="qtySkipIncrement" value="{{this.qtySkipIncrement}}" class="item_qtySkipIncrement" />
+  
+
+       </p>
+       <p>
+        <button type="button" class="btn btn-primary addItem" data-seller="{{this.sellerID}}" data-id="{{this.prodBean.id}}" data-inventory="{{this.productInventory}}" data-errsection="messagingSection-{{this.prodBean.id}}-Error">{{pageLabelMap 'ProductsInc_AddToCart'}}</button>
+       </p>
+      {{/ifDisplay}}
+     {{/if}}
+                    {{/unless}}
+     <div class="wishFinder" data-sku="{{this.prodBean.sku}}">
+      {{#listFind this.prodBean.ProductType 'Aggregated|Dynamic Kit' false }}
+       <p class="wishButtons"></p>
+      {{/listFind}}
+     </div>
+    </div>
+   {{/each}}
+  </div>
+ </script>
+<style>
+
+.loader {
+  border: 16px solid #f3f3f3;
+  border-radius: 50%;
+  border-top: 16px solid #0DA96A;
+  width: 25px;  
+  height: 25px;
+  -webkit-animation: spin 1s linear infinite; /* Safari */
+  animation: spin 1s linear infinite;
+}
+.loader-hidden{
+	visibility: hidden;   
+    height:0px;
+}
+
+.loader-show{
+    visibility: visible;
+    }
+
+/* Safari */
+@-webkit-keyframes spin {
+  0% { -webkit-transform: rotate(0deg); }
+  100% { -webkit-transform: rotate(360deg); }
+}
+
+@keyframes spin {
+  0% { transform: rotate(0deg); }
+  100% { transform: rotate(360deg); }
+}
+
+</style>  
+<script id="MyNexeoProductListBrowserImp" type="text/template">
+  <h2 class="title">{{pageLabelMap 'ProductsInc_ProductList'}}</h2>
+  <div class="products_1_row_medium">
+    
+   {{#each this.prods}}   
+    <div class="products_1_row_medium_item {{this.prodBean.id}}">    
+     <div class="alert alert-error messagingSection-{{this.prodBean.id}}-Error" id="messagingSection-{{this.prodBean.id}}-Error" style="display: none"></div>
+     <div class="alert alert-info messagingSection-{{this.prodBean.id}}-Info" style="display: none"></div>
+     <div>
+    	<a href="javascript:void(0);" style="float: left; widht:100%;" class="productName" data-sku="{{this.prodBean.sku}}">{{this.prodBean.name}}</a>
+       
+        
+        <table style="table-layout: fixed;">
+            <tr>
+            <td valign="top">
+                    <table class="borderless">
+            <!--<tr><td style="width:20%">{{pageLabelMap 'ProductsInc_PricePer'}} {{pageLabelPrefixMap 'UOM_' this.prodBean.UnitOfMeasure}}:</td><td style="width:30%"> {{this.priceCurrency}}</td><td rowspan="7" style="width:50%">  			
+    
+ 			 </td></tr>-->
+                 <tr><td style="width:20%">{{pageLabelMap 'ProductsInc_CustomerSKU'}}</td><td style="width:30%">{{this.customerMaterialNumber}}</td><td style="width:50%"></td></tr>
+            <tr><td style="width:20%">{{pageLabelMap 'ProductsInc_Documents'}}</td><td style="width:30%"><a href=""><a href="/mynexeo/cc_imp_mn_ViewSDSeDoc?strPid={{this.productNumber}}"   target="_blank">{{pageLabelMap 'ProductsInc_SDS'}}</a></a></td><td style="width:50%"></td></tr>
+            <tr><td style="width:20%">{{pageLabelMap 'Container_Weight'}}</td><td>{{containerWeight}}</td></tr>
+            <tr><td style="width:20%; height:10px;"> 	<div class="input-prepend" style="float: left; widht:100%;">
+  					<span class="add-on" style="height: 17px;">{{pageLabelPrefixMap 'UOM_' uom}}</span>  
+         			<input id="qty-{{this.prodBean.id}}"  style="height: 12px; background-color:#FFFFFF" type="text" name="qty" value="{{this.minimumQuantity}}" data-check="check-{{this.prodBean.id}}" data-add="add-{{this.prodBean.id}}" data-minqty="{{minimumQuantity}}" data-itemcu="{{currencyCode}}" class="input-text entry plus_minus verifyQuantity" data-errsection="messagingSection-{{this.prodBean.id}}-Error" data-id="{{this.prodBean.id}}" maxlength="7" />             					
+  	           </div> </td><td style="width:30%"><button type="button" id="add-{{this.prodBean.id}}" style="height: 27px; margin-left:3px; width:140px; padding-left:3px; padding-right:3px; text-align=center; border-radius:5px;" class="btn btn-success checkCurrency addItem" data-id="{{this.prodBean.id}}" data-minqty="{{minimumQuantity}}" data-itemcu="{{currencyCode}}" data-seller="{{this.sellerID}}" data-inventory="{{this.productInventory}}" data-errsection="messagingSection-{{this.prodBean.id}}-Error"><i class="icon-shopping-cart"></i>{{pageLabelMap 'Component_MiniwishList_AddToCart'}}</button></span></td><td style="width:50%"></td></tr>            
+            {{#ifDisplay 'PL.DsplCheckInventory' }}
+           <tr>
+                   <td style="width:20%">     <div class="input-prepend" style="float: left; widht:100%;">                                          
+       			 <input id="fromdate{{this.prodBean.id}}" type="text" class="form-control" placeholder="{{pageLabelMap 'ProductsInc_ReqDelDate'}}" data-zdp_readonly_element="true">        
+  	           </div></td><td style="width:30%"><button id="check-{{this.prodBean.id}}" type="button" style="height: 27px; margin-left:3px; width:140px; padding-left:3px; padding-right:3px; text-align=center; border-radius:5px;" class="btn btn-success checkInventory" data-id="{{this.prodBean.id}}" data-pli="{{pliID}}" data-minqty="{{minimumQuantity}}" data-itemcu="{{currencyCode}}" data-uom="{{uom}}" data-seller="{{this.sellerID}}" data-inventory="{{this.productInventory}}" data-errsection="messagingSection-{{this.prodBean.id}}-Error">{{pageLabelMap 'ProductsInc_CheckInventory'}}</button></span></td><td style="width:50%"></td>              
+           </tr>
+               {{/ifDisplay}}
+               <tr><td colspan="2" style="width:20%;" id="checkInventoryMessages{{this.prodBean.id}}" align="center"></td><td style="width:30%"></td><td style="width:50%"></td></tr>              
+               </table>
+            
+            </td>
+        
+        
+        <td valign="top">
+            <div id="pricingTiersProductList{{@index}}"></div>     
+        </td>
+        
+        
+        
+        </tr>
+        </table>
+
+  </div>           
+
+     </div>
+    </div>
+   {{/each}}
+  </div>
+ </script>
+    
+	<script id="TieredPricingProductList" type="text/template">
+    	
+    	
+        <table id="tieredPricingProductList" class="table table-striped">
+            <tr class="even">
+                <td style="padding: 2px 4px 2px;" class="right_align">{{pageLabelMap 'cc_imp_TieredPricing_LowerBound'}}</td>
+                <td style="padding: 2px 4px 2px;" class="right_align">{{pageLabelMap 'cc_imp_TieredPricing_Amount'}}</td>
+                <td style="padding: 2px 4px 2px;" class="right_align">{{pageLabelMap 'cc_imp_TieredPricing_BaseAmount'}}</td>
+            </tr>
+            {{#each this.tiers}}
+            <tr class="odd myAccOrderRows">
+                <td style="padding: 2px 4px 2px;" class="right_align">{{this.lowerBound}}</td>
+                <td style="padding: 2px 4px 2px;" class="right_align">{{price this.amount}}</td>
+                <td style="padding: 2px 4px 2px;" class="right_align">{{this.baseAmount}}</td>
+            </tr>
+            {{/each}}   
+        </table>
+    	
+    </script>    
+ 
+<script type="text/javascript">
+
+   
+    jQuery(function($) {
+		
+        CCRZ.subsc = _.extend(CCRZ.subsc||{});
+        CCRZ.subsc.plistData = {'jsonProductEntryData' : {! jsonProductEntryData}};
+        //CCRZ.plistData = CCRZ.subsc.plistData;
+
+        CCRZ.pubSub.once('view:productPaginationView:entriesLoaded', function(data) {
+            var dataArray = CCRZ.subsc.plistData.jsonProductEntryData;
+           
+            var triggerIt = false;
+            if (dataArray != null && dataArray.length != 0) {
+              triggerIt = true;
+            }
+            if (triggerIt) {
+              CCRZ.pubSub.trigger('view:FeatureFilterView:filter', dataArray);
+            }
+        });
+
+        CCRZ.pubSub.once("view:productListView:refresh", function(view) {
+            var dataArray = CCRZ.subsc.plistData.jsonProductEntryData;
+            var triggerIt = false;
+                      
+            if (dataArray != null && dataArray.length != 0) {
+              triggerIt = true;
+            }
+            if (triggerIt) {
+              CCRZ.pubSub.trigger('view:productPaginationView:entriesLoaded', dataArray);                
+            }
+              var viewPrototype = Object.getPrototypeOf(view);
+               	if (viewPrototype != null) {                
+                  	  viewPrototype.events = _.extend(viewPrototype.events, {
+                      "click .addItem" : "verifyQuantityOnAddToCartButton",
+                    // "focus .verifyQuantity" : "saveCurrentQuantity",
+                      "change .verifyQuantity" : "verifyQuantity",
+                      "click .checkInventory" : "checkInventory"
+                  });
+                      viewPrototype.verifyQuantityOnAddToCartButton= function(event) {
+                    console.log("*** verifyQuantityOnAddToCartButton")
+                    var v = this;
+                    var success = true;
+
+                          var objLink = $(event.target);
+                     if(! this.performVerifyCurrency(objLink)){
+                          success = false;
+                        return false;               
+                     }  
+                      else{
+                      if(success){                      
+                          //this.addItem(event);                                                       
+                          this.addToCart(event);
+                          setTimeout(function(){ location.reload(); }, 2000);
+                          //
+                          //return true;
+                    }                     
+                      }          
+                  };
+  				  	  viewPrototype.checkInventory = function(event) {
+                      	var objLink = $(event.target);	            
+                        var errsection = objLink.data("errsection");
+                        var date= $( "#fromdate"+objLink.data("id")).val(); 
+                        var qty= $( "#qty-"+objLink.data("id")).val(); 
+                        var uom=objLink.data("uom");
+                          
+                          if(date==''){
+                              CCRZ.pubSub.trigger('pageMessage',{
+                                messages :      [{
+                                type:          'CUSTOM',
+                                severity:      'ERROR',
+                                classToAppend: errsection,
+                                labelId:       'cc_imp_error_Atp_date_error'}]
+                              });
+                          		return false;
+                          }
+                         
+                       	$( "#"+errsection).addClass("Display:none;");
+                        document.getElementById('checkInventoryMessages'+objLink.data("id")).innerHTML = '<div id="loader-{{this.prodBean.id}}" class="loader" ></div>';                                                 
+                   	 	Visualforce.remoting.Manager.invokeAction('{!$RemoteAction.cc_mn_ctrl_ProductList.checkInventory}',CCRZ.pagevars.remoteContext,objLink.data("pli"),qty,uom,date,
+            			function(result, event){
+                			if (event.status) {       
+                                //$( "#loader-"+objLink.data("id")).addClass( "loader-hidden" );
+                                document.getElementById('checkInventoryMessages'+objLink.data("id")).innerHTML = result;
+                                    setTimeout(function() {
+   								document.getElementById('checkInventoryMessages'+objLink.data("id")).innerHTML = '';
+									}, 10000);
+                			} 
+                            else{                            
+                            	 
+                                 CCRZ.pubSub.trigger('pageMessage',{
+                                messages :      [{
+                                type:          'CUSTOM',
+                                severity:      'ERROR',
+                                classToAppend: errsection,
+                                labelId:       'cc_imp_error_InventoryError'}]
+                              });
+                            }
+            			}, 
+            			{escape: true}
+        			   );                            
+                       };        	
+        	          viewPrototype.verifyQuantity = function(event) {
+
+                      var objLink = $(event.target);
+                      this.performVerifyQuantity(objLink);
+                          
+                          
+                  return false;
+                };
+                  	  viewPrototype.verifyCurrency = function(event) {
+                                                            
+                  return false;
+                };
+                  	  viewPrototype.performVerifyCurrency = function(objLink) {           
+                      var itemcurrency =objLink.data("itemcu");
+                      var errsection = objLink.data("errsection");
+                      var cartCurrency ="{!cartCurrency}"; 
+                      // alert("itemcurrency "+itemcurrency);
+                      //    alert("cartcurrency "+cartCurrency);                      
+                  if(cartCurrency!=itemcurrency && cartCurrency!=""){
+                      CCRZ.pubSub.trigger('pageMessage',{
+                                messages :      [{
+                                type:          'CUSTOM',
+                                severity:      'ERROR',
+                                classToAppend: errsection,
+                                labelId:       'cc_imp_error_currencyError'}]
+                              });
+                      
+                            return false;
+                      }
+                      else{                          
+                        return true;          
+                      }            
+                  };
+                      viewPrototype.performVerifyQuantity = function(objLink) {
+                          var qty = objLink.val();                     
+                          var minqty = objLink.data("minqty");                         
+                          var errsection = objLink.data("errsection");  
+                          var checkButton= objLink.data("check"); 
+                          var addButton=objLink.data("add");
+                            if(qty < minqty){
+                                console.log("*** Minimum Quantity not met");
+                      				$("#"+checkButton).attr("disabled","disabled");
+                                	$("#"+addButton).attr("disabled","disabled");                                
+                                      CCRZ.pubSub.trigger('pageMessage',{
+                                        messages :      [{
+                                        type:          'CUSTOM',
+                                        severity:      'ERROR',
+                                        classToAppend: errsection,
+                                        labelId:       'cc_imp_error_minQuantityError'}]
+                                      });
+                                    return false;
+                            }        
+                          $("#"+checkButton).removeAttr('disabled');
+                          $("#"+addButton).removeAttr('disabled');                          
+                          $("."+errsection).css("display", "none");
+                            return true;
+                     };
+            	}	
+
+        });
+
+        	CCRZ.views.TieredPricingProductListView = CCRZ.CloudCrazeView.extend({
+            	template: CCRZ.util.template('TieredPricingProductList'),
+            	viewName : "TieredPricingProductList",
+           		
+
+            	render: function() {
+                    var allProIds = [];
+                    var productTiers = {!tiers}; 
+                    
+                    jQuery.each(CCRZ.prodView.items.toJSON(), function(i, val) {
+                        var thisSId = val.prodBean.sfid;
+                        allProIds.push(thisSId);
+                       
+                    });
+					
+                    
+                    
+
+                                        for (var i = 0; i < allProIds.length; i++) { 
+                                           
+                                            this.setElement('#pricingTiersProductList'+i);
+                                                var	data = {"tiers" : productTiers[allProIds[i]]};
+                                                this.$el.html(this.template(data));
+                                            }
+                  
+                        
+                    
+
+      	
+                	CCRZ.pubSub.trigger("view:"+this.viewName+":refresh", this);
+            	}
+        	});        
+        
+        CCRZ.pubSub.on("view:productListView:refresh", function(view) {
+            
+                $( "input[id^=fromdate]" ).Zebra_DatePicker({
+                direction: 1,
+                disabled_dates: ['* * * 0,6'],
+                format: 'm/d/Y'
+                }); 
+				
+            if (CCRZ.prodView.items && CCRZ.prodView.items.length != 0 && !CCRZ.subsc.refresh) {
+              cc_mn_ctrl_ProductList.fetchExtendedData(
+                CCRZ.pagevars.remoteContext,
+                JSON.stringify(CCRZ.prodView.items.toJSON()),
+                function(response) {
+                  if (response && response.success) {
+                      
+                    CCRZ.subsc.extendedMap = response.data;
+
+                    for (var i = 0; i < CCRZ.prodView.items.models.length; i++) {
+                      var prodId = CCRZ.prodView.items.models[i].attributes.prodBean.id;
+                      CCRZ.prodView.items.models[i].attributes = _.extend(CCRZ.prodView.items.models[i].attributes, CCRZ.subsc.extendedMap[prodId]);
+                    }
+                    CCRZ.subsc.refresh = true;
+                      
+                    CCRZ.prodView.render();
+                      
+                    if (!CCRZ.subsc.TieredPricingProductList) {
+                        CCRZ.subsc = _.extend(CCRZ.subsc||{});
+                        CCRZ.subsc.TieredPricingProductList = new CCRZ.views.TieredPricingProductListView();
+                    }
+                    CCRZ.subsc.TieredPricingProductList.render();                      
+                  }
+                }
+              );
+            }
+            else {
+              CCRZ.subsc.refresh = false;
+            }
+        });
+    });
+
+</script>
+
+
+</apex:component>

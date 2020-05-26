@@ -1,0 +1,68 @@
+<apex:page standardController="Enhancement__c" recordSetVar="unused" sidebar="false" lightningStylesheets="{!$User.UIThemeDisplayed == 'Theme4d'}">
+<style>
+div.autoCompleteBoxScrolling {
+	width: 26% !important;
+}   
+</style>     
+    
+    <apex:includeScript value="{!$Resource.UtilJS}" />
+    <apex:form >
+        <apex:pageBlock >
+            <apex:pageMessages />
+            <apex:pageBlock >
+                Note: All modifications made on the page will be lost if Return button is clicked without clicking the Save button first. 
+            </apex:pageBlock>
+            <apex:pageBlockButtons >
+                <apex:commandButton value="Save" action="{!save}"/>
+                <apex:commandButton value="Return" action="{!cancel}"/>
+            </apex:pageBlockButtons>
+            <apex:pageBlockTable value="{!selected}" var="a" id="table">
+                
+                <apex:column headerValue="Line of Business">
+                    <apex:inputField value="{!a.Line_of_Business__c}"/>
+                </apex:column>
+                
+                <apex:column headerValue="Enhancement Name">
+                    <apex:inputField value="{!a.name}"/>
+                </apex:column>
+                
+                <apex:column headerValue="Project / Work stream">
+                    <apex:inputField value="{!a.Project__c}"/>
+                </apex:column>
+                
+                <apex:column headerValue="InScope">
+                    <apex:inputField value="{!a.Approved__c}"/>
+                </apex:column>
+                
+                 <apex:column headerValue="Priority">
+                    <apex:inputField value="{!a.Priority__c}"/>
+                </apex:column>
+                
+      <!--          <apex:column headerValue="BSM">
+                    <apex:inputField value="{!a.BSM__c}"/>
+                </apex:column>
+                
+                <apex:column headerValue="Primary Business Contact">
+                    <apex:inputField value="{!a.User_Contact__c}"/>
+                </apex:column>      -->          
+                
+                <apex:column headerValue="Enhancement Number">
+                    <apex:inputField value="{!a.Enhancement_Number__c}"/>
+                </apex:column>   
+                
+                <apex:column headerValue="Status">
+                    <apex:inputField value="{!a.Project_Status__c}"/>
+                </apex:column> 
+                
+                <apex:column headerValue="Target Quarter">
+                    <apex:inputField value="{!a.Target_Quarter__c}"/>
+                </apex:column>
+                
+                <apex:column headerValue="Target Go-Live Date">
+                    <apex:inputField value="{!a.Target_Date_for_Completion__c}"/>
+                </apex:column> 
+                
+            </apex:pageBlockTable>
+        </apex:pageBlock>
+    </apex:form>
+</apex:page>

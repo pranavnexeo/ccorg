@@ -1,0 +1,12 @@
+<apex:page sidebar="false" showheader="false">
+<apex:form >
+<apex:pageblock >
+<center>
+<b><apex:outputtext value="VPN is Requried to use this Tab"/></b><br/>
+<apex:outputtext value="If you are already on the VPN or otherwise on the Nexeo Network, "/><br/>
+<apex:outputtext value="click the continue button at the bottom right of this page." /><br/><br/>
+<apex:image value="{!$Resource.VPN_Logo}"/>
+</center>
+</apex:pageblock>
+</apex:form>
+</apex:page>

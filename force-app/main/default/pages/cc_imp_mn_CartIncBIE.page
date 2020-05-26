@@ -1,0 +1,702 @@
+<apex:page showHeader="false" sidebar="false" docType="html-5.0" standardStylesheets="false" cache="false" applyHtmlTag="false" applyBodyTag="false" controller="cc_mn_ctrl_Cart">
+
+<script>
+ CCRZ.uiProperties.CartDetailView.partials.actionsTotals = '#CartDetailActionTotalsViewImp';
+ CCRZ.uiProperties.CartDetailView.partials.cartItemsDesktop = '#MyNexeoCartItemDetailViewDesktop';
+ CCRZ.uiProperties.CartDetailView.partials.cartItemsMobile   = '#MyNexeoCartItemDetailViewMobile';
+ CCRZ.uiProperties.CartDetailView.partials.rfqModal = '#rfqModalTemplateCorrection';
+</script>
+
+
+<script id="CartDetailActionTotalsViewImp" type="text/template">
+		<ul class="shopping_cart">
+			<li><button class="btn slim continueShoppingButton" name="" type="button" >{{pageLabelMap 'CartInc_ContinueShopping'}}</button></li>
+			{{#if {!ISPICKVAL($User.UserType, 'Guest')} }}
+			{{ else }}
+				<li><button class="btn slim" data-toggle="modal" data-target="#wishMod" name="" type="button" >{{pageLabelMap 'Create_Cart_Wishlist'}}</button></li>
+			{{/if}}
+			<li><button class="btn slim updateCartButton verifyQuantityOnUpdateCartButton" onclick="window.location.reload(true);" name="" type="button" >{{pageLabelMap 'CartInc_Update'}}</button></li>
+			{{#if {!ISPICKVAL($User.UserType, 'Guest')} }}
+				{{#ifDisplay 'C.EmailAnon'}}
+					<li><a href="#emailModal" id="emailCartLink" data-toggle="modal"><button class="btn slim remove" type="button" >{{pageLabelMap 'CartOrderEmailer_Header'}}</button></a></li>
+				{{/ifDisplay}}
+			{{else}}
+				{{#ifDisplay 'C.EnableEmailCart'}}
+					<li><a href="#emailModal" id="emailCartLink" data-toggle="modal"><button class="btn slim remove" type="button" >{{pageLabelMap 'CartOrderEmailer_Header'}}</button></a></li>
+				{{/ifDisplay}}
+			{{/if}}
+			<!-- rfq button -->
+			{{#if this.cartItems }}
+				{{#ifDisplayRFQ this.cartItems.models}}
+					<li><a href="#rfqModal" id="rfqLink" data-toggle="modal"><button class="btn slim remove" type="button" >{{pageLabelMap 'CartRFQForm_Header'}}</button></a></li>
+				{{/ifDisplayRFQ}}
+			{{/if}}
+			<!-- rfq button -->
+		</ul>
+		<ul class="checkout clear_right">
+			{{#if subTotal}}
+				<li class="grand_total">{{pageLabelMap 'CartInc_Subtotal'}}: {!cartCurrency} ${{{price subTotal}}}</li>
+			{{/if}}
+			{{#if this.totalInfo}}
+				<li class="cart_total_amount">{{this.totalInfo}}</li>
+			{{/if}}
+			<li class="totalsmessagingSection"></li>
+			{{#if this.cartItems}}
+				{{#ifNotEquals this.cartItems.length 0}}
+					{{#if this.allowCheckout}} 
+                    
+ 						{{#ifEquals this.preventCheckout false}}
+							<li>
+								<button type="button" class="btn btn-primary wide checkOutBtn verifyQuantityOnGoToCheckoutButton verifyCurrency">{{pageLabelMap 'CartInc_Checkout'}}</button>
+							</li>
+						{{/ifEquals}}
+					{{/if}}
+				{{/ifNotEquals}}
+			{{/if}}
+		</ul>
+		
+		{{#ifStoreSetting 'Display_Cart_Coupon__c'}}
+			<div class="discount_code_container">
+			{{#if this.hasCoupon}}
+				<form id="couponClearForm">
+				<h2 class="title">{{pageLabelMap 'CartInc_discountCodes'}}</h2>
+				<div class="discount_code">
+						<p>{{pageLabelMap 'CartInc_AppliedCoupon'}} {{this.couponName}}</p>
+						<p><button id="clearCouponBtn" type="button">{{pageLabelMap 'CartInc_ClearCoupon'}}</button></p>
+					</div>
+				</form>
+			{{else}}
+				<form id="couponAddForm">
+					<h2 class="title">{{pageLabelMap 'CartInc_discountCodes'}}</h2>
+					<div class="discount_code">
+						<p id="couponAddError"></p>
+					<p>{{pageLabelMap 'CartInc_EntercouponCode'}}</p>
+						<p><input type="text" id="addCouponId" name="couponId" /></p>
+						<div class="couponMessagingSection-Error"></div>
+						<p><button id="addCouponBtn" type="button">{{pageLabelMap 'CartInc_ApplyCoupon'}}</button></p>
+				</div>
+				</form>
+			{{/if}}
+			</div>
+		{{/ifStoreSetting}}
+	</script>
+
+<script id="CartDetail-View-Mobile" type="text/template">
+
+  <div class="cart_1_row_medium_container">
+   <h2 class="title">{{pageLabelMap 'CartInc_ShoppingCart'}}</h2>
+   <div class="cart_1_row_medium">
+    {{> headerSection}}
+    <!--************-->
+    <div class="cart_item_list">
+     {{#if this.cartItems}}
+      {{#each this.cartItems.models}}
+       <div class="cart_item {{this.attributes.itemID}}">
+        {{> cartItemsMobile}}
+       </div>
+      {{/each}}
+     {{/if}}
+    </div>
+    {{> emailModal}}
+    {{> rfqModal}}
+    {{> wishModal}}
+    <div class="cartactions">
+     <button class="btn slim remove updateCartButton verifyQuantityOnUpdateCartButton" type="button" >{{pageLabelMap 'CartInc_Update'}}</button>
+     {{#if false }}
+     {{ else }}
+      {{#ifStoreSetting 'AutoCalcPriceAdjust__c'}}
+      {{else}}
+       <button class="btn slim remove getExtPricingButton" type="button" >{{pageLabelMap 'CartInc_ApplyDiscounts'}}</button>
+      {{/ifStoreSetting}}
+      <button class="btn slim createWishlist" name="" type="button" data-toggle="modal" data-target="#wishMod">{{pageLabelMap 'Create_Cart_Wishlist'}}</button>
+     {{/if}}
+     {{#if false }}
+      {{#ifDisplay 'C.EmailAnon'}}
+       <a href="#emailModal" id="emailCartLink" data-toggle="modal"><button class="btn slim remove" type="button" >{{pageLabelMap 'CartOrderEmailer_Header'}}</button></a>
+      {{/ifDisplay}}
+     {{else}}
+      {{#ifDisplay 'C.EnableEmailCart'}}
+       <a href="#emailModal" id="emailCartLink" data-toggle="modal"><button class="btn slim remove" type="button" >{{pageLabelMap 'CartOrderEmailer_Header'}}</button></a>
+      {{/ifDisplay}}
+     {{/if}}
+			<!-- rfq button -->
+			{{#if this.cartItems }}
+				{{#ifDisplayRFQ this.cartItems.models}}
+					<li><a href="#rfqModal" id="rfqLink" data-toggle="modal"><button class="btn slim remove" type="button" >{{pageLabelMap 'CartRFQForm_Header'}}</button></a></li>
+				{{/ifDisplayRFQ}}
+			{{/if}}
+
+			<!-- rfq button -->
+    </div>
+    <div class="total_cart">
+     <span class="cart_total_amount">{{pageLabelMap 'CartInc_Total'}}: {{price this.subTotal}}</span>
+     {{#if this.totalInfo}}
+      <span class="cart_total_amount">{{this.totalInfo}}</span>
+     {{/if}}
+    </div>
+    <!--*****************************--> 
+    {{#ifStoreSetting 'Display_Cart_Coupon__c'}}
+    <div class="discount_code_container_mobile ">
+    {{#if this.hasCoupon}}
+     <form id="couponClearForm">
+     <h2 class="title">{{pageLabelMap 'CartInc_discountCodes'}}</h2>
+     <div class="discount_code_mobile">
+       <p>{{pageLabelMap 'CartInc_AppliedCoupon'}} {{this.couponName}}</p>
+       <p><button id="clearCouponBtn" type="button">{{pageLabelMap 'CartInc_ClearCoupon'}}</button></p>
+      </div>
+     </form>
+    {{else}}
+     <form id="couponAddForm">
+      <h2 class="title">{{pageLabelMap 'CartInc_discountCodes'}}</h2>
+      <div class="discount_code_mobile">
+       <p id="couponAddError"></p>
+      <p>{{pageLabelMap 'CartInc_EntercouponCode'}}</p>
+       <p><input type="text" id="addCouponId" name="couponId" /></p>
+       <div class="couponMessagingSection-Error"></div>
+       <p><button id="addCouponBtn" type="button">{{pageLabelMap 'CartInc_ApplyCoupon'}}</button></p>
+     </div>
+     </form>
+    {{/if}}
+    </div>
+   {{/ifStoreSetting}}
+    {{#if this.cartItems}}
+     {{#ifNotEquals this.cartItems.length 0}}
+      {{#if this.allowCheckout}}
+       {{#ifEquals this.preventCheckout false}}
+        <div class="button_large_container">
+         <input type="button" class="btn btn-primary checkOutBtn verifyQuantityOnGoToCheckoutButton" value="{{pageLabelMap 'CartInc_Checkout'}}"/>
+        </div>
+       {{/ifEquals}}
+      {{/if}}
+     {{/ifNotEquals}}
+    {{/if}}
+   </div>
+  </div>
+
+</script>
+
+<script id="MyNexeoCartItemDetailViewDesktop" type="text/template">
+  {{#with this.attributes}}
+   {{#ifEquals itemStatus 'Invalid'}}
+    <div class="alert alert-error">
+     <p class="item_title">
+      <a href="#" class="prodLink" data-id="{{mockProduct.sku}}">{{displayProductName 'Aggregate_Display' displayProductBean.name mockProduct.name }}</a>
+     </p>
+     				<p><span><strong>{{pageLabelMap 'SKU'}}:</strong> {{mockProduct.sku}}</span></p>
+            <p><span><strong>{{pageLabelMap 'ProductDetails_UnitOfMeasure'}}:</strong>&#160;{{pageLabelPrefixMap 'UOM_' this.mockProduct.UnitOfMeasure}}</span></p>
+     				<p><span><strong>{{pageLabelMap 'CustomerMaterialNumber'}}:</strong> {{this.customerMaterialNumber}}</span></p>
+                    {{#if showSubProdTerm}}
+                        <p><label class="subscriptionSummary">{{insertTokens cartDisplayName displayName (price price) (price SubAmount) (price recurringPrice) (price recurringPriceSubAmount) (pageLabelPrefixMap 'Subscriptions_Frequency_' orderFrequencyUOM) (pageLabelPrefixMap 'Subscriptions_Frequency_' installmentFrequencyUOM) orderFrequency installmentFrequency installmentCount orderCount}}</span></label></p>
+                    {{/if}}
+     <div class="clear"></div>
+     <button type="button" class="btn slim deleteItem removeItemButton" data-dismiss="modal" aria-hidden="true" data-id="{{itemID}}" >{{pageLabelMap 'Action_Delete'}}</button>
+    </div>
+   {{else}}
+    <div class="quantity" data-id="{{itemID}}">
+     {{#ifNotEquals cartItemType 'Coupon'}}
+      <p class="section2 plus_minus" data-id="{{itemID}}">
+      <!--
+       {{> cartItemsQty}}
+       -->
+
+        <input type="button" value="-" class="plus_minus minus">
+        <input id="entry_{{this.itemID}}" data-minqty="{{this.minimumQuantity}}" data-errsection="messagingSection-{{this.itemID}}-Error" type="text" name="qty" value="{{this.quantity}}" class="input-text entry plus_minus verifyQuantity" maxlength="7">
+        <input type="button" value="+" class="plus_minus plus">
+        <input type="hidden" name="qtyIncrement" value="1" class="item_qtyIncrement">
+        <input type="hidden" name="qtySkipIncrement" value="" class="item_qtySkipIncrement">       
+      </p>
+     {{/ifNotEquals}}
+     <div class="price">
+      <p class="price">
+       {{#if price}}
+        <!--{{pageLabelMap 'CartInc_Price'}}: {{{price price}}}<br />-->
+            {{pageLabelMap 'PriceUOM'}}: {{{price this.priceuom}}}<br />
+            {{pageLabelMap 'PricePerUnit'}}: {{{price this.priceperunit}}}<br />
+       {{/if}}
+       {{#if absoluteDiscount}}
+        <span>{{pageLabelMap 'YouSave'}}: {{{price absoluteDiscount}}}</span><br/>
+       {{/if}}
+       <strong>{{pageLabelMap 'CartInc_Total'}}: {!cartCurrency} $ {{{price itemTotal}}}</strong>
+      </p>
+     </div>
+    </div>
+    {{#ifEquals cartItemType 'Coupon'}}
+     <p class="item_title coupon_title" data-id="{{mockProduct.sku}}">
+      <span class="couponCartLabel">{{pageLabelMap 'CartInc_AppliedCoupon'}}</span>{{mockProduct.name}}
+     </p>
+    {{else}}
+  
+     <p class="item_title">
+      <a href="#" class="prodLink" data-id="{{mockProduct.sku}}">{{displayProductName 'Aggregate_Display' displayProductBean.name mockProduct.name }}</a>
+     </p>
+                    <!--<p><span><strong>{{pageLabelMap 'SKU'}}:</strong> {{mockProduct.sku}}</span></p>-->
+                    <p><span><strong>{{pageLabelMap 'SKU'}}:</strong> {{this.productNumber}}</span></p>
+          <p><span><strong>{{pageLabelMap 'ProductDetails_UnitOfMeasure'}}:</strong>&#160;{{pageLabelPrefixMap 'UOM_' this.mockProduct.UnitOfMeasure}}</span></p>
+ 					<p><span><strong>{{pageLabelMap 'CustomerMaterialNumber'}}:</strong> {{this.customerMaterialNumber}}</span></p>
+
+                    {{#if showSubProdTerm}}
+                        <p>
+                         <span>
+                          {{insertTokens cartDisplayName displayName (price price) (price SubAmount) (price recurringPrice) (price recurringPriceSubAmount) (pageLabelPrefixMap 'Subscriptions_Frequency_' orderFrequencyUOM) (pageLabelPrefixMap 'Subscriptions_Frequency_' installmentFrequencyUOM) orderFrequency installmentFrequency installmentCount orderCount}}
+                         </span>
+                        </p>
+                    {{else}}
+                        {{#if this.isSubscription}}
+                            <p class="subscriptionSummary">{{subscriptionSummary 'Cart_Subscription_' this.subscriptionFrequency mockProduct.sku itemTotal}}</p>
+                        {{/if}}
+                    {{/if}}
+
+                    <div class="cart-links">
+                     {{#if showIncludedItems }}
+       <a href="#included_items{{itemID}}" class="includedItemsLink" id="includedItemsLink{{itemID}}" data-desktop="true" data-toggle="modal" data-id="{{itemID}}">{{pageLabelMap 'CartInc_IncludedItems'}}</a>
+       {{#ifDisplay 'C.DsplAddtInfo'}} &#160;|&#160;{{/ifDisplay}}
+       {{> includedDisplay}}
+      {{/if}}
+      {{#ifDisplay 'C.DsplAddtInfo'}}
+       <a class="included_items" href="#additional_info{{itemID}}" id="additionalInfoLink" data-toggle="modal">{{pageLabelMap 'AdditionalInfo'}}</a>
+       {{#ifDisplay 'C.DsplComments'}} &#160;|&#160;{{/ifDisplay}}
+       {{> cartItemAdditional}}
+      {{/ifDisplay}}
+      {{#ifDisplay 'C.DsplComments'}}
+       <a href="#comments_{{itemID}}" id="commentsLink" data-toggle="modal">{{pageLabelMap 'CartLineCommentLabel'}}</a>
+       {{> cartItemComment}}
+      {{/ifDisplay}}
+                    </div>
+
+     
+                    
+     {{#each minorLines}}
+                        {{#if showSubProdTerm}}
+                            <p><label class="subscriptionSummary">{{insertTokens cartDisplayName displayName (price price) (price SubAmount) (price recurringPrice) (price recurringPriceSubAmount) (pageLabelPrefixMap 'Subscriptions_Frequency_' orderFrequencyUOM) (pageLabelPrefixMap 'Subscriptions_Frequency_' installmentFrequencyUOM) orderFrequency installmentFrequency installmentCount orderCount}}</span></label></p>
+                        {{else}}
+                            {{#if this.isSubscription}}
+                                <p class="subscriptionSummary">{{subscriptionSummary 'Cart_Subscription_' this.subscriptionFrequency mockProduct.sku itemTotal}}</p>
+                            {{/if}}
+                        {{/if}}
+     {{/each}}
+     <div class="clear"></div>
+     <div class=" wishFinder" data-sku="{{mockProduct.sku}}">
+      <button type="button" class="btn slim deleteItem removeItemButton" data-dismiss="modal" aria-hidden="true" data-id="{{itemID}}" >{{pageLabelMap 'Action_Delete'}}</button>
+      {{#unless showSubProdTerm}}
+                                <div class="wishButtons"></div>
+                           {{/unless}}
+     </div>
+    {{/ifEquals}}
+    <div class="alert alert-error messagingSection-{{itemID}}-Error" style="display: none"></div>
+    <div class="alert alert-info messagingSection-{{itemID}}-Info" style="display: none"></div>
+   {{/ifEquals}}
+  {{/with}}
+ </script>
+ 
+ <script id="MyNexeoCartItemDetailViewMobile" type="text/template">
+  {{#with this.attributes}}
+   {{#ifEquals itemStatus 'Invalid'}}
+    <div class="alert alert-error">
+     <div class="cart_1_row_medium_viewport">
+      <a href="#">{{{displayImage mediaWrapper 'cart'}}}</a>
+     </div>
+     <p><a href="#" class="prodLink" data-id="{{mockProduct.sku}}">{{displayProductName 'Aggregate_Display' displayProductBean.name mockProduct.name }}</a></p>
+     <p>SKU: {{mockProduct.sku}}</p>
+     <p>{{pageLabelMap 'CustomerMaterialNumber'}}: {{this.customerMaterialNumber}}</p>
+     <div class="clear"></div>
+     <button type="button" class="btn remove removeItemButton" data-id="{{itemID}}">{{pageLabelMap 'Action_Delete'}}</button>
+    </div>
+   {{else}}
+    {{#ifNotEquals cartItemType 'Coupon'}}
+     <div class="cart_1_row_medium_viewport">
+      <a href="#">{{{displayImage mediaWrapper 'cart'}}}</a>
+     </div>
+    {{/ifNotEquals}}
+    <p>
+     <a href="#" class="prodLink" data-id="{{mockProduct.sku}}">{{displayProductName 'Aggregate_Display' displayProductBean.name mockProduct.name }}</a>
+    </p>
+    {{#ifNotEquals cartItemType 'Coupon'}}
+     <p>{{pageLabelMap 'SKU'}}: {{mockProduct.sku}}</p>
+     <p>{{pageLabelMap 'ProductDetails_UnitOfMeasure'}}: {{pageLabelPrefixMap 'UOM_' this.mockProduct.UnitOfMeasure}}</p>
+
+     <p>{{pageLabelMap 'CustomerMaterialNumber'}}: {{this.customerMaterialNumber}}</p>
+     <p class="included_items">
+      {{#if showIncludedItems }}
+       <a href="#included_items{{itemID}}" class="includedItemsLink" id="includedItemsLink{{itemID}}" data-desktop="false" data-toggle="modal" data-id="{{itemID}}">{{pageLabelMap 'CartInc_IncludedItems'}}</a>
+       {{#ifDisplay 'C.DsplAddtInfo'}} |{{/ifDisplay}}
+      {{/if}}
+      {{#ifDisplay 'C.DsplAddtInfo'}}
+       <a class="included_items" href="#additional_info{{itemID}}" id="additionalInfoLink" data-toggle="modal">{{pageLabelMap 'AdditionalInfo'}}</a>
+       {{#ifDisplay 'C.DsplComments'}} |{{/ifDisplay}}
+      {{/ifDisplay}}
+      {{#ifDisplay 'C.DsplComments'}}
+       <a href="#comments_{{itemID}}" id="commentsLink" data-toggle="modal">{{pageLabelMap 'CartLineCommentLabel'}}</a>
+      {{/ifDisplay}} 
+      {{#if showIncludedItems }}
+       {{> includedDisplay}}
+      {{/if}}
+      {{#ifDisplay 'C.DsplAddtInfo'}}
+       {{> cartItemAdditional}}
+      {{/ifDisplay}}
+      {{#ifDisplay 'C.DsplComments'}}
+       {{> cartItemComment}}
+      {{/ifDisplay}}
+    {{/ifNotEquals}}
+                {{#if showSubProdTerm}}
+                    <p><label class="subscriptionSummary">{{insertTokens cartDisplayName displayName (price price) (price SubAmount) (price recurringPrice) (price recurringPriceSubAmount) (pageLabelPrefixMap 'Subscriptions_Frequency_' orderFrequencyUOM) (pageLabelPrefixMap 'Subscriptions_Frequency_' installmentFrequencyUOM) orderFrequency installmentFrequency installmentCount orderCount}}</span></label></p>
+                {{else}}
+                    {{#if this.isSubscription}}
+                       <p class="subscriptionSummary">{{subscriptionSummary 'Cart_Subscription_' this.subscriptionFrequency mockProduct.sku itemTotal}}</p>
+                    {{/if}}
+                {{/if}}
+    {{#each minorLines}}
+                    {{#if showSubProdTerm}}
+                        <p><label class="subscriptionSummary">{{insertTokens cartDisplayName displayName (price price) (price SubAmount) (price recurringPrice) (price recurringPriceSubAmount) (pageLabelPrefixMap 'Subscriptions_Frequency_' orderFrequencyUOM) (pageLabelPrefixMap 'Subscriptions_Frequency_' installmentFrequencyUOM) orderFrequency installmentFrequency installmentCount orderCount}}</span></label></p>
+                    {{else}}
+                        {{#if this.isSubscription}}
+                            <p class="subscriptionSummary">{{subscriptionSummary 'Cart_Subscription_' this.subscriptionFrequency mockProduct.sku itemTotal}}</p>
+                        {{/if}}
+                    {{/if}}
+    {{/each}}
+    <div class="clear"></div>
+    <div class="cart_figures">
+     {{#ifNotEquals cartItemType 'Coupon'}}      
+      <div class="section1">{{pageLabelMap 'CartInc_Price'}}:</div>
+      <div class="section2">{{pageLabelMap 'YouSave'}}:</div>
+     {{/ifNotEquals}}
+     <div class="section3">{{pageLabelMap 'CartInc_Total'}}:</div>
+     {{#ifNotEquals cartItemType 'Coupon'}}      
+      <div class="section1">
+       <strong>{{price price}}</strong>
+      </div>
+      <div class="section2">
+       <strong>{{price absoluteDiscount}}</strong>
+      </div>
+     {{/ifNotEquals}}
+     <div class="section3 totalAmount">
+      <strong class="price">{{price itemTotal}}</strong>
+     </div>
+     <div class="clear"></div>
+    </div>
+    {{#ifNotEquals cartItemType 'Coupon'}}      
+     <div class="section2 plus_minus" data-id="{{itemID}}">
+     <!--
+      {{> cartItemsQty}}
+      -->
+
+        <input type="button" value="-" class="plus_minus minus">
+        <input id="entry_{{this.itemID}}" data-minqty="{{this.minimumQuantity}}" data-errsection="messagingSection-{{this.itemID}}-Error" type="text" name="qty" value="{{this.quantity}}" class="input-text entry plus_minus verifyQuantity" maxlength="7">
+        <input type="button" value="+" class="plus_minus plus">
+        <input type="hidden" name="qtyIncrement" value="1" class="item_qtyIncrement">
+        <input type="hidden" name="qtySkipIncrement" value="" class="item_qtySkipIncrement"> 
+
+
+      <button type="button" class="btn remove removeItemButton" data-id="{{itemID}}">{{pageLabelMap 'Action_Delete'}}</button>
+     </div>
+                       {{#unless showSubProdTerm}}
+      <div class=" wishFinder" data-sku="{{mockProduct.sku}}">
+       <div class="sectionWide wishButtons"></div>
+      </div>
+                       {{/unless}}
+    {{/ifNotEquals}}
+    <div id="modalSec"></div>
+    <div class="alert alert-error messagingSection-{{itemID}}-Error" style="display: none"></div>
+    <div class="alert alert-info messagingSection-{{itemID}}-Info" style="display: none"></div>
+   {{/ifEquals}}
+  {{/with}}
+ </script>
+
+<script id="rfqModalTemplateCorrection" type="text/template">
+
+  <div id="rfqModal" class="modal hide fade" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
+   <div class="modal-header">
+    <button type="button" class="close" data-dismiss="modal" aria-hidden="true">×</button>
+    <h3 id="myModalLabel">{{pageLabelMap 'CartRFQForm_Header'}}</h3>
+   </div>
+   <div class="modal-body" >
+    <div class="alert alert-error messagingSection-rfq-Error" style="display: none"></div>
+    <form id="rfqForm">
+     <label for="rfq_first_name" class="rfq-firstName-label required">{{pageLabelMap 'RequestForQuoteForm_FirstName'}}</label>
+     <input type="text" id="rfq_first_name" name="rfq_first_name" value="{{ currentUser.FirstName}}" class="rfq-firstName-input"/><br/>
+     <label for="rfq_last_name" class="rfq-lastName-label required">{{pageLabelMap 'RequestForQuoteForm_LastName'}}</label>
+     <input type="text" id="rfq_last_name" name="rfq_last_name" value="{{ currentUser.LastName}}" class="rfq-lastName-input"/><br/>
+     <label for="rfq_email" class="rfq-email-label required">{{pageLabelMap 'RequestForQuoteForm_Email'}}</label>
+     <input type="text" id="rfq_email" name="rfq_email" value="{{ currentUser.Email}}" class="rfq-email-input"/><br/>
+     <label for="rfq_company" class="rfq-company-label required">{{pageLabelMap 'RequestForQuoteForm_Company'}}</label>
+     <input type="text" id="rfq_company" name="rfq_company" value="{{ currentUser.CompanyName}}" class="rfq-company-input"/><br/>
+     <label for="rfq_phone" class="rfq-phone-label required">{{pageLabelMap 'RequestForQuoteForm_Phone'}}</label><br/>
+     <input type="text" id="rfq_phone" name="rfq_phone" value="{{ currentUser.Phone}}" class="rfq-phone-input" /><br/>
+     <label for="rfq_description" class="rfq-description-label">{{pageLabelMap 'RequestForQuoteForm_Description'}}</label>
+     <textarea id="rfq_description" rows="10" name="rfq_description" class="rfq-description-input"></textarea>
+    </form>
+   </div>
+   <div class="modal-footer">
+    <button class="btn btn-primary js-rfq-submit" id="rfq_submit">{{pageLabelMap 'RequestForQuoteForm_Submit'}}</button><br/>
+  </div>
+  </div>
+
+  <div id="rfqModalSuccess" class="modal hide fade" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
+   <div class="modal-header">
+    <button type="button" class="close" data-dismiss="modal" aria-hidden="true">×</button>
+    <h3 id="myModalLabel">{{pageLabelMap 'CartRFQForm_Header'}}</h3>
+   </div>
+   <div class="modal-body" >
+     <p>{{pageLabelMap 'cc_imp_RFQConfirm'}}</p>
+   </div>
+   <div class="modal-footer">
+    <button class="btn btn-primary js-rfq-success" id="rfq_success" data-dismiss="modal" aria-hidden="true">{{pageLabelMap 'cc_imp_MyAccount_UploadFilesFinishButton'}}</button><br/>
+  </div>
+  </div>
+ 
+</script>
+
+<script type="text/javascript">
+
+	Handlebars.registerHelper('ifDisplayRFQ', function(cartItems, options) {
+
+		var displayRFQ = false;
+		for (var i = 0; i < cartItems.length; i++) {
+		    var itemPrice = cartItems[i].attributes.price;
+		    if (itemPrice != null && itemPrice == 0) {
+				displayRFQ = true;
+		    }
+		    else {
+		    	displayRFQ = false;
+		    	break;
+		    }
+		}
+        if (displayRFQ) {
+            return options.fn(this);
+        }
+        else {
+            return options.inverse(this);
+        }
+	});
+
+	jQuery(function($) 
+	{   
+      CCRZ.pubSub.on('view:CartDetailView:refresh', function(cartDetailView) {
+            var myCartItems =  cartDetailView.model.attributes.cartItems;
+            if (!cartDetailView.model.attributes.cartItems.extendedLoaded) {
+              var extendedDataMap = {!extendedCartJSON};
+              for (var i = 0; i < myCartItems.models.length; i++) {
+                var cartItemId = myCartItems.models[i].attributes.itemID;
+                myCartItems.models[i].attributes = _.extend(myCartItems.models[i].attributes, extendedDataMap[cartItemId]);
+              }
+              cartDetailView.model.attributes.cartItems.extendedLoaded = true;
+              cartDetailView.render();
+            }
+      });
+
+      CCRZ.pubSub.once('view:CartDetailView:refresh', function(cartDetailView) {
+
+             var viewPrototype = Object.getPrototypeOf(cartDetailView);
+              if (viewPrototype != null) {
+                console.log('Got view prototype');
+
+                  viewPrototype.events = _.extend(viewPrototype.events, {
+                    "change .verifyQuantity" : "verifyQuantity" ,
+                    // "focus .verifyQuantity" : "saveCurrentQuantity",
+                    "click .addItem" : "verifyQuantityOnAddToCartButton",
+                    "click .updateCartButton" : "verifyQuantityOnUpdateCartButton",
+                    "click .checkOutBtn" : "verifyQuantityOnGoToCheckoutButton",                 
+                    "click .continueShoppingButton" : "verifyQuantityOnContinueShoppingButton"
+                  });
+
+                  viewPrototype.verifyQuantityOnAddToCartButton = function(event) {
+                    
+                    console.log("*** verifyQuantityOnAddToCartButtonPaco")
+                    var v = this;
+                    var success = true;
+
+                    $(".verifyQuantity").each(function(index, element){
+                      console.log("*** Iterating: %o", $(this));
+                      // console.log("*** Iterating: %o", this.val());
+                      if(! v.performVerifyQuantity($(element)) ){
+                        console.log("*** verification failed");
+                        success = false;
+                        return false;
+                      }
+                      else {
+                        console.log("*** verification passed");
+                      }
+
+                    });
+
+                    if(success){
+                      console.log("*** verifyQuantityOnAddToCartButton -- now submit")
+                      // this.addItem(event);
+                      this.addToCart(event);
+                    }
+                  };
+
+                  viewPrototype.verifyQuantityOnUpdateCartButton = function(event) {
+                    console.log("*** verifyQuantityOnUpdateCartButton")
+                    var v = this;
+                    var success = true;
+
+                    $(".verifyQuantity").each(function(index, element){
+                      console.log("*** Iterating: %o", $(this));
+                      // console.log("*** Iterating: %o", this.val());
+                      if(! v.performVerifyQuantity($(element)) ){
+                        console.log("*** verification failed");
+                        success = false;
+                        return false;
+                      }
+                      else {
+                        console.log("*** verification passed");
+                      }
+
+                    });
+
+                    if(success){
+                      console.log("*** verifyQuantityOnUpdateCartButton-- now submit")
+                      // this.addItem(event);
+                      this.saveCart(event);
+                    }
+                  };
+
+                  viewPrototype.verifyQuantityOnGoToCheckoutButton = function(event) {
+                    console.log("*** verifyQuantityOnGoToCheckoutButton")
+                    var v = this;
+                    var success = true;
+					
+                    $(".verifyQuantity").each(function(index, element){
+                      console.log("*** Iterating: %o", $(this));
+                      // console.log("*** Iterating: %o", this.val());
+                      if(! v.performVerifyQuantity($(element)) ){
+                        console.log("*** verification failed");
+                        success = false;
+                        return false;
+                      }
+                      else {
+                        console.log("*** verification passed");
+                      }
+
+                    });
+
+                    if(success){
+                      console.log("*** verifyQuantityOnGoToCheckoutButton-- now submit")
+                      // this.addItem(event);
+                      this.goToCheckout(event);
+                    }
+                  };
+
+                  viewPrototype.verifyQuantityOnContinueShoppingButton = function(event) {
+                    console.log("*** verifyQuantityOnContinueShoppingButton")
+                    var v = this;
+                    var success = true;
+
+                    $(".verifyQuantity").each(function(index, element){
+                      console.log("*** Iterating: %o", $(this));
+                      // console.log("*** Iterating: %o", this.val());
+                      if(! v.performVerifyQuantity($(element)) ){
+                        console.log("*** verification failed");
+                        success = false;
+                        return false;
+                      }
+                      else {
+                        console.log("*** verification passed");
+                      }
+
+                    });
+
+                    if(success){
+                      console.log("*** verifyQuantityOnContinueShoppingButton-- now submit")
+                      // this.addItem(event);
+                      this.goToHomePage(event);
+                    }
+                  };
+
+                  viewPrototype.verifyQuantity = function(event) {
+                    console.log("*** verifyQuantity: entry");
+
+                      var objLink = $(event.target);
+                      this.performVerifyQuantity(objLink);
+                      console.log("*** verifyQuantity: exit");
+
+                      return false;
+                };
+
+                  viewPrototype.performVerifyQuantity = function(objLink) {
+                      console.log("*** performVerifyQuantity: entry");
+					
+                      var qty = objLink.val();
+                      var minqty = objLink.data("minqty");
+                      var errsection = objLink.data("errsection");
+                      //var prevqty = objLink.data("curqty");
+
+                  console.log('*** Changed Quantity: ' + qty);
+                  console.log('*** Min Quantity: ' + minqty);
+                  // console.log('*** Prevqty: ' + prevqty);
+                  if(qty < minqty){
+                    console.log("*** Minimum Quantity not met");
+                        // objLink.data('curqty', prevqty);
+                        // objLink.val(prevqty);
+// messagingSection-{{this.prodBean.id}}-Error
+// data-errsection
+                              CCRZ.pubSub.trigger('pageMessage',{
+                                messages :      [{
+                                type:          'CUSTOM',
+                                severity:      'ERROR',
+                                classToAppend: errsection,
+                                labelId:       'cc_imp_error_minQuantityError'}]
+                              });
+                            return false;
+                  }
+                  return true;
+                  };
+
+            }
+            else {
+              console.log('did not get view prototype');
+            }
+
+
+      });
+
+	    CCRZ.pubSub.on('view:CartDetailView:refresh', function(cartDetailView) {
+	       		var myCartItems =  cartDetailView.model.attributes.cartItems;
+            	console.log(cartDetailView.model.attributes.cartItems);
+	       		var cartCurrency = "{!cartCurrency}";
+            
+		       	for (var i = 0; i < myCartItems.models.length; i++) 
+		        {
+		            var model = myCartItems.models[i];				
+		            var itemPrice = model.attributes.price;
+
+                    if(model.attributes.priceuom.substring(0,3)!=cartCurrency.substring(0,3)){
+                            	 CCRZ.pubSub.trigger('pageMessage',{
+                                messages : [{
+                                    type:          'CUSTOM',
+                                    severity:      'ERROR',
+                                    classToAppend: 'messagingAction-Info',
+                                    labelId:       'cc_imp_error_currencyError'}]
+                            });
+
+		          		$(".checkOutBtn").prop('disabled', true); 
+
+		          		break ;
+                    }
+		          	// disable checkout button and trigger pub sub message on page
+		          	if ( itemPrice != null && itemPrice == 0)
+		          	{
+		          	   	CCRZ.pubSub.trigger('pageMessage',{
+                                messages : [{
+                                    type:          'CUSTOM',
+                                    severity:      'INFO',
+                                    classToAppend: 'messagingAction-Info',
+                                    labelId:       'cc_imp_cart_item_price_zero'}]
+                            });
+
+		          		$(".checkOutBtn").prop('disabled', true); 
+
+		          		break ;
+		          	}
+		        }
+
+			});
+      CCRZ.pubSub.on('cart:rfqSubmitted', function(data) {
+        console.log('cart:rfqSubmitted');
+        $("#rfqModal").modal('hide');
+        $("#rfqModalSuccess").modal('show');
+      });
+	});  
+</script>
+
+</apex:page>

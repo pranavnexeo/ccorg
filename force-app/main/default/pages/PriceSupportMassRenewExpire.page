@@ -1,0 +1,160 @@
+<apex:page controller="PriceSupportMassRenewExpireController" showHeader="false" sideBar="false" id="massRenewExpire">
+	
+	<style type="text/css">
+        .custPopup{
+            background-color: white;
+            border-width: 2px;
+            border-style: solid;
+            z-index: 9999;
+            left: 50%;
+            padding:10px;
+            position: absolute;
+            /* These are the 3 css properties you will need to change so the popup 
+            displays in the center of the screen. First set the width. Then set 
+            margin-left to negative half of what the width is. You can add 
+            the height property for a fixed size pop up if you want.*/
+            width: 500px;
+            margin-left: -250px;
+            top:100px;
+        }
+        .popupBackground{
+            background-color:black;
+            opacity: 0.20;
+            filter: alpha(opacity = 20);
+            position: absolute;
+            width: 100%;
+            height: 100%;
+            top: 0;
+            left: 0;
+            z-index: 9998;
+        }
+        
+        .datePicker {
+        z-index: 9999;/*Changed this css property which was 100 prior*/
+        position: absolute;
+        display: none;
+        top: 0;
+        left: 0;
+        width: 17em;
+        background-color: #b7c6b2;
+        border-bottom: 1px solid #000;
+        border-right: 1px solid #000;
+        margin: 0;
+        padding: 1px 1px 2px 2px;
+    }
+
+        #sticky {
+             width: 100%;
+        }
+        #sticky.stick {
+             position: fixed;
+             top: 0;
+             left: 10px;
+             
+        }
+ 
+    </style>
+    
+    <script>
+    	
+    	function doMassRenew(){
+    		//if(document.getElementById('massRenewExpire:priceForm:massRenew:renewSection:renewExpiryDate').value==''){
+    		//	alert('Please enter expiration date');
+    		//}else{
+    			massRenew();
+    		//}
+    		return false;
+    	}
+    	function doMassExpiry(){
+    	
+    		if(document.getElementById('massRenewExpire:priceForm:massExpiry:expirySection:expirationDate').value==''){
+    			alert('Please enter expiration date');
+    		}else{
+    			massExpire();
+    		}
+    		return false;
+    	}
+    
+    	function expireSuccess(){
+			alert('Mass Expire Completed.');
+			window.top.close();
+		}
+		
+		function renewSuccess(){
+			alert('Mass Renew Completed.');
+			window.top.close();
+		}
+	
+    	function close_window() {   
+			if (confirm("Close Window?")) {
+		     	window.top.close();   
+		     } 
+		} 
+    </script>
+    
+    <apex:form id="priceForm">
+    	
+       <apex:actionFunction name="massRenew" action="{!doMassRenew}"  rerender="error" status="busyStatus" oncomplete="renewSuccess();"/>
+       <apex:actionFunction name="massExpire" action="{!doMassExpiry}"  rerender="errorExp" status="busyStatus" oncomplete="expireSuccess();"/>
+       
+	   <apex:ActionStatus id="busyStatus" >
+	        <apex:facet name="start" >
+	            <c:BusyStatusComp height="300px" width="300px" Message="Pleas Wait..." />
+	        </apex:facet>
+	  </apex:ActionStatus>
+    
+    <apex:outputPanel >
+          <apex:outputPanel styleClass="popupBackground" layout="block" rendered="{!massRenew}" />
+            <apex:outputPanel styleClass="custPopup" layout="block" rendered="{!massRenew}">
+            <apex:pageMessages id="error"/>
+            <apex:pageBlock id="massRenew">
+                <apex:pageBlockSection title="Renew Price Supports" id="renewSection">
+                    <apex:outputLabel value="Enter or select the new expiration date for all selected price supports"/>
+                    <apex:inputText id="renewExpiryDate"  value="{!expirationDate}" styleClass="cssbody" onfocus="DatePicker.pickDate(false, 'massRenewExpire:priceForm:massRenew:renewSection:renewExpiryDate', false);"/>
+               </apex:pageBlockSection>
+            </apex:pageBlock>
+               <apex:pageBlock >
+               <center>
+               <apex:commandButton value="OK" onclick="return doMassRenew();"/>
+               <apex:commandButton value="Cancel" onclick="close_window();return false;"/>
+               </center>
+               </apex:pageBlock>
+            </apex:outputPanel>
+       </apex:outputPanel>
+       
+       <apex:outputPanel >
+       	  
+          <apex:outputPanel styleClass="popupBackground" layout="block" rendered="{!NOT(massRenew)}"/>
+            <apex:outputPanel styleClass="custPopup" layout="block" rendered="{!NOT(massRenew)}">
+            <apex:pageMessages id="errorExp"/>
+            <apex:pageBlock id="massExpiry">
+                <apex:pageBlockSection title="Expire Price Supports" columns="1">
+                    <apex:outputLabel value="Enter the following information for all selected price supports"/>
+               </apex:pageBlockSection>
+               <apex:pageBlockSection showHeader="false" id="expirySection">
+               		<apex:outputLabel value="Expiration Date "/>
+               		<apex:inputText value="{!expirationDate}" id="expirationDate" styleClass="cssbody" onfocus="DatePicker.pickDate(false, 'massRenewExpire:priceForm:massExpiry:expirySection:expirationDate', false);"/>
+               		<apex:outputLabel value="Expiration Reason "/>
+               		<apex:inputTextArea value="{!expirationReason}"/>
+               		<apex:outputLabel value="E-mail Supplier "/>
+               		<apex:selectRadio value="{!emailSupplier}">
+               			<apex:selectOption itemValue="Yes" itemLabel="Yes"/>
+						<apex:selectOption itemValue="No" itemLabel="No"/>
+               		</apex:selectRadio>
+               </apex:pageBlockSection>
+            </apex:pageBlock>
+               <apex:pageBlock >
+               <center>
+               <apex:commandButton value="OK" onclick="return doMassExpiry();"/>
+               <apex:commandButton value="Cancel" onclick="close_window();return false;"/>
+               </center>
+               </apex:pageBlock>
+            </apex:outputPanel>
+       </apex:outputPanel>
+       
+    </apex:form>
+    
+    
+    
+
+</apex:page>

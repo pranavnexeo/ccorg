@@ -1,0 +1,43 @@
+<apex:page standardController="Billto_Cost_Center_Code__c" extensions="BillingInfoNewExtension">
+
+  <apex:pageMessages ></apex:pageMessages>
+  <script>
+  function getDetailsToPopulate(comp){
+        
+        fetchDetailsToPopulate(comp.value);
+    }
+  </script>
+  <apex:sectionHeader title="Billto/Cost Center Code Information" subtitle="Billto/Cost Center Code Information"/>
+          <apex:form id="AfeForm">
+           
+           <apex:actionFunction name="fetchDetailsToPopulate" action="{!getRecDetails}" rerender="theSection1" immediate="true">
+            <apex:param name="PriceReqDtl" value=""/>
+            </apex:actionFunction>
+              <apex:pageBlock title="Billto/Cost Center Code Information" mode="edit" id="theBlock" >
+                  <apex:pageBlockButtons location="both" >
+                  <apex:commandButton action="{!save}" value="Save"/>
+                  <apex:commandButton action="{!cancel}" value="Cancel"/>
+               </apex:pageBlockButtons>
+               <apex:pageBlockSection id="PAyment">
+                        <!--<apex:inputField value="{!Billto_Cost_Center_Code__c.New_Bill_Code__c}"/>-->
+                        <apex:inputField value="{!Billto_Cost_Center_Code__c.Bill_To__c}" onchange="getDetailsToPopulate(this);"/>
+                    </apex:pageBlockSection>
+               <apex:pageBlockSection showHeader="true" title="General Information" columns="2" id="theSection1">
+                    <apex:inputField value="{!Billto_Cost_Center_Code__c.New_Bill_Code__c}"/>                   
+                    <apex:inputField value="{!Billto_Cost_Center_Code__c.Bill_Code_Description__c}"/>
+                    <apex:inputField value="{!Billto_Cost_Center_Code__c.Report_Grouping_Code_Description_new__c}"/>
+                    <apex:inputField value="{!Billto_Cost_Center_Code__c.Active_Billto_Code__c}"/>
+                    <apex:inputField value="{!Billto_Cost_Center_Code__c.Company_Code__c}"/>
+                    <apex:inputField value="{!Billto_Cost_Center_Code__c.Business_Area__c}"/>
+                    <apex:inputField value="{!Billto_Cost_Center_Code__c.Actual_Cost_Center_Code__c}"/>
+                    <apex:inputField value="{!Billto_Cost_Center_Code__c.Actual_Cost_Center_Code_Description__c}"/>                    
+               </apex:pageBlockSection>
+               <apex:pageBlockSection >
+               <apex:inputField value="{!Billto_Cost_Center_Code__c.SAP_Billing_Cost_Center__c}"/>
+               <apex:inputField value="{!Billto_Cost_Center_Code__c.Short_Name__c}"/>
+               </apex:pageBlockSection>
+              </apex:pageBlock>
+          </apex:form> 
+       
+                           
+</apex:page>

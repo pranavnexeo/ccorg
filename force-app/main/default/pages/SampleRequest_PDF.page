@@ -1,0 +1,252 @@
+<apex:page standardController="Sample_Request__c" extensions="Sample_Request_PDF_Extension" showHeader="false" renderAs="pdf">
+
+<!--  renderAs="pdf" -->
+
+    <apex:stylesheet value="{!$Resource.printcss}"/>
+
+    <apex:outputText value="{!Sample_Request__c.id} {!Sample_Request__c.name}" rendered="false"/>
+
+    <apex:panelGrid columns="2" width="100%">
+        <apex:panelGroup >
+            <apex:outputText value="{!$Label.Sample_Request} # - {!Sample_Request__c.name}" styleClass="title"/>
+            <apex:outputText value="{!HeaderDetailLine}" styleClass="subtitle"/>
+        </apex:panelGroup>
+        <apex:image value="{!$Resource.Nexeo_Logo}"/>
+    </apex:panelGrid>
+ 
+ <!--   <hr/>  --> 
+
+
+    <apex:panelGrid border="1" cellpadding="0px" cellspacing="0px" frame="above,hsides" rules="none" columns="1" width="100%" >
+        <apex:panelGroup layout="block" styleClass="subtitleWithGrayBackground">
+            <apex:outputText value="{!$Label.Basic_Information}"/> 
+        </apex:panelGroup>
+    </apex:panelGrid>
+        
+    <apex:panelGrid border="1" cellpadding="0px" cellspacing="0px" frame="border" rules="all" columns="4" width="100%" >
+        <apex:panelGroup layout="block" styleClass="cellHeader">
+            <apex:outputText value="{!$Label.Account}:"/>    
+        </apex:panelGroup>
+        <apex:outputText value="{!Sample_Request__c.Account__r.Name} ({!Sample_Request__c.Account__r.AccountNumber})" style="font-family: Arial Unicode MS;"/>
+        
+        <apex:panelGroup layout="block" styleClass="cellHeader">
+            <apex:outputText value="{!$Label.Current_Status}:"/>    
+        </apex:panelGroup>
+        <apex:outputField value="{!Sample_Request__c.Status__c}"/>
+        
+        <apex:panelGroup layout="block" styleClass="cellHeader">
+            <apex:outputText value="{!$Label.Contact}:"/>    
+        </apex:panelGroup>
+        <apex:outputText value="{!Sample_Request__c.Contact_First_Name__c} {!Sample_Request__c.Contact_Last_Name__c} - {!Sample_Request__c.Contact_Phone_Number__c}" style="font-family: Arial Unicode MS;"/>
+
+        <apex:panelGroup layout="block" styleClass="cellHeader">
+            <apex:outputText value="{!$Label.Current_Sample_Coordinator}:"/>    
+        </apex:panelGroup>
+        <apex:outputField value="{!Sample_Request__c.Sample_Coordinator__r.Name}"/>
+
+        <apex:panelGroup layout="block" styleClass="cellHeader">
+            <apex:outputText value="{!$Label.Opportunity} {!$Label.Name}:"/>    
+        </apex:panelGroup>
+        <apex:outputField value="{!Sample_Request__c.Opportunity__r.Name}" style="font-family: Arial Unicode MS;"/>
+        
+        <apex:panelGroup layout="block" styleClass="cellHeader">
+            <apex:outputText value="{!$Label.CSR_Responsible}:"/>    
+        </apex:panelGroup>
+        <apex:outputField value="{!Sample_Request__c.CSR_Responsible_for_Order_Entry__r.Name}"/>
+
+        <apex:panelGroup layout="block" styleClass="cellHeader">
+            <apex:outputText value="{!$Label.Requested_by}:"/>    
+        </apex:panelGroup>
+        <apex:outputField value="{!Sample_Request__c.Owner.Name}"/>
+
+        <apex:panelGroup layout="block" styleClass="cellHeader">
+            <apex:outputText value="{!$Label.Order_Number}:"/>    
+        </apex:panelGroup>
+        <apex:outputField value="{!Sample_Request__c.SAP_Order_Number__c}"/>
+
+        <apex:panelGroup layout="block" styleClass="cellHeader">
+            <apex:outputText value=""/>    
+        </apex:panelGroup>
+        <apex:outputText value=""/>
+
+        <apex:panelGroup layout="block" styleClass="cellHeader">
+            <apex:outputText value="{!$Label.Cost_Center_Info}:"/>    
+        </apex:panelGroup>
+        <apex:outputField value="{!Sample_Request__c.Cost_Center__c}"/>
+
+
+        <apex:panelGroup layout="block" styleClass="cellHeader">
+            <apex:outputText value="{!$Label.Ship_To_Address}:"/>    
+        </apex:panelGroup>
+        <apex:outputText escape="false" value="{!SampleRequestAddress}" style="font-family: Arial Unicode MS;"/>
+                        
+        <apex:panelGroup layout="block" styleClass="cellHeader">
+            <apex:outputText value="{!$Label.Approval_Process}:"/>    
+        </apex:panelGroup>
+        <apex:outputField value="{!Sample_Request__c.Approval_Process__c}"/>
+        
+    </apex:panelGrid>
+
+    <BR/>
+
+    <apex:panelGrid border="1" cellpadding="0px" cellspacing="0px" frame="above,hsides" rules="none" columns="1" width="100%" >
+        <apex:panelGroup layout="block" styleClass="subtitleWithGrayBackground">
+            <apex:outputText value="{!$Label.Reason_for_Request}" style="font-family: Arial Unicode MS;"/> 
+        </apex:panelGroup>
+    </apex:panelGrid>
+        
+    <apex:panelGrid border="1" cellpadding="0px" cellspacing="0px" frame="border" rules="all" columns="1" width="100%" >
+        <apex:outputText escape="false" value="{!sampleRequest.Reason_for_Sample__c}" style="font-family: Arial Unicode MS;"/>
+    </apex:panelGrid>
+
+    <BR/>
+
+   <apex:panelGrid border="1" cellpadding="0px" cellspacing="0px" frame="above,hsides" rules="none" columns="1" width="100%" >
+        <apex:panelGroup layout="block" styleClass="subtitleWithGrayBackground">
+            <apex:outputText value="{!$Label.Sample_Notes}"/> 
+        </apex:panelGroup>
+    </apex:panelGrid>
+
+    <apex:dataTable value="{!sampleNotes}" var="lines" styleClass="dataTable" columnclasses="lineitems" rowclasses="odd,even" headerClass="dataTableHeader_fontsize10" id="NotesGrid" width="100%">
+    
+    <!-- style="font-size:10px;vertical-align:top;word-wrap: break-word;" -->
+      <apex:column >
+          <apex:facet name="header">{!$Label.Created_Date}</apex:facet>
+          <apex:outputField value="{!lines.CreatedDate}"/>&nbsp;
+      </apex:column>
+      <apex:column >
+          <apex:facet name="header">{!$Label.Title}</apex:facet>
+          <apex:outputField value="{!lines.Title}" style="font-family: Arial Unicode MS;"/>&nbsp;
+      </apex:column>
+      <apex:column >
+          <apex:facet name="header">{!$Label.Body}</apex:facet>
+          <apex:outputField value="{!lines.body}" style="font-family: Arial Unicode MS;"/>&nbsp;
+      </apex:column>
+      <apex:column >
+          <apex:facet name="header">{!$Label.Created_by}</apex:facet>
+          <apex:outputField value="{!lines.CreatedBy.Name}"/>&nbsp;
+      </apex:column>
+    </apex:dataTable>
+
+
+    <BR/>
+    
+   <apex:panelGrid border="1" cellpadding="0px" cellspacing="0px" frame="above,hsides" rules="none" columns="1" width="100%" >
+        <apex:panelGroup layout="block" styleClass="subtitleWithGrayBackground">
+            <apex:outputText value="{!$Label.Summary_of_Sample}"/> 
+        </apex:panelGroup>
+    </apex:panelGrid>
+        
+    <apex:panelGrid border="1" cellpadding="0px" cellspacing="0px" frame="border" rules="all" columns="4" width="100%" >
+        <apex:panelGroup layout="block" styleClass="cellHeader">
+            <apex:outputText value="{!$Label.Number_of_Items}:"/>    
+        </apex:panelGroup>
+        <apex:outputField value="{!sampleRequest.Number_of_Items__c}"/>
+        
+        <apex:panelGroup layout="block" styleClass="cellHeader">
+            <apex:outputText value="{!$Label.Total_Value}:"/>    
+        </apex:panelGroup>
+        <apex:outputField value="{!sampleRequest.Total_Value_of_Sample__c}"/>
+        
+        <apex:panelGroup layout="block" styleClass="cellHeader">
+            <apex:outputText value="{!$Label.Most_Valuable}:"/>    
+        </apex:panelGroup>
+        <apex:outputField value="{!sampleRequest.Most_Valuable_Item_Value__c}"/>
+        
+        <apex:panelGroup layout="block" styleClass="cellHeader">
+            <apex:outputText value="{!$Label.Total_Possible_Value}:"/>    
+        </apex:panelGroup>
+        <apex:outputField value="{!sampleRequest.Total_Potential_Annual_Value_of_Sample__c}"/>
+    </apex:panelGrid>
+    
+    <BR/>
+    
+    <apex:dataTable value="{!sampleMaterials}" var="lines" styleClass="dataTable" columnclasses="lineitems" rowclasses="odd,even" headerClass="dataTableHeader_fontsize10" id="sampleMaterialsSection" width="100%">
+    <!-- style="font-size:10px;vertical-align:top;word-wrap: break-word;"  -->
+    <!--  styleClass="dataTable" -->
+        <apex:column >
+             <apex:facet name="header">{!$Label.Material_Name}</apex:facet>
+             <apex:outputField value="{!lines.name}" style="width: 50px;font-family: Arial Unicode MS;"/>&nbsp;
+        </apex:column>
+    
+        <apex:column >
+             <apex:facet name="header">{!$Label.Existing} <br/> {!$Label.Material} <br/> {!$Label.in_SAP}?</apex:facet>
+             <apex:outputField value="{!lines.Existing_Material_in_SAP__c}"/>&nbsp;
+        </apex:column>
+
+        <apex:column >
+             <apex:facet name="header">{!$Label.SAP_Material}</apex:facet>
+             <apex:outputText value="{!lines.SAP_Material_MSD2__r.Name}"/>&nbsp;
+        </apex:column>
+        
+        <apex:column >
+            <apex:facet name="header">{!$Label.SAP_Material}<BR/>{!$Label.Number}</apex:facet>
+            <apex:outputField value="{!lines.SAP_Material_Number__c}" style="font-family: Arial Unicode MS;"/>&nbsp;
+       </apex:column>
+    
+       <apex:column >
+            <apex:facet name="header">{!$Label.Ship_From_Location}</apex:facet>
+            <apex:outputField value="{!lines.Ship_From_Location__c}" style="font-family: Arial Unicode MS;"/>&nbsp;
+       </apex:column>
+    
+       <apex:column width="100px">
+            <apex:facet name="header">{!$Label.Material} <br/> {!$Label.Must_Ship} <br/> {!$Label.From_Location}</apex:facet>
+            <apex:outputField value="{!lines.Material_Must_Ship_From_Location__c}" />&nbsp;
+       </apex:column>
+    
+       <apex:column >
+            <apex:facet name="header">{!$Label.Estimated} <br/> {!$Label.Ship_Date}</apex:facet>
+            <apex:outputField value="{!lines.Estimated_Ship_Date__c}"/>&nbsp;
+       </apex:column>
+    
+       <apex:column >
+            <apex:facet name="header">{!$Label.Estimated} <br/> {!$Label.Arrival_Date}</apex:facet>
+            <apex:outputField value="{!lines.Estimated_Arrival_Date__c}"/>&nbsp;
+       </apex:column>
+    
+       <apex:column >
+            <apex:facet name="header">{!$Label.Quantity}</apex:facet>
+            <apex:outputField value="{!lines.Sample_Quantity__c}"/>&nbsp;
+       </apex:column>
+    
+       <apex:column >
+         <apex:facet name="header">{!$Label.UOM}</apex:facet>
+         <apex:outputField value="{!lines.Sample_UOM__c}"/>&nbsp;
+       </apex:column>
+    
+       <apex:column >
+         <apex:facet name="header">{!$Label.Date_Required}</apex:facet>
+         <apex:outputField value="{!lines.Date_Required_By__c}"/>&nbsp;
+       </apex:column>
+    
+       <apex:column >
+         <apex:facet name="header">{!$Label.Currency}</apex:facet>
+         <apex:outputField value="{!lines.CurrencyIsoCode}"/>&nbsp;
+        </apex:column>
+    
+       <apex:column >
+         <apex:facet name="header">{!$Label.Sample_Value}</apex:facet>
+         <apex:outputField value="{!lines.Estimated_Sample_Value__c}"/>&nbsp;
+       </apex:column>
+    
+       <apex:column >
+            <apex:facet name="header">{!$Label.Potential_Annual_Value}</apex:facet>
+            <apex:outputField value="{!lines.Potential_Annual_Value__c}"/>&nbsp;
+       </apex:column>
+
+<!-- 
+       <apex:column rendered="{!RenderTectyl}">
+         <apex:facet name="header"><b>Tectyl Product?</b></apex:facet>
+         <apex:outputField value="{!lines.Tectyl_Product__c}"/>&nbsp
+       </apex:column>
+    
+       <apex:column rendered="{!RenderADCompound}">
+         <apex:facet name="header"><b>AD Compound?</b></apex:facet>
+         <apex:outputField value="{!lines.AD_Compound__c}"/>&nbsp
+       </apex:column> 
+ -->           
+    </apex:dataTable>
+    
+
+
+</apex:page>

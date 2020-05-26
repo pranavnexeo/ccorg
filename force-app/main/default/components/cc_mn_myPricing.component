@@ -1,0 +1,607 @@
+<apex:component layout="none" controller="cc_mn_ctrl_MyPricing">
+    
+	<style>
+    .popUpBodyMyPricing {
+      min-height: 20px;
+      padding-right: 22px;
+      padding-left: 9px;
+      margin-bottom: 20px;
+    }
+	
+	.sendEmailButtonPadding {
+	  padding: 4px 5px !important;
+    }       
+   
+    </style>    
+        
+    <script id="PricingDesktopTemplate" type="text/template">
+    <h2 class="title">{{pageLabelMap 'MyPricing_title'}}</h2>
+     <div class="default_page_message"></div>
+    <div class="row-fluid" style="min-width:600px;">        			                  
+                   <div class="span10 second"> 
+                    <br/>
+                   	{{pageLabelMap 'MyPricing_description'}}
+                     <div class="row-fluid" style="min-width:600px;"> 	
+                        <form class="form-inline" id="searchPricingForm">
+                            <input class="textToSearchMyPricing" id="textToSearch" value="" type="text" size="60" placeholder="{{pageLabelMap 'MyPricing_searchPlaceHolder'}}">  					
+                            <button type="button" class="btn searchPricing">{{pageLabelMap 'MyPricing_search'}}</button>
+                            <button type="button" class="btn resetPricing">{{pageLabelMap 'MyPricing_reset'}}</button>
+                        </form>                 
+                     </div>
+                            <br/>
+                                
+                     {{#pagination currentPage pageCount size currentSortCriteria currentSortDir}}
+                     <div class="row-fluid" align="center" style="min-width:600px; margin-top: -25px;"> 	
+                     	<div class="pagination pagination-small">
+                            <ul>
+
+                              {{#unless startFromFirstPage}}
+                                <li><a data-currentsortcriteria = "{{currentSortCriteria}}" data-currentsortdir = "{{currentSortDir}}" data-currentpage = "{{currentPage}}" href="javascript:void(0);" class="pricingPrevPage">{{pageLabelMap 'MyPricing_Prev'}}</a></li>
+                              {{/unless}}
+                            
+                              {{#each totalPages}}
+                                {{#if isCurrent}}
+                                  <li class="active"><a href="javascript:void(0);" >{{page}}</a></li>
+                                {{/if}}
+                                {{#unless isCurrent}}
+                                  <li><a data-currentsortcriteria = "{{currentSortCriteria}}" data-currentsortdir = "{{currentSortDir}}" data-currentpage = "{{page}}" href="javascript:void(0);" class="pricingGoToPage">{{page}}</a></li>
+                                {{/unless}}
+                              {{/each}}
+                            
+                              {{#unless endAtLastPage}}
+                                <li><a data-currentsortcriteria = "{{currentSortCriteria}}" data-currentsortdir = "{{currentSortDir}}" data-currentpage = "{{currentPage}}" href="javascript:void(0);" class="pricingNextPage">{{pageLabelMap 'MyPricing_Next'}}</a></li>
+                              {{/unless}}
+                            </ul>
+                            
+                        </div>
+                               <p align="center">{{pageLabelMap 'MyPricing_fineprint'}}</p>
+                       </div>
+                      {{/pagination}}                      
+                       <br/>
+                       <br/>
+                     </div>
+                     <div class="span2 first">
+                         <h2 class="title">{{pageLabelMap 'MyPricing_archivedPriceLetters'}}</h2> 
+                         <center>
+                        {{#each this.priceLetter}}
+                            <a class="msds-btn-link" href="javascript:void(0);" data-id="{{Attachment_Id__c}}" >{{Name}}</a><br/>
+                        {{else}}
+                          	{{pageLabelMap 'MyPricing_noPriceLettersFound'}}       
+                        {{/each}}
+                         </center>
+                    </div>
+                     <br/>   
+                     </div>
+                     <div class="row-fluid" style="min-width:600px;">
+                         <div class="span12">
+                        <table id="pricing" class="table table-striped table-bordered">
+                         <thead>
+ 		  	               	<tr>            			      	
+                  				<td data-sortcriteria="materialDescription" class="span4" style="max-width:234px !important">
+                                    {{pageLabelMap 'MyPricing_materialDescription'}}
+                                    <a href="javascript:void(0);" class="descSort pricingSortControl {{#ifEqualsIgnoreCase this.searchFormData.sortCriteria 'MaterialDescription'}}{{#ifEqualsIgnoreCase this.searchFormData.sortDir 'Desc'}}active{{/ifEqualsIgnoreCase}}{{/ifEqualsIgnoreCase}}" data-sortcriteria="MaterialDescription" data-sortdir="Desc">{{pageLabelMap 'CommonElements_DownArrow'}}</a>
+									<a href="javascript:void(0);" class="ascSort pricingSortControl  {{#ifEqualsIgnoreCase this.searchFormData.sortCriteria 'MaterialDescription'}}{{#ifEqualsIgnoreCase this.searchFormData.sortDir 'Asc'}}active{{/ifEqualsIgnoreCase}}{{/ifEqualsIgnoreCase}}" data-sortcriteria="MaterialDescription" data-sortdir="Asc">{{pageLabelMap 'CommonElements_UpArrow'}}</a>
+                                </td>
+                  				<td data-sortcriteria="customerMaterialNumber" class="span3" style="max-width:140px !important">
+                                    
+                                    {{pageLabelMap 'MyPricing_customerMaterialNumber'}}
+                                    <a href="javascript:void(0);" class="descSort pricingSortControl {{#ifEqualsIgnoreCase this.searchFormData.sortCriteria 'CustomerMaterialNumber'}}{{#ifEqualsIgnoreCase this.searchFormData.sortDir 'Desc'}}active{{/ifEqualsIgnoreCase}}{{/ifEqualsIgnoreCase}}" data-sortcriteria="CustomerMaterialNumber" data-sortdir="Desc">{{pageLabelMap 'CommonElements_DownArrow'}}</a>
+									<a href="javascript:void(0);" class="ascSort pricingSortControl  {{#ifEqualsIgnoreCase this.searchFormData.sortCriteria 'CustomerMaterialNumber'}}{{#ifEqualsIgnoreCase this.searchFormData.sortDir 'Asc'}}active{{/ifEqualsIgnoreCase}}{{/ifEqualsIgnoreCase}}" data-sortcriteria="CustomerMaterialNumber" data-sortdir="Asc">{{pageLabelMap 'CommonElements_UpArrow'}}</a>
+                                </td>
+                  				<td data-sortcriteria="accountTeam" class="span1">
+                                    {{pageLabelMap 'MyPricing_accountTeam'}}				
+                                 </td>                                        		 
+                  				<td class="span3" >
+                                     {{pageLabelMap 'MyPricing_tierPricing'}}
+                                </td>  
+                				<td class="span1" style="max-width:50px !important">
+                                    {{pageLabelMap 'MyPricing_contact'}}
+                                 </td>
+      							<td data-sortcriteria="incoTerms" class="span1">
+                                    {{pageLabelMap 'MyPricing_incoTerms'}}
+                                </td>                           				                                    
+                		  	</tr>
+              			</thead>
+                         {{#each this}}       
+                            <tr>
+                                <td>{{this.materialDescription}}</td>
+                                <td>{{this.customerMaterialNumber}}</td>
+                                <td>{{this.sellerName}}</td>
+                                <td style="min-width: 350px !important">
+                                    
+                                     <table id="tieredPricingProductList" class="table table-striped">
+                                    
+                                    <tbody>
+                                     
+                                     <tr class="even">
+                                        <td style="padding: 2px 4px 2px;" class="right_align">{{pageLabelMap 'MyPricing_minQuantity'}}</td>
+                                        <td style="padding: 2px 4px 2px;" class="right_align">{{pageLabelMap 'MyPricing_priceSalesUOM'}}</td>
+                                        <td style="padding: 2px 4px 2px;" class="right_align">{{pageLabelMap 'MyPricing_priceUOM'}}</td>
+                                        <td style="padding: 2px 4px 2px;" class="right_align">{{pageLabelMap 'MyPricing_validFrom'}}</td>
+                                        <td style="padding: 2px 4px 2px;" class="right_align">{{pageLabelMap 'MyPricing_validTo'}}</td>                                
+                                    </tr> 
+                                    {{#this.tierList}}    
+                                        <tr class="odd myAccOrderRows">
+                                            <td style="padding: 2px 4px 2px;" class="right_align">{{lowerBound}}</td>
+                                            <td style="padding: 2px 4px 2px;" class="right_align">{{amount}}</td>
+                                            <td style="padding: 2px 4px 2px;" class="right_align">{{baseAmount}}</td>
+                                            <td style="padding: 2px 4px 2px;" class="right_align">{{startDate}}</td>
+                                            <td style="padding: 2px 4px 2px;" class="right_align">{{endDate}}</td>                
+                                        </tr>
+                                    {{/this.tierList}} 
+
+               					</tbody></table>
+                                     
+                                    </td>
+                                <td>
+                                    <center>
+                                    	<button data-primaryseller='{{this.sellerEmail}}' data-id='{{this.Id}}' data-customername='{{customerName}}' data-materialdescription='{{this.materialDescription}}' class="btn sendEmailButtonPadding sendEmail">
+                                            <i data-primaryseller='{{this.sellerEmail}}' data-id='{{this.Id}}' data-customername='{{customerName}}' data-materialdescription='{{this.materialDescription}}' class="icon-envelope"></i>
+                                        </button>
+                                    </center>
+                                </td>
+                                <td>{{this.incoTerms}}</td>
+                            </tr> 
+                        {{else}}
+                          	<tr> 
+                              <td colspan="6">
+                                  <center>
+                                  	<p class="empty">{{pageLabelMap 'MyPricing_noRecordsFound'}}</p>
+                                  </center>
+                              </td>     
+                         	</tr> 
+                         {{/each}} 
+                         
+                        </table>
+                         
+                         </div>
+                     </div>
+  
+	</div>
+                    
+    <div id="sendEmailToRepresentative" class="modal hide fade" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
+         <div class="modal-header">
+              <button type="button" class="close finishButton" onclick="closePopup()">×</button>
+              
+              {{pageLabelMap 'MyPricing_EmailTitle'}}              
+         </div>
+    
+    <div class="modal-body">
+         <div id = "emailSendMessageFromServer" class="alert alert-error messagingSection-maContactUsModal-Error modal_error_message" style="display: none"></div>
+         <div id = "emailSendMessageFromServerSucces" class="info info-error messagingSection-maContactUsModal-Info modal_info_message" style="display: none"></div>
+
+         <div class="popUpBodyMyPricing" style="background: white; border: none">
+	         <form>
+             
+    	         <div class="form-group">
+                     <label class="col-form-label" for="primarySellerEmail">{{pageLabelMap 'MyPricing_ToEmail'}}</label> 
+                     <input class="form-control" type="text" id="primarySellerEmail" name="subject" readonly >
+                 </div>         
+    	         <div class="form-group">
+                     <label class="col-form-label" for="subject">{{pageLabelMap 'MyPricing_EmailSubject'}}</label> 
+                     <input class="form-control" type="text" id="subject" name="subject" readonly >
+                 </div>
+                 <div class="form-group">
+                     <label class="control-label" for="bodyMessage">{{pageLabelMap 'MyPricing_EmailMessage'}}</label>
+                     <textarea class="form-control" id = "bodyMessage" rows="5" cols="81" ></textarea>
+                 </div>
+                 <input type="hidden" id="priceItemId" name="priceItemId" > 
+              </form>
+		 </div>
+	</div>
+	<div class="modal-footer">
+        <input type="button" class="finishButton" data-id="" onclick="closePopup()" value="{{pageLabelMap 'MyPricing_cancelSendEmail'}}" id="cancelEmailButton" />
+        <input type="button" class="finishButton" data-id="" onclick="sendEmail()" value="{{pageLabelMap 'MyPricing_sendEmail'}}" id="sendEmailButton" />
+	</div>
+  	</div>                         
+    </script>
+      
+    <script >
+    
+    Handlebars.registerHelper('ifEqualsIgnoreCase', function(v1, v2, options) {
+      if (v1 && v2 && (v1.toLowerCase() == v2.toLowerCase())) {
+        return options.fn(this);
+      }
+      return options.inverse(this);
+    });
+
+    Handlebars.registerHelper('pagination', function(currentPage, totalPage, size, currentSortCriteria, currentSortDir, options) {
+      var startPage, endPage, context;
+    
+      if (arguments.length === 3) {
+        options = size;
+        size = 5;
+      }
+    
+      startPage = currentPage - Math.floor(size / 2);
+      endPage = currentPage + Math.floor(size / 2);
+    
+      if (startPage <= 0) {
+        endPage -= (startPage - 1);
+        startPage = 1;
+      }
+    
+      if (endPage > totalPage) {
+        endPage = totalPage;
+        if (endPage - size + 1 > 0) {
+          startPage = endPage - size + 1;
+        } else {
+          startPage = 1;
+        }
+      }
+    
+      context = {
+        startFromFirstPage: false,
+        totalPages: [],
+        endAtLastPage: false,
+        currentPage: currentPage,
+		currentSortCriteria: currentSortCriteria,
+        currentSortDir: currentSortDir,  
+      };
+      if (startPage === 1) {
+        context.startFromFirstPage = true;
+      }
+      for (var i = startPage; i <= endPage; i++) {
+        context.totalPages.push({
+          page: i,
+          isCurrent: i === currentPage,
+          currentSortCriteria: currentSortCriteria,
+          currentSortDir: currentSortDir,
+        });
+      }
+      if (endPage === totalPage) {
+        context.endAtLastPage = true;
+      }
+    
+      return options.fn(context);
+    });
+    
+    
+    
+    jQuery(function($){
+        CCRZ.subsc       = CCRZ.subsc || {};
+        CCRZ.subsc.views = CCRZ.subsc.views || {};
+        
+        CCRZ.subsc.myNexeoRemoteActions = _.extend(CCRZ.RemoteInvocation, { 
+        	className : 'cc_mn_ctrl_MyPricing',
+            getAllPricesPerAccount : function(callback) {
+                this.invokeCtx('getAllPricesPerAccount',
+                    function(resp) 
+                    {
+                        callback(resp);
+                    },
+                    {
+                        buffer : false, // this call will be executed by itself
+                        nmsp   : false  // defines that this is a call to a subscriber class
+                    }
+                );
+            },
+            searchAllPricesPerAccountByParams : function(searchFormData, callback) {
+                this.invokeCtx('searchAllPricesPerAccountByParams',
+                    searchFormData,
+                    function(resp) 
+                    {
+                        callback(resp);
+                    },
+                    {
+                        buffer : false, // this call will be executed by itself
+                        nmsp   : false  // defines that this is a call to a subscriber class
+                    }
+                );
+            },  
+            sendMaterialEmail : function(materialId, bodyMessage, subject ,callback) {
+                this.invokeCtx('sendMaterialEmail',
+                    materialId, 
+                    bodyMessage,
+                    subject,
+                    function(resp) 
+                    {
+                        callback(resp);
+                    },
+                    {
+                        buffer : false, // this call will be executed by itself
+                        nmsp   : false  // defines that this is a call to a subscriber class
+                    }
+                );
+            }          
+        });
+              
+        
+        CCRZ.subsc.views.MyPricingView = CCRZ.CloudCrazeView.extend({
+            
+            templateDesktop: CCRZ.util.template('PricingDesktopTemplate'),
+            templatePhone: CCRZ.util.template('PricingDesktopTemplate'),            
+         	viewName : "MyPricingView",
+            events : {
+                    "click .sendEmail" : "openEmailSection",
+                	"click .msds-btn-link" : "getArchivedPriceLetter" ,
+               	 	"click .resetPricing": "resetPricing",
+                	"click .pricingSortControl" : "doPricingSort",
+                	"click .searchPricing" : "searchPricing",
+                	"click .pricingNextPage" : "doNextPage",
+                	"click .pricingPrevPage" : "doPrevPage",
+                	"click .pricingGoToPage" : "goToPage",
+               	 	"keypress .textToSearchMyPricing" : "doSearchEnter"
+            },  
+            init : function(){
+				this.getAllPricing();                
+    		}, 
+            
+            getAllPricing: function() {
+                var view = this;
+                
+				CCRZ.subsc.myNexeoRemoteActions.getAllPricesPerAccount( 
+					function(resp){
+		            	if (resp && resp.success && resp.data.pricing){
+                            view.data = {};
+                            view.data = resp.data.pricing;
+                            
+                            var archivedLetters = {!archivedPriceLetters};
+                            var	dataPrice =  archivedLetters;
+                            view.data.priceLetter = {};
+                            view.data.priceLetter = dataPrice;  
+                            view.model = resp.data.pricing;
+                             
+                            view.data.currentPage = 1;
+                            
+                            view.data.pageCount = resp.data.totalPagesPerPriceList;
+                            view.data.size = 5;
+                            view.data.currentSortCriteria = '';
+                			view.data.currentsortDir = '';
+                           
+                            view.render();
+			      	} else {
+                            console.log(resp.success);
+                            console.log(resp.data.message);
+                            console.log(resp.data.cause);
+                            console.log(resp.data.trace);
+                    }
+	            }); 
+            },
+            
+            getArchivedPriceLetter : function(event) { 
+                var objLink = $(event.target);
+                var priceLetterId = objLink.data("id");                    
+                var pdfDataAsUri = "/mynexeo/cc_imp_mn_ViewArchivedPriceLetterDoc?sfid=" + priceLetterId;
+                window.open(pdfDataAsUri, '_blank');
+            },
+            
+            openEmailSection: function(event) {
+                var objLink = jQuery(event.target);
+                var priceLetterId = objLink.data("id"); 
+                var customerName = objLink.data("customername"); 
+                var materialDescription = objLink.data("materialdescription");
+                var primaryseller = objLink.data("primaryseller");
+                console.log(' priceLetterId ' + priceLetterId );
+                console.log(' customerName ' + customerName);
+                console.log(' materialDescription ' + materialDescription);
+                console.log($("#sendEmailToRepresentative"));
+                jQuery("#priceItemId").val(priceLetterId);
+                jQuery("#subject").val(customerName + " - " + materialDescription);
+                jQuery("#primarySellerEmail").val(primaryseller);
+                
+                jQuery("#sendEmailToRepresentative").css({'margin-top': -($("#sendEmailToRepresentative").height()/2)});
+                jQuery("#sendEmailToRepresentative").css({'top': '50%'});
+                jQuery("#sendEmailToRepresentative").css({'margin-left': -($("#sendEmailToRepresentative").width()/2)})              
+            	
+                jQuery("#sendEmailToRepresentative").modal("show"); 
+                console.log($("#sendEmailToRepresentative"));
+            },
+                        
+            renderDesktop: function() {
+          
+                this.setElement($('.MyPricingESDskTarget'));
+                this.$el.html(this.templateDesktop(this.data));
+            },
+            
+            renderPhone: function() {
+                
+                this.setElement($('.phone_center_top'));
+                this.$el.html(this.templatePhone(this.data));                
+            },
+           
+            resetPricing: function() {
+            	this.getAllPricing();    
+            },
+            
+            goToPage: function(event) {
+                var v = this; 
+                var objLink = $(event.target);
+                var sortCol = objLink.data('currentsortcriteria');
+                var sortDir  = objLink.data('currentsortdir');
+                var currentPage = objLink.data('currentpage');
+
+                $('#pricing .sortControl.active').removeClass('active');
+                objLink.addClass('active');
+                $('[name="sortCriteria"]').val(sortCol);
+                $('[name="sortDir"]').val(sortDir);
+           	    v.data.currentSortCriteria = sortCol;
+                v.data.currentSortDir = sortDir;
+                var searchFormData = '{"sortCriteria"  : "' + sortCol + '", "sortDir" : "' + sortDir + '", "searchDataInput":"' + $('#textToSearch').val() + '", "page" : "'  + currentPage + '"}';                               
+				this.doSearchByParams(searchFormData, currentPage);            
+            },
+            
+            doNextPage:function(event) {
+                var v = this; 
+                var objLink = $(event.target);
+                var sortCol = objLink.data('currentsortcriteria');
+                var sortDir  = objLink.data('currentsortdir');
+                var currentPage = objLink.data('currentpage');
+
+                var nextPage = currentPage + 1;
+
+                $('#pricing .sortControl.active').removeClass('active');
+                objLink.addClass('active');
+                $('[name="sortCriteria"]').val(sortCol);
+                $('[name="sortDir"]').val(sortDir);
+                v.data.currentSortCriteria = sortCol;
+                v.data.currentSortDir = sortDir;
+                var searchFormData = '{"sortCriteria"  : "' + sortCol + '", "sortDir" : "' + sortDir + '", "searchDataInput":"' + $('#textToSearch').val() + '", "page" : "'  + nextPage + '"}';                               
+				this.doSearchByParams(searchFormData, nextPage); 
+            },
+            
+            doPrevPage:function(event) {
+                var v = this; 
+                var objLink = $(event.target);
+                var sortCol = objLink.data('currentsortcriteria');
+                var sortDir  = objLink.data('currentsortdir');
+                var currentPage = objLink.data('currentpage');
+
+                var prevPage = currentPage - 1;
+                if (prevPage < 1) {
+                    prevPage = 1;
+                }
+
+                $('#pricing .sortControl.active').removeClass('active');
+                objLink.addClass('active');
+                $('[name="sortCriteria"]').val(sortCol);
+                $('[name="sortDir"]').val(sortDir);
+                v.data.currentSortCriteria = sortCol;
+                v.data.currentSortDir = sortDir;
+                var searchFormData = '{"sortCriteria"  : "' + sortCol + '", "sortDir" : "' + sortDir + '", "searchDataInput":"' + $('#textToSearch').val() + '", "page" : "'  + prevPage + '"}';                               
+				this.doSearchByParams(searchFormData, prevPage); 
+            },
+            
+            doPricingSort: function(event) {
+                var v = this; 
+                var objLink = $(event.target);
+                var sortCol = objLink.data('sortcriteria');
+                var sortDir  = objLink.data('sortdir');
+                $('#pricing .sortControl.active').removeClass('active');
+                objLink.addClass('active');
+                $('[name="sortCriteria"]').val(sortCol);
+                $('[name="sortDir"]').val(sortDir);
+                v.data.currentSortCriteria = sortCol;
+                v.data.currentSortDir = sortDir;
+                var searchFormData = '{"sortCriteria"  : "' + sortCol + '", "sortDir" : "' + sortDir + '", "searchDataInput":"' + $('#textToSearch').val() + '", "page" : "1"}';                               
+				this.doSearchByParams(searchFormData, 1);                   
+            },
+            
+            doSearchEnter: function(event) {
+                var v = this;
+                if (window.event && window.event.keyCode == 13 || event.which == 13) {
+                     v.searchPricing(event);
+                     return false;
+                } else {
+                 	return true;
+                }
+            },
+                        
+            searchPricing: function(event) {
+                var v = this; 
+                var objLink = $(event.target);
+                var sortCol = objLink.data('sortcriteria');
+                var sortDir  = objLink.data('sortdir');
+                $('#pricing .sortControl.active').removeClass('active');
+                objLink.addClass('active');
+                $('[name="sortCriteria"]').val(sortCol);
+                $('[name="sortDir"]').val(sortDir);
+                v.data.currentSortCriteria = sortCol;
+                v.data.currentSortDir = sortDir;
+                var searchFormData = '{"sortCriteria"  : "' + sortCol + '", "sortDir" : "' + sortDir + '", "searchDataInput":"' + $('#textToSearch').val() + '", "page" : "1"}';                               
+				this.doSearchByParams(searchFormData, 1); 
+        	},
+            
+            doSearchByParams: function(searchFormData, currentPage) {
+                var v = this;
+				CCRZ.subsc.myNexeoRemoteActions.searchAllPricesPerAccountByParams( 
+                    searchFormData,
+					function(resp){
+		           		if (resp && resp.success ){
+                            var currentSortCriteria = _.clone(v.data.currentSortCriteria);
+                            var currentsortDir = _.clone(v.data.currentSortDir);
+                            var searchValue = $('#textToSearch').val();
+                            v.data = resp.data.pricing;
+                            var archivedLetters = {!archivedPriceLetters};
+                            var	dataPrice =  archivedLetters;
+                            v.data.priceLetter = {};
+                            v.data.priceLetter = dataPrice;
+                            
+                            v.data.pageCount = resp.data.totalPagesPerPriceList;
+                            v.data.size = 5;
+                            v.data.currentPage = currentPage;
+                            
+                            v.data.currentSortCriteria = currentSortCriteria;
+							v.data.currentSortDir = currentsortDir;                            
+                            
+                            v.render();
+                            $('#textToSearch').val(searchValue);
+			      		} else {
+                        	console.log(resp.success);
+                            console.log(resp.data.message);
+                            console.log(resp.data.cause);
+                            console.log(resp.data.trace);
+
+                        }
+	            });
+            }
+            
+        });
+	
+        CCRZ.subsc.MyPricingView = new CCRZ.subsc.views.MyPricingView();
+        
+       
+
+    });
+
+   
+    
+    function closePopup(){
+       $("#bodyMessage").val("");     
+       $("#reportGeneratedMessage").html("");
+       $("#emailSendMessageFromServer").css("display","none");
+       $("#emailSendMessageFromServerSucces").css("display","none");
+       $("#sendEmailToRepresentative").modal("hide");
+	}
+    
+    function sendEmail(){
+        var priceListItemId = $("#priceItemId").val();
+        var bodyMessage = $("#bodyMessage").val();
+        var subjectMessage = $("#subject").val();
+        $("#cancelEmailButton").attr('disabled','disabled').addClass('disabled');
+        $("#sendEmailButton").attr('disabled','disabled').addClass('disabled');
+                      
+     	CCRZ.subsc.myNexeoRemoteActions.sendMaterialEmail( 
+            priceListItemId,
+			bodyMessage,  
+            subjectMessage,
+			function(resp){
+		       	if (resp && resp.success ){
+                    CCRZ.pubSub.trigger('pageMessage',{
+                            		messages :      [{
+                                        type:          'CUSTOM',
+                                        severity:      'INFO',
+                                        classToAppend: 'modal_info_message',
+                                        labelId:       'MyPricing_EmailSendSuccess',
+                                    }]
+                            	});
+                    setTimeout( function(){ 
+                        $("#sendEmailToRepresentative").modal("hide");
+                        $("#priceItemId").val('');
+        				$("#bodyMessage").val('');
+                		$("#subject").val('');
+						$("#emailSendMessageFromServer").css("display","none");
+                        $("#emailSendMessageFromServerSucces").css("display","none");
+                        $("#cancelEmailButton").removeAttr('disabled').removeClass('disabled');
+        		  		$("#sendEmailButton").removeAttr('disabled').removeClass('disabled');
+                    }, 3000);
+				} else {
+                  $("#cancelEmailButton").removeAttr('disabled').removeClass('disabled');
+        		  $("#sendEmailButton").removeAttr('disabled').removeClass('disabled');
+                  CCRZ.pubSub.trigger('pageMessage',{
+                            		messages :      [{
+                                        type:          'CUSTOM',
+                                        severity:      'ERROR',
+                                        classToAppend: 'modal_error_message',
+                                        labelId:       'MyPricing_EmailSendFail',
+                                    }]
+                            	});
+                }
+            });    
+        
+    	
+    }
+              
+            </script>
+            <div class="MyPricingESDskTarget"></div>
+</apex:component>

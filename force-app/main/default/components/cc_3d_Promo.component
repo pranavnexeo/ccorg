@@ -1,0 +1,57 @@
+<apex:component >
+
+<script type="text/javascript">
+    CCRZ.uiProperties.PromoDisp.desktop.tmpl = 'nexeo3d-promo-desktop-template';
+    CCRZ.uiProperties.PromoDisp.phone.tmpl   = 'nexeo3d-promo-phone-template';
+</script>
+
+<script id="nexeo3d-promo-phone-template" type="text/template">
+  <div class="promo_container promo_phone_container">
+   {{#if this}}
+    <div class="product_search_container">
+     <h2 class="title promo_phone_title">{{pageLabelMap 'Title_Promotion'}}</h2>
+     <div class="product_search">
+      {{#each this}}
+       <div class="promosec {{sfid}}" >
+        <div class="item promo_phone">
+         {{#if sku}}
+          <a class="promoLink promo_phone promo_sku" data-id="{{sku}}" href="#"><img src="{{fullImageURL}}"  class="promoLink promo_phone promo_sku"/></a>
+         {{else}}{{#if categoryId}}
+          <a class="promoLink promo_phone promo_category" data-id="{{categoryid}}" href="#"><img src="{{fullImageURL}}"  class="promoLink promo_phone promo_sku"/></a>
+         {{else}}{{#if externalLink}}
+          <a href="{{{externalLink}}}" {{#if isNewWindow}}target="_blank"{{/if}} class="promoLink promo_phone promo_ext {{#if isNewWindow}}promo_newwindow{{/if}}"><img src="{{fullImageURL}}" alt="{{altMsg}}" class="promoLink promo_phone promo_ext {{#if isNewWindow}}promo_newwindow{{/if}}" /></a>
+         {{else}}{{#if isDownload }}
+                                        <a href="{{downloadUri}}" target="_blank" class="promoLink promo_phone promo_dwnld"><img src="{{fullImageURL}}" alt="{{altMsg}}" class="promoLink promo_phone promo_dwnld"/></a>
+                                    {{else}}{{#if noLink }}
+          <img src="{{fullImageURL}}" alt="{{altMsg}}" class="promo_phone promo_nolink"/>
+                        {{/if}}{{/if}}{{/if}}{{/if}}{{/if}}
+        </div>
+       </div>
+      {{/each}}
+     </div>
+    </div>
+   {{/if}}
+  </div>
+</script>
+
+<script id="nexeo3d-promo-desktop-template" type="text/template">
+
+  <div class="promo_container promo_side_container">
+   {{#each this}}
+    <div class="promotion_side promo_desk {{sfid}}">
+     {{#if sku}}
+      <a class="promoLink promo_desk promo_sku" data-id="{{sku}}" href="javascript:productDetails('{{sku}}');"><img data-id="{{sku}}" src="{{fullImageURL}}" alt="{{altMsg}}" class="promoLink promo_desk promo_sku"/></a>
+     {{else}}{{#if categoryId}}
+      <a class="promoLink promo_desk promo_category" data-id="{{categoryId}}" href="javascript:productList('{{categoryId}}');"><img data-id="{{categoryId}}" src="{{fullImageURL}}" alt="{{altMsg}}" class="promoLink promo_desk promo_category"/></a>
+     {{else}}{{#if externalLink}}
+      <a href="{{{externalLink}}}" {{#if isNewWindow}}target="_blank"{{/if}} class="promoLink promo_desk promo_ext {{#if isNewWindow}}promo_newwindow{{/if}}"><img src="{{fullImageURL}}" alt="{{altMsg}}" class="promoLink promo_desk promo_ext {{#if isNewWindow}}promo_newwindow{{/if}}" /></a>
+     {{else}}{{#if isDownload }}
+                       <a href="{{downloadUri}}" target="_blank" class="promoLink promo_desk promo_dwnld"><img src="{{fullImageURL}}" alt="{{altMsg}}" class="promoLink promo_desk promo_dwnld"/></a>
+                    {{else}}{{#if noLink }}
+      <img src="{{fullImageURL}}" alt="{{altMsg}}" class="promo_desk promo_nolink"/>
+                    {{/if}}{{/if}}{{/if}}{{/if}}{{/if}}
+    </div>
+   {{/each}}
+  </div>
+ </script>
+</apex:component>

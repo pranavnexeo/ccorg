@@ -1,0 +1,157 @@
+<apex:page standardController="Plant_Hours_Report__c" extensions="planthourExtension"> 
+<apex:sectionHeader title="Plant Hours Report" subtitle="{!Plant_Hours_Report__c.name}"/>
+<apex:form > 
+<apex:pageBlock title="Plant Hours Report"> 
+
+<apex:pageBlockButtons location="both">
+<apex:commandButton value="Edit" action="{!edit}"/>
+<apex:commandButton value="Delete" action="{!delete}"/>
+</apex:pageBlockButtons>
+
+<apex:pageBlockSection title="Information" columns="2"> 
+<apex:pageBlockSectionItem >
+<apex:outputLabel value="{!$ObjectType.Plant_Hours_Report__c.fields.Report_Type__c.label}" />
+<apex:actionRegion >
+<apex:outputField value="{!Plant_Hours_Report__c.Report_Type__c}" id="statusfield">
+<apex:actionsupport rerender="sec1" status="status" />
+</apex:outputField>
+</apex:actionRegion>
+</apex:pageBlockSectionItem>
+<apex:outputField title="Plant Hours Report ID" value="{!Plant_Hours_Report__c.Name}"/> 
+<apex:outputField title="Owner" value="{!Plant_Hours_Report__c.OwnerId}"/> 
+<apex:outputField title="Reporting Period" value="{!Plant_Hours_Report__c.Reporting_Period__c}"/> 
+<apex:outputField title="Report Year" value="{!Plant_Hours_Report__c.Report_Year__c}"/> 
+<apex:outputField title="Currency" value="{!Plant_Hours_Report__c.CurrencyIsoCode}"/> 
+<apex:outputField title="Country" value="{!Plant_Hours_Report__c.Country__c}"/> 
+</apex:pageBlockSection>
+
+<apex:outputpanel id="sec1">
+<apex:pageBlockSection title="Facility Information" rendered="{!(1==1 && Plant_Hours_Report__c.Report_Type__c == 'Facility')}" columns="2">
+<apex:outputField title="facility" value="{!Plant_Hours_Report__c.Facility__c}"/>
+<apex:outputField title="reportcat" value="{!Plant_Hours_Report__c.Reporting_Category__c}"/>
+<apex:outputField title="reportgrp" value="{!Plant_Hours_Report__c.Reporting_Group__c}"/>
+<apex:outputField title="division" value="{!Plant_Hours_Report__c.Division__c}"/>
+<apex:outputField title="category" value="{!Plant_Hours_Report__c.Category__c}"/>
+<apex:outputField title="group" value="{!Plant_Hours_Report__c.Group__c}"/>
+<apex:outputField title="Country" value="{!Plant_Hours_Report__c.Country1__c}"/>
+</apex:pageBlockSection>
+
+<apex:pageBlockSection rendered="{!(1==1 && Plant_Hours_Report__c.Report_Type__c == 'Sub')}" columns="2">
+<apex:outputField title="Countrys" value="{!Plant_Hours_Report__c.Country__c}"/> 
+<apex:outputField title="reportcats" value="{!Plant_Hours_Report__c.Reporting_Category_Sub__c}"/>
+<apex:outputField title="reportgrps" value="{!Plant_Hours_Report__c.Reporting_Group_Sub__c}"/>
+<apex:outputField title="divisions" value="{!Plant_Hours_Report__c.Division_Sub__c}"/>
+<apex:outputField title="categorys" value="{!Plant_Hours_Report__c.Category_Sub__c}"/>
+<apex:outputField title="groups" value="{!Plant_Hours_Report__c.Group_Sub__c}"/>
+</apex:pageBlockSection>
+
+<apex:pageBlockSection rendered="{!(1==1 && Plant_Hours_Report__c.Report_Type__c == 'Division')}" columns="2">
+<apex:outputField title="Countryd" value="{!Plant_Hours_Report__c.Country__c}"/> 
+<apex:outputField title="reportcatd" value="{!Plant_Hours_Report__c.Division_div__c}"/>
+</apex:pageBlockSection>
+
+<apex:pageBlockSection rendered="{!(1==1 && Plant_Hours_Report__c.Report_Type__c == 'Corp')}" columns="2">
+<apex:outputField title="Countryc" value="{!Plant_Hours_Report__c.Country__c}"/> 
+</apex:pageBlockSection>
+</apex:outputpanel>
+
+<apex:pageBlockSection title="Goal Section" columns="3">
+<apex:outputField title="Basic # Injuries/Illnesses" value="{!Plant_Hours_Report__c.Basic_Injuries_Illnesses__c}"/> 
+<apex:outputField title="Target # Injuries/Illnesses" value="{!Plant_Hours_Report__c.Target_Injuries_Illnesses__c}"/> 
+<apex:outputField title="Outstanding # Injuries/Illnesses" value="{!Plant_Hours_Report__c.Outstanding_Injuries_Illnesses__c}"/> <apex:outputField title="Basic TRR" value="{!Plant_Hours_Report__c.Basic_TRR__c}"/> <apex:outputField title="Target TRR" value="{!Plant_Hours_Report__c.Target_TRR__c}"/> 
+<apex:outputField title="Outstanding TRR" value="{!Plant_Hours_Report__c.Outstanding_TRR__c}"/> 
+</apex:pageBlockSection> 
+
+<apex:pageBlockSection title="Man Hours Section" columns="3">
+<apex:dataTable value="{!Manhour}" var="pay" cellPadding="5" cellSpacing="5" border="1" width="200">
+<apex:column >
+<apex:facet name="header">Month</apex:facet>
+{!pay.Month__c}
+</apex:column>
+<apex:column >
+<apex:facet name="header">Reporting Year</apex:facet>
+{!pay.Reporting_Year__c}
+</apex:column>
+<apex:column >
+<apex:facet name="header">Man Hour</apex:facet>
+{!pay.Man_hours__c}
+</apex:column>
+<apex:column >
+<apex:facet name="header"># Employee</apex:facet>
+{!pay.Employee__c}
+</apex:column>
+</apex:dataTable>
+<table id="apppp" column="2">
+<td>
+<table id="appp" column="1" cellspacing="0" cellpadding="0">
+<tr>
+<th>Cumulative Man Hour</th>
+</tr>
+<apex:repeat var="d" value="{!CumulativeManhour}">
+<tr><apex:outputText value="{!d}"/></tr>
+</apex:repeat>
+</table>
+</td>
+<td>
+<table id="app" column="1" cellspacing="0" cellpadding="0">
+<tr>
+<th>Average Employee</th>
+</tr>
+<apex:repeat var="e" value="{!AverageEmployee}">
+<tr><apex:outputText value="{!e}"/></tr>
+</apex:repeat>
+</table>
+</td>
+</table>
+</apex:pageBlockSection>
+<apex:pageBlockSection title="Cumulative Rolling Rates Section" columns="1">
+<apex:dataTable value="{!CumulativeRolling}" var="pay" cellPadding="4" border="1" width="200">
+<apex:column >
+<apex:facet name="header">Month</apex:facet>
+{!pay.Month__c}
+</apex:column>
+<apex:column >
+<apex:facet name="header">Reporting Year</apex:facet>
+{!pay.Reporting_Year__c}
+</apex:column>
+<apex:column >
+<apex:facet name="header"># Incidents</apex:facet>
+{!pay.Incidents__c}
+</apex:column>
+<apex:column >
+<apex:facet name="header">TRR</apex:facet>
+{!pay.Total_Recordable_Rate__c}
+</apex:column>
+<apex:column >
+<apex:facet name="header">#LW</apex:facet>
+{!pay.Lost_Work_Incidents__c}
+</apex:column>
+<apex:column >
+<apex:facet name="header">LWR</apex:facet>
+{!pay.Lost_Work_Rate__c}
+</apex:column>
+<apex:column >
+<apex:facet name="header">#DAW</apex:facet>
+{!pay.Days_Away_From_work__c}
+</apex:column>
+<apex:column >
+<apex:facet name="header">DAWR</apex:facet>
+{!pay.Days_Away_From_Work_Rate__c}
+</apex:column>
+<apex:column >
+<apex:facet name="header">#MT</apex:facet>
+{!pay.Medical_Treatment__c}
+</apex:column>
+<apex:column >
+<apex:facet name="header">MTR</apex:facet>
+{!pay.Medical_Treatment_Rate__c}
+</apex:column>
+<apex:column >
+<apex:facet name="header">#Fatalities</apex:facet>
+{!pay.Fatalities__c}
+</apex:column>
+</apex:dataTable>
+</apex:pageBlockSection>
+</apex:pageBlock> 
+</apex:form>
+</apex:page>

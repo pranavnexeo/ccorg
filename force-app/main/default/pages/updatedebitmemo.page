@@ -1,0 +1,46 @@
+<apex:page controller="PriceSupportSearchController" showHeader="false" sideBar="false">
+
+    
+   <script>
+     
+    function close_window() {   
+        if (confirm("Close Window?")) {
+            window.top.close();   
+         } 
+    }
+   
+    function redirect(){
+        alert('Debit Memo updated successfully');
+        window.top.close();    
+    
+    }
+   
+   </script>    
+  <apex:pageMessages id="errors" />
+  
+  
+  <apex:form >
+  
+  
+            <apex:pageBlock >
+            
+            <apex:pageBlockButtons location="top">
+               <apex:commandButton value="Update DM" action="{!updateDebitMemo}" oncomplete="redirect()" rerender="errors"/>
+               
+               <apex:commandButton value="Cancel"  onclick="close_window();return false;" />
+              </apex:pageBlockButtons>
+  
+                <apex:pageBlockSection >
+                    
+                    <apex:selectList id="supplierName"  value="{!newDebitMemo}"  label="New Debit Memo"   required="true"  size="1">
+                        <apex:selectOptions value="{!DebitMemoList}" />
+                    </apex:selectList>
+               </apex:pageBlockSection>
+                
+               
+             </apex:pageBlock>
+               
+ 
+ </apex:form>   
+
+</apex:page>

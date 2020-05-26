@@ -1,0 +1,780 @@
+<apex:page standardController="Account" extensions="SCPR" showHeader="false" renderAs="pdf" >
+    <head>
+    <style type="text/css" media="print">
+        @page {
+            @top-left {
+                content: element(header);
+            }
+        }
+        div.header {
+            display: bold; 
+            padding: 5px;   
+            position: running(header);
+        }              
+    </style>          
+    </head>      
+    <div class="header">        
+        <div>
+             <apex:outputText value="{!AccountDetailSection_Header}" styleClass="subtitle"/>
+        </div>  
+    </div>    
+    <apex:stylesheet value="{!$Resource.printcss}"/>
+
+    <apex:panelGrid columns="2" width="100%">
+        <apex:panelGroup >
+            <apex:outputText value="Sales Call Prep Report" styleClass="title"/>
+            <!--<apex:outputText value="{!AccountDetailSection_Header}" styleClass="subtitle"/>-->
+        </apex:panelGroup>
+        <apex:image value="{!$Resource.Nexeo_Logo}"/>
+    </apex:panelGrid>
+    <hr/><br/>
+<!-- <hr style="height:0.10em;width:100%;border:1px solid #000;" />  -->
+
+        <apex:form >
+            <apex:outputText value="General Account Information" styleClass="subtitle"/>
+            <apex:dataTable value="{!Account}" var="lines" styleClass="dataTable" columnclasses="lineitems" headerClass="dataTableHeader" id="AccountDetailSection" rowclasses="odd,even" width="100%">
+                <apex:column >
+                    <apex:facet name="header"><b>Account Name</b></apex:facet>
+                    <apex:outputText value="{!lines.Name}"/>
+                </apex:column>
+                <apex:column >
+                    <apex:facet name="header"><b>Account Owner</b></apex:facet>
+                    <apex:outputText value="{!Acct_team}"/>
+                </apex:column>
+                <apex:column rendered="{!isProspect}">
+                    <apex:facet name="header"><b>Prospect Number</b></apex:facet>
+                    <apex:outputText value="{!lines.CIS_Prospect_Number__c}"/>
+                </apex:column>
+                <apex:column rendered="{!isCustomer}">
+                    <apex:facet name="header"><b>Customer Number</b></apex:facet>
+                    <apex:outputText value="{!lines.SAP_Customer_Number__c}"/>
+                </apex:column>
+                <apex:column >
+                    <apex:facet name="header"><b>Address</b></apex:facet>
+                    <apex:outputText escape="false" value="{!AccountAddress}" />
+                </apex:column>
+        </apex:dataTable>
+          
+<br/>
+    
+
+<apex:outputText value="Account Summary" styleClass="subtitle" rendered="{!NOT(isValvoline)}"/>
+<apex:outputPanel id="Account_Summary_Panel" rendered="{!NOT(isValvoline)}">
+            <BR/>
+            <apex:panelGrid columns="4"
+                            id="AccountSummaryGrid" width="100%" 
+                            styleClass="TableStyleClass" captionClass="TableCaptionClass" 
+                            headerClass="TableHeaderClass" 
+                            rowClasses="TableHeaderClass,TableRowClasses_odd,TableRowClasses_even,AccountSummaryFooterLine" 
+                            columnClasses="LineHeading_ColumnFormat,Data_ColumnFormat,Data_ColumnFormat,Data_ColumnFormat,Data_ColumnFormat,Data_ColumnFormat">
+                
+                <apex:outputText value="&nbsp;" styleClass="subtitle2" escape="false"/>
+                <apex:outputText value="Volume in LB" styleClass="subtitle2"/>
+                <apex:outputText value="Volume in KG" styleClass="subtitle2"/>
+                <apex:outputText value="Sales Amount" styleClass="subtitle2"/>
+                
+ 
+                <apex:outputText value="{!CFYTD_Label}" style="" styleClass="subtitle2"/>
+                <apex:panelGroup >
+                    <apex:image value="{!$Resource.GreenUpArrow}" width="12" height="12" rendered="{!FYTDvsPFYTD_Volume_in_LB_Up }"/>
+                    <apex:image value="{!$Resource.RedDownArrow}" width="12" height="12" rendered="{!FYTDvsPFYTD_Volume_in_LB_Down }"/>
+                    <apex:outputText value="{!FYTD_Volume_in_LB_formatted}" style="{!FYTD_Volume_in_LB_style}"/>
+                </apex:panelGroup>
+                <apex:panelGroup >
+                    <apex:image value="{!$Resource.GreenUpArrow}" width="12" height="12" rendered="{!FYTDvsPFYTD_Volume_in_KG_Up}"/>
+                    <apex:image value="{!$Resource.RedDownArrow}" width="12" height="12" rendered="{!FYTDvsPFYTD_Volume_in_KG_Down}"/>
+                    <apex:outputText value="{!FYTD_Volume_in_KG_formatted}" style="{!FYTD_Volume_in_KG_style}"/>
+                </apex:panelGroup>
+                <apex:panelGroup >
+                    <apex:image value="{!$Resource.GreenUpArrow}" width="12" height="12" rendered="{!FYTDvsPFYTD_Amount_Up}"/>
+                    <apex:image value="{!$Resource.RedDownArrow}" width="12" height="12" rendered="{!FYTDvsPFYTD_Amount_Down}"/>
+                    <apex:outputText value="{!CFYTD_Amount_formatted}" style="{!FYTD_Amount_style}"/>
+                </apex:panelGroup>
+ 
+                <apex:outputText value="{!PFYTD_Label}" style="" styleClass="subtitle2"/>
+                <apex:outputText value="{!PFYTD_Volume_in_LB_formatted}" style="{!PFYTD_Volume_in_LB_style}"/>
+                <apex:outputText value="{!PFYTD_Volume_in_KG_formatted}" style="{!PFYTD_Volume_in_KG_style}"/>
+                <apex:outputText value="{!PFYTD_Amount_formatted}" style="{!PFYTD_Amount_style}"/>
+          
+                <apex:outputText value="{!CFYTDvsPFYTD_Label}" style="" styleClass="subtitle2"/>
+                <apex:outputText value="{!FYTDvsPFYTD_Volume_in_LB_Variance_formatted}" style="{!FYTDvsPFYTD_Volume_in_LB_Variance_style}"/>
+                <apex:outputText value="{!FYTDvsPFYTD_Volume_in_KG_Variance_formatted}" style="{!FYTDvsPFYTD_Volume_in_KG_Variance_style}"/>
+                <apex:outputText value="{!FYTDvsPFYTD_Amount_Variance_formatted}" style="{!FYTDvsPFYTD_Amount_Variance_style}"/>
+
+            </apex:panelGrid>
+</apex:outputPanel>
+
+
+                
+        <apex:panelGrid rendered="{!NotIncludeOO}">
+                
+            <apex:panelGrid rendered="{!IF(OpenOrders.size>0,'true','false')}" width="100%">
+            <apex:outputText value="Open Orders" styleClass="subtitle" rendered="{!renderOO}"/>
+            <apex:outputText value="{!OpenOrder_Desc}" rendered="{!renderOO}" styleClass="subtitle2"/>
+                    <apex:dataTable value="{!OpenOrders}" var="lines" styleClass="dataTable" columnclasses="lineitems" rendered="{!AND(NOT(isdistribution),renderOO)}" headerClass="dataTableHeader"  id="OpenOrderSection" width="100%" rowclasses="odd,even">
+                        <apex:column >
+                            <apex:facet name="header"><b>Sales Order Number</b></apex:facet>
+                            <apex:outputField value="{!lines.Sales_Order_Number__c}"/>
+                        </apex:column>
+                        <apex:column >
+                            <apex:facet name="header"><b>Ship to Description</b></apex:facet>
+                            <apex:outputField value="{!lines.ShipTo_Desc__c}"/>
+                        </apex:column><apex:column >
+                        <apex:facet name="header"><b>Material</b></apex:facet>
+                            <apex:outputField value="{!lines.Material__c}"/>
+                        </apex:column>
+                        <apex:column >
+                            <apex:facet name="header"><b>Ordered Quantity</b></apex:facet>
+                            <apex:outputField value="{!lines.Ordered_Qty__c}"/>
+                        </apex:column>
+                       <apex:column rendered="{!isperformancematerials}">
+                            <apex:facet name="header"><b>Ordered Quantity<br/>in lbs</b></apex:facet>
+                            <apex:outputField value="{!lines.Ordered_Qty_in_LB__c}"/>
+                        </apex:column>
+                        <apex:column >
+                            <apex:facet name="header"><b>Requested<br/>Delivery<br/>Date</b></apex:facet>
+                            <apex:outputField value="{!lines.Requested_Delivery_Date2__c}"/>
+                        </apex:column>
+                        <apex:column >
+                            <apex:facet name="header"><b>Expected<br/>Shipping<br/>Date</b></apex:facet>
+                            <apex:outputField value="{!lines.Expected_Ship_Date2__c}"/>
+                        </apex:column>
+                        <apex:column rendered="{!NOT(isperformancematerials)}">
+                            <apex:facet name="header"><b>Created Date</b></apex:facet>
+                            <apex:outputField value="{!lines.Created_Date2__c}"/>
+                        </apex:column>
+                        <apex:column >
+                            <apex:facet name="header"><b>Customer <br/>PO Number</b></apex:facet>
+                            <apex:outputField value="{!lines.Customer_PO_Number__c}"/>
+                        </apex:column>
+                    </apex:dataTable>
+                    
+                    
+               <apex:dataTable value="{!OpenOrders}" var="lines" styleClass="datatable" rendered="{!AND(isdistribution, RenderOO)}" id="ADOpenorderSection" columnclasses="lineitems" headerClass="dataTableHeader"  width="100%" rowclasses="odd,even">
+                        <apex:column >
+                            <apex:facet name="header"><b>Sales Order Number</b></apex:facet>
+                            <apex:outputField value="{!lines.Sales_Order_Number__c}"/>
+                        </apex:column>
+                        <apex:column >
+                            <apex:facet name="header"><b>Customer PO <br/>Number</b></apex:facet>
+                            <apex:outputField value="{!lines.Customer_PO_Number__c}"/>
+                        </apex:column>
+                        <apex:column >
+                        <apex:facet name="header"><b>Material</b></apex:facet>
+                            <apex:outputField value="{!lines.Material__c}"/>
+                        </apex:column>
+                       <apex:column >
+                            <apex:facet name="header"><b>Ordered Quantity<br/>in lbs</b></apex:facet>
+                            <apex:outputField value="{!lines.Ordered_Qty_in_LB__c}"/>
+                        </apex:column>                        
+                        <apex:column >
+                        <apex:facet name="header"><b>Unit Price<br/>per lb</b></apex:facet>
+                            <apex:outputField value="{!lines.Unit_Price_per_LB__c}"/>
+                        </apex:column>
+                        
+                        <apex:column >
+                        <apex:facet name="header"><b>Requested <br/>Delivery<br/> Date</b></apex:facet>
+                            <apex:outputField value="{!lines.Requested_Delivery_Date2__c}"/>
+                        </apex:column>
+                        <apex:column >
+                            <apex:facet name="header"><b>Expected <br/>Shipping<br/> Date</b></apex:facet>
+                            <apex:outputField value="{!lines.Expected_Ship_Date2__c}"/>
+                        </apex:column>
+                        <apex:column >
+                        <apex:facet name="header"><b>Plant Desc</b></apex:facet>
+                            <apex:outputField value="{!lines.Plant_Desc__c}"/>
+                        </apex:column>
+
+                    </apex:dataTable>
+
+                    </apex:panelGrid>
+            </apex:panelGrid>        
+           
+ <apex:panelGrid rendered="{!NotIncludeCSP}">
+                
+            <apex:panelGrid rendered="{!IF(CSPtoDisplay.size>0,'true','false')}" width="100%">
+            <apex:outputText value="CSP" styleClass="subtitle" rendered="{!renderCSP}"/>
+            <apex:outputText value="{!CSP_Desc}" rendered="{!renderCSP}" styleClass="subtitle2"/>
+                    <apex:dataTable value="{!CSPtoDisplay}" var="lines" styleClass="dataTable" columnclasses="lineitems" rendered="{!AND(isCSP,renderCSP)}" headerClass="dataTableHeader"  id="CSPSection" width="100%" rowclasses="odd,even">
+                        <apex:column >
+                            <apex:facet name="header"><b>SAP Material</b></apex:facet>
+                            <apex:outputField value="{!lines.SAP_Material__r.name}"/>
+                        </apex:column>
+                        <apex:column >
+                            <apex:facet name="header"><b>Price</b></apex:facet>
+                            <apex:outputField value="{!lines.Price__c}"/>
+                        </apex:column><apex:column >
+                        <apex:facet name="header"><b>Effective Date</b></apex:facet>
+                            <apex:outputField value="{!lines.Requested_Effective_Date__c}"/>
+                        </apex:column>
+                        <apex:column >
+                            <apex:facet name="header"><b>Expiration Date</b></apex:facet>
+                            <apex:outputField value="{!lines.Requested_Expiration_Date__c}"/>
+                        </apex:column>
+                      
+                        <apex:column >
+                            <apex:facet name="header"><b>PLM</b></apex:facet>
+                            <apex:outputField value="{!lines.PLM__c}"/>
+                        </apex:column>
+                        <apex:column >
+                            <apex:facet name="header"><b>Approver</b></apex:facet>
+                            <apex:outputField value="{!lines.Approver__r.name}"/>
+                        </apex:column>
+                       
+                    </apex:dataTable>
+                   <apex:dataTable value="{!CSPtoDisplay}" var="lines" styleClass="datatable" rendered="{!AND(Not(isCSP), RenderCSP)}" id="ADCSPSection" columnclasses="lineitems" headerClass="dataTableHeader"  width="100%" rowclasses="odd,even">
+                          <apex:column >
+                            <apex:facet name="header"><b>SAP Material</b></apex:facet>
+                            <apex:outputField value="{!lines.SAP_Material__r.name}"/>
+                        </apex:column>
+                        <apex:column >
+                            <apex:facet name="header"><b>Price</b></apex:facet>
+                            <apex:outputField value="{!lines.Price__c}"/>
+                        </apex:column><apex:column >
+                        <apex:facet name="header"><b>Effective Date</b></apex:facet>
+                            <apex:outputField value="{!lines.Requested_Effective_Date__c}"/>
+                        </apex:column>
+                        <apex:column >
+                            <apex:facet name="header"><b>Expiration Date</b></apex:facet>
+                            <apex:outputField value="{!lines.Requested_Expiration_Date__c}"/>
+                        </apex:column>
+                      
+                        <apex:column >
+                            <apex:facet name="header"><b>PLM</b></apex:facet>
+                            <apex:outputField value="{!lines.PLM__c}"/>
+                        </apex:column>
+                        <apex:column >
+                            <apex:facet name="header"><b>Approver</b></apex:facet>
+                            <apex:outputField value="{!lines.Approver__r.name}"/>
+                        </apex:column>
+                    </apex:dataTable>                    
+              
+               </apex:panelGrid>
+            </apex:panelGrid>  
+            
+            
+            <apex:panelGrid rendered="{!NotIncludeOH}">
+                    <apex:panelGrid rendered="{!IF(OrderHistorytoDisplay.size>0,'true','false')}" width="100%">
+                    <apex:outputText value="Order History" styleClass="subtitle" rendered="{!renderOH}"/>       
+                    <apex:outputText value="{!OrderHistory_Desc}" rendered="{!renderOH}" styleClass="subtitle2"/>
+                    <apex:dataTable value="{!OrderHistorytoDisplay}" var="lines" rendered="{!AND(NOT(isdistribution),RenderOH)}"  styleClass="dataTable" columnclasses="lineitems" headerClass="dataTableHeader" id="OrderHistorySection" width="100%" rowclasses="odd,even">    
+                        <apex:column >
+                            <apex:facet name="header"><b>Sales Order Number</b></apex:facet>
+                            <apex:outputField value="{!lines.Sales_Order_Number__c}"/>
+                        </apex:column>
+                        <apex:column >
+                            <apex:facet name="header"><b>Ship to Description</b></apex:facet>
+                            <apex:outputField value="{!lines.ShipTo_Desc__c}"/>
+                        </apex:column><apex:column >
+                        <apex:facet name="header"><b>Material</b></apex:facet>
+                            <apex:outputField value="{!lines.Material__c}"/>
+                        </apex:column>
+                        <apex:column >
+                            <apex:facet name="header"><b>Ordered Quantity</b></apex:facet>
+                            <apex:outputField value="{!lines.Ordered_Qty__c}"/>
+                        </apex:column>
+                       <apex:column rendered="{!isperformancematerials}">
+                            <apex:facet name="header"><b>Ordered Quantity<br/>in lbs</b></apex:facet>
+                            <apex:outputField value="{!lines.Ordered_Qty_in_LB__c}"/>
+                        </apex:column>
+                        <apex:column >
+                            <apex:facet name="header"><b>Requested<br/>Delivery<br/>Date</b></apex:facet>
+                            <apex:outputField value="{!lines.Requested_Delivery_Date2__c}"/>
+                        </apex:column>
+                        <apex:column >
+                            <apex:facet name="header"><b>Expected<br/>Shipping<br/>Date</b></apex:facet>
+                            <apex:outputField value="{!lines.Expected_Ship_Date2__c}"/>
+                        </apex:column>
+                        <apex:column >
+                            <apex:facet name="header"><b>Goods<BR/>Issue<BR/>Date</b></apex:facet>
+                            <apex:outputField value="{!lines.Goods_Issue_Date2__c}"/>
+                        </apex:column>
+                        <apex:column rendered="{!NOT(isperformancematerials)}">
+                            <apex:facet name="header"><b>Reason<BR/>Rejection<BR/>Decription</b></apex:facet>
+                            <apex:outputField value="{!lines.Reason_Rejected_Desc__c}"/>
+                        </apex:column>
+                        <apex:column >
+                            <apex:facet name="header"><b>Customer <br/>PO Number</b></apex:facet>
+                            <apex:outputField value="{!lines.Customer_PO_Number__c}"/>
+                        </apex:column>
+                    </apex:dataTable>
+                    
+                    <apex:dataTable value="{!OrderHistorytoDisplay}" var="lines" styleClass="datatable" rendered="{!AND(isdistribution, RenderOH)}" id="ADOrderHistorySection" columnclasses="lineitems" headerClass="dataTableHeader"  width="100%" rowclasses="odd,even">
+                        <apex:column >
+                            <apex:facet name="header"><b>Sales Order Number</b></apex:facet>
+                            <apex:outputField value="{!lines.Sales_Order_Number__c}"/>
+                        </apex:column>
+                        <apex:column >
+                            <apex:facet name="header"><b>Customer PO <br/>Number</b></apex:facet>
+                            <apex:outputField value="{!lines.Customer_PO_Number__c}"/>
+                        </apex:column>
+                        <apex:column >
+                        <apex:facet name="header"><b>Material</b></apex:facet>
+                            <apex:outputField value="{!lines.Material__c}"/>
+                        </apex:column>
+                       <apex:column >
+                            <apex:facet name="header"><b>Ordered Quantity<br/>in lbs</b></apex:facet>
+                            <apex:outputField value="{!lines.Ordered_Qty_in_LB__c}"/>
+                        </apex:column>                        
+                        <apex:column >
+                        <apex:facet name="header"><b>Unit Price<br/>per lb</b></apex:facet>
+                            <apex:outputField value="{!lines.Unit_Price_per_LB__c}"/>
+                        </apex:column>
+                        
+                        <apex:column >
+                            <apex:facet name="header"><b>Expected<br/> Shipping<br/> Date</b></apex:facet>
+                            <apex:outputField value="{!lines.Expected_Ship_Date2__c}"/>
+                        </apex:column>
+                        <apex:column >
+                        <apex:facet name="header"><b>Delivered<br/> Date</b></apex:facet>
+                            <apex:outputField value="{!lines.Delivery_Date__c}"/>
+                        </apex:column>
+                        <apex:column >
+                        <apex:facet name="header"><b>Plant Desc</b></apex:facet>
+                            <apex:outputField value="{!lines.Plant_Desc__c}"/>
+                        </apex:column>
+
+                    </apex:dataTable>
+
+                    </apex:panelGrid>
+                    
+             </apex:panelGrid>
+
+
+        <apex:panelGrid rendered="{!NotIncludeOP}">
+            <apex:panelGrid rendered="{!IF(Opportunities.size>0,'true','false')}" width="100%">       
+            <apex:outputText value="Opportunities" styleClass="subtitle" rendered="{!renderOPP}"/>
+            <apex:outputText value="{!OppStage_Desc}" styleClass="subtitle2" rendered="{!renderOPP}"/>
+                    <apex:dataTable value="{!Opportunities}" var="lines" styleClass="dataTable" columnclasses="lineitems" headerClass="dataTableHeader" id="OpportunitiesSection" width="100%" rendered="{!renderOPP}" rowclasses="odd,even">
+                        <apex:column >
+                            <apex:facet name="header"><b>Opportunity Name</b></apex:facet>
+                            <apex:outputField value="{!lines.Name}"/>
+                        </apex:column>
+                        <apex:column >
+                            <apex:facet name="header"><b>Stage</b></apex:facet>
+                            <apex:outputField value="{!lines.StageName}"/>
+                        </apex:column>
+                        <apex:column >
+                            <apex:facet name="header"><b>Close Date</b></apex:facet>
+                            <apex:outputField value="{!lines.CloseDate}"/>
+                        </apex:column>
+                        <apex:column >
+                            <apex:facet name="header"><b>Volume</b></apex:facet>
+                            <apex:outputField value="{!lines.Annual_Usage__c}"/>
+                        </apex:column>
+                        <apex:column >
+                            <apex:facet name="header"><b>Requested Supplier</b></apex:facet>
+                            <apex:outputField value="{!lines.Requested_Supplier__r.Name}"/>
+                        </apex:column>
+<!--
+                        <apex:column >
+                            <apex:facet name="header"><b>Competition</b></apex:facet>
+                            <apex:outputField value="{!lines.Competition__c}"/>
+                        </apex:column>
+                        <apex:column >
+                            <apex:facet name="header"><b>Target Price</b></apex:facet>
+                            <apex:outputField value="{!lines.Target_Price__c}"/>
+                        </apex:column>
+-->
+                    </apex:dataTable>
+                    </apex:panelGrid>     
+             </apex:panelGrid>                      
+       
+
+
+        <apex:panelGrid rendered="{!NotIncludeOA}">
+             <apex:panelGrid rendered="{!IF(OpenActivities.size>0,'true','false')}" width="100%">             
+             <apex:outputText value="Open Activities" styleClass="subtitle" rendered="{!renderOA}"/>
+             <apex:outputText value="{!OpenActivities_Desc}" styleClass="subtitle2" rendered="{!renderOA}"/>
+                    <apex:dataTable rendered="{!renderOA}" value="{!OpenActivities}" var="accOpenAct" styleClass="dataTable" columnclasses="lineitems" headerClass="dataTableHeader" id="AccOpenActivitiesSection" width="100%" rowclasses="odd,even">
+                        <apex:column style="width: 250px" >
+                            <apex:facet name="header"><b>Open Activity Subject</b></apex:facet>
+                            <apex:outputText value="{!accOpenAct.Subject}"/>
+                        </apex:column>
+                        <apex:column style="width: 100px" >
+                            <apex:facet name="header"><b>Name</b></apex:facet>
+                            <apex:outputText value="{!accOpenAct.Name}"/>
+                        </apex:column>
+                        <apex:column style="width: 100px" >
+                            <apex:facet name="header"><b>Related To</b></apex:facet>
+                            <apex:outputText value="{!accOpenAct.RelatedTo}"/>
+                        </apex:column>
+                        <apex:column style="width: 100px" >
+                            <apex:facet name="header"><b>Assigned To</b></apex:facet>
+                            <apex:outputText value="{!accOpenAct.AssignedToName}"/>
+                        </apex:column>
+                        <apex:column style="width: 150px" >
+                            <apex:facet name="header"><b>Due Date</b></apex:facet>
+                            <apex:outputText value="{!accOpenAct.ActivityDate_Formatted}"/>
+                        </apex:column>
+                        <apex:column >
+                            <apex:facet name="header"><b>Comments</b></apex:facet>
+                            <apex:outputText styleClass="item" escape="false" value="{!accOpenAct.Comments}"/>
+                        </apex:column>
+                        <apex:column >
+                            <apex:facet name="header"><b>Status</b></apex:facet>
+                            <apex:outputText styleClass="item" escape="false" value="{!accOpenAct.Status}"/>
+                        </apex:column>
+                    </apex:dataTable>
+            </apex:panelGrid>            
+         </apex:panelGrid>   
+
+       
+
+        <apex:panelGrid rendered="{!NotIncludeCA}">
+            <apex:panelGrid rendered="{!IF(CloseActivities.size>0,'true','false')}" width="100%"> 
+            <apex:outputText value="Closed Activities" styleClass="subtitle" rendered="{!renderCA}"/> 
+            <apex:outputText value="{!ClosedActivities_Desc}" styleClass="subtitle2" rendered="{!renderCA}"/>                  
+                        <apex:dataTable headerClass="dataTableHeader" rendered="{!renderCA}" value="{!CloseActivities}" styleClass="list" columnclasses="lineitems"  var="CLOSEAct" styleClass="list" id="AccClosedActivitiesSection" width="100%" rowclasses="odd,even">
+                        <apex:column style="width : 250px">
+                            <apex:facet name="header"><b>Closed Activity<br/>Subject</b></apex:facet>
+                            <apex:outputLink value="/{!CLOSEAct.ID}" id="ClosedActivitySubjectLink">{!CLOSEAct.Subject}</apex:outputLink>
+                        </apex:column>
+                        <apex:column style="width : 100px">
+                            <apex:facet name="header"><b>Name</b></apex:facet>
+                            <apex:outputLink value="/{!CLOSEAct.WhoId}" id="ClosedActivityNameLink">{!CLOSEAct.Who.nAME}</apex:outputLink>
+                        </apex:column>
+                        <apex:column style="width : 100px">
+                            <apex:facet name="header"><b>Related To</b></apex:facet>
+                            <apex:outputLink value="/{!CLOSEAct.WhatId}" id="ClosedActivityRelatedToLink">{!CLOSEAct.What.Name}</apex:outputLink>
+                        </apex:column>
+                        <apex:column style="width : 100px">
+                            <apex:facet name="header"><b>Assigned To</b></apex:facet>
+                            <apex:outputLink value="/{!CLOSEAct.OwnerId}" id="ClosedActivityAssignedToLink">{!CLOSEAct.Owner.Name}</apex:outputLink>
+                        </apex:column>
+                        <apex:column style="width : 150px">
+                            <apex:facet name="header"><b>Due Date</b></apex:facet>
+                            <apex:outputText value="{!CLOSEAct.ActivityDate}"/>
+                        </apex:column>
+                        <apex:column >
+                         <div style="width:100%;overflow:hidden"> 
+                            <apex:facet name="header"><b>Comments</b></apex:facet>
+                            <apex:outputText escape="false" value="{!CLOSEAct.Description}"/>
+                         </div>
+                        </apex:column>              
+                    </apex:dataTable>
+                </apex:panelGrid>
+          </apex:panelGrid>      
+ 
+       
+        <apex:panelGrid rendered="{!NotIncludeCR}">
+       
+            <apex:panelGrid rendered="{!IF(Call_Reports.size>0,'true','false')}" width="100%"> 
+            <apex:outputText value="Call Reports" styleClass="subtitle" rendered="{!renderCR}"/>
+            <apex:outputText value="{!CallReports_Desc}" styleClass="subtitle2" rendered="{!renderCR}"/>
+                    <apex:dataTable value="{!Call_Reports}" var="lines" rendered="{!renderCR}" styleClass="dataTable" 
+                                    columnclasses="lineitems" headerClass="dataTableHeader" 
+                                    id="Call_ReportsSection" width="100%" rowclasses="odd,even">
+                        <apex:column style="width: 150px" >
+                            <apex:facet name="header"><b>Call Report Date</b></apex:facet>
+                            <apex:outputText value="{!lines.callReportDate_Formatted}"  />
+                        </apex:column>
+                        <apex:column style="width: 100px" rendered="{!Not(CallReports_LimittoOwner)}">
+                            <apex:facet name="header"><b>Created By</b></apex:facet>
+                            <apex:outputText value="{!lines.CallReportCreatedByName}"/>
+                        </apex:column>
+                        <apex:column style="width: 250px">
+                            <apex:facet name="header"><b>Title</b></apex:facet>
+                            <apex:outputText value="{!lines.Subject}"/>
+                        </apex:column>
+                        <apex:column >
+                            <apex:facet name="header"><b>Purpose / Reason for Visit</b></apex:facet>
+                            <apex:outputText styleClass="item" escape="true" value="{!lines.Comments}"/>
+                        </apex:column>
+                        <apex:column >                       
+                            <apex:facet name="header"><b>Discussion</b></apex:facet>
+                            <apex:outputText escape="false" value="{!lines.Discussion}"/>
+                        </apex:column>
+                    </apex:dataTable>
+                    </apex:panelGrid>
+                    
+        </apex:panelGrid> 
+  
+  
+   <apex:panelGrid rendered="{!NotIncludeSR}">
+              <apex:panelGrid rendered="{!IF(SampleRequest.size>0,'true','false')}" width="100%">       
+              <apex:outputText value="Sample Request" styleClass="subtitle" rendered="{!renderSR}"/>
+              <apex:outputText value="{!SampleRequest_Desc}" rendered="{!renderSR}" styleClass="subtitle2"/>
+                     <apex:dataTable value="{!SampleRequest}" var="lines" columnclasses="lineitems"  styleClass="dataTable" rendered="{!renderSR}" id="SampleRequestSection" headerClass="dataTableHeader" width="100%" rowclasses="odd,even">                        
+                        <apex:column >
+                            <apex:facet name="header"><b>Sample Material</b></apex:facet>
+                            <apex:outputField value="{!lines.Name}"/>
+                        </apex:column>
+                        <!--<apex:column >
+                        <apex:facet name="header"><b>Material</b></apex:facet>
+                            <apex:outputField value="{!lines.Material__r.Name}"/>
+                        </apex:column>-->
+                        <apex:column >
+                            <apex:facet name="header"><b>Created Date</b></apex:facet>
+                            <apex:outputField value="{!lines.Sample_Request__r.Createddate}"/>
+                        </apex:column>
+                        <apex:column >
+                            <apex:facet name="header"><b>Status</b></apex:facet>
+                            <apex:outputField value="{!lines.Sample_Request__r.Status__c}"/>
+                        </apex:column>
+                        <apex:column >
+                            <apex:facet name="header"><b>Material Summary</b></apex:facet>
+                            <apex:outputField value="{!lines.Sample_Request__r.Material_Summary__c}"/>
+                        </apex:column>
+                    </apex:dataTable>
+                    </apex:panelGrid>
+             </apex:panelGrid>     <br/>
+
+ <!--       <apex:panelGrid rendered="{!NotIncludeCL}">
+            <apex:panelGrid rendered="{!IF(CallReports.size>0,'true','false')}" width="100%">
+            <apex:outputText value="Call Logs" styleClass="subtitle" rendered="{!renderCL}"/>
+            <apex:outputText value="{!CallReports_Desc}" rendered="{!renderCL}" styleClass="subtitle2"/>
+                    <apex:dataTable value="{!CallReports}" rendered="{!renderCL}" var="lines" styleClass="dataTable" columnclasses="lineitems" headerClass="dataTableHeader" id="CallReportsSection" width="100%" rowclasses="odd,even">
+                        <apex:column style="width: 150px" >
+                            <apex:facet name="header"><b>Call Report Date</b></apex:facet>
+                            <apex:outputText value="{!lines.callReportDate_Formatted}"  />
+                        </apex:column>
+                        <apex:column style="width: 100px" rendered="{!Not(CallReports_LimittoOwner)}">
+                            <apex:facet name="header"><b>Created By</b></apex:facet>
+                            <apex:outputText value="{!lines.CallReportCreatedByName}"/>
+                        </apex:column>
+                        <apex:column style="width: 250px">
+                            <apex:facet name="header"><b>Subject</b></apex:facet>
+                            <apex:outputText value="{!lines.Subject}"/>
+                        </apex:column>
+                        <apex:column >
+                            <apex:facet name="header"><b>Comments</b></apex:facet>
+                            <apex:outputText styleClass="item" escape="true" value="{!lines.Comments}"/>
+                        </apex:column>
+                    </apex:dataTable>
+            </apex:panelGrid>
+       </apex:panelGrid>     -->
+  
+            <apex:panelGrid rendered="{!IF(AND(NOT(isdistribution), ContactstoDisplay.size>0 ), true, false)}" width="100%">                 
+            <apex:outputText value="Contacts" styleClass="subtitle" rendered="{!renderCOn}"/>
+            <apex:outputText value="{!Cnct_Desc}" styleClass="subtitle2" rendered="{!renderCOn}"/>
+               <apex:dataTable value="{!ContactstoDisplay}" var="lines" styleClass="dataTable" columnclasses="lineitems" headerClass="dataTableHeader" id="ContactsSection" rendered="{!renderCOn}" width="100%" rowclasses="odd,even">
+                <apex:column >
+                    <apex:facet name="header"><b>Contact Name</b></apex:facet>
+                    <apex:outputField value="{!lines.FirstName}"/>
+                    <apex:outputText value=" "/>
+                    <apex:outputField value="{!lines.LastName}"/>
+                </apex:column>
+                <apex:column rendered="{!Contacts_ShowInactive}">
+                    <apex:facet name="header"><b>Active</b></apex:facet>
+                    <apex:image value="{!URLFOR($Resource.Images_checkbox, IF(lines.WV_Contact_Status__c = 'Active', 'true.gif','false.gif'))}"/>
+                </apex:column>
+                <apex:column >
+                    <apex:facet name="header"><b>Contact Title</b></apex:facet>
+                    <apex:outputField value="{!lines.Title}"/>
+                </apex:column>
+                <apex:column >
+                    <apex:facet name="header"><b>Phone #</b></apex:facet>
+                    <apex:outputField value="{!lines.Phone}"/>
+                </apex:column>
+                <apex:column >
+                    <apex:facet name="header"><b>Fax #</b></apex:facet>
+                    <apex:outputField value="{!lines.Fax}"/>
+                </apex:column>
+                <apex:column >
+                    <apex:facet name="header"><b>Email Address</b></apex:facet>
+                    <apex:outputField value="{!lines.Email}" styleClass="item" />
+                </apex:column>
+                <apex:column >
+                            <apex:facet name="header"><b>Status</b></apex:facet>
+                            <apex:outputField value="{!lines.WV_Contact_Status__c}"/>
+                </apex:column>
+            </apex:dataTable>
+            </apex:panelGrid>
+
+            <apex:panelGrid rendered="{!NotIncludeBC}">
+                    <apex:panelGrid rendered="{!IF(BusContactstoDisplay.size>0,'true','false')}" width="100%">  
+                    <apex:outputText value="Business Contracts" styleClass="subtitle" rendered="{!renderBusCOn}"/>       
+                        <apex:dataTable headerClass="dataTableHeader" rendered="{!renderBusCOn}"  value="{!BusContactstoDisplay}" styleClass="list" columnclasses="lineitems"  var="lines" styleClass="list" id="BusinessContactsSection" width="100%" rowclasses="odd,even">
+                        <apex:column style="width: 250px" >
+                            <apex:facet name="header"><b>Business Contract Name</b></apex:facet>
+                            <apex:outputField value="{!lines.Name}"/>
+                        </apex:column>
+                        <apex:column >
+                            <apex:facet name="header"><b>Customer Name</b></apex:facet>
+                            <apex:outputField value="{!lines.Customer_Name__c}"/>
+                        </apex:column>
+                        <apex:column >
+                            <apex:facet name="header"><b>Contract Type</b></apex:facet>
+                            <apex:outputField value="{!lines.Contract_Type__c}"/>
+                        </apex:column>
+                        <apex:column >
+                            <apex:facet name="header"><b>Effective Date</b></apex:facet>
+                            <apex:outputField value="{!lines.Effective_Date__c}"/>
+                        </apex:column>
+                        <apex:column >
+                            <apex:facet name="header"><b>Expiration Date</b></apex:facet>
+                            <apex:outputField value="{!lines.Expiration_Date__c}"/>
+                        </apex:column>
+                        <apex:column >
+                            <apex:facet name="header"><b>Comments</b></apex:facet>
+                            <apex:outputField value="{!lines.Comments__c}"/>
+                        </apex:column>
+                    </apex:dataTable>
+                    </apex:panelGrid>
+             </apex:panelGrid>      
+         
+         <apex:panelGrid rendered="{!NotIncludeCDF}">
+          <apex:panelGrid rendered="{!IF(conList.size>0,'true','false')}" width="100%">
+            <apex:outputText value="CDFs" styleClass="subtitle" rendered="{!isDistribution}"/>
+            <apex:outputText value="{!CDFStatus_Desc}" rendered="{!isDistribution}" styleClass="subtitle2"/>
+                    <apex:dataTable value="{!conList}" var="lines" rendered="{!isDistribution}" styleClass="dataTable" columnclasses="lineitems" headerClass="dataTableHeader" id="ContractsSection" width="100%" rowclasses="odd,even">
+                        <apex:column >
+                            <apex:facet name="header"><b>CDF Name</b></apex:facet>
+                            <apex:outputField value="{!lines.Name}"/>
+                        </apex:column>
+                        <apex:column >
+                            <apex:facet name="header"><b>Status</b></apex:facet>
+                            <apex:outputField value="{!lines.Status}"/>
+                        </apex:column>
+                        <apex:column >
+                            <apex:facet name="header"><b>Stocking Agreement</b></apex:facet>
+                            <apex:outputField value="{!lines.Forecasted_Quantity__c}"/>
+                            <apex:outputText value=" "/>
+                            <apex:outputField value="{!lines.Stocking_Unit__c}"/>
+                            <apex:outputText value=" per "/>
+                            <apex:outputField value="{!lines.Per__c}"/>
+                        </apex:column>
+                        <apex:column >
+                            <apex:facet name="header"><b>Order Size</b></apex:facet>
+                            <apex:outputField value="{!lines.Order_Size__c}"/>
+                        </apex:column>
+                        <apex:column >
+                            <apex:facet name="header"><b>CDF End Date</b></apex:facet>
+                            <apex:outputField value="{!lines.EndDate}"/>
+                        </apex:column>
+                    </apex:dataTable>
+            </apex:panelGrid>  
+            </apex:panelGrid>      
+<br/>                    
+<!--
+            <apex:outputText value="Active Sample Requests" styleClass="subtitle"  rendered="{!renderSR}"/>
+                    <apex:dataTable value="{!SampleRequest}" var="lines"  styleClass="dataTable" rendered="{!renderSR}" columnclasses="lineitems" headerClass="dataTableHeader" id="SampleRequestSection" width="100%" rowclasses="odd,even">
+                        <apex:column >
+                            <apex:facet name="header"><b>Sample Number</b></apex:facet>
+                            <apex:outputField value="{!lines.Name}"/>
+                        </apex:column>
+                        <apex:column >
+                            <apex:facet name="header"><b>Status</b></apex:facet>
+                            <apex:outputField value="{!lines.Status__c}"/>
+                        </apex:column>
+                        <apex:column >
+                            <apex:facet name="header"><b>Created Date</b></apex:facet>
+                            <apex:outputField value="{!lines.CreatedDate}"/>
+                        </apex:column>
+                        <apex:column >
+                            <apex:facet name="header"><b>Material Summary</b></apex:facet>
+                            <apex:outputField value="{!lines.Material_Summary__c}"/>
+                        </apex:column>
+                    </apex:dataTable>
+-->
+<!--
+            <apex:outputText value="Consumption" styleClass="subtitle" rendered="{!IF(AND(isDistribution, NOT(isES), IF(Consumption_Count>0,true,false)),'true','false')}"/>
+
+                    <apex:dataTable value="{!Account.Consumptions__r}" var="lines" styleClass="dataTable" columnclasses="lineitems" headerClass="dataTableHeader" id="ConsumptionSection" width="100%" rowclasses="odd,even" rendered="{!IF(AND(isDistribution, NOT(isES), IF(Consumption_Count>0,true,false)),'true','false')}">
+
+                    
+                        <apex:column >
+                            <apex:facet name="header"><b>Consumption<br/> Number</b></apex:facet>
+                            <apex:outputLink value="/{!lines.Id}" id="ConsumptionNumberLink">{!lines.Name}</apex:outputLink>
+                        </apex:column>
+                        <apex:column rendered="{!NOT(isNorthAmerica)}">
+                            <apex:facet name="header"><b>Material</b></apex:facet>
+                            <apex:outputField value="{!lines.SAP_Material__c}"/>
+                        </apex:column>
+                        <apex:column rendered="{!NOT(isNorthAmerica)}">
+                            <apex:facet name="header"><b>Market</b></apex:facet>
+                            <apex:outputField value="{!lines.Market__c}"/>
+                        </apex:column>                      
+                        <apex:column rendered="{!NOT(isNorthAmerica)}">
+                            <apex:facet name="header"><b>Group/Family</b></apex:facet>
+                            <apex:outputField value="{!lines.Product_Group_FAMILY__c}"/>
+                        </apex:column>
+                        <apex:column rendered="{!NOT(isNorthAmerica)}">
+                            <apex:facet name="header"><b>MFI</b></apex:facet>
+                            <apex:outputField value="{!lines.MFI__c}"/>
+                        </apex:column>                        
+                        <apex:column rendered="{!NOT(isNorthAmerica)}">
+                            <apex:facet name="header"><b>Product<br/> Desc.</b></apex:facet>
+                            <apex:outputField value="{!lines.Product_Description__c}"/>
+                        </apex:column>                        
+                        <apex:column rendered="{!NOT(isNorthAmerica)}">
+                            <apex:facet name="header"><b>Description</b></apex:facet>
+                            <apex:outputField value="{!lines.Description__c}"/>
+                        </apex:column>                                                
+                        <apex:column rendered="{!NOT(isNorthAmerica)}">
+                            <apex:facet name="header"><b>Current Supp.<br/> /Producer</b></apex:facet>
+                            <apex:outputField value="{!lines.Current_Supplier_Producer__c}"/>
+                        </apex:column>                                                
+                                               
+                        <apex:column rendered="{!NOT(isNorthAmerica)}">
+                            <apex:facet name="header"><b>Status</b></apex:facet>
+                            <apex:outputField value="{!lines.Status__c}"/>
+                        </apex:column>                                                
+                                                
+                                                
+                        <apex:column rendered="{!NOT(isNorthAmerica)}">
+                            <apex:facet name="header"><b>Annual <br/>Volume (T/Y)</b></apex:facet>
+                            <apex:outputField value="{!lines.Annual_Usage_Volume__c}"/>
+                        </apex:column>
+                        <apex:column rendered="{!NOT(isNorthAmerica)}">
+                            <apex:facet name="header"><b>UOM</b></apex:facet>
+                            <apex:outputField value="{!lines.Unit_of_Measure__c}"/>
+                        </apex:column>
+
+
+                        <apex:column rendered="{!NOT(isNorthAmerica)}">
+                            <apex:facet name="header"><b>Technology</b></apex:facet>
+                            <apex:outputField value="{!lines.Technology__c}"/>
+                        </apex:column>
+                        <apex:column rendered="{!isNorthAmerica}">
+                            <apex:facet name="header"><b>Product <br/>Group</b></apex:facet>
+                            <apex:outputField value="{!lines.Product_Group__c}"/>
+                        </apex:column>
+                        
+                        <apex:column rendered="{!isNorthAmerica}">
+                            <apex:facet name="header"><b>SAP Material</b></apex:facet>
+                            <apex:outputField value="{!lines.SAP_Material__c}"/>
+                        </apex:column>
+                        <apex:column rendered="{!isNorthAmerica}">
+                            <apex:facet name="header"><b>Base Code<br/>Other</b></apex:facet>
+                            <apex:outputField value="{!lines.Base_Code_Other__c}"/>
+                        </apex:column>
+
+                        <apex:column rendered="{!isNorthAmerica}">
+                            <apex:facet name="header"><b>Dist. <br/>Volume</b></apex:facet>
+                            <apex:outputField value="{!lines.Distribution_Volume__c}"/>
+                        </apex:column>
+                        <apex:column rendered="{!isNorthAmerica}">
+                            <apex:facet name="header"><b>Direct <br/>Volume</b></apex:facet>
+                            <apex:outputField value="{!lines.Direct_Volume__c}"/>
+                        </apex:column>
+                        <apex:column rendered="{!isNorthAmerica}">
+                            <apex:facet name="header"><b>Sec.<br/>Volume</b></apex:facet>
+                            <apex:outputField value="{!lines.Secondary_Volume__c}"/>
+                        </apex:column>
+                        <apex:column rendered="{!isNorthAmerica}">
+                            <apex:facet name="header"><b>Annual <br/>Volume</b></apex:facet>
+                            <apex:outputField value="{!lines.Annual_Volume__c}"/>
+                        </apex:column>
+                       <apex:column rendered="{!isNorthAmerica}">
+                            <apex:facet name="header"><b>Unit of <br/>Measure</b></apex:facet>
+                            <apex:outputField value="{!lines.Unit_of_Measure__c}"/>
+                        </apex:column>
+                        <apex:column rendered="{!isNorthAmerica}">
+                            <apex:facet name="header"><b>Distributor</b></apex:facet>
+                            <apex:outputField value="{!lines.Distributor__c}"/>
+                        </apex:column>
+                        <apex:column rendered="{!isNorthAmerica}">
+                            <apex:facet name="header"><b>Current Supp. <br/>/ Producer</b></apex:facet>
+                            <apex:outputField value="{!lines.Current_Supplier_Producer__c}"/>
+                        </apex:column>
+
+
+
+                    </apex:dataTable>
+
+ -->
+ 
+          </apex:form>
+</apex:page>

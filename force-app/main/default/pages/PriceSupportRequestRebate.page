@@ -1,0 +1,443 @@
+<apex:page standardController="Price_Support_Request__c" id="PSRpage" extensions="PriceSupportExtensionRequest" standardStylesheets="false">
+<apex:pageMessages id="errorMessages">
+</apex:pageMessages>
+<script src="{!URLFOR($Resource.JQueryUI, 'js/jquery-1.7.2.min.js')}" />
+<script src="{!URLFOR($Resource.JQueryUI, 'js/jquery-ui-1.8.21.custom.min.js')}" />
+ 
+<script type="text/javascript">
+window.onload = setFocus
+    function setFocus() {
+    try{
+        document.getElementById("hiddenElement").focus();    
+    }catch(e){
+        }
+    }
+</script>  
+<script type="text/javascript">  
+    function openLookup(baseURL, width, modified, searchParam){
+    var originalbaseURL = baseURL;
+    var originalwidth = width;
+    var originalmodified = modified;
+    var originalsearchParam = searchParam;
+    var lookupType = baseURL.substr(baseURL.length-3, 3);
+    if (modified == '1') baseURL = baseURL + searchParam;
+    var isCustomLookup = false;
+    // Following "001" is the lookup type for Account object so change this as per your standard or custom object
+    if(lookupType == "a0e" || lookupType=="001"){
+      var urlArr = baseURL.split("&");
+      var txtId = '';
+    if(urlArr.length > 2) {
+      urlArr = urlArr[1].split('=');
+      txtId = urlArr[1];
+      }
+      //Following is the url of Custom Lookup page. You need to change that accordingly
+    if(lookupType == "a0e"){
+      baseURL = "/apex/CustomMaterialLookup?txt=" + txtId;
+      }
+    else if(lookupType=="001"){
+      baseURL = "/apex/CustomCustomerLookup?txt=" + txtId;
+      }
+      // Following is the id of apex:form control "myForm". You need to change that accordingly
+      baseURL = baseURL + "&frm=" + escapeUTF("{!$Component.priceForm}");
+    if (modified == '1' && lookupType == "a0e") {
+      baseURL = baseURL + "&lksearch=" + searchParam+"&salesOrg="+document.getElementById('PSRpage:priceForm:pricePageBlock:nexeoInfoEdit:salesOrgSection:salesOrg').value;
+      }
+    else if(modified == '1' && lookupType == "001"){
+      baseURL = baseURL + "&lksearch=" + searchParam+"&salesOrg="+document.getElementById('PSRpage:priceForm:pricePageBlock:nexeoInfoEdit:salesOrgSection:salesOrg').value+"&customerType="+document.getElementById('PSRpage:priceForm:pricePageBlock:customerInfoEdit:customerTypeSection:custType').value+"&divisionNo="+document.getElementById('PSRpage:priceForm:pricePageBlock:nexeoInfoEdit:divNo').value+"&distChannel="+document.getElementById('PSRpage:priceForm:pricePageBlock:nexeoInfoEdit:distChnl').value;  
+      }
+      // Following is the ID of inputField that is the lookup to be customized as custom lookup
+    if(txtId.indexOf('materialSelling') > -1 ){
+      isCustomLookup = true;
+      }
+    else if(txtId.indexOf('materialBuying') > -1 ){
+      isCustomLookup = true;
+      }
+    else if(txtId.indexOf('customerName') > -1 ){
+      isCustomLookup = true;
+      }
+    }
+    if(isCustomLookup == true){
+      openPopup(baseURL, "lookup", 350, 480, "width="+width+",height=480,toolbar=no,status=no,directories=no,menubar=no,resizable=yes,scrollable=no", true);
+    }
+    else {
+      if (modified == '1') originalbaseURL = originalbaseURL + originalsearchParam;
+      openPopup(originalbaseURL, "lookup", 350, 480, "width="+originalwidth+",height=480,toolbar=no,status=no,directories=no,menubar=no,resizable=yes,scrollable=no", true);
+    } 
+  }
+</script>
+
+<script> 
+    var j$ = jQuery.noConflict();
+    function sticky_relocate() {
+                 var window_top = j$(window).scrollTop();
+                 var div_top = j$('#sticky-anchor').offset().top;
+                 if (window_top > div_top)
+                   j$('#sticky').addClass('stick')
+                 else
+                   j$('#sticky').removeClass('stick');
+                }
+    
+                 j$(function() {
+                   j$(window).scroll(sticky_relocate);
+                   sticky_relocate();
+                 });
+                 
+    var soldToId='';
+    
+    var payerCustNo='';
+    var region='';
+              
+    function fetchCustomerDetails(){
+        var custName = document.getElementById('PSRpage:priceForm:pricePageBlock:customerInfoEdit:customerNameSection:customerName').value;
+        var custId = document.getElementById('PSRpage:priceForm:pricePageBlock:customerInfoEdit:customerNameSection:customerName_lkid').value;
+        var custType = document.getElementById('PSRpage:priceForm:pricePageBlock:customerInfoEdit:customerTypeSection:custType').value;
+        if(custName!=''){
+            customerDeatils(custId,custType,soldToId,payerCustNo,region);
+        }else{
+            customerDeatils('',custType,soldToId,payerCustNo,region);
+        }
+     }
+    function setSoldTo(soldTo,payerNo,regionVal){
+        soldToId = soldTo;
+        payerCustNo = payerNo;
+        region = regionVal;
+    }
+    
+     function setRegion(regionVal){
+       // alert('setRegion : '+regionVal);
+        region = regionVal;
+    }
+    function populateMaterialSelling(comp){
+        var materialSelling = document.getElementById('PSRpage:priceForm:pricePageBlock:supportInfo:materialSellingSection:materialSelling_lkid').value;
+        var materialSellingName = document.getElementById('PSRpage:priceForm:pricePageBlock:supportInfo:materialSellingSection:materialSelling').value;
+        //lookupPick2('PSRpage:priceForm','PSRpage:priceForm:pricePageBlock:costInfoEdit:materialBuyingSection:materialBuying_lkid','PSRpage:priceForm:pricePageBlock:costInfoEdit:materialBuyingSection:materialBuying',materialSelling,materialSellingName, false);
+        fetchMaterialData(materialSelling,'Selling');
+    }
+    
+    function getBracketedPricing(comp){
+        fetchPricing(comp.value);
+    }
+    
+    function fetchRegion(){
+        var allRegionVal= document.getElementById('PSRpage:priceForm:pricePageBlock:customerInfoEdit:allRegions').checked;
+        regionCheckbox(region,allRegionVal);
+    }
+    
+    function setRegion(regionVal){
+       // alert('setRegion : '+regionVal);
+        region = regionVal;
+    }
+</script>                 
+
+<apex:form id="priceForm">
+<input id="hiddenElement" type="hidden" />
+<apex:actionFunction name="fetchMaterialData"
+            action="{!populateMaterialData}"
+            rerender="materialCodeSelling,materialDescription"
+            status="busyStatus">
+            <apex:param name="materialId" value="" />
+            <apex:param name="materialType" value="" />
+</apex:actionFunction>
+<apex:actionFunction name="fetchPricing" action="{!getPricing}"
+            rerender="errorMessages,competitiveInfoEdit,salesContact,supplierGroup,supplierApprover,supplierGroupName,pricingBlock,matchToPO,adjustPO,discountOneSell,discountOneTypeSell,discountTwoSell,discountTwoTypeSell,packagingAllowance,freightSell,discountOneBuy,discountOneTypeBuy,discountTwoBuy,discountTwoTypeBuy,supplierCity,supplierStreet,supplierState,supplierNumber,supplierName,supplierPINumber,applicationSection,dmContact"
+            status="busyStatus">
+            <apex:param name="supplierProfile" value="" />
+</apex:actionFunction>
+<apex:actionFunction name="customerDeatils"
+            action="{!getCustomerDetails}"
+            rerender="customerInfoEdit,regionCode,allRegions"
+            status="busyStatus">
+            <apex:param name="customerId" value="" />
+            <apex:param name="custType" value="" />
+            <apex:param name="soldToId" value="" />
+            <apex:param name="payerNo" value="" />
+            <apex:param name="region" value="" />
+            
+        </apex:actionFunction>
+<apex:actionFunction name="regionCheckbox"
+            action="{!getRegionDetails}"
+            rerender="regionCode"
+            status="busyStatus">
+            <apex:param name="region" value="" />
+            <apex:param name="allRegionVal" value="" />
+        </apex:actionFunction>
+<apex:sectionHeader title="Price Support Request" subtitle="{!Price_Support_Request__c.Name}"/>
+<div id="sticky-anchor"></div>
+        <div id="sticky">
+            <apex:pageblock >
+                <apex:pageBlockButtons id="buttons" location="top">
+                    <apex:commandButton value="Save" action="{!customSave}"/>
+                    <apex:commandButton action="{!cancel}" value="Cancel" />
+                </apex:pageBlockButtons>
+                <apex:ActionStatus id="busyStatus">
+                    <apex:facet name="start">
+                        <c:BusyStatusComp height="300px" width="300px"
+                            Message="Please Wait..." />
+                    </apex:facet>
+                </apex:ActionStatus>
+            </apex:pageblock>
+        </div>
+        <apex:pageBlock id="pricePageBlock">
+            <!--<BR />
+            <B><apex:outputLabel value=" ID# :   " for="supportId" />
+                <apex:outputField value="{!Price_Support_Request__c.Support_ID__c}"
+                    id="supportId" />
+            </B>
+            <BR />
+            <BR />-->
+ 
+<apex:pageBlockSection showHeader="true" title="Status" columns="1"
+                id="status">
+               <apex:pageBlocksectionItem >
+                    <apex:outputLabel value="Status" />
+                    <apex:panelgroup >
+                        <div class="requiredInput">
+                            <div class="requiredBlock"></div>
+                            <apex:inputField value="{!Price_Support_Request__c.Status__c}" />
+                        </div>
+                    </apex:panelgroup>
+                 </apex:pageBlocksectionItem>   
+            </apex:pageBlockSection> 
+        <apex:pageBlockSection title=" General Information"
+                id="generalInfoEdit">
+             
+                <apex:pageBlocksectionItem >
+                    <apex:outputLabel value="New Or Changed" />
+                    <apex:panelgroup >
+                        <div class="requiredInput">
+                            <div class="requiredBlock"></div>
+                            <apex:inputField value="{!Price_Support_Request__c.New_Or_Changed__c}" />
+                        </div>
+                    </apex:panelgroup>
+                 </apex:pageBlocksectionItem>   
+                <apex:outputField value="{!Price_Support_Request__c.Support_Type1__c}"/>
+                <apex:pageBlocksectionItem >
+                    <apex:outputLabel value="Order Type" />
+                    <apex:panelgroup >
+                        <div class="requiredInput">
+                            <div class="requiredBlock"></div>
+                            <apex:inputField value="{!Price_Support_Request__c.Order_Type__c}" />
+                        </div>
+                    </apex:panelgroup>
+                 </apex:pageBlocksectionItem>   
+                 <apex:pageBlocksectionItem >
+                    <apex:outputLabel value="Flat Or Purchased" />
+                    <apex:panelgroup >
+                        <div class="requiredInput">
+                            <div class="requiredBlock"></div>
+                            <apex:inputField value="{!Price_Support_Request__c.Flat_or_Purchased__c}" />
+                        </div>
+                    </apex:panelgroup>
+                 </apex:pageBlocksectionItem>   
+                </apex:pageBlockSection>
+                
+           <apex:pageBlockSection showHeader="true" title="Comments" columns="1"
+                id="commentsEdit">
+                <apex:inputTextArea value="{!Price_Support_Request__c.Comments__c}" rows="5"
+                    cols="150" />
+            </apex:pageBlockSection>
+       <apex:pageBlockSection showHeader="true" title="Nexeo Information" columns="2" id="nexeoInfoEdit">
+                <apex:inputField value="{!Price_Support_Request__c.Division_Number__c}" id="divNo" />     
+                <apex:inputField value="{!Price_Support_Request__c.Division_Name__c}"/>
+           
+           <apex:pageBlocksectionItem id="salesOrgSection">    
+                    <apex:outputLabel value="Sales Organization" />
+                    <apex:panelgroup >
+                        <div class="requiredInput">
+                            <div class="requiredBlock"></div>
+                            <apex:inputField value="{!Price_Support_Request__c.Sales_Organization__c}" id="salesOrg"/>
+                        </div>
+                    </apex:panelgroup>
+                </apex:pageBlocksectionItem>
+            <apex:inputField value="{!Price_Support_Request__c.Distribution_Channel__c}" id="distChnl" onclick="blur()" style="border:0px;background-color:#F3F3EC;"/>         
+          </apex:pageBlockSection>
+          
+       <apex:pageBlockSection showHeader="true" title="Supplier Information"
+                columns="2" id="supplierInfoEdit">
+                <apex:inputfield value="{!Price_Support_Request__c.Supplier_Number__c}"/> 
+                <apex:inputfield value="{!Price_Support_Request__c.Supplier_Name__c}"/>   
+                 
+       </apex:pageBlockSection> 
+       
+       <apex:pageBlockSection showHeader="true" title="Customer Information"
+                columns="2" id="customerInfoEdit">
+           <apex:pageBlocksectionItem id="customerTypeSection">     
+           <apex:outputLabel value="Customer Type"/>
+                    <apex:panelgroup >
+                        <div class="requiredInput">
+                            <div class="requiredBlock"></div>
+                            <apex:inputField value="{!Price_Support_Request__c.Customer_Type__c}" id="custType" />    
+                        </div>
+                        
+                    </apex:panelgroup>
+                </apex:pageBlocksectionItem>  
+                
+       <apex:pageBlocksectionItem id="customerNameSection">
+                    <apex:outputLabel value="Customer Name" />
+                    <apex:panelgroup >
+                        <div class="requiredInput">
+                            <div class="requiredBlock"></div>
+                            <apex:inputField value="{!Price_Support_Request__c.Customer_Name__c}"
+                                id="customerName" onchange="fetchCustomerDetails();" />
+                        </div>
+                    </apex:panelgroup>
+                </apex:pageBlocksectionItem>  
+                <apex:outputField value="{!Price_Support_Request__c.Customer_Number__c}" />
+                <apex:outputField value="{!Price_Support_Request__c.Region_Code__c}" id="regionCode"/> 
+                <apex:inputField value="{!Price_Support_Request__c.All_Regions__c}" id="allRegions" onchange="fetchRegion();" rendered="{!dispCheckBox}"/>         
+       </apex:pageBlockSection>
+       
+       <apex:pageBlockSection showHeader="true"
+                title="Competitive Information" columns="2" id="competitiveInfoEdit">
+
+                <apex:pageBlocksectionItem >
+                    <apex:outputLabel value="Competitor Name" />
+                    <apex:panelgroup >
+                        <div class="requiredInput">
+                            <div class="requiredBlock"></div>
+                            <apex:inputField value="{!Price_Support_Request__c.Competitor_Name__c}" />
+                        </div>
+                    </apex:panelgroup>
+                </apex:pageBlocksectionItem>
+
+                <apex:pageBlocksectionItem >
+                    <apex:outputLabel value="Potential Annual Volume" />
+                    <apex:panelgroup >
+                            <apex:inputField value="{!Price_Support_Request__c.Potential_Annual_Volume__c}" />
+                        
+                    </apex:panelgroup>
+                </apex:pageBlocksectionItem>
+                
+                <apex:pageBlocksectionItem >
+                    <apex:outputLabel value="Competitor Manufacturer" />
+                    <apex:panelgroup >
+
+                            <apex:inputField value="{!Price_Support_Request__c.Competitor_Manufacturer__c}" />
+                        
+                    </apex:panelgroup>
+                </apex:pageBlocksectionItem>
+                
+                
+
+                <apex:pageBlocksectionItem id="applicationSection">
+                    <apex:outputLabel value="Application" />
+                    <apex:panelgroup >
+                     <apex:outputPanel >
+                            <apex:inputField value="{!Price_Support_Request__c.Application__c}"
+                                id="applicationReq" />
+                    </apex:outputPanel>
+                    </apex:panelgroup>
+                </apex:pageBlocksectionItem>
+                
+                <apex:pageBlocksectionItem >
+                    <apex:outputLabel value="Competitive Product" />
+                    <apex:panelgroup >
+                      <apex:outputPanel >
+                            <apex:inputField value="{!Price_Support_Request__c.Competitive_Product__c}" />
+                        
+                        </apex:outputPanel>
+                        
+                    </apex:panelgroup>
+                </apex:pageBlocksectionItem>
+                
+                
+
+                <apex:pageBlocksectionItem >
+                    <apex:outputLabel value="Market Segment" />
+                    <apex:panelgroup >
+                      <apex:outputPanel >
+                            <apex:inputField value="{!Price_Support_Request__c.Market_Segment__c}" />
+                      </apex:outputPanel>
+                      
+                    </apex:panelgroup>
+                </apex:pageBlocksectionItem>
+
+                <apex:pageBlocksectionItem >
+                    <apex:outputLabel value="OEM" />
+                    <apex:panelgroup >
+                      <apex:outputPanel >
+                            <apex:inputField value="{!Price_Support_Request__c.OEM__c}" />
+                       </apex:outputPanel>
+                    </apex:panelgroup>
+                </apex:pageBlocksectionItem>
+
+                <apex:inputField value="{!Price_Support_Request__c.Actual_Annual_Volume__c}" />
+                <apex:pageBlockSectionItem />
+            </apex:pageBlockSection>
+            <apex:pageBlockSection showHeader="false" columns="1">
+                <apex:inputTextArea value="{!Price_Support_Request__c.Competitive_Comments__c}" cols="150"
+                    rows="5" />
+            </apex:pageBlockSection>
+           
+           <apex:outputPanel id="supportInfoEdit">
+
+                <apex:pageBlockSection showHeader="true" id="supportInfo"
+                    title="Cost Information" columns="2">
+
+                    <apex:pageBlocksectionItem id="materialSellingSection">
+                        <apex:outputLabel value="Material (Selling)" />
+                        <apex:panelgroup >
+                            <div class="requiredInput">
+                                <div class="requiredBlock"></div>
+                                <apex:inputField value="{!Price_Support_Request__c.Material_Selling__c}"
+                                    id="materialSelling" onchange="populateMaterialSelling(this)" />
+                            </div>
+                        </apex:panelgroup>
+                    </apex:pageBlocksectionItem>
+              <apex:pageBlocksectionItem id="uomSellSection">
+                        <apex:outputLabel value="UOM" />
+                        <apex:panelgroup >
+                            <div class="requiredInput">
+                                <div class="requiredBlock"></div>
+                                <apex:inputField value="{!Price_Support_Request__c.UOM__c}" id="uomSell" />
+                            </div>
+                        </apex:panelgroup>
+                    </apex:pageBlocksectionItem>
+             <apex:outputField value="{!Price_Support_Request__c.Material_Code_Selling__c}"
+                        id="materialCodeSelling" />
+                    <apex:pageBlockSectionItem />
+                    <apex:outputField value="{!Price_Support_Request__c.Material_Description_Selling__c}"
+                        id="materialDescription" /> 
+                     <apex:inputField value="{!Price_Support_Request__c.All_Containers_Selling__c}"/> 
+                     <apex:inputField value="{!Price_Support_Request__c.Packaging_Allowance__c}" id="packagingAllowance"  /> 
+                        <apex:inputField value="{!Price_Support_Request__c.Freight_Allowance_Selling__c}" id="freightSell"  />
+                        <apex:inputField value="{!Price_Support_Request__c.Other_Allowances__c}" id="otherAllowances"  /> 
+               
+               <apex:pageBlocksectionItem id="supplierSupportedPriceSection">
+                        <apex:outputLabel value="Supplier Supported Price" />
+                        <apex:panelgroup >
+                                
+                                <apex:inputField value="{!Price_Support_Request__c.Supplier_Supported_Price__c}"
+                                    id="supplierSupportedPrice"  />
+                           
+                        </apex:panelgroup>
+                    </apex:pageBlocksectionItem>
+                    
+              <apex:inputField value="{!Price_Support_Request__c.X1st_Discount_Sell__c}" id="discountOneSell"  />
+              <apex:inputField value="{!Price_Support_Request__c.X2nd_Discount_Sell__c}" id="discountTwoSell"  /> 
+              <apex:inputField value="{!Price_Support_Request__c.Expiration_Date__c}" />
+              
+              <apex:pageBlocksectionItem >
+                    <apex:outputLabel value="Effective Date" />
+                    <apex:panelgroup >
+                        <div class="requiredInput">
+                            <div class="requiredBlock"></div>
+                            <apex:inputField value="{!Price_Support_Request__c.Effective_Date__c}" />
+                        </div>
+                    </apex:panelgroup>
+                </apex:pageBlocksectionItem>               
+               </apex:pageBlocksection>
+               </apex:outputpanel> 
+            <apex:pageBlockSection title="Audit Trial" showHeader="True"
+                columns="2">
+                <apex:outputField value="{!Price_Support_Request__c.CreatedById}" />
+                <apex:outputField value="{!Price_Support_Request__c.CreatedDate}" />
+                <apex:outputField value="{!Price_Support_Request__c.LastModifiedById}" />
+                <apex:outputField value="{!Price_Support_Request__c.LastModifiedDate}" />
+                <apex:outputField value="{!Price_Support_Request__c.Additional_Comments__c}"/>
+                
+            </apex:pageBlockSection>
+                            
+          </apex:pageBlock>                
+</apex:form>  
+</apex:page>

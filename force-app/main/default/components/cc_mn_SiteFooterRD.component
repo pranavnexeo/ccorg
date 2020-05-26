@@ -1,0 +1,124 @@
+<apex:component >
+
+	<script id="foot_phone" type="text/template">
+		{{#each this}}
+			<div>
+				<a href="{{this.href}}" target="{{this.target}}">{{pageLabelMap this.label}}</a>
+			</div>
+		{{/each}}
+			<div class="footer-image"></div>
+	</script>
+
+	<script id="foot_desktop" type="text/template">
+		<div class="footer">
+			<div class="footer-links">
+				{{#each this}}
+					<a href="{{this.href}}" target="{{this.target}}">{{pageLabelMap this.label}}</a>
+				{{/each}}
+			</div>
+			<div class="footer-image"></div>
+		</div>
+	</script>
+
+	<script>
+		jQuery(function($) {
+           
+       
+			CCRZ.models.footModel = Backbone.Model.extend();
+			CCRZ.collections.footList = Backbone.Collection.extend({
+				model : CCRZ.models.footModel
+			});
+
+			CCRZ.views.footView = Backbone.View.extend({
+				templatePhone : CCRZ.util.template('foot_phone'),
+				templateDesktop : CCRZ.util.template('foot_desktop'),
+				contactUsModal: CCRZ.util.template('MyAccount-ContactUs-Modal'),
+				viewName : "footView",
+				events: {
+					"click .footer-mn-contact-us" : "contactusmodal"
+				},
+				initialize : function(){
+					this.render();
+				},
+				render: function(){
+					this.$el.html('');
+					if(CCRZ.display.isPhone()) {
+						this.$el = $(".footerPhone");
+						this.$el.html(this.templatePhone(this.collection.toJSON()));
+					}else{
+						this.$el = $(".footerBrowser");
+						this.$el.html(this.templateDesktop(this.collection.toJSON()));
+					}
+					CCRZ.pubSub.trigger("view:"+this.viewName+":refresh", this);
+				},
+				viewChanged: function() {
+					if(this.currentView !== CCRZ.display.currentView) {
+						this.currentView = CCRZ.display.currentView;
+						return true;
+					}
+					return false;
+				},
+				renderViewChanged: function() {
+					CCRZ.display.setCurrentView();
+					if(this.viewChanged()) {
+						this.render();
+					}
+				},
+				contactusmodal: function(e){
+					console.log('heelo');
+
+					e.preventDefault();	
+
+				}
+			});
+
+			// The URL's for these labels can be edited via the page label settings
+			var footerCollection = new CCRZ.collections.footList();
+
+			footerCollection.add(new CCRZ.models.footModel({
+                label : "cc_imp_SiteFooter_Terms_Conditions",
+                href: "https://www.nexeoplastics.com/terms-of-use/",
+                target: "_blank"
+			}));
+
+			footerCollection.add(new CCRZ.models.footModel({
+				label : "cc_imp_SiteFooter_NorthAmerica",
+                href: "http://www.nexeoplastics.com/privacy-policy/",
+                target: "_blank"
+			}));
+
+			footerCollection.add(new CCRZ.models.footModel({
+				label : "cc_imp_SiteFooter_Europe",
+                href: "https://www.nexeoplastics.com/privacy-policy/",
+                target: "_blank"
+			}));
+
+			footerCollection.add(new CCRZ.models.footModel({
+                label : "cc_imp_SiteFooter_EuPrivacyShield",
+                href: "https://www.nexeoplastics.com/privacy-policy/",
+                target: "_blank"
+			}));
+            
+            footerCollection.add(new CCRZ.models.footModel({
+                label : "cc_imp_SiteFooter_AboutUs",
+                href: "https://www.nexeoplastics.com/about-us/",
+                target: "_blank"
+			}));
+
+			var footerView = new CCRZ.views.footView({
+				collection : footerCollection
+			});
+			CCRZ.dynamicViews.push(footerView);
+		});
+	</script>
+<!-- Global site tag (gtag.js) - Google Analytics -->
+<script async="async" src="https://www.googletagmanager.com/gtag/js?id=UA-22075979-5"></script>
+<script>
+  window.dataLayer = window.dataLayer || [];
+  function gtag(){dataLayer.push(arguments);}
+  gtag('js', new Date());
+
+  gtag('config', 'UA-22075979-5');
+</script>
+
+</apex:component>

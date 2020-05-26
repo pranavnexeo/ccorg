@@ -1,0 +1,90 @@
+<apex:page standardController="Check_Request__c" extensions="CheckRequestExtension" action="{!init}">
+<script>
+
+function calculateTotal(){
+
+ //alert('inside calculate total');
+ calculate();
+
+}
+
+</script>
+<apex:form >
+
+ <apex:ActionStatus id="busyStatus" >
+        <apex:facet name="start" >
+            <c:BusyStatusComp height="300px" width="300px" Message="Pleas Wait..." />
+        </apex:facet>
+ </apex:ActionStatus>
+
+ <apex:actionFunction name="calculate" action="{!doCalculation}" rerender="totalAmount,totalChange,oldTotal,Br" status="SearchStatus" />
+
+ <apex:pageBlock title="Check Request">
+ 
+    <apex:pageBlockButtons >
+        <apex:commandButton value="Save" action="{!save}"/>
+        <apex:commandButton value="Cancel" action="{!cancel}" immediate="true"/>
+    </apex:pageBlockButtons>
+    
+    <apex:pageBlockSection title="General Check Information">
+    
+        <apex:inputField value="{!Check_Request__c.Lease_Property__c}"/>
+        <apex:outputText />
+        <apex:inputField value="{!Check_Request__c.Vendor__c}"/>
+        <apex:outputText />
+        <apex:inputField value="{!Check_Request__c.Check_Desc__c}"/>
+        <apex:inputField value="{!Check_Request__c.Acct_Group__c}" required="true"/>
+        <apex:inputField value="{!Check_Request__c.Reviewer__c}"/>
+        <apex:inputField value="{!Check_Request__c.Frequency__c}"/>
+        <apex:inputField value="{!Check_Request__c.Next_Date__c}"/>
+        <apex:inputField value="{!Check_Request__c.Hold_Check__c}" />
+        <apex:inputField value="{!Check_Request__c.Generate_Request__c}" />
+        <apex:inputField value="{!Check_Request__c.SAP_Recurring_Doc__c}"/>
+        <apex:inputField value="{!Check_Request__c.Check_Type__c}"/>
+        <apex:inputField value="{!Check_Request__c.CurrencyIsoCode}"/>
+        <apex:inputTextArea value="{!Check_Request__c.Comments__c}" cols="75" rows="3"/>
+    
+    </apex:pageBlockSection>
+    
+    <apex:pageBlockSection title="Check Distribution">
+    
+        
+        
+        <apex:inputField value="{!Check_Request__c.Base_Rent__c}"  id="Br"  onfocus="blur();" style="background-color:#CCC"/>
+        
+        <apex:inputField value="{!Check_Request__c.Vendor_Rent__c}" onChange="calculateTotal();"/>
+        
+        <apex:inputField value="{!Check_Request__c.Rent_Expenses__c}" onfocus="blur();" style="background-color:#CCC"/>
+        <apex:inputField value="{!Check_Request__c.Vendor_Expenses__c}" onChange="calculateTotal();"/>
+        <apex:inputField value="{!Check_Request__c.Original_Base__c}"/>
+        <apex:inputField value="{!Check_Request__c.Adjustments__c}" onChange="calculateTotal();"/>
+        
+        <apex:inputField value="{!Check_Request__c.Original_Vendor_Rent__c}" onChange="calculateTotal();"/>
+        <apex:inputField value="{!Check_Request__c.Total_Amount__c}" id="totalAmount" onfocus="blur();" style="background-color:#CCC"/>
+        <apex:inputField value="{!Check_Request__c.Original_Expenses__c}" onChange="calculateTotal();"/>
+        <apex:outputText />
+        <apex:inputField value="{!Check_Request__c.Original_Adjustments__c}" onChange="calculateTotal();"/>
+        <apex:inputField value="{!Check_Request__c.Total_Change__c}" id="totalChange" onfocus="blur();" style="background-color:#CCC"/>
+        <apex:inputField value="{!Check_Request__c.Old_Total__c}" id="oldTotal" onfocus="blur();" style="background-color:#CCC"/>
+        
+        <apex:outputPanel >
+            <apex:actionStatus id="SearchStatus" stopText="">
+                <apex:facet name="start">
+                    <apex:outputText value="Processing..Please Wait..."/>                       
+                </apex:facet>
+            </apex:actionStatus>
+        </apex:outputPanel>
+     </apex:pageBlockSection>
+    
+    <apex:pageBlockSection title="Adjustment Reason">
+    
+        <apex:inputTextArea value="{!Check_Request__c.Adjustment_Reason__c}" cols="150" rows="5"/>
+    
+    </apex:pageBlockSection>
+    
+     
+ </apex:pageBlock>
+ 
+</apex:form>
+
+</apex:page>

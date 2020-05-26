@@ -1,0 +1,56 @@
+<apex:page standardController="Opportunity" recordSetVar="unused" sidebar="false">
+
+    <apex:form >
+        <apex:pageBlock >
+            <apex:pageMessages />
+            <apex:pageBlock >
+                Note: All modifications made on the page will be lost if Return button is clicked without clicking the Save button first. 
+            </apex:pageBlock>
+            <apex:pageBlockButtons >
+                <apex:commandButton value="Save" action="{!save}"/>
+                <apex:commandButton value="Return" action="{!cancel}"/>
+            </apex:pageBlockButtons>
+            <apex:pageBlockTable value="{!selected}" var="a" id="table" columns="10" columnsWidth="200px,200px">
+                <apex:column headerValue="Account Name">
+                    <apex:outputField value="{!a.Account_Name__c}"/>
+                </apex:column>
+                                
+                <apex:column headerValue="Opportunity Name">
+                    <apex:outputField value="{!a.Name}"/>
+                </apex:column>
+                
+                <apex:column headerValue="Stage">
+                    <apex:inputField value="{!a.StageName}"/>
+                </apex:column>
+                
+                <apex:column headerValue="Close Date">
+                    <apex:inputField value="{!a.CloseDate}"/>
+                </apex:column>
+                
+                <apex:column headerValue="Probability">
+                    <apex:inputField value="{!a.Probability_picklist__c}"/>
+                </apex:column>
+
+                <apex:column headerValue="One-time project/Event">
+                    <apex:inputField value="{!a.One_Time_Project_Event__c}"/>
+                </apex:column>
+                
+                <apex:column headerValue="Opportunity Revenue">
+                    <apex:inputField value="{!a.Amount}"/>
+                </apex:column>
+                
+                <apex:column headerValue="Business Type">
+                    <apex:inputField value="{!a.T_Business_Type__c}"/>
+                </apex:column>
+                
+                <apex:column headerValue="Opportunity Type">
+                    <apex:inputField value="{!a.Type}"/>
+                </apex:column>
+                
+                <apex:column headerValue="Nexeo Primary Competitor">
+                    <apex:inputField value="{!a.Nexeo_Primary_Competitor_PL__c}"/>
+                </apex:column>                                
+            </apex:pageBlockTable>
+        </apex:pageBlock>
+    </apex:form>
+</apex:page>

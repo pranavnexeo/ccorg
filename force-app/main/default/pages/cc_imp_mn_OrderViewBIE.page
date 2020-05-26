@@ -1,0 +1,11 @@
+<apex:page controller="cc_mn_ctrl_MyOrderBIE" showHeader="false" sidebar="false" docType="html-5.0" standardStylesheets="false" cache="false" applyHtmlTag="false" applyBodyTag="false">
+    
+   <c:cc_imp_mn_OrderView />
+
+    <c:cc_imp_mn_OrderConfirmationTemplates />
+    <c:cc_imp_mn_OrderConfirmationTemplatesLLI />
+
+    <apex:outputPanel rendered="{!isES}">
+    <c:cc_imp_mn_OrderViewES />
+    </apex:outputPanel>
+</apex:page>

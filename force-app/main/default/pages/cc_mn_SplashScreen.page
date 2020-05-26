@@ -1,0 +1,9 @@
+<apex:page controller="cc_mn_ctrl_HomeScreen" showHeader="false" sidebar="false" docType="html-5.0" standardStylesheets="false" cache="false" applyHtmlTag="false" applyBodyTag="false">
+ 
+    <apex:outputPanel rendered="{!isES}">
+    	<c:cc_mn_HomeScreen_ES />
+    </apex:outputPanel>
+    <apex:outputPanel rendered="{!!isES}">
+    	<c:cc_mn_HomeScreen_NOES />
+    </apex:outputPanel>
+</apex:page>

@@ -1,0 +1,641 @@
+<apex:component controller="cc_imp_ctrl_ContactUs">
+    <script type="text/javascript">
+      CCRZ.uiProperties.myInvoicesView.desktop.tmpl = 'MyAccountMyInvoicesDesktopImp';
+      CCRZ.uiProperties.myInvoicesView.phone.tmpl   = 'MyAccountMyInvoicesMobileImp';
+    </script>
+
+ <script id="MyAccountMyInvoicesDesktopImp" type="text/template">
+        <div class="invoiceOuterContainer">
+            <h2 class="title">{{pageLabelMap 'MyAccount_MyInvoices'}}</h2>
+            <div class="alert alert-error messagingSection-invoicehistory-Error" style="display: none"></div>
+            <div class="alert alert-info messagingSection-invoicehistory-Info" style="display: none"></div>
+            <div class="main_content_large_solo_container">
+                {{#ifDisplay 'srch.inv'}}
+                <form id="searchInvoiceForm" class="searchInvoiceForm">
+                    <input type="text"  name="searchInvoiceInput" value="{{this.searchFormData.searchInvoiceInput}}" class="searchInvoiceInput input-text invoiceSearch" placeholder="{{pageLabelMap 'MyInvoices_SearchInvoices'}}"/>
+                    <span class="invoiceSearch statusLabel">{{pageLabelMap 'MyInvoices_SearchStatus'}}</span>
+                    <select name="searchInvoiceStatus" value="{{this.searchFormData.searchInvoiceStatus}}" class="invoiceSearch searchInvoiceStatus">
+                        <option value=""       >{{pageLabelMap 'MyInvoices_AllInvoiceStatus'}}</option>
+                        <option value="Open"   {{#ifEqualsIgnoreCase this.searchFormData.searchInvoiceStatus 'Open'}} selected {{/ifEqualsIgnoreCase}}>{{pageLabelMap 'MyInvoices_Status_Open'}}</option>
+                        <option value="Closed" {{#ifEqualsIgnoreCase this.searchFormData.searchInvoiceStatus 'Closed'}} selected {{/ifEqualsIgnoreCase}}>{{pageLabelMap 'MyInvoices_Status_Closed'}}</option>
+                    </select>
+                    <span class="invoiceSearch typeLabel">{{pageLabelMap 'MyInvoices_SearchType'}}</span>
+                    <select name="searchInvoiceType" value="{{this.searchFormData.searchInvoiceType}}" class="invoiceSearch searchInvoiceType">
+                        <option value="">{{pageLabelMap 'MyInvoices_AllInvoiceType'}}</option>
+                        <option value="Credit"  {{#ifEqualsIgnoreCase this.searchFormData.searchInvoiceType 'Credit'}} selected {{/ifEqualsIgnoreCase}}>{{pageLabelMap 'MyInvoices_Type_Credit'}}</option>
+                        <option value="Debit"   {{#ifEqualsIgnoreCase this.searchFormData.searchInvoiceType 'Debit'}} selected {{/ifEqualsIgnoreCase}}>{{pageLabelMap 'MyInvoices_Type_Debit'}}</option>
+                        <option value="Summary" {{#ifEqualsIgnoreCase this.searchFormData.searchInvoiceType 'Summary'}} selected {{/ifEqualsIgnoreCase}}>{{pageLabelMap 'MyInvoices_Type_Summary'}}</option>
+                    </select>
+                    <span class="invoiceSearch searchFromLabel">{{pageLabelMap 'MyInvoices_SearchFrom'}}</span>
+                    <input name="fromDateStr" value="{{this.searchFormData.fromDateStr}}" class="requestedDate fromDate invoiceSearch">
+                    <span class="invoiceSearch searchToLabel">{{pageLabelMap 'MyInvoices_SearchTo'}}</span>
+                    <input name="toDateStr" value="{{this.searchFormData.toDateStr}}" class="requestedDate toDate invoiceSearch">
+                    <input type="hidden" name="sortCriteria" value="{{this.searchFormData.sortCriteria}}"/>
+                    <input type="hidden" name="sortDir" value="{{this.searchFormData.sortDir}}" />
+                    <span class="searchButtons">
+                        <input type="button" class="searchInvoice invoiceSearch" value="{{pageLabelMap 'MyInvoices_SearchInvoices'}}"/>
+                        <input type="button" class="resetInvoiceSearch invoiceSearch" value="{{pageLabelMap 'MyInvoices_ResetInvoices'}}"/>
+                    </span>
+                </form>
+                {{/ifDisplay}}
+                <div class="orderPaginationSec" />
+                <table id="invoiceTable" class="shopping_cart invoices">
+                    <tr class="even">
+                        <td class="invoiceHeader headerSort name" data-sortcriteria="name" >
+                            <span class="invoiceHeader headerLabel name">{{pageLabelMap 'cc_imp_MyInvoices_InvoiceNumber'}}</span>
+                            <!--<a href="javascript:void(0);" class="descSort sortControl {{#ifEqualsIgnoreCase this.searchFormData.sortCriteria 'Name'}}{{#ifEqualsIgnoreCase this.searchFormData.sortDir 'Desc'}}active{{/ifEqualsIgnoreCase}}{{/ifEqualsIgnoreCase}}" data-sortcriteria="Name" data-sortdir="Desc">{{pageLabelMap 'CommonElements_DownArrow'}}</a>-->
+                            <!--<a href="javascript:void(0);" class="ascSort sortControl  {{#ifEqualsIgnoreCase this.searchFormData.sortCriteria 'Name'}}{{#ifEqualsIgnoreCase this.searchFormData.sortDir 'Asc'}}active{{/ifEqualsIgnoreCase}}{{/ifEqualsIgnoreCase}}" data-sortcriteria="Name" data-sortdir="Asc">{{pageLabelMap 'CommonElements_UpArrow'}}</a>-->
+                        </td>
+                        <td class="invoiceHeader invoiceId headerSort" data-sortcriteria="InvoiceId">
+                            {{pageLabelMap 'MyInvoices_InvoiceId'}}
+                            <a href="javascript:void(0);" class="descSort sortControl {{#ifEqualsIgnoreCase this.searchFormData.sortCriteria 'InvoiceId'}}{{#ifEqualsIgnoreCase this.searchFormData.sortDir 'Desc'}}active{{/ifEqualsIgnoreCase}}{{/ifEqualsIgnoreCase}}" data-sortcriteria="InvoiceId" data-sortdir="Desc">{{pageLabelMap 'CommonElements_DownArrow'}}</a>
+                            <a href="javascript:void(0);" class="ascSort sortControl  {{#ifEqualsIgnoreCase this.searchFormData.sortCriteria 'InvoiceId'}}{{#ifEqualsIgnoreCase this.searchFormData.sortDir 'Asc'}}active{{/ifEqualsIgnoreCase}}{{/ifEqualsIgnoreCase}}" data-sortcriteria="InvoiceId" data-sortdir="Asc">{{pageLabelMap 'CommonElements_UpArrow'}}</a>
+                        </td>
+                        <td class="invoiceHeader">{{pageLabelMap 'MyInvoices_PONumber'}}</td>
+                        <td class="invoiceHeader dateIssued headerSort" data-sortcriteria="DateIssued">
+                            {{pageLabelMap 'MyInvoices_Date'}}
+                            <a href="javascript:void(0);" class="descSort sortControl {{#ifEqualsIgnoreCase this.searchFormData.sortCriteria 'DateIssued'}}{{#ifEqualsIgnoreCase this.searchFormData.sortDir 'Desc'}}active{{/ifEqualsIgnoreCase}}{{/ifEqualsIgnoreCase}}" data-sortcriteria="DateIssued" data-sortdir="Desc">{{pageLabelMap 'CommonElements_DownArrow'}}</a>
+                            <a href="javascript:void(0);" class="ascSort sortControl  {{#ifEqualsIgnoreCase this.searchFormData.sortCriteria 'DateIssued'}}{{#ifEqualsIgnoreCase this.searchFormData.sortDir 'Asc'}}active{{/ifEqualsIgnoreCase}}{{/ifEqualsIgnoreCase}}" data-sortcriteria="DateIssued" data-sortdir="Asc">{{pageLabelMap 'CommonElements_UpArrow'}}</a>
+                        </td>
+                        <td class="invoiceHeader dueDate headerSort" data-sortcriteria="DueDate">
+                            {{pageLabelMap 'MyInvoices_DueDate'}}
+                            <a href="javascript:void(0);" class="descSort sortControl {{#ifEqualsIgnoreCase this.searchFormData.sortCriteria 'DueDate'}}{{#ifEqualsIgnoreCase this.searchFormData.sortDir 'Desc'}}active{{/ifEqualsIgnoreCase}}{{/ifEqualsIgnoreCase}}" data-sortcriteria="DueDate" data-sortdir="Desc">{{pageLabelMap 'CommonElements_DownArrow'}}</a>
+                            <a href="javascript:void(0);" class="ascSort sortControl {{#ifEqualsIgnoreCase this.searchFormData.sortCriteria 'DueDate'}}{{#ifEqualsIgnoreCase this.searchFormData.sortDir 'Asc'}}active{{/ifEqualsIgnoreCase}}{{/ifEqualsIgnoreCase}}" data-sortcriteria="DueDate" data-sortdir="Asc">{{pageLabelMap 'CommonElements_UpArrow'}}</a>
+                        </td>
+                        <td class="invoiceHeader amount headerSort" data-sortcriteria="Amount">
+                            {{pageLabelMap 'MyInvoices_Amount'}}
+                            <a href="javascript:void(0);" class="descSort amount sortControl {{#ifEqualsIgnoreCase this.searchFormData.sortCriteria 'Amount'}}{{#ifEqualsIgnoreCase this.searchFormData.sortDir 'Desc'}}active{{/ifEqualsIgnoreCase}}{{/ifEqualsIgnoreCase}}" data-sortcriteria="Amount" data-sortdir="Desc">{{pageLabelMap 'CommonElements_DownArrow'}}</a>
+                            <a href="javascript:void(0);" class="ascSort amount sortControl  {{#ifEqualsIgnoreCase this.searchFormData.sortCriteria 'Amount'}}{{#ifEqualsIgnoreCase this.searchFormData.sortDir 'Asc'}}active{{/ifEqualsIgnoreCase}}{{/ifEqualsIgnoreCase}}" data-sortcriteria="Amount" data-sortdir="Asc">{{pageLabelMap 'CommonElements_UpArrow'}}</a>
+                        </td>
+                        <td class="invoiceHeader paidAmount headerSort" data-sortcriteria="PaidAmount">
+                            {{pageLabelMap 'MyInvoices_PaidAmount'}}
+                            <a href="javascript:void(0);" class="descSort sortControl {{#ifEqualsIgnoreCase this.searchFormData.sortCriteria 'PaidAmount'}}{{#ifEqualsIgnoreCase this.searchFormData.sortDir 'Desc'}}active{{/ifEqualsIgnoreCase}}{{/ifEqualsIgnoreCase}}" data-sortcriteria="PaidAmount" data-sortdir="Desc">{{pageLabelMap 'CommonElements_DownArrow'}}</a>
+                            <a href="javascript:void(0);" class="ascSort sortControl  {{#ifEqualsIgnoreCase this.searchFormData.sortCriteria 'PaidAmount'}}{{#ifEqualsIgnoreCase this.searchFormData.sortDir 'Asc'}}active{{/ifEqualsIgnoreCase}}{{/ifEqualsIgnoreCase}}" data-sortcriteria="PaidAmount" data-sortdir="Asc">{{pageLabelMap 'CommonElements_UpArrow'}}</a>
+                        </td>
+                        <td class="invoiceHeader type headerSort" data-sortcriteria="Type">
+                            {{pageLabelMap 'MyInvoices_Type'}}
+                            <a href="javascript:void(0);" class="descSort sortControl {{#ifEqualsIgnoreCase this.searchFormData.sortCriteria 'Type'}}{{#ifEqualsIgnoreCase this.searchFormData.sortDir 'Desc'}}active{{/ifEqualsIgnoreCase}}{{/ifEqualsIgnoreCase}}" data-sortcriteria="Type" data-sortdir="Desc">{{pageLabelMap 'CommonElements_DownArrow'}}</a>
+                            <a href="javascript:void(0);" class="ascSort sortControl  {{#ifEqualsIgnoreCase this.searchFormData.sortCriteria 'Type'}}{{#ifEqualsIgnoreCase this.searchFormData.sortDir 'Asc'}}active{{/ifEqualsIgnoreCase}}{{/ifEqualsIgnoreCase}}" data-sortcriteria="Type" data-sortdir="Asc">{{pageLabelMap 'CommonElements_UpArrow'}}</a>
+                        </td>
+                        <td class="invoiceHeader status headerSort" data-sortcriteria="Status">
+                            {{pageLabelMap 'MyInvoices_Status'}}
+                            <a href="javascript:void(0);" class="descSort sortControl {{#ifEqualsIgnoreCase this.searchFormData.sortCriteria 'Status'}}{{#ifEqualsIgnoreCase this.searchFormData.sortDir 'Desc'}}active{{/ifEqualsIgnoreCase}}{{/ifEqualsIgnoreCase}}" data-sortcriteria="Status" data-sortdir="Desc">{{pageLabelMap 'CommonElements_DownArrow'}}</a>
+                            <a href="javascript:void(0);" class="ascSort sortControl {{#ifEqualsIgnoreCase this.searchFormData.sortCriteria 'Status'}}{{#ifEqualsIgnoreCase this.searchFormData.sortDir 'Asc'}}active{{/ifEqualsIgnoreCase}}{{/ifEqualsIgnoreCase}}" data-sortcriteria="Status" data-sortdir="Asc">{{pageLabelMap 'CommonElements_UpArrow'}}</a>
+                        </td>
+                        <td class="invoiceHeader actions">
+                            {{pageLabelMap 'MyInvoices_Actions'}}
+                        </td>
+                    </tr>
+                    {{#each this.invoiceList}}
+                        <tr class="odd myAccInvoiceRows {{this.status}} {{this.type}} {{this.sfid}}">
+                            <td class="invoiceRow name"><a href="javascript:void(0);" data-id="{{this.invoiceId}}" data-sfid="{{this.sfid}}" class="displayInvoicePdf">{{pageLabelMap 'Display_Invoice'}}</a></td>
+                                <!--<td class="invoiceRow name"><a href="javascript:void(0);" data-id="{{this.invoiceId}}" data-sfid="{{this.sfid}}" class="displayInvoicePdf">{{this.name}}</a></td> Backed up by FGG this was changed by Philip Bivens Request-->
+                            <td class="invoiceRow invoiceId">{{this.invoiceId}}</td>
+                            <td class="invoiceRow">{{this.poNumber}}</td>
+                            <td class="invoiceRow dateIssued">{{this.dateIssuedStr}}</td>
+                            <td class="invoiceRow dueDate">{{this.dueDateStr}}</td>
+                            <td class="invoiceRow amount">{{price this.amount this.currencyIsoCode}}</td>
+                            <td class="invoiceRow paidAmount">{{price this.paidAmount this.currencyIsoCode}}</td>
+                            <td class="invoiceRow type">
+                                {{pageLabelMapMultiString 'MyInvoices_Type_' this.type}}<br/>
+                                {{#ifEqualsIgnoreCase type 'Summary'}}
+                                    <a href="javascript:void(0);" class="seeChildrenLink openCloseLink active {{this.sfid}}" data-id="{{this.sfid}}">{{pageLabelMap 'MyInvoices_ShowChildren'}}</a>
+                                    <a href="javascript:void(0);" class="hideChildrenLink openCloseLink inactive {{this.sfid}}" data-id="{{this.sfid}}">{{pageLabelMap 'MyInvoices_HideChildren'}}</a>
+                                {{/ifEqualsIgnoreCase}}
+                            </td>
+                            <td class="invoiceRow status">{{pageLabelMapMultiString 'MyInvoices_Status_' this.status}}</td>
+                            <td class="invoiceRow actions">
+                                {{#ifEqualsIgnoreCase status 'Open'}}
+                                    <!--NEX-130
+                                    -->
+                                    {{#ifNotEquals type 'Credit'}}
+                                        <a href="javascript:void(0);" class="payLink" data-id="{{this.sfid}}">{{pageLabelMap 'MyInvoices_Pay'}}</a>
+                                    {{/ifNotEquals}}                                  
+                                  <br> 
+                                 <a href="javascript:void(0);" class="disputeInvoice" data-id="{{this.sfid}}">{{pageLabelMap 'cc_imp_mn_disputeInvoice'}}</a>   
+                                {{/ifEqualsIgnoreCase}}
+                            </td>
+                        </tr>
+                        {{#each this.childInvoices}}
+                            <tr class="odd myAccInvoiceRows childRow inactive {{../sfid}} {{this.status}} {{this.type}}">
+                                <td class="invoiceRow name"><a href="javascript:void(0);" data-id="{{this.invoiceId}}" data-sfid="{{this.sfid}}" class="displayInvoicePdf">{{this.name}}</a></td>
+                                <td class="invoiceRow invoiceId">{{this.invoiceId}}</td>
+                                <td class="invoiceRow dateIssued">{{this.dateIssuedStr}}</td>
+                                <td class="invoiceRow dueDate">{{this.dueDateStr}}</td>
+                                <td class="invoiceRow amount">{{price this.amount this.currencyIsoCode}}</td>
+                                <td class="invoiceRow paidAmount">{{price this.paidAmount this.currencyIsoCode}}</td>
+                                <td class="invoiceRow type">{{pageLabelMapMultiString 'MyInvoices_Type_' this.type}}</td>
+                                <td class="invoiceRow status">{{pageLabelMapMultiString 'MyInvoices_Status_' this.status}}</td>
+                                <td class="invoiceRow actions">
+                                    {{#ifEqualsIgnoreCase status 'Open'}}
+                                        <!--NEX-130
+                                           -->                               
+                                        {{#ifEqualsIgnoreCase type 'Debit'}}
+                                            <a href="javascript:void(0);" class="payLink" data-id="{{this.sfid}}">{{pageLabelMap 'MyInvoices_Pay'}}</a>
+                                        {{/ifEqualsIgnoreCase}}                                  
+                                           <br>     
+                                          <a href="javascript:void(0);" class="disputeInvoice" data-id="{{this.sfid}}">{{pageLabelMap 'cc_imp_mn_disputeInvoice'}}</a>  
+                                    {{/ifEqualsIgnoreCase}}
+                                </td>
+                            </tr>
+                        {{/each}}
+                    {{/each}}
+                </table>
+                <!--NEX-130
+                {{#if this.canPay}}
+                <div class="invoiceContainer invoiceActionContainer invoiceActionContainerTop">
+                    <div class="actionButtonsStart">
+                        <button type="button" class="btn btn-primary wide makePayment">{{pageLabelMap 'MyInvoices_MakePaymentBtn'}}</button>
+                    </div>
+                    <div class="clear"></div>
+                </div>
+                {{/if}}
+                -->
+                <div id="modalSec"></div>
+            </div>
+        </div>
+    </script>
+
+    <script id="MyAccountMyInvoicesMobileImp" type="text/template">
+        <div class="checkout_container">
+            <h2 class="title">{{pageLabelMap 'MyAccount_MyInvoices'}}</h2>
+            <div class="checkout_detail myInvoices">
+                <div class="checkout_detail_item myInvoices">
+                    {{#each this.invoiceList}}
+                        <div class="invoice_info {{this.sfid}} {{this.status}} {{this.type}}">
+                            <div class="arrow"><a href="#" data-id="{{this.sfid}}" class="gotoInvoiceDetails">{{pageLabelMap 'CommonElements_RightArrow'}}</a></div>
+                            <div class="info name">
+                                <span class="infoLabel">{{pageLabelMap 'cc_imp_MyInvoices_InvoiceNumber'}}</span>
+                                <span class="infoValue"><a href="javascript:void(0);" data-id="{{this.invoiceId}}" data-sfid="{{this.sfid}}" class="displayInvoicePdf">{{this.name}}</a></span>
+                            </div>
+                            {{#if this.invoiceId}}
+                            <div class="info invoiceId">
+                                <span class="infoLabel">{{pageLabelMap 'MyInvoices_InvoiceId'}}</span>
+                                <span class="infoValue">{{this.invoiceId}}</span>
+                            </div>
+                            {{/if}}
+                            {{#if this.poNumber}}
+                            <div class="info invoiceId">
+                                <span class="infoLabel">{{pageLabelMap 'MyInvoices_PONumber'}}</span>
+                                <span class="infoValue">{{this.poNumber}}</span>
+                            </div>
+                            {{/if}}
+                            {{#if this.dateIssuedStr}}
+                            <div class="info dateIssued">
+                                <span class="infoLabel">{{pageLabelMap 'MyInvoices_Date'}}</span>
+                                <span class="infoValue">{{this.dateIssuedStr}}</span>
+                            </div>
+                            {{/if}}
+                            {{#if this.dueDateStr}}
+                            <div class="info dueDate">
+                                <span class="infoLabel">{{pageLabelMap 'MyInvoices_DueDate'}}</span>
+                                <span class="infoValue">{{this.dueDateStr}}</span>
+                            </div>
+                            {{/if}}
+                            <div class="info amount">
+                                <span class="infoLabel">{{pageLabelMap 'MyInvoices_Amount'}}</span>
+                                <span class="infoValue">{{price this.amount this.currencyIsoCode}}</span>
+                            </div>
+                            <div class="info paidAmount">
+                                <span class="infoLabel">{{pageLabelMap 'MyInvoices_PaidAmount'}}</span>
+                                <span class="infoValue">{{price this.paidAmount this.currencyIsoCode}}</span>
+                            </div>
+                            {{#if this.type}}
+                            <div class="info type">
+                                <span class="infoLabel">{{pageLabelMap 'MyInvoices_Type'}}</span>
+                                <span class="infoValue">
+                                    {{pageLabelMapMultiString 'MyInvoices_Type_' this.type}}&nbsp;
+                                    {{#ifEqualsIgnoreCase type 'Summary'}}
+                                        <a href="javascript:void(0);" class="seeChildrenLink openCloseLink active {{sfid}}" data-id="{{this.sfid}}">{{pageLabelMap 'MyInvoices_ShowChildren'}}</a>
+                                        <a href="javascript:void(0);" class="hideChildrenLink openCloseLink inactive {{sfid}}" data-id="{{this.sfid}}">{{pageLabelMap 'MyInvoices_HideChildren'}}</a>
+                                    {{/ifEqualsIgnoreCase}}
+                                </span>
+                            </div>
+                            {{/if}}
+                            {{#if this.status}}
+                            <div class="info status">
+                                <span class="infoLabel">{{pageLabelMap 'MyInvoices_Status'}}</span>
+                                <span class="infoValue">{{pageLabelMapMultiString 'MyInvoices_Status_' this.status}}</span>
+                            </div>
+                            {{/if}}
+                            <div class="info actions">
+                            {{#ifEqualsIgnoreCase status 'Open'}}
+                                <!-- NEX-130
+                                {{#ifNotEquals type 'Credit'}}
+                                    <a href="javascript:void(0);" class="payLink" data-id="{{this.sfid}}">{{pageLabelMap 'MyInvoices_Pay'}}</a>
+                                {{/ifNotEquals}}
+                                    <br>   
+                                    -->                                 
+                                   <a href="javascript:void(0);" class="disputeInvoice" data-id="{{this.sfid}}">{{pageLabelMap 'cc_imp_mn_disputeInvoice'}}</a>
+                            {{/ifEqualsIgnoreCase}}
+                            </div>
+                            {{#each this.childInvoices}}
+                            <div class="invoice_info childRow inactive {{../sfid}} {{this.sfid}} {{this.status}} {{this.type}}">
+                                <div class="arrow"><a href="#" data-id="{{this.sfid}}" class="gotoInvoiceDetails">{{pageLabelMap 'CommonElements_RightArrow'}}</a></div>
+                                <div class="info Name">
+                                    <span class="infoLabel">{{pageLabelMap 'cc_imp_MyInvoices_InvoiceNumber'}}</span>
+                                    <span class="infoValue"><a href="javascript:void(0);" data-id="{{this.invoiceId}}" data-sfid="{{this.sfid}}" class="displayInvoicePdf">{{this.name}}</a></span>
+                                </div>
+                                {{#if this.invoiceId}}
+                                <div class="info invoiceId">
+                                    <span class="infoLabel">{{pageLabelMap 'MyInvoices_InvoiceId'}}</span>
+                                    <span class="infoValue">{{this.invoiceId}}</span>
+                                </div>
+                                {{/if}}
+                                {{#if this.dateIssuedStr}}
+                                <div class="info dateIssued">
+                                    <span class="infoLabel">{{pageLabelMap 'MyInvoices_Date'}}</span>
+                                    <span class="infoValue">{{this.dateIssuedStr}}</span>
+                                </div>
+                                {{/if}}
+                                {{#if this.dueDateStr}}
+                                <div class="info dueDate">
+                                    <span class="infoLabel">{{pageLabelMap 'MyInvoices_DueDate'}}</span>
+                                    <span class="infoValue">{{this.dueDateStr}}</span>
+                                </div>
+                                {{/if}}
+                                <div class="info amount">
+                                    <span class="infoLabel">{{pageLabelMap 'MyInvoices_Amount'}}</span>
+                                    <span class="infoValue">{{price this.amount this.currencyIsoCode}}</span>
+                                </div>
+                                <div class="info paidAmount">
+                                    <span class="infoLabel">{{pageLabelMap 'MyInvoices_PaidAmount'}}</span>
+                                    <span class="infoValue">{{price this.paidAmount this.currencyIsoCode}}</span>
+                                </div>
+                                {{#if this.type}}
+                                <div class="info type">
+                                    <span class="infoLabel">{{pageLabelMap 'MyInvoices_Type'}}</span>
+                                    <span class="infoValue">
+                                        {{pageLabelMapMultiString 'MyInvoices_Type_' this.type}}
+                                    </span>
+                                </div>
+                                {{/if}}
+                                {{#if this.status}}
+                                <div class="info status">
+                                    <span class="infoLabel">{{pageLabelMap 'MyInvoices_Status'}}</span>
+                                    <span class="infoValue">{{pageLabelMapMultiString 'MyInvoices_Status_' this.status}}</span>
+                                </div>
+                                {{/if}}
+                                <div class="info actions">
+                                {{#ifEqualsIgnoreCase status 'Open'}}
+                                    <!--NEX-130
+                                           -->                               
+                                    {{#ifNotEquals type 'Credit'}}
+                                        <a href="javascript:void(0);" class="payLink" data-id="{{this.sfid}}">{{pageLabelMap 'MyInvoices_Pay'}}</a>
+                                    {{/ifNotEquals}}                                  
+                                         <br>     
+                                        <a href="javascript:void(0);" class="disputeInvoice" data-id="{{this.sfid}}">t - {{pageLabelMap 'cc_imp_mn_disputeInvoice'}}</a>  
+                                {{/ifEqualsIgnoreCase}}
+                                </div>
+                            </div>
+                            {{/each}}
+                        </div>
+                    {{/each}}
+                </div>
+                <!--NEX-130
+                {{#if this.canPay}}
+                <div class="invoiceContainer invoiceActionContainer invoiceActionContainerTop">
+                    
+                    <div class="actionButtonsStart">
+                        <button type="button" class="btn btn-primary wide makePayment">{{pageLabelMap 'MyInvoices_MakePaymentBtn'}}</button>
+                    </div>
+                   
+                    <div class="clear"></div>
+                    </div>
+                    {{/if}}
+                     -->
+                    </div>
+                <div class="orderPaginationSecPhone" />
+                <div id="modalSec"></div>
+            </div>
+        </script>
+
+  <script type="text/javascript">
+
+    Handlebars.registerHelper('ifEqualsIgnoreCase', function(v1, v2, options) {
+      if (v1 && v2 && (v1.toLowerCase() == v2.toLowerCase())) {
+        return options.fn(this);
+      }
+      return options.inverse(this);
+    });
+
+
+    CCRZ.MyAccount = _.extend(CCRZ.MyAccount||{},{
+        NexeoInvoices :{
+            register : function(registrar){
+                //My Orders stuff
+                var invoiceList = new CCRZ.collections.NexeoInvoiceList();
+                var useInvPaginator = CCRZ.getPageConfig('pgbl.inv', false);
+                if(useInvPaginator) {
+                    CCRZ.invoicesPaginatorView = new CCRZ.views.navigatePaginationView({
+                        model : invoiceList
+                    });
+                }
+
+                CCRZ.subsc = _.extend(CCRZ.subsc||{});
+                CCRZ.subsc.nexeoInvoicesView = new CCRZ.views.NexeoInvoicesView({
+                    model : invoiceList
+                });
+                
+                registrar.registerNewView('NexeoInvoices',  CCRZ.pagevars.pageLabels['MyAccount_MyInvoices'], CCRZ.subsc.nexeoInvoicesView );
+                if(useInvPaginator) {
+                    CCRZ.invoicesPaginatorView.listenTo(CCRZ.subsc.nexeoInvoicesView, "pagination:host:rendered", CCRZ.invoicesPaginatorView.hostRendered);
+                }
+            }
+        }
+    });
+
+
+    CCRZ.HDRMyAccount = _.extend(CCRZ.HDRMyAccount||{},{
+        NexeoInvoices :{
+            register : function(registrar){
+                var invoiceList = new CCRZ.collections.NexeoInvoiceList();
+                CCRZ.subsc = _.extend(CCRZ.subsc||{});
+                CCRZ.subsc.nexeoInvoicesView = new CCRZ.views.NexeoInvoicesView({
+                    model : invoiceList
+                });
+                
+                registrar.registerNewView('NexeoInvoices',  CCRZ.pagevars.pageLabels['MyAccount_MyInvoices'], CCRZ.subsc.nexeoInvoicesView );
+                
+            }
+        }
+    });
+
+    jQuery(function($) 
+    {
+        CCRZ.contactUsForm = {};
+        CCRZ.contactUsForm.reasonCodeOptions = {!reasonCodeOptions};
+        CCRZ.contactUsForm.subjectOptions = {!subjectOptions};
+
+
+        CCRZ.subsc = CCRZ.subsc || {};
+
+        CCRZ.subsc.myAccountInvoicesNexeoRemoteActions = _.extend(CCRZ.RemoteInvocation, {
+            className : 'cc_imp_ctrl_ContactUs',
+            getAllInvoicesForShipToAddress : function(callback) {
+                this.invokeCtx('getAllInvoicesForShipToAddress',
+                    function(resp) 
+                    {
+                        callback(resp);
+                    },
+                    {
+                        buffer : false, // this call will be executed by itself
+                        nmsp   : false  // defines that this is a call to a subscriber class
+                    }
+                );
+            },
+            searchAllInvoices : function(inputData, callback) {
+                this.invokeCtx('searchAllInvoices',
+                    inputData,
+                    function(resp) 
+                    {
+                        callback(resp);
+                    },
+                    {
+                        buffer : false, // this call will be executed by itself
+                        nmsp   : false  // defines that this is a call to a subscriber class
+                    }
+                );
+            },
+        });
+
+        CCRZ.models.NexeoInvoiceSummaryModel = Backbone.Model.extend({
+                idAttribute: "sfid",
+                initialize : function(invoiceSummary){
+                    this.set(this.parse(invoiceSummary));
+                }
+        });
+
+        CCRZ.collections.NexeoInvoiceList = CCRZ.CloudCrazePageable.extend({
+            mode: "client",
+            state: {
+                firstPage: 1,
+                pageSize: parseInt(CCRZ.getPageConfig('pgbl.inv', true) ? CCRZ.getPageConfig('pgbl.pageSize', '3') : '2000'),
+            },
+            model : CCRZ.models.NexeoInvoiceSummaryModel,
+            className : "cc_ctrl_MyAccountInvoicesRD",
+            canPay : false,
+            initialize : function(dataList){
+                this.reset(dataList);
+            },
+
+            fetchNavData: function(state, formData, callback) {
+                var coll = this;
+
+                var formElements = JSON.parse(formData);
+
+                if(formElements.hasOwnProperty('searchInvoiceInput') || formElements.hasOwnProperty('sortCriteria') ){
+                        CCRZ.subsc.myAccountInvoicesNexeoRemoteActions.searchAllInvoices( 
+                            formData
+                            ,function(resp){
+                                if (resp && resp.success && resp.data.invoices){
+                                    //coll.canPay = response.data.canPay;
+                                    coll.canPay = true;
+                                    callback(resp.data.invoices);
+                                };
+                            }
+                        );
+
+                }else{
+                    CCRZ.subsc.myAccountInvoicesNexeoRemoteActions.getAllInvoicesForShipToAddress( function(resp){
+                        if(resp && resp.success && resp.data && resp.data.invoices){
+                            //coll.canPay = response.data.canPay;
+                            coll.canPay = true;
+                            callback(resp.data.invoices);
+                        }
+                    }); 
+                }
+
+
+
+            },
+            
+            fetchAllNavData: function(state, formData, callback) {
+                this.fetchNavData(state,formData,callback);
+            }
+        });
+
+        CCRZ.views.NexeoInvoicesView = CCRZ.CloudCrazeView.extend({
+            templatePhone : CCRZ.util.template(CCRZ.uiProperties.myInvoicesView.phone.tmpl),
+            templateDesktop : CCRZ.util.template(CCRZ.uiProperties.myInvoicesView.desktop.tmpl),
+            viewName : "myInvoicesView",
+            managedSubView : true,
+            searchFormData :{
+                 sortCriteria:"Name"
+                ,sortDir:"Desc"
+            },
+            initialize : function(){
+                this.listenTo(this.model, "reset", this.ready);
+                this.dataLoadStarted = false;
+                this.dataReady = false;
+                this.dataModel = this.model;
+            },
+            events: {
+                "click .gotoInvoiceDetails" : "gotoInvoiceDetails",
+                "click .sortControl" : "doSort",
+                "click .searchInvoice": "searchInvoice",
+                "click .resetInvoiceSearch": "resetSearch",
+                "keypress .searchInvoiceInput" : "doSearchEnter",
+                "click .payLink" : "doPayInvoice",
+                "click .seeChildrenLink" : "seeChildren",
+                "click .hideChildrenLink" : "hideChildren",
+                "click .makePayment" : "makePayment",
+                "click .payLink" : "payInvoice",
+                "click .disputeInvoice" : "showContactUsModal",
+                "click  .saveContactUs" : "saveContactUsCreateCase",
+                "change .subjectList" : "showorHideReasonCodes",
+                "click  .displayInvoicePdf" : "showInvoicePdf"
+            },
+            initSetup: function(callback) {
+                this.dataLoadStarted = false;
+                this.dataReady = false;
+                callback();
+            },
+            ready : function(invoiceList, args) { 
+                this.invoiceList = invoiceList;
+                this.dataReady = true; 
+                this.render();
+            },
+            renderPhone : function(){
+                if(this.dataReady) {
+                    this.$el.html('');
+                    this.$el.html(this.templatePhone({
+                        'invoiceList':this.invoiceList.toJSON()
+                        ,'canPay' : this.invoiceList.canPay
+                    }));
+                }
+            },
+            renderDesktop : function(){
+                if(this.dataReady) {
+                    this.$el.html('');
+                    this.$el.html(this.templateDesktop({
+                         'invoiceList'    : this.invoiceList.toJSON()
+                        ,'searchFormData' : this.searchFormData
+                        ,'canPay' : this.invoiceList.canPay
+                    }));
+                }
+            },
+            preRender: function() {
+                if(!this.dataLoadStarted) {
+                    this.dataModel.fetch();
+                    this.dataLoadStarted=true;
+                }
+            },
+            postRender: function() {
+                if(this.dataReady) {
+                    this.updateDatePicker();
+                    this.trigger('pagination:host:rendered', this, {
+                        hostView : this.viewName
+                    });
+                }
+            },
+            doSort : function( event ){
+                console.log('doSort');
+                var objLink = $(event.target);
+                var sortCol = objLink.data('sortcriteria');
+                var sorDir  = objLink.data('sortdir');
+                $('.invoices .sortControl.active').removeClass('active');
+                objLink.addClass('active');
+                $('[name="sortCriteria"]').val(sortCol);
+                $('[name="sortDir"]').val(sorDir);
+                this.searchInvoice();
+            },
+            seeChildren : function( event ){
+                var objLink = $(event.target);
+                var linkId = objLink.data('id');
+                $('.seeChildrenLink.'+linkId).addClass('inactive');
+                $('.hideChildrenLink.'+linkId).removeClass('inactive');
+                $('.childRow.'+linkId).removeClass('inactive');
+            },
+            hideChildren : function( event ){
+                var objLink = $(event.target);
+                var linkId = objLink.data('id');
+                $('.seeChildrenLink.'+linkId).removeClass('inactive');
+                $('.hideChildrenLink.'+linkId).addClass('inactive');
+                $('.childRow.'+linkId).addClass('inactive');
+            },
+            gotoInvoiceDetails: function (event) {
+                var objLink = $(event.target);
+                var id = objLink.data("id");
+                invoiceDetail(id);
+            },
+            payInvoice: function (event) {
+                var objLink = $(event.target);
+                var id = objLink.data("id");
+                invoicePayment(id);
+            },
+            searchInvoice: function(event) {
+                console.log('searchInvoice');
+                this.searchFormData = _.extend({"sortCriteria":"Name", "sortDir":"Desc"},$("#searchInvoiceForm").serializeObject());
+                this.invoiceList.searchFormData = this.searchFormData;
+                console.log(this.invoiceList.searchFormData);
+                this.invoiceList.fetch();
+            },
+            doSearchEnter: function(event) {
+                if (event && event.keyCode == 13 || event.which == 13) {
+                    this.searchInvoice(event);
+                    return false;
+                } else {
+                    return true;
+                }
+            },
+            updateDatePicker: function() {
+                var daysArray = CCRZ.pagevars.pageLabels['DaysOfWeek'].split(",");
+                var monthsArray = CCRZ.pagevars.pageLabels['MonthsOfYear'].split(",");
+                var dateFormat = CCRZ.pagevars.pageLabels['Date_Format'];
+                $(".requestedDate").Zebra_DatePicker({ 
+                    show_other_months: false,
+                    readonly_element: true,
+                    show_select_today: false,
+                    days: daysArray,
+                    months: monthsArray,
+                    format: dateFormat
+                });
+
+            },
+            resetSearch:function(){
+                this.searchFormData = {"sortCriteria":"Name", "sortDir":"Desc"};
+                this.invoiceList.searchFormData = this.searchFormData;
+                this.invoiceList.fetch();
+            },
+            makePayment:function(){
+                invoicePayment();
+            },
+            showInvoicePdf:function(event){
+                var objLink = $(event.target);
+
+                var invoiceId = objLink.data("id");
+                var sfid = objLink.data("sfid");
+                var pdfDataAsUri = "/mynexeo/cc_imp_mn_ViewSDSDoc?invoiceID=" + invoiceId+"&sfid="+sfid+"&StrDocType=invoice";
+                window.open(pdfDataAsUri, '_blank');
+                
+            },
+            showContactUsModal: function(event) {
+                var invoiceId = $(event.target).data("id");
+                if (invoiceId) {
+                    var invoice = _.find(this.invoiceList.models, function(i) { return i.attributes.sfid == invoiceId });
+                    if (invoice) {
+                        CCRZ.subsc.contactUsView.render();
+                        CCRZ.subsc.contactUsView.disputeInvoice(invoice.attributes);
+                    }
+                }
+            }              
+            
+        });
+        CCRZ.pubSub.on('invoice:disputed', function(invoice) {
+            console.log('invoice:disputed');
+            Visualforce.remoting.Manager.invokeAction(
+                '{!$RemoteAction.cc_imp_ctrl_ContactUs.disputeInvoice}',
+                    CCRZ.pagevars.remoteContext,
+                    invoice.sfid,
+                    function(response) {
+                        invoice.status = 'Disputed';
+                        CCRZ.subsc.nexeoInvoicesView.render();
+                    }
+            );
+
+        });
+ 
+    });
+    </script>
+</apex:component>

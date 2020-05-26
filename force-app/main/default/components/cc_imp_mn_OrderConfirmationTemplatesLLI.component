@@ -1,0 +1,290 @@
+<!--
+ - Created by tdissi on 9/12/18.
+ -->
+
+<apex:component id="cc_imp_mn_OrderConfirmationTemplatesLLI">
+    <script type="text/javascript">
+        if (CCRZ.pagevars.currentPageName === 'ccrz__OrderConfirmation') {
+            CCRZ.uiProperties.OrderDetailLLIView.desktop.tmpl = 'MyNexeo-OrderDetailsLLI-View-Desktop';
+            CCRZ.uiProperties.OrderDetailLLIView.phone.tmpl = 'MyNexeo-OrderDetailsLLI-View-Mobile';
+        }
+    </script>
+
+    <script id="MyNexeo-OrderDetailsLLI-View-Desktop" type="text/template">
+        <form id="orderDetails" class="form">
+            <div class="confirmationContainer">
+                {{#if this.isConfirmation}}
+                {{#with this.orderData}}
+                <div class="accordion-group">
+                    <div class="accordion-heading title">
+                        <a href="#" data-parent="#accordion" class="large accordion-toggle">{{pageLabelMap
+                            'OrderConfirmation_Title'}} </a>
+                    </div>
+                    <div class="accordion-inner">
+                        <p class="larger"><strong>{{pageLabelMap 'OrderConfirmation_PlacedOrder' this.orderName
+                                this.orderDate}}</strong></p>
+                        <p class="larger">{{pageLabelMap 'OrderConfirmation_StatusInfo'}} &nbsp;<a href="#"
+                                                                                                   class="orderHistory">{{pageLabelMap
+                                'OrderConfirmation_OrderHistory'}}</a></p>
+                        <p>{{pageLabelMap 'OrderConfirmation_GuidingText'}}</p>
+                        <p>{{pageLabelMap 'OrderConfirmation_GuidingText2'}}</p>
+                        <p>
+                            {{#each this.payments}}
+                            {{#ifEquals paymentMethod "PO Number"}}
+                            {{pageLabelMap 'CheckOut_POGuidingText'}}
+                            {{/ifEquals}}
+                            {{/each}}
+                        </p>
+                    </div>
+                </div>
+                {{/with}}
+                {{else}}
+                {{#with this.orderData}}
+                <div class="accordion-group">
+                    <div class="accordion-heading title">
+                        <a href="#" data-parent="#accordion" class="large accordion-toggle">{{pageLabelMap
+                            'OrderInformation'}} </a>
+                    </div>
+                    <div class="accordion-inner">
+                        <p class="larger">
+                            <span class="orderNum"><strong>{{pageLabelMap 'OrderView_OrderNumber'}}:</strong> {{this.orderName}}</span><br/>
+                            {{#ifDisplay 'OD.DsplExtOrderNumber'}} <span class="orderExtNum"><strong>{{pageLabelMap 'ExternalOrderID'}}:</strong> {{this.externalOrderId}}</span><br/>
+                            {{/ifDisplay}}
+                            <span class="orderDate"><strong>{{pageLabelMap 'MyOrdersInc_OrderDate'}}:</strong> {{this.orderDate}}</span><br/>
+                            <span class="orderStat"><strong>{{pageLabelMap 'MyOrdersInc_Status'}}:</strong> {{pageLabelMap this.orderStatus}}</span><br/>
+                            <span class="rightside"><a href="#" class="orderHistory">{{pageLabelMap 'OrderConfirmation_OrderHistory'}}</a></span>
+                        </p>
+                        <p>
+                            {{#each this.payments}}
+                            {{#ifEquals paymentMethod "PO Number"}}
+                            {{pageLabelMap 'CheckOut_POGuidingText'}}
+                            {{/ifEquals}}
+                            {{/each}}
+                        </p>
+                    </div>
+                </div>
+                {{/with}}
+                {{/if}}
+            </div>
+            <div class="reviewContainer">
+
+                <div class="alert alert-error messagingSection-Error" style="display: none"></div>
+                <div class="alert alert-info messagingSection-Info" style="display: none"></div>
+                <div class="alert alert-warning messagingSection-Warning" style="display: none"></div>
+
+                <!-- ----Item Groups Display----- -->
+                <div class="reviewGroups">
+
+                    {{#each this.orderData.EOrderItemGroupsS.models}}
+                    {{#with this.attributes}}
+                    {{#if this.EOrderItemsS}}
+                    <div class="accordion-group">
+                        <div class="accordion-heading title">
+                            <a href="#collapse{{sfid}}" data-parent="#accordion" data-toggle="collapse"
+                               class="large accordion-toggle">{{pageLabelMap 'LLICheckOut_GroupHeader'}} {{XofY @index
+                                ../../this.orderData.EOrderItemGroupsS.models}}: {{groupName}}</a>
+                        </div>
+                        <div class="accordion-body in collapse" id="collapse{{sfid}}">
+                            <div class="accordion-inner">
+                                <div class="LLIshipOptions">
+                                    <div class="addressEntry">
+                                        <label>{{pageLabelMap 'LLICheckOut_ShipAddrHeader'}}</label><br/>
+                                        <div class="groupAddress">
+                                            {{>addressDisplay shipTo}}
+                                        </div>
+                                    </div>
+                                    <div class="shipInfo">
+                                        {{#ifDisplay 'SO.DsplShipOptions'}}
+                                        {{#if shipMethod}}
+                                        <div class="row ship_method">
+                                            <label>{{pageLabelMap 'LLICheckOut_ShippingMethod'}}: </label>
+                                            <span class="reviewShipOptions">{{shipMethod}}</span>
+                                        </div>
+                                        {{/if}}
+                                        {{#if shipAmount}}
+                                        <div class="row ship_amount">
+                                            <label>{{pageLabelMap 'LLICheckOut_ShippingAmount'}}: </label>
+                                            <span class="reviewShipOptions">{{{price shipAmount}}}</span>
+                                        </div>
+                                        {{/if}}
+                                        {{/ifDisplay}}
+
+                                        {{#ifDisplay 'SO.ShowReqDate'}}
+                                        {{#if requestDate}}
+                                        <div class="row ship_req_date">
+                                            <label class="reviewShipOptions">{{pageLabelMap
+                                                'LLICheckout_RequestedDeliveryDt'}}: </label>
+                                            <span class="reviewShipOptions">{{requestDate}}</span>
+                                        </div>
+                                        {{/if}}
+                                        {{/ifDisplay}}
+
+                                        {{#ifDisplay 'SO.DsplShipNotes'}}
+                                        {{#if note}}
+                                        <div class="row ship_notes">
+                                            <label>{{pageLabelMap 'LLICheckOut_ShippingNotes'}}: </label>
+                                            <span class="reviewShipOptions">{{note}}</span>
+                                        </div>
+                                        {{/if}}
+                                        {{/ifDisplay}}
+
+
+                                    </div>
+                                </div>
+                            </div>
+
+                            <div class="groupItems">
+                                {{> orderItemsLLIDesktop productList=../../productList}}
+                            </div>
+
+                        </div>
+                    </div>
+                    {{/if}}
+                    {{/with}}
+                    {{/each}}
+                </div>
+
+                <!-- -----Order Summary Widget----- -->
+                <div class="summaryWidget">
+                    {{>orderReviewSummary}}
+                </div>
+            </div>
+
+        </form>
+
+    </script>
+
+    <script id="MyNexeo-OrderDetailsLLI-View-Mobile" type="text/template">
+        <form id="orderDetails" class="form">
+            <div class="confirmationContainer">
+                {{#if this.isConfirmation}}
+                {{#with this.orderData}}
+                <div class="accordion-group">
+                    <div class="accordion-heading title">
+                        <a href="#" data-parent="#accordion" class="large accordion-toggle">{{pageLabelMap 'OrderConfirmation_Title'}} </a>
+                    </div>
+                    <div class="accordion-inner">
+                        <p class="larger"><strong>{{pageLabelMap 'OrderConfirmation_PlacedOrder' this.orderName this.orderDate}}</strong></p>
+                        <p class="larger">{{pageLabelMap 'OrderConfirmation_StatusInfo'}} &nbsp;<a href="#" class="orderHistory">{{pageLabelMap 'OrderConfirmation_OrderHistory'}}</a></p>
+                        <p>{{pageLabelMap 'OrderConfirmation_GuidingText'}}</p>
+                        <p>{{pageLabelMap 'OrderConfirmation_GuidingText2'}}</p>
+                        <p>
+                            {{#each this.payments}}
+                            {{#ifEquals paymentMethod "PO Number"}}
+                            {{pageLabelMap 'CheckOut_POGuidingText'}}
+                            {{/ifEquals}}
+                            {{/each}}
+                        </p>
+                    </div>
+                </div>
+                {{/with}}
+                {{else}}
+                {{#with this.orderData}}
+                <div class="accordion-group">
+                    <div class="accordion-heading title">
+                        <a href="#" data-parent="#accordion" class="large accordion-toggle">{{pageLabelMap 'OrderInformation'}} </a>
+                    </div>
+                    <div class="accordion-inner">
+                        <p class="larger">
+                            <span class="orderNum"><strong>{{pageLabelMap 'OrderView_OrderNumber'}}:</strong> {{this.orderName}}</span><br/>
+                            {{#ifDisplay 'OD.DsplExtOrderNumber'}} <span class="orderExtNum"><strong>{{pageLabelMap 'ExternalOrderID'}}:</strong> {{this.externalOrderId}}</span><br/> {{/ifDisplay}}
+                            <span class="orderDate"><strong>{{pageLabelMap 'MyOrdersInc_OrderDate'}}:</strong> {{this.orderDate}}</span><br/>
+                            <span class="orderStat"><strong>{{pageLabelMap 'MyOrdersInc_Status'}}:</strong> {{pageLabelMap this.orderStatus}}</span><br/>
+                            <span class="rightside"><a href="#" class="orderHistory">{{pageLabelMap 'OrderConfirmation_OrderHistory'}}</a></span>
+                        </p>
+                        <p>
+                            {{#each this.payments}}
+                            {{#ifEquals paymentMethod "PO Number"}}
+                            {{pageLabelMap 'CheckOut_POGuidingText'}}
+                            {{/ifEquals}}
+                            {{/each}}
+                        </p>
+                    </div>
+                </div>
+                {{/with}}
+                {{/if}}
+            </div>
+            <div class="reviewContainer">
+
+                <div class="alert alert-error messagingSection-Error" style="display: none"></div>
+                <div class="alert alert-info messagingSection-Info" style="display: none"></div>
+                <div class="alert alert-warning messagingSection-Warning" style="display: none"></div>
+
+                <!-- ----Item Groups Display----- -->
+                <div class="reviewGroups">
+                    <!-- -----Order Summary Widget----- -->
+                    <div class="summaryWidget">
+                        {{>orderReviewSummary}}
+                    </div>
+                    {{#each this.orderData.EOrderItemGroupsS.models}}
+                    {{#with this.attributes}}
+                    {{#if this.EOrderItemsS}}
+                    <div class="accordion-group">
+                        <div class="accordion-heading title">
+                            <a href="#collapse{{sfid}}" data-parent="#accordion" data-toggle="collapse" class="large accordion-toggle">{{pageLabelMap 'LLICheckOut_GroupHeader'}} {{XofY @index ../../this.orderData.EOrderItemGroupsS.models}}: {{groupName}}</a>
+                        </div>
+                        <div class="accordion-body in collapse" id="collapse{{sfid}}">
+                            <div class="accordion-inner">
+                                <div class="LLIshipOptions">
+                                    <div class="addressEntry">
+                                        <label>{{pageLabelMap 'LLICheckOut_ShipAddrHeader'}}</label><br />
+                                        <div class="groupAddress">
+                                            {{>addressDisplay shipTo}}
+                                        </div>
+                                    </div>
+                                    <div class="shipInfo">
+                                        {{#ifDisplay 'SO.DsplShipOptions'}}
+                                        {{#if shipMethod}}
+                                        <div class="row ship_method">
+                                            <label>{{pageLabelMap 'LLICheckOut_ShippingMethod'}}: </label>
+                                            <span class="reviewShipOptions">{{shipMethod}}</span>
+                                        </div>
+                                        {{/if}}
+                                        {{#if shipAmount}}
+                                        <div class="row ship_amount">
+                                            <label>{{pageLabelMap 'LLICheckOut_ShippingAmount'}}: </label>
+                                            <span class="reviewShipOptions">{{{price shipAmount}}}</span>
+                                        </div>
+                                        {{/if}}
+                                        {{/ifDisplay}}
+
+                                        {{#ifDisplay 'SO.ShowReqDate'}}
+                                        {{#if requestDate}}
+                                        <div class="row ship_req_date">
+                                            <label class="reviewShipOptions">{{pageLabelMap 'LLICheckout_RequestedDeliveryDt'}}: </label>
+                                            <span class="reviewShipOptions">{{requestDate}}</span>
+                                        </div>
+                                        {{/if}}
+                                        {{/ifDisplay}}
+
+                                        {{#ifDisplay 'SO.DsplShipNotes'}}
+                                        {{#if note}}
+                                        <div class="row ship_notes">
+                                            <label>{{pageLabelMap 'LLICheckOut_ShippingNotes'}}: </label>
+                                            <span class="reviewShipOptions">{{note}}</span>
+                                        </div>
+                                        {{/if}}
+                                        {{/ifDisplay}}
+
+
+                                    </div>
+                                </div>
+                            </div>
+
+                            <div class="groupItems">
+                                {{> orderItemsLLIDesktop productList=../../productList}}
+                            </div>
+
+                        </div>
+                    </div>
+                    {{/if}}
+                    {{/with}}
+                    {{/each}}
+                </div>
+
+            </div>
+
+        </form>
+
+    </script>
+</apex:component>

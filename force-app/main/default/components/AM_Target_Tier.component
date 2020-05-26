@@ -1,0 +1,68 @@
+<apex:component controller="AM_CSPTier"  access="global">
+
+<apex:attribute name="recordid" description="Account_Material__Id"  type="Id" required="required" assignto="{!recordid}"/>
+<apex:attribute name="tableid" description="Table Id"  type="string" />
+<c:importvisualstrap />
+
+<style>
+
+
+</style>
+
+
+<c:visualstrapblock style="padding:5px">
+    <c:panel title="Target Tier" type="info"> <center>
+    <table id="{!tableid}" title="Target Tier" class="table table-striped table-bordered" cellspacing="0" width="100%">
+    <thead> 
+
+    <tr style="height:10px;">
+        <td style="vertical-align:top;padding-right:1px;">
+            <b>Bracket / UoM</b>
+        </td>
+        <td style="vertical-align:top;padding-right:1px;">
+            <b>Price / UoM</b>
+        </td>
+    </tr>
+    </thead>
+    <tbody id="{!tableid}_body">
+    <apex:variable value="{!0}" var="rowNum"/>
+    <apex:repeat value="{!target}" var="v">
+    <tr style="height:10px;">
+        
+        <td style="vertical-align:top;">
+           {!v.tier_volume}/{!v.target_scale_uom}
+        </td>
+        <td style="vertical-align:top;">
+           {!v.target_Price} / {!v.target_price_UoM} 
+        </td>
+        <td id="{!FLOOR(rowNum)}_price" style="visibility:collapse;">
+           {!v.target_Price}
+        </td>
+        <td id="{!FLOOR(rowNum)}_vol" style="visibility:collapse;">
+           {!v.tier_volume}
+        </td>
+        <td id="tarvoluom" style="visibility:collapse;">
+           {!v.target_scale_uom}
+        </td>
+        <td id="tarpriceuom" style="visibility:collapse;">
+           {!v.target_price_UoM}
+        </td>
+         
+        <apex:variable value="{!rowNum + 1}" var="rowNum"/>
+    </tr>
+    
+    
+    
+    </apex:repeat>
+    </tbody>
+   
+    </table>
+     </center>
+  </c:panel>
+
+
+</c:visualstrapblock>
+
+
+
+</apex:component>

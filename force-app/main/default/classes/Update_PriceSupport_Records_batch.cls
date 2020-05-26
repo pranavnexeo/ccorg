@@ -1,0 +1,1 @@
+global class Update_PriceSupport_Records_batch{}

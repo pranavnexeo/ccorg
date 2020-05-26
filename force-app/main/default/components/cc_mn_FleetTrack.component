@@ -1,0 +1,213 @@
+<apex:component controller="cc_mn_ctrl_FleetTrack">
+    
+<script>
+function goBack() {
+    window.history.back();
+}
+    </script>
+<apex:attribute name="docNumber" description="Page Content - docNumber" type="String" required="true"/>
+<apex:attribute name="itemNumber" description="Page Content - itemNumber" type="String" required="true"/>
+
+<div class="fleetTrackContainer" ></div>
+
+<script id="FleetTrack" type="text/template">
+    <div class="margin_form">
+        <fieldset class="clear orderDetails">
+            <legend class="orderDetails">{{pageLabelMap 'cc_imp_FleetTrack_Title'}}</legend>
+            {{#if this}}
+                {{#if this.error_indicator}}
+                    {{pageLabelMap 'cc_imp_no_tracking_data'}}
+                {{else}}
+                    <p class="larger">
+                        <span><strong>{{pageLabelMap 'cc_imp_FleetTrack_DocumentNumber'}}: </strong> {{this.doc_number}}</span><br />
+                        <span><strong>{{pageLabelMap 'cc_imp_FleetTrack_ItemNumber'}}: </strong> {{this.itm_number}}</span><br />
+                        
+                         {{#ifEquals this.track_type ''}}
+                          
+                            <span><strong>{{pageLabelMap 'cc_imp_FleetTrack_Type'}}: </strong>{{pageLabelMap 'cc_imp_FleetTrack_NoType'}}</span><br />
+                                                       
+                            {{#ifCondText  this.ESUser}}
+                             <span><strong>{{pageLabelMap 'cc_imp_FleetTrack_RequestedDelDate_ES'}}: </strong>{{this.requested_date}}</span><br />
+                           	 <span><strong>{{pageLabelMap 'cc_imp_FleetTrack_EstimatedDelDate_ES'}}: </strong>{{this.estimated_delivery_date}}</span><br />
+                            {{else}}
+                             <span><strong>{{pageLabelMap 'cc_imp_FleetTrack_RequestedDelDate'}}: </strong>{{this.requested_date}}</span><br />
+                           	 <span><strong>{{pageLabelMap 'cc_imp_FleetTrack_EstimatedDelDate'}}: </strong>{{this.estimated_delivery_date}}</span><br />                            
+                            {{/ifCondText}}                             
+                                
+                        {{/ifEquals}}    
+                        {{#ifEquals this.track_type 'C'}}
+                            <span><strong>{{pageLabelMap 'cc_imp_FleetTrack_Type'}}: </strong>{{pageLabelMap 'cc_imp_FleetTrack_CommonCarrier'}}</span><br />
+                            
+                             {{#ifCondText  this.ESUser}}
+                                <span><strong>{{pageLabelMap 'cc_imp_FleetTrack_RequestedDelDate_ES'}}: </strong>{{this.requested_date}}</span><br />
+                                <span><strong>{{pageLabelMap 'cc_imp_FleetTrack_EstimatedDelDate_ES'}}: </strong>{{this.estimated_delivery_date}}</span><br />
+                                <span><strong>{{pageLabelMap 'cc_imp_FleetTrack_PlannedDelDate_ES'}}: </strong>{{this.planned_delivery_date}}</span><br /> 
+                            {{else}}
+                                <span><strong>{{pageLabelMap 'cc_imp_FleetTrack_RequestedDelDate'}}: </strong>{{this.requested_date}}</span><br />
+                                <span><strong>{{pageLabelMap 'cc_imp_FleetTrack_EstimatedDelDate'}}: </strong>{{this.estimated_delivery_date}}</span><br />
+                                <span><strong>{{pageLabelMap 'cc_imp_FleetTrack_PlannedDelDate'}}: </strong>{{this.planned_delivery_date}}</span><br />                            
+                            {{/ifCondText}} 
+                                                         
+                            <span><strong>{{pageLabelMap 'cc_imp_FleetTrack_URL'}}: </strong><a href="{{decodeHTML this.url}}">{{decodeHTML this.url}}</a></span><br />
+                        {{/ifEquals}}
+                        {{#ifEquals this.track_type 'P'}}
+                            <span><strong>{{pageLabelMap 'cc_imp_FleetTrack_Type'}}: </strong>{{pageLabelMap 'cc_imp_FleetTrack_PrivateFleet'}}</span><br />
+                            
+                             {{#ifCondText  this.ESUser}}
+                                <span><strong>{{pageLabelMap 'cc_imp_FleetTrack_RequestedDelDate_ES'}}: </strong>{{this.requested_date}}</span><br />
+                                <span><strong>{{pageLabelMap 'cc_imp_FleetTrack_EstimatedDelDate_ES'}}: </strong>{{this.estimated_delivery_date}}</span><br />
+                                <span><strong>{{pageLabelMap 'cc_imp_FleetTrack_PlannedDelDate_ES'}}: </strong>{{this.planned_delivery_date}}</span><br /> 
+                            {{else}}
+                                <span><strong>{{pageLabelMap 'cc_imp_FleetTrack_RequestedDelDate'}}: </strong>{{this.requested_date}}</span><br />
+                                <span><strong>{{pageLabelMap 'cc_imp_FleetTrack_EstimatedDelDate'}}: </strong>{{this.estimated_delivery_date}}</span><br />
+                                <span><strong>{{pageLabelMap 'cc_imp_FleetTrack_PlannedDelDate'}}: </strong>{{this.planned_delivery_date}}</span><br />                            
+                            {{/ifCondText}}                                 
+                                <!--  <span><strong>{{pageLabelMap 'cc_imp_FleetTrack_VehicleNumber'}}: </strong>{{this.pvt_fleet_data.vehicle_location.vehicle_number}}</span><br />
+                            <span><strong>{{pageLabelMap 'cc_imp_FleetTrack_Date'}}: </strong>{{this.pvt_fleet_data.vehicle_location.datime}}</span><br />
+                            <span><strong>{{pageLabelMap 'cc_imp_FleetTrack_Location'}}: </strong>{{this.pvt_fleet_data.vehicle_location.location}}</span><br />-->
+                        {{/ifEquals}}
+                    </p>
+                {{/if}}
+            {{else}}
+            <p class="larger">
+                {{pageLabelMap 'cc_imp_no_svc_connection_two'}}
+            </p>
+            {{/if}}
+        </fieldset>
+		{{#ifEquals this.track_type ''}}
+          <p class="larger">
+                {{pageLabelMap 'cc_imp_FleetTrack_NoTableData'}}
+            </p>
+        {{/ifEquals}}
+        {{#ifEquals this.track_type 'P'}}
+        <div class="cart_item_list">
+
+            <table id="orderTable" class="shopping_cart">
+                <tr class="even">
+                    <!-- <td class="right_align">{{pageLabelMap 'cc_imp_FleetTrack_VehicleNumber'}}</td> -->
+                    <!-- <td class="right_align">{{pageLabelMap 'cc_imp_FleetTrack_DispatchNumber'}}</td> -->
+                    <!-- <td class="right_align">{{pageLabelMap 'cc_imp_FleetTrack_Driver'}}</td> -->
+                    <td class="right_align">{{pageLabelMap 'cc_imp_FleetTrack_StopNumber'}}</td>
+                    <td class="right_align">{{pageLabelMap 'cc_imp_FleetTrack_Name'}}</td>
+                    <td class="right_align">{{pageLabelMap 'cc_imp_FleetTrack_City'}}</td>
+                    <td class="right_align">{{pageLabelMap 'cc_imp_FleetTrack_State'}}</td>
+                    <td class="right_align">{{pageLabelMap 'cc_imp_FleetTrack_ScheduledArrival'}}</td>
+                    <!-- <td class="right_align">{{pageLabelMap 'cc_imp_FleetTrack_ArrivalTime'}}</td> -->
+                    <td class="right_align">{{pageLabelMap 'cc_imp_FleetTrack_DepartureTime'}}</td>
+                    <!-- <td class="right_align">{{pageLabelMap 'cc_imp_FleetTrack_LocationStatus'}}</td> -->
+                    <!-- <td class="right_align">{{pageLabelMap 'cc_imp_FleetTrack_ShipTo'}}</td> -->
+                </tr>
+                {{#each this.pvt_fleet_data.stops_data}}
+                <tr class="odd myAccOrderRows">
+                    <!-- <td class="right_align">{{this.vehicle_number}}</td> -->
+                    <!-- <td class="right_align">{{this.dispatch_number}}</td> -->
+                    <!-- <td class="right_align">{{this.driver}}</td> -->
+                    <td class="right_align">{{this.stop_number}}</td>
+                    <td class="right_align">{{this.name}}</td>
+                    <td class="right_align">{{this.city}}</td>
+                    <td class="right_align">{{this.state}}</td>
+                    <td class="right_align">{{this.scheduled_arrival}}</td>
+                    <!-- <td class="right_align">{{this.arrival_time}}</td> -->
+                    <td class="right_align">{{this.departure_time}}</td>
+                    <!-- <td class="right_align">{{this.location_status}}</td> -->
+                    <!-- <td class="right_align">{{this.ship_to}}</td> -->
+                </tr>
+                {{/each}}
+            </table>
+        </div>
+        {{/ifEquals}}
+        <p>
+             <button onclick="goBack()">{{pageLabelMap 'MyAccount_OrderHistory'}}</button>
+        </p>
+    </div>
+</script>
+
+<script type="text/javascript">
+     var ESUserFromCookie;
+jQuery(function($) {
+    CCRZ.subsc       = CCRZ.subsc || {};
+    CCRZ.subsc.views = CCRZ.subsc.views || {};
+
+    CCRZ.subsc.views.FleetTrackView = CCRZ.CloudCrazeView.extend({
+        events : {
+            "click .orderHistory": "gotoOrderHistory"
+        },
+        className: 'cc_mn_ctrl_FleetTrack',
+        viewName:  'FleetTrackView',
+        template: CCRZ.util.template('FleetTrack'),
+        docNumber: '{!docNumber}',
+        itemNumber: '{!itemNumber}',
+
+        init : function(){
+            var view = this;
+            cc_mn_ctrl_FleetTrack.fetch(
+                CCRZ.pagevars.remoteContext,
+                view.docNumber,
+                function(response) {
+                    if (response && response.data.success) {
+                        if (response.data.data) {
+                            view.model = response.data.data;
+                            view.render();
+                        }
+                    }
+                }
+            );
+
+        },
+        findItem: function() {
+            var item = null;
+            var number = this.itemNumber;
+            for (var i=number.length; i<6; i++) {
+                number = '0' + number; 
+            }
+            console.log(number);
+            for (var i=0; i<this.model.items.length; i++) {
+                if (this.model.items[i].itm_number == number) {
+                    item = this.model.items[i];
+                    item.ESUser = ESUserFromCookie;
+                    break;
+                }
+            }
+            return item;
+        },
+        renderDesktop: function() {
+            var item = this.findItem();
+            this.setElement($('.fleetTrackContainer'));
+            this.$el.html(this.template(item));
+        },
+        renderPhone: function() {
+            var item = this.findItem();
+            this.setElement($('.phone_center_top'));
+            this.$el.html(this.template(item));
+        },
+        gotoOrderHistory: function() {
+            document.location = "{!$Page.ccrz__MyAccount}?viewState=myOrders&cartID=" + CCRZ.pagevars.currentCartID + getCSRQueryString();
+        }
+    });
+    CCRZ.subsc.fleetTrackView = new CCRZ.subsc.views.FleetTrackView();
+});
+ 
+    Handlebars.registerHelper('ifCondText', function(ESUser , options) {
+      if(ESUser == 'true') {
+        return options.fn(this);
+      } else {
+        return options.inverse(this);
+      }
+    }); 
+         jQuery( window ).load(function() {
+
+          ESUserFromCookie = CCRZ.getCookie("apex__isESUser");
+		 if (ESUserFromCookie !== undefined) {
+            
+             var ua = window.navigator.userAgent;
+    		 var msie = ua.indexOf("MSIE ");
+             if (msie > 0 || navigator.userAgent.match(/Trident.*rv\:11\./) || window.navigator.userAgent.indexOf("Edge") > -1) {
+                 ESUserFromCookie = ESUserFromCookie.toString();
+             }
+                           
+             }             
+         }
+                          
+     );    
+</script>
+</apex:component>

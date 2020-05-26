@@ -1,0 +1,68 @@
+<apex:component >
+
+	<script>
+		$(function(){
+
+
+			CCRZ.pubSub.on('view:newCustomerView:refresh',function(view){
+				var viewPrototype = Object.getPrototypeOf(view);
+            	if (viewPrototype != null) {
+            		console.log('does not get in to meethdo submit');
+					viewPrototype.submit = function(event) {
+
+						$('#newCustomerForm').find('input[name="companyName"]').rules("remove");
+
+					    if ($('#newCustomerForm').valid()) {
+                            var validationResult=validateZIP();
+                            //alert(validationResult);
+                         if(!validationResult){
+                         	document.body.scrollTop = document.documentElement.scrollTop = 0;
+                         return false;
+                         }
+					     var v = this;
+					     var newCustomerJSON = $('#newCustomerForm').serializeObject();
+					     if(!CCRZ.getPageConfig('reg.addlInf', true)) {
+					      if(!newCustomerJSON.companyName) {
+					       newCustomerJSON.companyName = newCustomerJSON.firstName + ' ' + newCustomerJSON.lastName;
+					      }
+					      if(!newCustomerJSON.companyType) {
+					       newCustomerJSON.companyType = CCRZ.getPageConfig('reg.cmpyType', 'ISP');
+					      }
+					     }
+
+					     if(newCustomerJSON.companyName === ''){
+					     	newCustomerJSON.companyName = newCustomerJSON.firstName + ' ' + newCustomerJSON.lastName;
+					     }
+					     
+					     //CCRZ-2145 Tax Exempt not working
+					     //checkbox will have a value of undefined if unchecked, and true if checked.
+					     if(!newCustomerJSON.taxExemptFlag) {
+					      newCustomerJSON.taxExemptFlag = false;
+					     }else{
+					      newCustomerJSON.taxExemptFlag = true;
+					     }
+
+					     v.model.registerUser(JSON.stringify(newCustomerJSON), function(response) {
+					      if(CCRZ.getPageConfig('UR.DirLogin', true)){
+					       v.model.doLogin(newCustomerJSON.username,newCustomerJSON.NewPassword);
+					      }
+					      else{
+					       window.location.href = '/nexeo3d/ccrz__CCSiteLogin?registrationSuccess=true' + getCSRQueryString(); 
+					      } 
+					      // callback function
+					     });
+					    }
+					    else{
+					     document.body.scrollTop = document.documentElement.scrollTop = 0;
+					    }
+					};
+
+					view.delegateEvents();
+            	}
+
+			});
+
+		});
+	</script>
+
+</apex:component>

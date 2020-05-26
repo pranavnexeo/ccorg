@@ -1,0 +1,63 @@
+<apex:page >
+<SCRIPT LANGUAGE="JavaScript">
+
+//************************************************************************
+// QueryString - Returns a value from the URL that called this
+//************************************************************************
+function QueryString(key)
+{
+var value = null;
+for (var i=0;i<QueryString.keys.length;i++)
+{
+if (QueryString.keys[i]==key)
+{
+value = QueryString.values[i];
+break;
+}
+}
+return value;
+}
+QueryString.keys = new Array();
+QueryString.values = new Array();
+
+//************************************************************************
+// QueryString_Parse - Does an inital parse of the incoming URL. Resulta
+// are used by the QueryString function.
+//************************************************************************
+function QueryString_Parse()
+{
+var query = window.parent.location.search.substring(1)
+var pairs = query.split("&");
+
+for (var i=0;i<pairs.length;i++)
+{
+var pos = pairs[i].indexOf('=');
+if (pos >= 0)
+{
+var argname = pairs[i].substring(0,pos);
+var value = pairs[i].substring(pos+1);
+QueryString.keys[QueryString.keys.length] = argname
+QueryString.values[QueryString.values.length] = value
+}
+}
+
+}
+//Performs the Parse, so QueryString will work automatically
+QueryString_Parse();
+
+function buildActiveAccountSearchURL()
+{
+	var searchURL = '/search/SearchResults?searchType=2&sen=001&00N50000001kXWuAccount=Yes';    //Production
+	//var searchURL = '/search/SearchResults?searchType=2&sen=001&00NT0000000yDuRAccount=Yes';      //Sandbox
+    var searchValue = QueryString('searchValue');
+    
+    if ((searchValue != '') && (searchValue != null))
+    	{searchURL += '&str=' + searchValue;}
+
+    return searchURL;
+}
+
+window.location = buildActiveAccountSearchURL();
+
+</SCRIPT>
+</apex:page>

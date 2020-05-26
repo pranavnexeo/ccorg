@@ -1,0 +1,41 @@
+<apex:component controller="cc_3d_ctrl_CheckoutUserInfoController">
+
+<script type="text/javascript">
+
+    var countryMap = {!countryMapJSON};
+    var currencyMap = {!currencyMapJSON};
+    var defaultCurrencyMap = {!defaultCurrencyMapJSON};
+
+    jQuery(function($) {
+        CCRZ.pubSub.once("view:newCustomerView:refresh", function(view) {
+            var countryList = _.filter(view.model.attributes.countryList, function(country) {
+                return (countryMap[country.value] != null); 
+            });
+            view.model.attributes.countryList = countryList;
+            view.render();
+            $("select[name='currencyCode']").val('USD');
+
+            $("select.billing").change(function () {
+                var currency = currencyMap[this.value];
+                if (!currency) {
+                    currency = defaultCurrencyMap[this.value];
+                    if (!currency) {
+                        currency = 'USD';
+                    }
+                }
+                var option = $('select[name="currencyCode"] option[value="' + currency + '"]');
+                if (option.length == 0) {
+                    currency = defaultCurrencyMap[this.value];
+                    if (!currency) {
+                        currency = 'USD';
+                    }
+                }
+                $("select[name='currencyCode']").val(currency);
+            });
+
+        });
+    });
+
+</script>
+
+</apex:component>

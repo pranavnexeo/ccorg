@@ -1,0 +1,75 @@
+<apex:page standardcontroller="Account" extensions="AccountDeliveryCitiesExtension">
+<style> body { background: #F3F3EC; } </style>
+<b>{!$Label.Accout_Total_Number_Cities} - {!dcsize}</b><br/><br/>
+<apex:datatable var="dd" value="{!DC}" >
+
+<apex:column >
+<apex:facet name="header">&nbsp;{!$Label.Account_Delivery_City}&nbsp;</apex:facet>
+<apex:outputLink value="/{!dd.Id}" target="_blank"><apex:outputField value="{!dd.Name}"/></apex:outputLink>
+</apex:column>
+
+<apex:column >
+<apex:facet name="header">&nbsp;{!$Label.Account_SAP_Plant_Code}&nbsp;</apex:facet>
+<center>
+<apex:outputfield value="{!dd.SAP_Plant__r.Plant_Code__c}"/>
+</center>
+</apex:column>
+
+<apex:column >
+<apex:facet name="header">&nbsp;{!$Label.Account_SAP_Plant_Name}&nbsp;</apex:facet>
+<center>
+<apex:outputLink value="/{!dd.SAP_Plant__c}" target="_blank"><apex:outputField value="{!dd.SAP_Plant__r.Plant_Name__c}"/></apex:outputLink>
+</center>
+</apex:column>
+
+<apex:column >
+<apex:facet name="header">&nbsp;{!$Label.Account_State}&nbsp;</apex:facet>
+<center>
+<apex:outputfield value="{!dd.State__c}"/>
+</center>
+</apex:column>
+
+<apex:column >
+<apex:facet name="header">&nbsp;{!$Label.Account_Monday}&nbsp;</apex:facet>
+<center>
+<apex:outputfield value="{!dd.Mon__c}"/>
+</center>
+</apex:column>
+
+<apex:column >
+<apex:facet name="header">&nbsp;{!$Label.Account_Tuesday}&nbsp;</apex:facet>
+<center>
+<apex:outputfield value="{!dd.Tues__c}"/>
+</center>
+</apex:column>
+
+<apex:column >
+<apex:facet name="header">&nbsp;{!$Label.Account_Wednesday}&nbsp;</apex:facet>
+<center>
+<apex:outputfield value="{!dd.Wed__c}"/>
+</center>
+</apex:column>
+
+<apex:column >
+<apex:facet name="header">&nbsp;{!$Label.Account_Thursday}&nbsp;</apex:facet>
+<center>
+<apex:outputfield value="{!dd.Thur__c}"/>
+</center>
+</apex:column>
+
+<apex:column >
+<apex:facet name="header">&nbsp;{!$Label.Account_Friday}&nbsp;</apex:facet>
+<center>
+<apex:outputfield value="{!dd.Fri__c}"/>
+</center>
+</apex:column>
+
+<apex:column >
+<apex:facet name="header">&nbsp;{!$Label.Account_Ship}&nbsp;</apex:facet>
+<center>
+<apex:outputfield value="{!dd.Ship__c}"/>
+</center>
+</apex:column>
+</apex:datatable>
+
+</apex:page>

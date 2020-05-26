@@ -1,0 +1,489 @@
+<apex:component controller="cc_mn_ProfilesController">
+        
+        <style>
+            .displayNone
+            {
+                display:none;
+            }
+            .displayBlock
+            {
+                display:block;
+            }
+             a.disabled { color:gray;text-decoration: none; }
+        </style>
+           <script id="Profile-Desktop-Template" type="text/template">
+            
+            <h2 class="title">{{pageLabelMap 'Profile_title'}}</h2>
+            <div class='messaging_block' style="display: none">
+                <div class='dynamic_page_message dynamic_page_message_info'>Hello World</div>
+            </div>
+            <div class="orderPaginationSec" />
+            <div class="alert alert-error messagingSection-Error" style="display: none"></div><br/>
+                 <!--<a href="{{pageLabelMap 'Profile_Wastebits_URL'}}" style="color:blank;cursor:pointer;font-size:14px;" target="_blank">{{pageLabelMap 'Profile_Wastebits'}}</a>  <br/>-->
+                 {{pageLabelMap 'Profile_Wastebits'}}
+                <div class="paginationDiv">
+                    <table>
+                        <tr>
+                            <td style="width:300px;">
+                                <span class="currentPage"></span>&nbsp;{{pageLabelMap 'profile_To'}}&nbsp;<span class="currentPage1"></span>&nbsp;{{pageLabelMap 'profile_Of'}}&nbsp;<span class="currentPage2"></span>
+                                
+                            </td>
+                             <td style="width:500px;">
+                               <center> <a href="#" class="FirstPage"> {{pageLabelMap 'profile_First'}}</a> &nbsp;<a href="#" class="prevPage"> {{pageLabelMap 'profile_Prev'}} </a>&nbsp;<a href="#" class="NextPage" > {{pageLabelMap 'profile_Next'}} </a>&nbsp;<a href="#" class="LastPage"  > {{pageLabelMap 'profile_last'}} </a> </center>
+                            </td>
+                            <td >
+                            <div style="float:right;">
+                                {{pageLabelMap 'profile_Display'}} <select onchange="OnChangeSize(this.value);">
+                                  <option value="10">10</option>
+                                  <option value="20">20</option>
+                                  <option value="50">50</option>
+                                  
+                                </select> &nbsp;{{pageLabelMap 'profile_Displayperpage'}}
+                            </div>
+                            </td>
+                        </tr>
+                    </table>
+                </div>
+                        <div class="panel-body {!IF(lstWrapprofile.size>0,'displayBlock','displayNone')}" style="margin-top:20px;">
+                      
+                            <table  class="shopping_cart" id="desktopTable" >
+                                <tr class="even">
+                                        <td class="right_align headerSort profileName" data-sortcriteria="profileName">{{pageLabelMap 'Profile_Name'}}
+                                               <a href="javascript:void(0);" onclick="SortTable('profile','asc')" class="descSort orderSortControl " data-sortcriteria="profileName" data-sortdir="Desc">{{pageLabelMap 'CommonElements_DownArrow'}}</a>
+                                                <a href="javascript:void(0);" onclick="SortTable('profile','desc')" class="ascSort orderSortControl " data-sortcriteria="profileName" data-sortdir="Asc">{{pageLabelMap 'CommonElements_UpArrow'}}</a>
+                                                
+                                        <td class="right_align headerSort profileDesc" data-sortcriteria="profileDesc">{{pageLabelMap 'ProfileDesc'}}
+                                               <a href="javascript:void(0);" onclick="SortTable('profileDesc','asc')" class="descSort orderSortControl" data-sortcriteria="profileDesc" data-sortdir="Desc">{{pageLabelMap 'CommonElements_DownArrow'}}</a>
+                                                <a href="javascript:void(0);" onclick="SortTable('profileDesc','desc')" class="ascSort orderSortControl " data-sortcriteria="profileDesc" data-sortdir="Asc">{{pageLabelMap 'CommonElements_UpArrow'}}</a>
+                                        </td>
+                                        <td class="right_align headerSort Exp_Date" data-sortcriteria="Exp_Date">{{pageLabelMap 'Exp_Date'}}
+                                               <a href="javascript:void(0);" onclick="SortTable('expDate','asc')" class="descSort orderSortControl" data-sortcriteria="Exp_Date" data-sortdir="Desc">{{pageLabelMap 'CommonElements_DownArrow'}}</a>
+                                                <a href="javascript:void(0);" onclick="SortTable('expDate','desc')" class="ascSort orderSortControl " data-sortcriteria="Exp_Date" data-sortdir="Asc">{{pageLabelMap 'CommonElements_UpArrow'}}</a>
+                                        </td>
+                                        <td class="right_align headerSort Exp_Date" data-sortcriteria="Disposer_Name">{{pageLabelMap 'Profile_disposer_name'}}
+                                               <a href="javascript:void(0);" onclick="SortTable('disposer','asc')" class="descSort orderSortControl" data-sortcriteria="Exp_Date" data-sortdir="Desc">{{pageLabelMap 'CommonElements_DownArrow'}}</a>
+                                                <a href="javascript:void(0);" onclick="SortTable('disposer','desc')" class="ascSort orderSortControl " data-sortcriteria="Exp_Date" data-sortdir="Asc">{{pageLabelMap 'CommonElements_UpArrow'}}</a>
+                                        </td>
+                                                                         
+                                </tr> 
+                                <tbody>
+                                <apex:repeat value="{!lstWrapprofile}" var="profile" id="rptData">
+                                    <tr  class="odd myAccOrderRows myNexeoOrders">
+                                        <td class="right_align"><a href="/mynexeo/cc_imp_mn_ViewProfileDoc?strPid={!profile.strProfileId}"   target="_blank">{!profile.strPName}</a></td>
+                                        <td class="right_align">{!profile.strPDesc}</td>
+                                        <td class="right_align">
+                                        <!--<apex:outputText value="{0,date,dd/MM/yyyy}"> <apex:param value="{!profile.expDate}" /> </apex:outputText>-->
+                                         <apex:outputText value="{0,date,MM/dd/yyyy}"> <apex:param value="{!profile.expDate}" /> </apex:outputText>
+                                        </td>
+                                        <td class="right_align">{!profile.strDisposerName }</td>
+                                           
+                                    </tr>   
+                                </apex:repeat>
+                                </tbody>
+                            </table>
+                           
+                        </div>
+                        <br/> <span Class="{!IF(lstWrapprofile.size=0,'displayBlock','displayNone')}">{{pageLabelMap 'No data Available'}} </span>
+        </script>
+    
+            <script id="Profile-Mobile-Template" type="text/template">
+                <h2 class="title">{{pageLabelMap 'Profile_title'}}</h2>
+            <div class='messaging_block' style="display: none">
+                <div class='dynamic_page_message dynamic_page_message_info'></div>
+            </div>
+            <div class="alert alert-error messagingSection-Error" style="display: none"></div>
+                 <a href="{{pageLabelMap 'Profile_Wastebits_URL'}}" style="color:blank;cursor:pointer;font-size:14px;" target="_blank">{{pageLabelMap 'Profile_Wastebits'}}</a>  
+                <div class="paginationDiv">
+                    <table>
+                        <tr>
+                            <td style="width:300px;">
+                                <span class="currentPage"></span>&nbsp;{{pageLabelMap 'profile_To'}}&nbsp;<span class="currentPage1"></span>&nbsp;{{pageLabelMap 'profile_Of'}}&nbsp;<span class="currentPage2"></span>
+                                
+                            </td>
+                             <td style="width:500px;">
+                               <center> <a href="#" class="FirstPage"> {{pageLabelMap 'profile_First'}}</a> &nbsp;<a href="#" class="prevPage"> {{pageLabelMap 'profile_Prev'}} </a>&nbsp;<a href="#" class="NextPage" > {{pageLabelMap 'profile_Next'}} </a>&nbsp;<a href="#" class="LastPage"  > {{pageLabelMap 'profile_last'}} </a> </center>
+                            </td>
+                            <td >
+                            <div style="float:right;">
+                                {{pageLabelMap 'profile_Display'}} <select onchange="OnChangeSize(this.value);">
+                                  <option value="10">10</option>
+                                  <option value="20">20</option>
+                                  <option value="50">50</option>
+                                  
+                                </select> &nbsp;{{pageLabelMap 'profile_Displayperpage'}}
+                            </div>
+                            </td>
+                        </tr>
+                    </table>
+                </div>
+                  <div class="panel-body {!IF(lstWrapprofile.size>0,'displayBlock','displayNone')}" style="margin-top:20px;">
+                      
+                    <table  class="shopping_cart ">
+                        <tr class="even">
+                            <td class="right_align headerSort profileName" data-sortcriteria="profileName">{{pageLabelMap 'Profile_Name'}}
+                                               <a href="javascript:void(0);" onclick="SortTable('profile','asc')" class="descSort orderSortControl " data-sortcriteria="profileName" data-sortdir="Desc">{{pageLabelMap 'CommonElements_DownArrow'}}</a>
+                                                <a href="javascript:void(0);" onclick="SortTable('profile','desc')" class="ascSort orderSortControl " data-sortcriteria="profileName" data-sortdir="Asc">{{pageLabelMap 'CommonElements_UpArrow'}}</a>
+                                                
+                                        <td class="right_align headerSort profileDesc" data-sortcriteria="profileDesc">{{pageLabelMap 'ProfileDesc'}}
+                                               <a href="javascript:void(0);" onclick="SortTable('profileDesc','asc')" class="descSort orderSortControl" data-sortcriteria="profileDesc" data-sortdir="Desc">{{pageLabelMap 'CommonElements_DownArrow'}}</a>
+                                                <a href="javascript:void(0);" onclick="SortTable('profileDesc','desc')" class="ascSort orderSortControl " data-sortcriteria="profileDesc" data-sortdir="Asc">{{pageLabelMap 'CommonElements_UpArrow'}}</a>
+                                        </td>
+                                        <td class="right_align headerSort Exp_Date" data-sortcriteria="Exp_Date">{{pageLabelMap 'Exp_Date'}}
+                                               <a href="javascript:void(0);" onclick="SortTable('expDate','asc')" class="descSort orderSortControl" data-sortcriteria="Exp_Date" data-sortdir="Desc">{{pageLabelMap 'CommonElements_DownArrow'}}</a>
+                                                <a href="javascript:void(0);" onclick="SortTable('expDate','desc')" class="ascSort orderSortControl " data-sortcriteria="Exp_Date" data-sortdir="Asc">{{pageLabelMap 'CommonElements_UpArrow'}}</a>
+                                        </td>
+                                        <td class="right_align headerSort Exp_Date" data-sortcriteria="Disposer_Name">{{pageLabelMap 'Profile_disposer_name'}}
+                                               <a href="javascript:void(0);" onclick="SortTable('disposer','asc')" class="descSort orderSortControl" data-sortcriteria="Exp_Date" data-sortdir="Desc">{{pageLabelMap 'CommonElements_DownArrow'}}</a>
+                                                <a href="javascript:void(0);" onclick="SortTable('disposer','desc')" class="ascSort orderSortControl " data-sortcriteria="Exp_Date" data-sortdir="Asc">{{pageLabelMap 'CommonElements_UpArrow'}}</a>
+                                        </td>
+                        </tr> 
+                        <apex:repeat value="{!lstWrapprofile}" var="profile">
+                            <tr  class="odd myAccOrderRows myNexeoOrders">
+                                <td class="right_align"><a href="#" onclick="OpenProfilePage({!profile.strProfileId})" target="_blank">{!profile.strPName}</a></td>
+                                        
+                                <td class="right_align">{!profile.strPDesc}</td>
+                                <td class="right_align"><apex:outputText value="{0,date,dd/MM/yyyy}"> <apex:param value="{!profile.expDate}" /> </apex:outputText> 
+                                </td>
+                                <td class="right_align">{!profile.strDisposerName }</td>
+                            </tr>   
+                        </apex:repeat>      
+                    </table>
+                </div>
+               <br/> <span Class="{!IF(lstWrapprofile.size=0,'displayBlock','displayNone')}">{{pageLabelMap 'No data Available'}} </span>
+            </script>
+            <script >
+                function SortTable(val,order)
+                {
+                   // alert(val);
+                   // alert(order);
+                    if(val =='profile')
+                    {
+                        if(order=='asc')
+                        {
+                            sortTableAsc(0)
+                        }
+                        else if(order=='desc')
+                        {
+                            sortTableDesc(0)        
+                        }
+                    }
+                    if(val =='profileDesc')
+                    {
+                        if(order=='asc')
+                        {
+                            sortTableAsc(1)
+                        }
+                        else if(order=='desc')
+                        {
+                            sortTableDesc(1)        
+                        }
+                    }
+                    if(val =='expDate')
+                    {
+                        if(order=='asc')
+                        {
+                            //sortTableAsc(2)
+                           sortByDate(2);
+                        }
+                        else if(order=='desc')
+                        {
+                            //sortTableDesc(2)
+                            sortByDateDesc(2);     
+                        }
+                    }
+                    if(val =='disposer')
+                    {
+                        if(order=='asc')
+                        {
+                            sortTableAsc(3)
+                        }
+                        else if(order=='desc')
+                        {
+                            sortTableDesc(3)        
+                        }
+                    }
+                }
+                function sortTableAsc(col) 
+                {
+                  var table, rows, switching, i, x, y, shouldSwitch;
+                  table = document.getElementById("desktopTable");
+                  switching = true;
+                  /*Make a loop that will continue until
+                  no switching has been done:*/
+                  while (switching) {
+                    //start by saying: no switching is done:
+                    switching = false;
+                    rows = table.getElementsByTagName("TR");
+                    /*Loop through all table rows (except the
+                    first, which contains table headers):*/
+                    for (i = 1; i < (rows.length - 1); i++) {
+                      //start by saying there should be no switching:
+                      shouldSwitch = false;
+                      /*Get the two elements you want to compare,
+                      one from current row and one from the next:*/
+                      x = rows[i].getElementsByTagName("TD")[col];
+                      y = rows[i + 1].getElementsByTagName("TD")[col];
+                      //check if the two rows should switch place:
+                      if (x.innerHTML.toLowerCase() > y.innerHTML.toLowerCase()) {
+                        //if so, mark as a switch and break the loop:
+                        shouldSwitch= true;
+                        break;
+                      }
+                    }
+                    if (shouldSwitch) {
+                      /*If a switch has been marked, make the switch
+                      and mark that a switch has been done:*/
+                      rows[i].parentNode.insertBefore(rows[i + 1], rows[i]);
+                      switching = true;
+                    }
+                  }
+                }
+                function sortTableDesc(col) 
+                {
+                  var table, rows, switching, i, x, y, shouldSwitch;
+                  table = document.getElementById("desktopTable");
+                  switching = true;
+                  /*Make a loop that will continue until
+                  no switching has been done:*/
+                  while (switching) {
+                    //start by saying: no switching is done:
+                    switching = false;
+                    rows = table.getElementsByTagName("TR");
+                    /*Loop through all table rows (except the
+                    first, which contains table headers):*/
+                    for (i = 1; i < (rows.length - 1); i++) {
+                      //start by saying there should be no switching:
+                      shouldSwitch = false;
+                      /*Get the two elements you want to compare,
+                      one from current row and one from the next:*/
+                      x = rows[i].getElementsByTagName("TD")[col];
+                      y = rows[i + 1].getElementsByTagName("TD")[col];
+                      //check if the two rows should switch place:
+                      if (x.innerHTML.toLowerCase() < y.innerHTML.toLowerCase()) {
+                        //if so, mark as a switch and break the loop:
+                        shouldSwitch= true;
+                        break;
+                      }
+                    }
+                    if (shouldSwitch) {
+                      /*If a switch has been marked, make the switch
+                      and mark that a switch has been done:*/
+                      rows[i].parentNode.insertBefore(rows[i + 1], rows[i]);
+                      switching = true;
+                    }
+                  }
+                }
+                function sortByDate(col) 
+                {
+                    var table, rows, switching, i, x, y, shouldSwitch;
+                  table = document.getElementById("desktopTable");
+                  switching = true;
+                  /*Make a loop that will continue until
+                  no switching has been done:*/
+                  while (switching) {
+                    //start by saying: no switching is done:
+                    switching = false;
+                    rows = table.getElementsByTagName("TR");
+                    /*Loop through all table rows (except the
+                    first, which contains table headers):*/
+                    for (i = 1; i < (rows.length - 1); i++) {
+                      //start by saying there should be no switching:
+                      shouldSwitch = false;
+                      /*Get the two elements you want to compare,
+                      one from current row and one from the next:*/
+                      x = rows[i].getElementsByTagName("TD")[col];
+                      y = rows[i + 1].getElementsByTagName("TD")[col];
+                      //check if the two rows should switch place:
+                      var a = parseInt(convertDate(x.innerHTML.toLowerCase()));
+                      var b= parseInt(convertDate(y.innerHTML.toLowerCase()));
+                      //alert('a=='+a);
+                      //alert('b=='+b);
+                      if (a > b) {
+                        //if so, mark as a switch and break the loop:
+                        shouldSwitch= true;
+                        break;
+                      }
+                    }
+                    if (shouldSwitch) {
+                      /*If a switch has been marked, make the switch
+                      and mark that a switch has been done:*/
+                      rows[i].parentNode.insertBefore(rows[i + 1], rows[i]);
+                      switching = true;
+                    }
+                  } 
+                  
+                }
+                function sortByDateDesc(col) 
+                {
+                    var table, rows, switching, i, x, y, shouldSwitch;
+                  table = document.getElementById("desktopTable");
+                  switching = true;
+                  /*Make a loop that will continue until
+                  no switching has been done:*/
+                  while (switching) {
+                    //start by saying: no switching is done:
+                    switching = false;
+                    rows = table.getElementsByTagName("TR");
+                    /*Loop through all table rows (except the
+                    first, which contains table headers):*/
+                    for (i = 1; i < (rows.length - 1); i++) {
+                      //start by saying there should be no switching:
+                      shouldSwitch = false;
+                      /*Get the two elements you want to compare,
+                      one from current row and one from the next:*/
+                      x = rows[i].getElementsByTagName("TD")[col];
+                      y = rows[i + 1].getElementsByTagName("TD")[col];
+                      //check if the two rows should switch place:
+                      var a = parseInt(convertDate(x.innerHTML.toLowerCase()));
+                      var b= parseInt(convertDate(y.innerHTML.toLowerCase()));
+                      //alert('a=='+a);
+                      //alert('b=='+b);
+                      if (a < b) {
+                        //if so, mark as a switch and break the loop:
+                        shouldSwitch= true;
+                        break;
+                      }
+                    }
+                    if (shouldSwitch) {
+                      /*If a switch has been marked, make the switch
+                      and mark that a switch has been done:*/
+                      rows[i].parentNode.insertBefore(rows[i + 1], rows[i]);
+                      switching = true;
+                    }
+                  } 
+                  
+                }
+                function convertDate(d) {
+                //alert(d);
+                  var p = d.split("/");
+                  var total = p[2]+p[1]+p[0];
+                  return total ;
+                }
+                function ClearTable()
+                {
+                    
+                    var counter=0;
+                    $( "#desktopTable tbody tr" ).each( function(){
+                       if(counter > 0 )
+                       {
+                            this.parentNode.removeChild( this ); 
+                       }
+                       counter++;
+                    }); 
+                }
+                function AddRow()
+                {
+                    var startCount = (parseInt(currentPageCounter)*parseInt(pageSize))+1;
+                    var EndCount = parseInt(startCount)+parseInt(pageSize);
+                    
+                    if(EndCount>rows.length)
+                    {
+                        EndCount = rows.length;
+                    }
+                    for(var i=startCount;i<EndCount;i++)
+                    {
+                        $("#desktopTable").append(rows[i]);
+                    }
+                    
+                    if(startCount == 1)
+                    {
+                        $(".prevPage").addClass('disabled').removeAttr("href");
+                        $(".FirstPage").addClass('disabled').removeAttr("href");
+                    }
+                    var count = (rows.length) ;
+                    if(EndCount == count)
+                    {
+                        $(".NextPage").addClass('disabled').removeAttr("href");
+                        $(".LastPage").addClass('disabled').removeAttr("href");
+                    }
+                    setMessage(startCount,EndCount);
+                }
+                function setMessage(st,en)
+                {
+                    $(".currentPage").text( st);
+                    $(".currentPage1").text( (en-1));
+                    $(".currentPage2").text((parseInt(rows.length)-1));
+                }
+                
+                function OnChangeSize(size)
+                {
+                    pageSize=size;
+                    currentPageCounter=0;
+                    ClearTable();
+                    AddRow();
+                }
+                var currentPageCounter =0;
+                var pageSize =10;
+                var rows;
+                jQuery(function($){
+                    $(document).ready(function() 
+                    {   
+                        rows = $("#desktopTable tbody tr" );
+                        ClearTable();
+                        AddRow();
+                        $(".FirstPage").addClass('disabled').removeAttr("href");
+                        $(".prevPage").addClass('disabled').removeAttr("href");
+                        $(".FirstPage").click(function(){
+                            if($(".FirstPage").hasClass("disabled") == false)
+                            {
+                                currentPageCounter=0;
+                                ClearTable();
+                                AddRow();
+                                $(".prevPage").addClass('disabled').removeAttr("href");
+                                
+                                if($(".NextPage").hasClass("disabled") == true)
+                                    $(".NextPage").removeClass("disabled").attr("href", "#"); 
+                                if($(".LastPage").hasClass("disabled") == true)
+                                    $(".LastPage").removeClass("disabled").attr("href", "#");
+                            }
+                        });
+                        $(".prevPage").click(function(){
+                            if($(".prevPage").hasClass("disabled") == false)
+                            {
+                                currentPageCounter--;
+                                ClearTable();
+                                AddRow();
+
+                                if($(".NextPage").hasClass("disabled") == true)
+                                    $(".NextPage").removeClass("disabled").attr("href", "#"); 
+                                if($(".LastPage").hasClass("disabled") == true)
+                                    $(".LastPage").removeClass("disabled").attr("href", "#");
+                            }
+                        });
+                        $(".NextPage").click(function(){
+                            if($(".NextPage").hasClass("disabled") == false)
+                            {
+                                currentPageCounter++;
+                                ClearTable();
+                                AddRow();
+                                $(".FirstPage").removeClass("disabled").attr("href", "#"); 
+                                $(".prevPage").removeClass("disabled").attr("href", "#"); 
+                            }
+                        
+                        });
+                        $(".LastPage").click(function(){
+                            if($(".LastPage").hasClass("disabled") == false)
+                            {
+                                currentPageCounter = parseInt(rows.length/pageSize);
+                                
+                                ClearTable();
+                                AddRow();
+                                $(".FirstPage").removeClass("disabled").attr("href", "#"); 
+                                $(".prevPage").removeClass("disabled").attr("href", "#"); 
+                                $(".NextPage").addClass('disabled').removeAttr("href"); 
+                            }
+                        });
+                        
+                        
+                    });
+                    
+                    
+                    CCRZ.util.createView({
+                        desktop: {target:'MyOrdersESDskTarget', template:'Profile-Desktop-Template'},
+                        phone: {target:'phone_center_column', template:'Profile-Mobile-Template'},
+                    });
+    
+                });
+            </script>
+            <div class="MyOrdersESDskTarget"></div>
+        </apex:component>

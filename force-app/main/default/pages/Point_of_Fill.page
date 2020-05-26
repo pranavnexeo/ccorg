@@ -1,0 +1,468 @@
+<apex:page renderAs="PDF" standardController="Quality_Assurance__c">
+<html>
+    <head>
+        <title></title>
+        <style>
+            @page
+            {
+                size: landscape;
+            }
+       </style> 
+    </head>
+    <body>
+        <p>
+            <apex:image url="{!$Resource.Nexeo_Logo}"  /><span style="color: rgb(0, 0, 205);"><span style="font-size: 22px;"><strong>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; &nbsp;&nbsp; Quality Assurance</strong></span></span></p>
+               
+        <hr />
+         
+        <table align="center"  style="width: 965px;  font-size: 12px;">
+            <tbody>
+                <tr>
+                    <td style="width: 500px;">
+                        <span style="font-size: 20px;"><strong>Point to Fill&nbsp; </strong></span></td>                    
+                        
+                    <td>
+                        
+                            <span style="color: rgb(0, 0, 205);"><span style="font-size: 20px;"><span style="font-size: 14px;">Material Code:</span></span></span>{!Quality_Assurance__c.Material_Name__r.Material_Number__c }</td> 
+                       </tr>
+                       <tr> 
+                       <td></td>
+                       <td>
+                            <span style="color: rgb(0, 0, 205);"><span style="font-size: 20px;"><span style="font-size: 14px;">Base Material Code:</span></span></span>{!Quality_Assurance__c.Material_Name__r.Material_Base_Code__c}</td>
+                       </tr>
+                       
+                       <tr><td></td>
+                        <td>
+                            <span style="color: rgb(0, 0, 205);"><span style="font-size: 20px;"><span style="font-size: 14px;">SAP Material Desc:</span></span></span>{!Quality_Assurance__c.Material_Name__r.Name}
+                    </td>
+                </tr>
+            </tbody>
+        </table>
+        
+                   
+        
+              <table align="center" cellpadding="1" cellspacing="1" style="width: 965px;  font-size: 12px;">
+            <tbody>
+                <tr>
+                    <td style="width: 450px;">
+            <span style="font-size: 20px;width:350;"><span style="font-size: 14px;"><span style="color: rgb(0, 0, 205);">Description</span>:</span></span>{!Quality_Assurance__c.QA_Description__c}
+            </td>
+            <td>&nbsp;</td>
+            </tr>
+            </tbody>
+            </table>
+             
+                           <table align="center" cellpadding="1" cellspacing="1" style="width: 950px; font-size: 12px;">
+            <tbody>
+                <tr>
+                    <td style="width:315px;">
+                        <span style="color: rgb(0, 0, 205);"><span style="font-size: 20px;"><span style="font-size: 14px;">Visual,Color: </span></span></span>{!Quality_Assurance__c.Visual_Color__c}</td>
+                    <td style="width:315px;">
+                        <span style="color: rgb(0, 0, 205);"><span style="font-size: 20px;"><span style="font-size: 14px;">G.C Matches Std:</span></span></span>{!Quality_Assurance__c.Gas_Chromatograph_matches_standard__c}</td>
+                    <td style="width:315px;">
+                        <span style="font-size: 20px;"><span style="font-size: 14px;"><span style="color: rgb(0, 0, 205);">Visual Appearance:</span></span></span>{!Quality_Assurance__c.Visual_Appearance__c}<span style="font-size: 20px;"><span style="font-size: 14px;"><span style="color: rgb(0, 0, 205);">&nbsp;Particles</span></span></span></td>
+                </tr>
+                <tr>
+                    <td>
+                        <span style="color: rgb(0, 0, 205);"><span style="font-size: 20px;"><span style="font-size: 14px;">Water Solubility:&nbsp; </span></span></span>{!Quality_Assurance__c.Water_Solubility__c}</td>
+                    <td>
+                        <span style="font-size: 20px;"><span style="font-size: 14px;"><span style="color: rgb(0, 0, 205);">Water% by wt:</span></span></span>{!Quality_Assurance__c.Water_by_wt_min__c}<span style="font-size: 20px;"><span style="font-size: 14px;"> <span style="color: rgb(0, 0, 205);">min</span>. </span></span>{!Quality_Assurance__c.Water_by_wt_max__c}<span style="font-size: 20px;"><span style="font-size: 14px;"> <span style="color: rgb(0, 0, 205);">max</span>. &nbsp; </span></span></td>
+                    <td>
+                        <span style="font-size: 20px;"><span style="font-size: 14px;"><span style="color: rgb(0, 0, 205);">Specific Gravity,20<sup>o</sup>C</span>:{!Quality_Assurance__c.Specific_Gravity_20_C_min__c}<span style="color: rgb(0, 0, 205);">min</span>.{!Quality_Assurance__c.Specific_Gravity_20_C_max__c}<span style="color: rgb(0, 0, 205);">max </span></span></span></td>
+                </tr>
+            </tbody>
+        </table>
+        
+               <table align="center" border="1" cellpadding="0" cellspacing="0" style="width: 925px;font-size: 12px;">
+            <thead>
+                  <tr style="height: 25px;" align="center">
+                    <td scope="col" style="width: 65px;">
+                        <span style="color: rgb(0, 0, 205);">Date</span></td >                               
+                    <td scope="col" style="width: 85px;">
+                        <span style="color: rgb(0, 0, 205);">Nexeo Batch#</span></td >                        
+                    <td scope="col" style="width: 85px;">
+                        <span style="color: rgb(0, 0, 205);">Tested By</span></td >
+                    <td scope="col" style="width: 65px;">
+                        <span style="color: rgb(0, 0, 205);">Sequence#</span></td >
+                    <td scope="col" style="width: 65px;">
+                        <span style="color: rgb(0, 0, 205);">Visual, Color</span></td >
+                    <td scope="col" style="width: 65px;">
+                        <span style="color: rgb(0, 0, 205);">Visual Appearance</span></td >                    
+                    <td scope="col" style="width: 65px;">
+                        <span style="color: rgb(0, 0, 205);">Water Solubility</span></td >
+                    <td scope="col" style="width: 65px;">
+                        <span style="color: rgb(0, 0, 205);">Water %by wt</span></td >
+                    <td scope="col" style="width: 65px;">
+                        <span style="color: rgb(0, 0, 205);">GC Matches Standard</span></td >
+                    <td scope="col" style="width: 65px;">
+                        <span style="color: rgb(0, 0, 205);">Specific Gravity</span></td >    
+                    <td scope="col" style="width: 65px;">
+                        <span style="color: rgb(0, 0, 205);">Passes QC Tests</span></td >
+                </tr>
+            </thead>
+            <tbody>
+                  <tr style="height: 25px;" align="center">
+                    <td>
+                        &nbsp;</td>
+                    <td>
+                        &nbsp;</td>
+                    <td>
+                        &nbsp;</td>
+                    <td>
+                        &nbsp;</td>
+                    <td>
+                        {!Quality_Assurance__c.Test_Visual_Color__c}</td>
+                    <td>
+                        {!Quality_Assurance__c.Test_Visual_appearance__c}</td>
+                    <td>
+                        {!Quality_Assurance__c.Test_Water_Solubility__c}</td>
+                    <td>
+                        {!Quality_Assurance__c.Test_Water_by_wt__c}</td>
+                    <td>
+                        {!Quality_Assurance__c.Test_GC_Matches_Standard__c}</td>                        
+                    <td>
+                        {!Quality_Assurance__c.Test_Specific_Gravity__c}</td>
+                    <td>
+                        &nbsp;</td>
+                </tr>
+                  <tr style="height: 25px;" align="center">
+                    <td>
+                        &nbsp;</td>
+                    <td>
+                        &nbsp;</td>
+                    <td>
+                        &nbsp;</td>
+                    <td>
+                        &nbsp;</td>
+                    <td>
+                        {!Quality_Assurance__c.Test_Visual_Color__c}</td>
+                    <td>
+                        {!Quality_Assurance__c.Test_Visual_appearance__c}</td>
+                                       
+                    <td>
+                        {!Quality_Assurance__c.Test_Water_Solubility__c}</td>
+                    <td>
+                        {!Quality_Assurance__c.Test_Water_by_wt__c}</td>
+                    <td>
+                        {!Quality_Assurance__c.Test_GC_Matches_Standard__c}</td>
+                        
+                    <td>
+                        {!Quality_Assurance__c.Test_Specific_Gravity__c}</td>
+                    <td>
+                        &nbsp;</td>
+                </tr>
+                  <tr style="height: 25px;" align="center">
+                    <td>
+                        &nbsp;</td>
+                    <td>
+                        &nbsp;</td>
+                    <td>
+                        &nbsp;</td>
+                    <td>
+                        &nbsp;</td>
+                    <td>
+                        {!Quality_Assurance__c.Test_Visual_Color__c}</td>
+                    <td>
+                        {!Quality_Assurance__c.Test_Visual_appearance__c}</td>
+                    <td>
+                        {!Quality_Assurance__c.Test_Water_Solubility__c}</td>
+                    <td>
+                        {!Quality_Assurance__c.Test_Water_by_wt__c}</td>
+                    <td>
+                        {!Quality_Assurance__c.Test_GC_Matches_Standard__c}</td>
+                    <td>
+                        {!Quality_Assurance__c.Test_Specific_Gravity__c}</td>
+                    <td>
+                        &nbsp;</td>
+                </tr>
+                  <tr style="height: 25px;" align="center">
+                    <td>
+                        &nbsp;</td>
+                    <td>
+                        &nbsp;</td>
+                    <td>
+                        &nbsp;</td>
+                    <td>
+                        &nbsp;</td>
+                    <td>
+                        {!Quality_Assurance__c.Test_Visual_Color__c}</td>
+                    <td>
+                        {!Quality_Assurance__c.Test_Visual_appearance__c}</td>
+                    <td>
+                        {!Quality_Assurance__c.Test_Water_Solubility__c}</td>
+                    <td>
+                        {!Quality_Assurance__c.Test_Water_by_wt__c}</td>
+                    <td>
+                        {!Quality_Assurance__c.Test_GC_Matches_Standard__c}</td>
+                    <td>
+                        {!Quality_Assurance__c.Test_Specific_Gravity__c}</td>
+                    <td>
+                        &nbsp;</td>
+                </tr>
+                  <tr style="height: 25px;" align="center">
+                    <td>
+                        &nbsp;</td>
+                    <td>
+                        &nbsp;</td>
+                    <td>
+                        &nbsp;</td>
+                    <td>
+                        &nbsp;</td>
+                    <td>
+                        {!Quality_Assurance__c.Test_Visual_Color__c}</td>
+                    <td>
+                        {!Quality_Assurance__c.Test_Visual_appearance__c}</td>
+                    <td>
+                        {!Quality_Assurance__c.Test_Water_Solubility__c}</td>
+                    <td>
+                        {!Quality_Assurance__c.Test_Water_by_wt__c}</td>
+                    <td>
+                        {!Quality_Assurance__c.Test_GC_Matches_Standard__c}</td>
+                    <td>
+                        {!Quality_Assurance__c.Test_Specific_Gravity__c}</td>
+                    <td>
+                        &nbsp;</td>
+                </tr>
+                  <tr style="height: 25px;" align="center">
+                    <td>
+                        &nbsp;</td>
+                    <td>
+                        &nbsp;</td>
+                    <td>
+                        &nbsp;</td>
+                    <td>
+                        &nbsp;</td>
+                    <td>
+                        {!Quality_Assurance__c.Test_Visual_Color__c}</td>
+                    <td>
+                        {!Quality_Assurance__c.Test_Visual_appearance__c}</td>
+                    <td>
+                        {!Quality_Assurance__c.Test_Water_Solubility__c}</td>
+                    <td>
+                        {!Quality_Assurance__c.Test_Water_by_wt__c}</td>
+                    <td>
+                        {!Quality_Assurance__c.Test_GC_Matches_Standard__c}</td>
+                    <td>
+                        {!Quality_Assurance__c.Test_Specific_Gravity__c}</td>
+                    <td>
+                        &nbsp;</td>
+                </tr>
+                  <tr style="height: 25px;" align="center">
+                    <td>
+                        &nbsp;</td>
+                    <td>
+                        &nbsp;</td>
+                    <td>
+                        &nbsp;</td>
+                    <td>
+                        &nbsp;</td>
+                    <td>
+                        {!Quality_Assurance__c.Test_Visual_Color__c}</td>
+                    <td>
+                        {!Quality_Assurance__c.Test_Visual_appearance__c}</td>
+                    <td>
+                        {!Quality_Assurance__c.Test_Water_Solubility__c}</td>
+                    <td>
+                        {!Quality_Assurance__c.Test_Water_by_wt__c}</td>
+                    <td>
+                        {!Quality_Assurance__c.Test_GC_Matches_Standard__c}</td>
+                    <td>
+                        {!Quality_Assurance__c.Test_Specific_Gravity__c}</td>
+                    <td>
+                        &nbsp;</td>
+                </tr>
+                  <tr style="height: 25px;" align="center">
+                    <td>
+                        &nbsp;</td>
+                    <td>
+                        &nbsp;</td>
+                    <td>
+                        &nbsp;</td>
+                    <td>
+                        &nbsp;</td>
+                    <td>
+                        {!Quality_Assurance__c.Test_Visual_Color__c}</td>
+                    <td>
+                        {!Quality_Assurance__c.Test_Visual_appearance__c}</td>
+                    <td>
+                        {!Quality_Assurance__c.Test_Water_Solubility__c}</td>
+                    <td>
+                        {!Quality_Assurance__c.Test_Water_by_wt__c}</td>
+                    <td>
+                        {!Quality_Assurance__c.Test_GC_Matches_Standard__c}</td>
+                    <td>
+                        {!Quality_Assurance__c.Test_Specific_Gravity__c}</td>
+                    <td>
+                        &nbsp;</td>
+                </tr>
+                  <tr style="height: 25px;" align="center">
+                    <td>
+                        &nbsp;</td>
+                    <td>
+                        &nbsp;</td>
+                    <td>
+                        &nbsp;</td>
+                    <td>
+                        &nbsp;</td>
+                    <td>
+                        {!Quality_Assurance__c.Test_Visual_Color__c}</td>
+                    <td>
+                        {!Quality_Assurance__c.Test_Visual_appearance__c}</td>
+                    <td>
+                        {!Quality_Assurance__c.Test_Water_Solubility__c}</td>
+                    <td>
+                        {!Quality_Assurance__c.Test_Water_by_wt__c}</td>
+                    <td>
+                        {!Quality_Assurance__c.Test_GC_Matches_Standard__c}</td>
+                    <td>
+                        {!Quality_Assurance__c.Test_Specific_Gravity__c}</td>
+                    <td>
+                        &nbsp;</td>
+                </tr>
+                  <tr style="height: 25px;" align="center">
+                    <td>
+                        &nbsp;</td>
+                    <td>
+                        &nbsp;</td>
+                    <td>
+                        &nbsp;</td>
+                    <td>
+                        &nbsp;</td>
+                    <td>
+                        {!Quality_Assurance__c.Test_Visual_Color__c}</td>
+                    <td>
+                        {!Quality_Assurance__c.Test_Visual_appearance__c}</td>
+                    <td>
+                        {!Quality_Assurance__c.Test_Water_Solubility__c}</td>
+                    <td>
+                        {!Quality_Assurance__c.Test_Water_by_wt__c}</td>
+                    <td>
+                        {!Quality_Assurance__c.Test_GC_Matches_Standard__c}</td>
+                    <td>
+                        {!Quality_Assurance__c.Test_Specific_Gravity__c}</td>
+                    <td>
+                        &nbsp;</td>
+                </tr>
+                  <tr style="height: 25px;" align="center">
+                    <td>
+                        &nbsp;</td>
+                    <td>
+                        &nbsp;</td>
+                    <td>
+                        &nbsp;</td>
+                    <td>
+                        &nbsp;</td>
+                    <td>
+                        {!Quality_Assurance__c.Test_Visual_Color__c}</td>
+                    <td>
+                        {!Quality_Assurance__c.Test_Visual_appearance__c}</td>
+                    <td>
+                        {!Quality_Assurance__c.Test_Water_Solubility__c}</td>
+                    <td>
+                        {!Quality_Assurance__c.Test_Water_by_wt__c}</td>
+                    <td>
+                        {!Quality_Assurance__c.Test_GC_Matches_Standard__c}</td>
+                    <td>
+                        {!Quality_Assurance__c.Test_Specific_Gravity__c}</td>
+                    <td>
+                        &nbsp;</td>
+                </tr>
+                  <tr style="height: 25px;" align="center">
+                    <td>
+                        &nbsp;</td>
+                    <td>
+                        &nbsp;</td>
+                    <td>
+                        &nbsp;</td>
+                    <td>
+                        &nbsp;</td>
+                    <td>
+                        {!Quality_Assurance__c.Test_Visual_Color__c}</td>
+                    <td>
+                        {!Quality_Assurance__c.Test_Visual_appearance__c}</td>
+                        
+                    <td>
+                        {!Quality_Assurance__c.Test_Water_Solubility__c}</td>
+                    <td>
+                        {!Quality_Assurance__c.Test_Water_by_wt__c}</td>
+                    <td>
+                        {!Quality_Assurance__c.Test_GC_Matches_Standard__c}</td>
+                    <td>
+                        {!Quality_Assurance__c.Test_Specific_Gravity__c}</td>
+                    <td>
+                        &nbsp;</td>
+                </tr>
+                  <tr style="height: 25px;" align="center">
+                    <td>
+                        &nbsp;</td>
+                    <td>
+                        &nbsp;</td>
+                    <td>
+                        &nbsp;</td>
+                    <td>
+                        &nbsp;</td>
+                    <td>
+                        {!Quality_Assurance__c.Test_Visual_Color__c}</td>
+                    <td>
+                        {!Quality_Assurance__c.Test_Visual_appearance__c}</td>
+                    <td>
+                        {!Quality_Assurance__c.Test_Water_Solubility__c}</td>
+                    <td>
+                        {!Quality_Assurance__c.Test_Water_by_wt__c}</td>
+                    <td>
+                        {!Quality_Assurance__c.Test_GC_Matches_Standard__c}</td>
+                    <td>
+                        {!Quality_Assurance__c.Test_Specific_Gravity__c}</td>
+                    <td>
+                        &nbsp;</td>
+                </tr>
+                  <tr style="height: 25px;" align="center">
+                    <td>
+                        &nbsp;</td>
+                    <td>
+                        &nbsp;</td>
+                   <td>
+                        &nbsp;</td>
+                    <td>
+                        &nbsp;</td>
+                    <td>
+                        {!Quality_Assurance__c.Test_Visual_Color__c}</td>
+                    <td>
+                        {!Quality_Assurance__c.Test_Visual_appearance__c}</td>
+                                       <td>
+                        {!Quality_Assurance__c.Test_Water_Solubility__c}</td>
+                    <td>
+                        {!Quality_Assurance__c.Test_Water_by_wt__c}</td>
+                    <td>
+                        {!Quality_Assurance__c.Test_GC_Matches_Standard__c}</td>
+                    <td>
+                        {!Quality_Assurance__c.Test_Specific_Gravity__c}</td>
+                    <td>
+                        &nbsp;</td>
+                </tr>
+            </tbody>
+        </table>
+        <hr />
+        <p style="font-size: 10px;">
+            <span style="color: rgb(0, 0, 205);">N/A = Not Applicable</span></p>
+        <table align="center" cellpadding="1" cellspacing="1" style="width: 965px; font-size: 11px;">
+            <tbody>
+                <tr>
+                    <td>
+                        <span style="color: rgb(0, 0, 205);"><span style="font-size: 11px;"><span style="font-size: 11px;">QA Form No:&nbsp;</span></span></span>{!Quality_Assurance__c.Material_Name__r.Material_Base_Code__c}</td>
+                    <td>
+                        <span style="color: rgb(0, 0, 205);"><span style="font-size: 11px;"><span style="font-size: 11px;"> Approved By:&nbsp;</span></span></span> Technical Service</td>
+                    <td>
+                        <span style="color: rgb(0, 0, 205);"><span style="font-size: 11px;"><span style="font-size: 11px;">Approved Date:&nbsp;</span></span></span>
+                        <apex:outputText value="{0,date,MM'/'dd'/'yyyy}">
+                            <apex:param value="{!Quality_Assurance__c.Approval_Date__c}" /> 
+                        </apex:outputText>
+                    </td>
+                </tr>
+            </tbody>
+        </table>
+        
+    </body>
+</html>
+
+</apex:page>

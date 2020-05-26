@@ -1,0 +1,637 @@
+<apex:page controller="PriceSupportMassApproveRejectController" sidebar="false" id="pg">
+   
+
+    <apex:pageMessages id="errorMessages">
+    </apex:pageMessages>
+    <style>
+.activeTab {
+    background-color: #236FBD;
+    color: white;
+    background-image: none
+}
+
+.inactiveTab {
+    background-color: lightgrey;
+    color: black;
+    background-image: none
+}
+</style>
+     <script src="/soap/ajax/24.0/connection.js" type="text/javascript"></script>
+    <script> var arrData = []; </script>
+    <script type="text/javascript">
+    var __sfdcSessionId = '{!GETSESSIONID()}';
+ </script>
+
+ <script>
+ function doSearch(){
+        
+        
+        searchServer(
+         
+            document.getElementById("pg:frm:customerName").value
+         
+          
+         );
+          
+         return false;
+
+      }
+
+
+function onSuccess(){
+    
+    alert('Processing Completed.Please Referesh to see the updated list.');
+    //window.location.reload();
+    
+}
+
+function getRecords(){
+    //alert('getRecords');
+    arrData.length=0;
+    loadRecords();
+    return false;
+}
+
+function doNexeoApproval(){
+    if(arrData.length==0){
+        alert('Please select a record');
+    
+    }else{
+        nexeoApproval();
+    }
+    return false;
+}
+
+function doNexeoRejection(){
+    if(arrData.length==0){
+        alert('Please select a record');
+    
+    }else if(document.getElementById('pg:frm:nexeoBlk:nexCommnt:nexCommntSection:nexeoComments').value==''){
+        alert('Please enter comments');
+    }else{
+        nexeoRejection();
+    }
+    return false;
+}
+
+function doSupplierApproval(){
+    if(arrData.length==0){
+        alert('Please select a record');
+    
+    }else{
+        supplierApproval();
+    }
+    
+    return false;
+
+}
+
+function doSupplierRejection(){
+    if(arrData.length==0){
+        alert('Please select a record');
+    }else if(document.getElementById('pg:frm:suppTab:suppCommnt:suppCommntSection:supplierComments').value==''){
+        alert('Please enter comments');
+    }else{
+        supplierRejection();
+    }
+    return false;
+
+}
+
+function doConditionalApproval(){
+    
+    if(arrData.length==0){
+    
+        alert('Please select a record');
+    
+    }else if(arrData.length>1){
+        alert('You can do conditional approval only for one record at a time.Please select only one record.');
+    }else{  
+            window.location='/apex/PriceSupportConditionalApproval?id='+arrData[0]+'&retURL=/apex/PriceSupportMassApproveReject';
+    }
+    
+    return false;
+
+}
+
+function editSuppRefno(){
+    
+    if(arrData.length==0){
+    
+        alert('Please select a record');
+    
+    }else if(arrData.length>1){
+        alert('You can Edit Supplier Reference Number only for one record at a time.Please select only one record.');
+    }else{  
+            window.location='/apex/PriceSupportSupplierEditPage?id='+arrData[0]+'&retURL=/apex/PriceSupportMassApproveReject';
+    }
+    
+    return false;
+
+}
+
+
+function addData(comp,id){
+      
+        if(comp.checked==true){
+                //alert('checkbox is checked');
+                arrData.push(id);
+            }else if(comp.checked==false){
+                //alert('checkbox is unchecked');
+                var indx=arrData.indexOf(id);
+                //alert('index is'+indx);
+                if(indx!=-1){
+                    arrData.splice(indx,1);
+                }
+            }
+            //alert(arrData);   
+        
+}
+
+</script>
+
+
+    <script>
+    //This prototype is provided by the Mozilla foundation and
+    //is distributed under the MIT license.
+    //http://www.ibiblio.org/pub/Linux/LICENSES/mit.license
+    
+    if (!Array.prototype.indexOf)
+    {
+        Array.prototype.indexOf = function(elt /*, from*/)
+    {
+        var len = this.length;
+    
+        var from = Number(arguments[1]) || 0;
+        from = (from < 0)
+        ? Math.ceil(from)
+        : Math.floor(from);
+    if (from < 0)
+        from += len;
+    
+    for (; from < len; from++)
+    {
+        if (from in this &&
+        this[from] === elt)
+        return from;
+    }
+        return -1;
+    };
+    }
+    
+    
+    
+  </script>
+    <apex:form id="frm">
+        
+         <apex:actionFunction name="searchServer" action="{!init}" rerender="nexeoResults,supplierResults,errorMessages" status="busyStatus">
+           <apex:param name="customerName" value="" />
+         
+         
+      </apex:actionFunction>
+      
+        <apex:actionFunction name="loadRecords" action="{!init}"
+            rerender="nexeoResults,supplierResults,errorMessages,customerName"
+            status="busyStatus">
+        
+        </apex:actionFunction>
+
+        <apex:actionFunction name="nexeoApproval" action="{!nexeoApprove}"
+            rerender="nexeoResults,errorMessages" status="busyStatus">
+        </apex:actionFunction>
+
+        <apex:actionFunction name="nexeoRejection" action="{!nexeoReject}"
+            rerender="nexeoResults,errorMessages" status="busyStatus">
+        </apex:actionFunction>
+
+        <apex:actionFunction name="supplierApproval"
+            action="{!supplierApprove}" rerender="supplierResults,errorMessages"
+            status="busyStatus">
+        </apex:actionFunction>
+
+        <apex:actionFunction name="supplierRejection"
+            action="{!supplierReject}" rerender="supplierResults,errorMessages"
+            status="busyStatus">
+        </apex:actionFunction>
+         <table cellpadding="2" cellspacing="2">
+         <tr>
+         <td style="font-weight:bold;">Customer Name<br/></td>
+        <td><apex:inputText value="{!customerName}" id="customerName" onchange="doSearch();"/>
+        
+        </td>
+        </tr>
+        </table>
+        <apex:tabpanel tabClass="activeTab" inactiveTabClass="inactiveTab" id="tab" value="{!tabInFocus}"  switchType="Ajax" >
+              
+
+            <apex:tab label="Nexeo Approvals"
+                rendered="{!$Profile.Name!='Price Support External'}"
+                id="nexeoApprvlTab" name="NexeoTab" >
+                <apex:pageblock rendered="{!isNexeoEmpty}">
+                    <apex:pageMessage summary="You have nothing to Approve."
+                        severity="Info" strength="3" />
+                </apex:pageblock>
+                <apex:pageblock rendered="{!NOT(isNexeoEmpty)}" id="nexeoBlk">
+                    <apex:pageblockbuttons >
+                        <apex:commandbutton value="Approve"
+                            onclick="return doNexeoApproval();" />
+                        <apex:commandbutton value="Reject"
+                            onclick="return doNexeoRejection();" />
+                        <apex:commandbutton value="Refresh" onclick="return getRecords();" /> 
+
+                    </apex:pageblockbuttons>
+                    <apex:pageblocksection columns="1" id="nexCommnt">
+                        <apex:pageblocksectionitem id="nexCommntSection">
+                            <apex:outputlabel value="Approval / Rejection Comments" />
+                            <apex:inputtextarea cols="150" rows="3" value="{!nexeoComments}" id="nexeoComments"/>
+                        </apex:pageblocksectionitem>
+                        <apex:pageblocktable value="{!nexeoPriceSupports}" var="p"
+                            id="nexeoResults">
+                            <apex:column headervalue="Select">
+                                <apex:inputcheckbox value="{!p.isselected}" id="nexeoSelected" onclick="addData(this,'{!p.pricesupport.id}');"/>
+                            </apex:column>
+                            <apex:column >
+                                <apex:facet name="header">
+Price Support Id
+</apex:facet>
+                                <apex:outputlink value="/{!p.pricesupport.id}" target="_blank">{!p.pricesupport.name}</apex:outputlink>
+                            </apex:column>
+                            <apex:column headervalue="Support ID"
+                                value="{!p.pricesupport.Support_ID__c}" />
+                            <apex:column headervalue="Support Type"
+                                value="{!p.pricesupport.Support_Type__c}" />
+                            <apex:column headervalue="New or Changed"
+                                value="{!p.pricesupport.New_or_Changed__c}" />
+                            <apex:column headervalue="Customer Name"
+                                value="{!p.pricesupport.Customer_Name__c}" />
+                            <apex:column headervalue="Region Code"
+                                value="{!p.pricesupport.Region_Code__c}" />    
+                            <apex:column headervalue="Supplier Name"
+                                value="{!p.pricesupport.Supplier_Name__c}" />
+                            <apex:column headervalue="Nexeo Group Name"
+                                value="{!p.pricesupport.Nexeo_Group_Name__c}" />
+                            <apex:column headervalue="Supplier Group Name"
+                                value="{!p.pricesupport.Supplier_Group_Name__c}" />
+                            <apex:column headervalue="Effective Date"
+                                value="{!p.pricesupport.Effective_Date__c}" />
+                            <apex:column headervalue="Expiration Date"
+                                value="{!p.pricesupport.Expiration_Date__c}" />
+                            <apex:column headervalue="Net Support Cost"
+                                value="{!p.pricesupport.Net_Support_Cost__c}" />
+                            <apex:column headervalue="Net Purchase Cost"
+                                value="{!p.pricesupport.Net_Purchase_Cost__c}" />
+                            <apex:column headervalue="Requested Rebate Amount"
+                                value="{!p.pricesupport.Requested_Rebate_Amount__c}" />
+                            <apex:column headervalue="Status"
+                                value="{!p.pricesupport.Status__c}" />
+                        </apex:pageblocktable>
+                    </apex:pageblocksection>
+                </apex:pageblock>
+            </apex:tab>
+            <apex:tab label="Supplier Approvals" id="supplierApprvlTab" name="SupplierTab" >
+                <apex:pageblock rendered="{!isSupplierEmpty}">
+                    <apex:pageMessage summary="You have nothing to Approve."
+                        severity="Info" strength="3" />
+                </apex:pageblock>
+                <apex:pageblock rendered="{!NOT(isSupplierEmpty)}" id="suppTab">
+
+                    <apex:pageblockbuttons >
+                        <apex:commandbutton value="Edit"
+                            onclick="return editSuppRefno();" />
+                        <apex:commandbutton value="Approve"
+                            onclick="return doSupplierApproval();" />
+                        <apex:commandbutton value="Conditionally Approve"
+                            onclick="return doConditionalApproval();" />
+                        <apex:commandbutton value="Reject"
+                            onclick="return doSupplierRejection();" />
+                        <!-- <apex:commandbutton value="Refresh" onclick="return getRecords();" />  -->
+                        <apex:ActionStatus id="busyStatus">
+                            <apex:facet name="start">
+                                <c:BusyStatusComp height="300px" width="300px"
+                                    Message="Please Wait..." />
+                            </apex:facet>
+                        </apex:ActionStatus>
+                    </apex:pageblockbuttons>
+                    <apex:pageblocksection columns="1" id="suppCommnt">
+                        <apex:pageblocksectionitem id="suppCommntSection">
+                            <apex:outputlabel value="Approval / Rejection Comments" />
+                            <apex:inputtextarea cols="150" rows="3"
+                                value="{!supplierComments}" id="supplierComments"/>
+                        </apex:pageblocksectionitem>
+                        <apex:pageblocktable value="{!supplierPriceSupports}" var="p"
+                            id="supplierResults">
+                            <apex:column headervalue="Select">
+                                <apex:inputcheckbox value="{!p.isselected}"
+                                    id="supplierSelected"
+                                    onclick="addData(this,'{!p.pricesupport.id}');" />
+                            </apex:column>
+                            
+                            <apex:column >
+                <apex:facet name="header">
+                    <apex:commandLink value="Price Support Id" action="{!toggleSort}" rerender="results,debug,supplierResults" status="busyStatus">
+                        <apex:param name="sortField" value="name" assignTo="{!sortField}"/>
+                    </apex:commandLink>
+                </apex:facet>
+                <apex:outputLink value="/{!p.pricesupport.id}"><apex:outputField value="{!p.pricesupport.name}"/></apex:outputLink>
+            </apex:column>
+                            <!--<apex:column >
+                                <apex:facet name="header">
+Price Support Id
+</apex:facet>
+                                <apex:outputlink value="/{!p.pricesupport.id}" target="_blank">{!p.pricesupport.name}</apex:outputlink>
+                            </apex:column>-->
+                             <apex:column >
+                <apex:facet name="header">
+                    <apex:commandLink value="SuppID" action="{!togglesort}" rerender="results,debug,supplierResults" status="busyStatus">
+                        <apex:param name="sortField" value="Support_ID__c" assignTo="{!sortField}"/>
+                    </apex:commandLink>
+                </apex:facet>
+                           <apex:outputField value="{!p.pricesupport.Support_ID__c}"/>
+                          </apex:column>
+                            <!--<apex:column headervalue="SuppID"
+                                value="{!p.pricesupport.Support_ID__c}" />-->
+                                <apex:column >
+                <apex:facet name="header">
+                    <apex:commandLink value="Nw/Chngd" action="{!togglesort}" rerender="results,debug,supplierResults" status="busyStatus">
+                        <apex:param name="sortField" value="New_or_Changed__c" assignTo="{!sortField}"/>
+                    </apex:commandLink>
+                </apex:facet>
+                           <apex:outputField value="{!p.pricesupport.New_or_Changed__c}"/>
+                          </apex:column>
+                            <!--<apex:column headervalue="Nw/Chngd"
+                                value="{!p.pricesupport.New_or_Changed__c}" />-->
+                                 <apex:column >
+                <apex:facet name="header">
+                    <apex:commandLink value="SuppTyp" action="{!togglesort}" rerender="results,debug,supplierResults" status="busyStatus">
+                        <apex:param name="sortField" value="Support_Type__c" assignTo="{!sortField}"/>
+                    </apex:commandLink>
+                </apex:facet>
+                           <apex:outputField value="{!p.pricesupport.Support_Type__c}"/>
+                          </apex:column>
+                            <!--<apex:column headervalue="SuppTyp"
+                                value="{!p.pricesupport.Support_Type__c}" />-->
+                                
+                               <apex:column >
+                <apex:facet name="header">
+                    <apex:commandLink value="Custmr Name" action="{!togglesort}" rerender="results,debug,supplierResults" status="busyStatus">
+                        <apex:param name="sortField" value="CustomerName_Mail__c" assignTo="{!sortField}"/>
+                    </apex:commandLink>
+                </apex:facet>
+                           <apex:outputField value="{!p.pricesupport.Customer_Name__c}"/>
+                          </apex:column>
+                            <!--<apex:column headervalue="Custmr Name"
+                                value="{!p.pricesupport.Customer_Name__c}" />-->
+                             <apex:column >
+                <apex:facet name="header">
+                    <apex:commandLink value="Region Code" action="{!togglesort}" rerender="results,debug,supplierResults" status="busyStatus">
+                        <apex:param name="sortField" value="Region_Code__c" assignTo="{!sortField}"/>
+                    </apex:commandLink>
+                </apex:facet>
+                           <apex:outputField value="{!p.pricesupport.Region_Code__c}"/>
+                          </apex:column>
+                             
+                             <apex:column >
+                <apex:facet name="header">
+                    <apex:commandLink value="Supplr Name" action="{!togglesort}" rerender="results,debug,supplierResults" status="busyStatus">
+                        <apex:param name="sortField" value="Supplier_Name__c" assignTo="{!sortField}"/>
+                    </apex:commandLink>
+                </apex:facet>
+                           <apex:outputField value="{!p.pricesupport.Supplier_Name__c}"/>
+                          </apex:column>    
+                            <!--<apex:column headervalue="Supplr Name"
+                                value="{!p.pricesupport.Supplier_Name__c}" />-->
+                                <apex:column >
+                <apex:facet name="header">
+                    <apex:commandLink value="Nexeo Grp" action="{!togglesort}" rerender="results,debug,supplierResults" status="busyStatus">
+                        <apex:param name="sortField" value="Nexeo_Group_Name__c" assignTo="{!sortField}"/>
+                    </apex:commandLink>
+                </apex:facet>
+                           <apex:outputField value="{!p.pricesupport.Nexeo_Group_Name__c}"/>
+                          </apex:column>  
+                            <!--<apex:column headervalue="Nexeo Grp"
+                                value="{!p.pricesupport.Nexeo_Group_Name__c}" />-->
+                                <apex:column >
+                <apex:facet name="header">
+                    <apex:commandLink value="Supplr Grp" action="{!togglesort}" rerender="results,debug,supplierResults" status="busyStatus">
+                        <apex:param name="sortField" value="Supplier_Group_Name__c" assignTo="{!sortField}"/>
+                    </apex:commandLink>
+                </apex:facet>
+                           <apex:outputField value="{!p.pricesupport.Supplier_Group_Name__c}"/>
+                          </apex:column>  
+                            <!--<apex:column headervalue="Supplr Grp"
+                                value="{!p.pricesupport.Supplier_Group_Name__c}" />-->
+                                <apex:column >
+                <apex:facet name="header">
+                    <apex:commandLink value="Eff Date" action="{!togglesort}" rerender="results,debug,supplierResults" status="busyStatus">
+                        <apex:param name="sortField" value="Effective_Date__c" assignTo="{!sortField}"/>
+                    </apex:commandLink>
+                </apex:facet>
+                           <apex:outputField value="{!p.pricesupport.Effective_Date__c}"/>
+                          </apex:column> 
+                            <!--<apex:column headervalue="Eff Date"
+                                value="{!p.pricesupport.Effective_Date__c}" />-->
+                                 <apex:column >
+                <apex:facet name="header">
+                    <apex:commandLink value="Exp Date" action="{!togglesort}" rerender="results,debug,supplierResults" status="busyStatus">
+                        <apex:param name="sortField" value="Expiration_Date__c" assignTo="{!sortField}"/>
+                    </apex:commandLink>
+                </apex:facet>
+                           <apex:outputField value="{!p.pricesupport.Expiration_Date__c}"/>
+                          </apex:column>
+                            <!--<apex:column headervalue="Exp Date"
+                                value="{!p.pricesupport.Expiration_Date__c}" />-->
+                                 <apex:column >
+                <apex:facet name="header">
+                    <apex:commandLink value="Prod Des" action="{!togglesort}" rerender="results,debug,supplierResults" status="busyStatus">
+                        <apex:param name="sortField" value="Material_Description_Buying__c" assignTo="{!sortField}"/>
+                    </apex:commandLink>
+                </apex:facet>
+                           <apex:outputField value="{!p.pricesupport.Material_Description_Buying__c}"/>
+                          </apex:column>
+                            <!--<apex:column headervalue="Prod Des"
+                                value="{!p.pricesupport.Material_Description_Buying__c}" />-->
+                                <apex:column >
+                <apex:facet name="header">
+                    <apex:commandLink value="Supp Price" action="{!togglesort}" rerender="results,debug,supplierResults" status="busyStatus">
+                        <apex:param name="sortField" value="Supplier_Supported_Price__c" assignTo="{!sortField}"/>
+                    </apex:commandLink>
+                </apex:facet>
+                           <apex:outputField value="{!p.pricesupport.Supplier_Supported_Price__c}"/>
+                          </apex:column>
+                            <!--<apex:column headervalue="Supp Price"
+                                value="{!p.pricesupport.Supplier_Supported_Price__c}" />-->
+                                <apex:column >
+                <apex:facet name="header">
+                    <apex:commandLink value="Dis1(S)" action="{!togglesort}" rerender="results,debug,supplierResults" status="busyStatus">
+                        <apex:param name="sortField" value="Dis1_Sell__c" assignTo="{!sortField}"/>
+                    </apex:commandLink>
+                </apex:facet>
+                           <apex:outputField value="{!p.pricesupport.Dis1_Sell__c}"/>
+                          </apex:column>
+                            <!--<apex:column headervalue="Dis1(S)"
+                                value="{!p.pricesupport.Dis1_Sell__c}" />-->
+                                <apex:column >
+                <apex:facet name="header">
+                    <apex:commandLink value="Dis2(S)" action="{!togglesort}" rerender="results,debug,supplierResults" status="busyStatus">
+                        <apex:param name="sortField" value="Dis2_Sell__c" assignTo="{!sortField}"/>
+                    </apex:commandLink>
+                </apex:facet>
+                           <apex:outputField value="{!p.pricesupport.Dis2_Sell__c}"/>
+                          </apex:column>
+                            <!--<apex:column headervalue="Dis2(S)"
+                                value="{!p.pricesupport.Dis2_Sell__c}" />-->
+                                <apex:column >
+                <apex:facet name="header">
+                    <apex:commandLink value="Pack" action="{!togglesort}" rerender="results,debug,supplierResults" status="busyStatus">
+                        <apex:param name="sortField" value="Packaging_Allowance__c" assignTo="{!sortField}"/>
+                    </apex:commandLink>
+                </apex:facet>
+                           <apex:outputField value="{!p.pricesupport.Packaging_Allowance__c}"/>
+                          </apex:column>
+                            <!--<apex:column headervalue="Pack"
+                                value="{!p.pricesupport.Packaging_Allowance__c}" />-->
+                                <apex:column >
+                <apex:facet name="header">
+                    <apex:commandLink value="Frght(S)" action="{!togglesort}" rerender="results,debug,supplierResults" status="busyStatus">
+                        <apex:param name="sortField" value="Freight_Allowance_Selling__c" assignTo="{!sortField}"/>
+                    </apex:commandLink>
+                </apex:facet>
+                           <apex:outputField value="{!p.pricesupport.Freight_Allowance_Selling__c}"/>
+                          </apex:column>
+                           <!-- <apex:column headervalue="Frght(S)"
+                                value="{!p.pricesupport.Freight_Allowance_Selling__c}" />-->
+                                <apex:column >
+                <apex:facet name="header">
+                    <apex:commandLink value="Othr" action="{!togglesort}" rerender="results,debug,supplierResults" status="busyStatus">
+                        <apex:param name="sortField" value="Other_Allowances__c" assignTo="{!sortField}"/>
+                    </apex:commandLink>
+                </apex:facet>
+                           <apex:outputField value="{!p.pricesupport.Other_Allowances__c}"/>
+                          </apex:column>
+                            <!--<apex:column headervalue="Othr"
+                                value="{!p.pricesupport.Other_Allowances__c}" />-->
+                                <apex:column >
+                <apex:facet name="header">
+                    <apex:commandLink value="NetSuppCost" action="{!togglesort}" rerender="results,debug,supplierResults" status="busyStatus">
+                        <apex:param name="sortField" value="Net_Support_Cost__c" assignTo="{!sortField}"/>
+                    </apex:commandLink>
+                </apex:facet>
+                           <apex:outputField value="{!p.pricesupport.Net_Support_Cost__c}"/>
+                          </apex:column>
+                            <!--<apex:column headervalue="NetSuppCost"
+                                value="{!p.pricesupport.Net_Support_Cost__c}" />-->
+                                <apex:column >
+                <apex:facet name="header">
+                    <apex:commandLink value="NetPurCost" action="{!togglesort}" rerender="results,debug,supplierResults" status="busyStatus">
+                        <apex:param name="sortField" value="Net_Purchase_Cost__c" assignTo="{!sortField}"/>
+                    </apex:commandLink>
+                </apex:facet>
+                           <apex:outputField value="{!p.pricesupport.Net_Purchase_Cost__c}"/>
+                          </apex:column>
+                            <!--<apex:column headervalue="NetPurCost"
+                                value="{!p.pricesupport.Net_Purchase_Cost__c}" />-->
+                                <apex:column >
+                <apex:facet name="header">
+                    <apex:commandLink value="ReqRbtAmt" action="{!togglesort}" rerender="results,debug,supplierResults" status="busyStatus">
+                        <apex:param name="sortField" value="Requested_Rebate_Amount__c" assignTo="{!sortField}"/>
+                    </apex:commandLink>
+                </apex:facet>
+                           <apex:outputField value="{!p.pricesupport.Requested_Rebate_Amount__c}"/>
+                          </apex:column>
+                            <!--<apex:column headervalue="ReqRbtAmt"
+                                value="{!p.pricesupport.Requested_Rebate_Amount__c}" />-->
+                                <apex:column >
+                <apex:facet name="header">
+                    <apex:commandLink value="Sales Contact" action="{!togglesort}" rerender="results,debug,supplierResults" status="busyStatus">
+                        <apex:param name="sortField" value="Supplier_Sales_Contact__c" assignTo="{!sortField}"/>
+                    </apex:commandLink>
+                </apex:facet>
+                           <apex:outputField value="{!p.pricesupport.Supplier_Sales_Contact__c}"/>
+                          </apex:column>
+                            <!--<apex:column headervalue="Sales Contact"
+                                value="{!p.pricesupport.Supplier_Sales_Contact__c}" />-->
+                                <apex:column >
+                <apex:facet name="header">
+                    <apex:commandLink value="Comp Name" action="{!togglesort}" rerender="results,debug,supplierResults" status="busyStatus">
+                        <apex:param name="sortField" value="Competitor_Name__c" assignTo="{!sortField}"/>
+                    </apex:commandLink>
+                </apex:facet>
+                           <apex:outputField value="{!p.pricesupport.Competitor_Name__c}"/>
+                          </apex:column>
+                            <!--<apex:column headervalue="Comp Name"
+                                value="{!p.pricesupport.Competitor_Name__c}" />-->
+                                <apex:column >
+                <apex:facet name="header">
+                    <apex:commandLink value="Annual Vol" action="{!togglesort}" rerender="results,debug,supplierResults" status="busyStatus">
+                        <apex:param name="sortField" value="Actual_Annual_Volume__c" assignTo="{!sortField}"/>
+                    </apex:commandLink>
+                </apex:facet>
+                           <apex:outputField value="{!p.pricesupport.Actual_Annual_Volume__c}"/>
+                          </apex:column>
+                            <!--<apex:column headervalue="Annual Vol"
+                                value="{!p.pricesupport.Actual_Annual_Volume__c}" />-->
+                                <apex:column >
+                <apex:facet name="header">
+                    <apex:commandLink value="Comp Manufr" action="{!togglesort}" rerender="results,debug,supplierResults" status="busyStatus">
+                        <apex:param name="sortField" value="Competitor_Manufacturer__c" assignTo="{!sortField}"/>
+                    </apex:commandLink>
+                </apex:facet>
+                           <apex:outputField value="{!p.pricesupport.Competitor_Manufacturer__c}"/>
+                          </apex:column>
+                            <!--<apex:column headervalue="Comp Manufr"
+                                value="{!p.pricesupport.Competitor_Manufacturer__c}" />-->
+                                <apex:column >
+                <apex:facet name="header">
+                    <apex:commandLink value="App" action="{!togglesort}" rerender="results,debug,supplierResults" status="busyStatus">
+                        <apex:param name="sortField" value="Application__c" assignTo="{!sortField}"/>
+                    </apex:commandLink>
+                </apex:facet>
+                           <apex:outputField value="{!p.pricesupport.Application__c}"/>
+                          </apex:column>
+                            <!--<apex:column headervalue="App"
+                                value="{!p.pricesupport.Application__c}" />-->
+                                <apex:column >
+                <apex:facet name="header">
+                    <apex:commandLink value="Mkt Segmnt" action="{!togglesort}" rerender="results,debug,supplierResults" status="busyStatus">
+                        <apex:param name="sortField" value="Market_Segment__c" assignTo="{!sortField}"/>
+                    </apex:commandLink>
+                </apex:facet>
+                           <apex:outputField value="{!p.pricesupport.Market_Segment__c}"/>
+                          </apex:column>
+                            <!--<apex:column headervalue="Mkt Segmnt"
+                                value="{!p.pricesupport.Market_Segment__c}" />-->
+                                <apex:column >
+                <apex:facet name="header">
+                    <apex:commandLink value="Seller" action="{!togglesort}" rerender="results,debug,supplierResults" status="busyStatus">
+                        <apex:param name="sortField" value="Seller__c" assignTo="{!sortField}"/>
+                    </apex:commandLink>
+                </apex:facet>
+                           <apex:outputField value="{!p.pricesupport.Seller__c}"/>
+                          </apex:column>
+                            <!--<apex:column headervalue="Seller"
+                                value="{!p.pricesupport.Seller__c}" />-->
+                                <apex:column >
+                <apex:facet name="header">
+                    <apex:commandLink value="Status" action="{!togglesort}" rerender="results,debug,supplierResults" status="busyStatus">
+                        <apex:param name="sortField" value="Status__c" assignTo="{!sortField}"/>
+                    </apex:commandLink>
+                </apex:facet>
+                           <apex:outputField value="{!p.pricesupport.Status__c}"/>
+                          </apex:column>
+                            <!--<apex:column headervalue="Status"
+                                value="{!p.pricesupport.Status__c}" />-->
+                                <apex:column >
+                <apex:facet name="header">
+                    <apex:commandLink value="Net Upfront Cost" action="{!togglesort}" rerender="results,debug,supplierResults" status="busyStatus">
+                        <apex:param name="sortField" value="Upfront_Cost__c" assignTo="{!sortField}"/>
+                    </apex:commandLink>
+                </apex:facet>
+                           <apex:outputField value="{!p.pricesupport.Upfront_Cost__c}"/>
+                          </apex:column>
+                        </apex:pageblocktable>
+                    </apex:pageblocksection>
+                </apex:pageblock>
+            </apex:tab>
+        </apex:tabpanel>
+    </apex:form>
+</apex:page>

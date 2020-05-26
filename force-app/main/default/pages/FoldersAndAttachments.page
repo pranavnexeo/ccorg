@@ -1,0 +1,20 @@
+<apex:page standardcontroller="Attachment_Folder__c" extensions="AttachmentFolder_Extension" >
+<apex:form >
+<apex:SectionHeader title="Folders and Attachments" subtitle="{!Account.name}{!MyCase.Casenumber}"/>
+<apex:pageblock >
+<apex:pageblocktable value="{!folders}" var="f">
+<apex:column headervalue="Folder Name">
+<apex:outputLink value="/{!f.id}" id="theLink">{!f.folder.name}</apex:outputLink>
+</apex:column>
+<apex:column >
+<apex:facet name="header"><b>File Name</b></apex:facet>
+<apex:pageblocktable value="{!f.attachments}" var="a">
+<apex:column >
+<apex:outputLink value="/servlet/servlet.FileDownload?file={!a.id}" id="theLink">{!a.name}</apex:outputLink>
+</apex:column>
+</apex:pageblocktable>
+</apex:column>
+</apex:pageblocktable>
+</apex:pageblock>
+</apex:form>
+</apex:page>

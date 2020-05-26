@@ -1,0 +1,389 @@
+<apex:page sidebar="false" controller="PriceSupportSupplierViewController" id="pg" showHeader="true">
+    
+    <style type="text/css">
+    .datePicker {
+        z-index: 9999;/*Changed this css property which was 100 prior*/
+        position: absolute;
+        display: none;
+        top: 0;
+        left: 0;
+        width: 17em;
+        background-color: #b7c6b2;
+        border-bottom: 1px solid #000;
+        border-right: 1px solid #000;
+        margin: 0;
+        padding: 1px 1px 2px 2px;
+        }
+</style>
+ <script type="text/javascript">
+    var __sfdcSessionId = '{!GETSESSIONID()}';
+ </script>
+ <script src="/soap/ajax/24.0/connection.js" type="text/javascript"></script>
+ <script> var arrData = []; </script>   
+ <script type="text/javascript">
+      function doSearch() {
+        //alert(document.getElementById("pg:searchFrm:param:criteria:status").value);
+        arrData.length =0;
+        searchServer(
+          document.getElementById("pg:searchFrm:criteria:agreementId").value,
+          document.getElementById("pg:searchFrm:criteria:supportType").value,
+          document.getElementById("pg:searchFrm:criteria:status").value,
+          document.getElementById("pg:searchFrm:criteria:customerName").value,
+          document.getElementById("pg:searchFrm:criteria:materialName").value,
+          document.getElementById("pg:searchFrm:criteria:nexeoApprover").value,
+          document.getElementById("pg:searchFrm:criteria:supplierApprover").value,
+          document.getElementById("pg:searchFrm:criteria:supplierReference").value,
+          document.getElementById("pg:searchFrm:criteria:plant").value,
+          document.getElementById("pg:searchFrm:criteria:region").value
+          );
+          
+          return false;
+      }
+      
+      function addData(comp,id){
+      
+        if(comp.checked==true){
+                //alert('checkbox is checked');
+                arrData.push(id);
+            }else if(comp.checked==false){
+                //alert('checkbox is unchecked');
+                var indx=arrData.indexOf(id);
+                //alert('index is'+indx);
+                if(indx!=-1){
+                    arrData.splice(indx,1);
+                }
+            }
+            //alert(arrData);   
+        
+      }
+      
+      
+      
+ </script> 
+ 
+ <script>
+    //This prototype is provided by the Mozilla foundation and
+    //is distributed under the MIT license.
+    //http://www.ibiblio.org/pub/Linux/LICENSES/mit.license
+    
+    if (!Array.prototype.indexOf)
+    {
+        Array.prototype.indexOf = function(elt /*, from*/)
+    {
+        var len = this.length;
+    
+        var from = Number(arguments[1]) || 0;
+        from = (from < 0)
+        ? Math.ceil(from)
+        : Math.floor(from);
+    if (from < 0)
+        from += len;
+    
+    for (; from < len; from++)
+    {
+        if (from in this &&
+        this[from] === elt)
+        return from;
+    }
+        return -1;
+    };
+    }
+    
+    
+    
+  </script>
+ 
+
+ <apex:form id="searchFrm">
+  <apex:pageMessages id="errors" />
+ 
+      <apex:pageBlock title="Find Price Supports !" mode="edit" id="criteria">
+      
+      <apex:pageBlockButtons location="top">
+            
+            <apex:commandButton value="Refresh" onclick="return doSearch();"/>
+            
+            <apex:outputLabel value="Limit :" style="font-weight:bold;"/>
+            <apex:selectList id="limit" value="{!limitVal}" size="1" onchange="doSearch();">
+              <apex:selectOptions value="{!limitList}" />
+            </apex:selectList>
+        
+        </apex:pageBlockButtons>
+      
+      <apex:actionStatus id="busyStatus">
+        <apex:facet name="start">
+            <c:BusyStatusComp height="300px" width="300px"
+                Message="Please Wait..." />
+        </apex:facet>
+    </apex:actionStatus> 
+    
+      <apex:actionFunction name="searchServer" action="{!runSearch}" rerender="results,debug,errors,nexeoGroupName,supplierGroupName" status="busyStatus">
+          <apex:param name="agreementId" value="" />
+          <apex:param name="supportType" value="" />
+          <apex:param name="status" value="" />
+          <apex:param name="customerName" value="" />
+          <apex:param name="materialName" value="" />
+          <apex:param name="nexeoApprover" value="" />
+          <apex:param name="supplierApprover" value="" />
+          <apex:param name="supplierReference" value="" />
+          <apex:param name="plant" value="" />
+          <apex:param name="region" value="" />
+      </apex:actionFunction>
+ 
+      <table cellpadding="2" cellspacing="2">
+      <tr>
+        <td style="font-weight:bold;">Agreement ID<br/>
+        <apex:inputText value="{!agreementId}" id="agreementId" onchange="doSearch();"/>
+        </td>
+      
+        <td style="font-weight:bold;">Support Type<br/>
+          <apex:selectList id="supportType" onchange="doSearch();" style="width:150px;" value="{!supportType}" multiselect="false" size="1">
+            <apex:selectOptions value="{!supportTypeList}"/>
+          </apex:selectList>
+        </td>
+     
+        <td style="font-weight:bold;">Status<br/>
+          <apex:selectList id="status" onchange="doSearch();" style="width:150px" value="{!status}" multiselect="false" size="1">
+            <apex:selectOptions value="{!statusList}"/>
+          </apex:selectList>
+        </td>
+      
+        <td style="font-weight:bold;">Customer<br/>
+        <apex:inputText value="{!customerName}" id="customerName" onchange="doSearch();"/>
+        </td>
+        
+        <td style="font-weight:bold;">Region Description<br/>
+        <apex:inputText value="{!region}" id="region" onchange="doSearch();"/>
+        </td>
+        
+        <td style="font-weight:bold;">Material Desc(Selling)<br/>
+        <apex:inputText value="{!materialName}" id="materialName" onchange="doSearch();"/>
+        </td>
+      
+        <td style="font-weight:bold;">Nexeo Approver<br/>
+        <apex:inputText value="{!nexeoApprover}" id="nexeoApprover" onchange="doSearch();"/>
+        </td>
+        
+        <td style="font-weight:bold;">Supplier Approver<br/>
+        <apex:inputText value="{!supplierApprover}" id="supplierApprover" onchange="doSearch();"/>
+        </td>
+        
+         <td style="font-weight:bold;">Supplier Reference<br/>
+        <apex:inputText value="{!supplierReference}" id="supplierReference" onchange="doSearch();"/>
+        </td>
+       </tr>
+       <tr>
+        <td style="font-weight:bold;">Plant<br/>
+        <apex:inputText value="{!plant}" id="plant" onchange="doSearch();"/>
+        </td>
+       </tr>
+      
+      
+      </table>
+ 
+      </apex:pageBlock>
+ 
+   
+ 
+    <apex:pageBlock mode="edit" id="results">
+    
+        <apex:pageBlockButtons rendered="true">
+                <apex:commandButton status="busyStatus" reRender="results" value="|<" action="{!setCon.first}" disabled="{!!setCon.hasPrevious}" title="First Page" oncomplete="return resetArray();"/>  
+
+                 <apex:commandButton status="busyStatus" reRender="results" value="<" action="{!setCon.previous}" disabled="{!!setCon.hasPrevious}" title="Previous Page" oncomplete="return resetArray();"/>  
+
+                 <apex:commandButton status="busyStatus" reRender="results" value=">" action="{!setCon.next}" disabled="{!!setCon.hasNext}" title="Next Page" oncomplete="return resetArray();"/>  
+
+                 <apex:commandButton status="busyStatus" reRender="results" value=">|" action="{!setCon.last}" disabled="{!!setCon.hasNext}" title="Last Page" oncomplete="return resetArray();"/>  
+
+                 <apex:outputText >{!(setCon.pageNumber * size)+1-size}-{!IF((setCon.pageNumber * size)>noOfRecords, noOfRecords,(setCon.pageNumber * size))} of {!noOfRecords}</apex:outputText>
+        </apex:pageBlockButtons>
+        
+        <apex:pageBlockTable value="{!priceSupports}" var="support">
+            
+            <!-- <apex:column >
+                 <apex:facet name="header">
+                    <apex:outputLabel value="Select"/>
+                 </apex:facet>
+                <apex:inputCheckbox id="ckhSelected"  onclick="addData(this,'{!support.Id}');"/>
+            </apex:column>  -->
+            
+            <apex:column >
+                <apex:facet name="header">
+                    <apex:commandLink value="AgreementID" action="{!toggleSort}" rerender="results,debug">
+                        <apex:param name="sortField" value="Agreement_Number__c" assignTo="{!sortField}"/>
+                    </apex:commandLink>
+                </apex:facet>
+                <apex:outputLink value="/{!support.Id}"><apex:outputField value="{!support.Agreement_Number__c}"/></apex:outputLink>
+            </apex:column>
+            
+            <apex:column >
+                <apex:facet name="header">
+                    <apex:commandLink value="Status" action="{!toggleSort}" rerender="results,debug">
+                        <apex:param name="sortField" value="Status__c" assignTo="{!sortField}"/>
+                    </apex:commandLink>
+                </apex:facet>
+                <apex:outputField value="{!support.Status__c}"/>
+            </apex:column>
+            
+            <apex:column >
+                <apex:facet name="header">
+                    <apex:commandLink value="Customer" action="{!toggleSort}" rerender="results,debug">
+                        <apex:param name="sortField" value="CustomerName_Mail__c" assignTo="{!sortField}"/>
+                    </apex:commandLink>
+                </apex:facet>
+                <apex:outputField value="{!support.Customer_Name__c}"/>
+            </apex:column>
+            
+            <apex:column >
+                <apex:facet name="header">
+                    <apex:commandLink value="Material Desc(Sell)" action="{!toggleSort}" rerender="results,debug">
+                        <apex:param name="sortField" value="Material_Description_Selling__c" assignTo="{!sortField}"/>
+                    </apex:commandLink>
+                </apex:facet>
+                <apex:outputField value="{!support.Material_Description_Selling__c}"/>
+            </apex:column>
+            
+            <apex:column >
+                <apex:facet name="header">
+                    <apex:commandLink value="Support Type" action="{!toggleSort}" rerender="results,debug">
+                        <apex:param name="sortField" value="Support_Type__c" assignTo="{!sortField}"/>
+                    </apex:commandLink>
+                </apex:facet>
+                <apex:outputField value="{!support.Support_Type__c}"/>
+            </apex:column>
+            
+            <apex:column >
+                <apex:facet name="header">
+                    <apex:commandLink value="Status Identifier" action="{!toggleSort}" rerender="results,debug">
+                        <apex:param name="sortField" value="New_or_Changed__c" assignTo="{!sortField}"/>
+                    </apex:commandLink>
+                </apex:facet>
+                <apex:outputField value="{!support.New_or_Changed__c}"/>
+            </apex:column>
+            <apex:column >
+                <apex:facet name="header">
+                    <apex:commandLink value="Region Description" action="{!toggleSort}" rerender="results,debug">
+                        <apex:param name="sortField" value="Region_Code__c" assignTo="{!sortField}"/>
+                    </apex:commandLink>
+                </apex:facet>
+                <apex:outputField value="{!support.Region_Code__c}"/>
+            </apex:column>
+            
+            <apex:column >
+                <apex:facet name="header">
+                    <apex:commandLink value="Support Price" action="{!toggleSort}" rerender="results,debug">
+                        <apex:param name="sortField" value="Supplier_Supported_Price__c" assignTo="{!sortField}"/>
+                    </apex:commandLink>
+                </apex:facet>
+                <apex:outputField value="{!support.Supplier_Supported_Price__c}"/>
+            </apex:column>
+            
+             <apex:column >
+                <apex:facet name="header">
+                    <apex:commandLink value="Units" action="{!toggleSort}" rerender="results,debug">
+                        <apex:param name="sortField" value="Units__c" assignTo="{!sortField}"/>
+                    </apex:commandLink>
+                </apex:facet>
+                <apex:outputField value="{!support.Units__c}"/>
+            </apex:column>
+            
+            <apex:column >
+                <apex:facet name="header">
+                    <apex:commandLink value="Dis1(S)" action="{!toggleSort}" rerender="results,debug">
+                        <apex:param name="sortField" value="X1st_Discount_Sell__c" assignTo="{!sortField}"/>
+                    </apex:commandLink>
+                </apex:facet>
+                <apex:outputField value="{!support.Dis1_Sell__c}"/>
+            </apex:column>
+            
+            <apex:column >
+                <apex:facet name="header">
+                    <apex:commandLink value="Dis2(S)" action="{!toggleSort}" rerender="results,debug">
+                        <apex:param name="sortField" value="X2nd_Discount_Sell__c" assignTo="{!sortField}"/>
+                    </apex:commandLink>
+                </apex:facet>
+                <apex:outputField value="{!support.Dis2_Sell__c}"/>
+            </apex:column>
+            
+             <!-- <apex:column >
+                <apex:facet name="header">
+                    <apex:commandLink value="Upfront Cost" action="{!toggleSort}" rerender="results,debug">
+                        <apex:param name="sortField" value="Upfront_Cost__c" assignTo="{!sortField}"/>
+                    </apex:commandLink>
+                </apex:facet>
+                <apex:outputField value="{!support.Upfront_Cost__c}"/>
+            </apex:column>  -->
+            
+            <apex:column >
+                <apex:facet name="header">
+                    <apex:commandLink value="Purchase Cost" action="{!toggleSort}" rerender="results,debug">
+                        <apex:param name="sortField" value="Purchase_Cost__c" assignTo="{!sortField}"/>
+                    </apex:commandLink>
+                </apex:facet>
+                <apex:outputField value="{!support.Purchase_Cost__c}"/>
+            </apex:column>
+            
+             <apex:column >
+                <apex:facet name="header">
+                    <apex:commandLink value="Dis1(B)" action="{!toggleSort}" rerender="results,debug">
+                        <apex:param name="sortField" value="X1st_Discount_Buy__c" assignTo="{!sortField}"/>
+                    </apex:commandLink>
+                </apex:facet>
+                <apex:outputField value="{!support.Dis1_Buy__c}"/>
+            </apex:column>
+            
+            <apex:column >
+                <apex:facet name="header">
+                    <apex:commandLink value="Dis2(B)" action="{!toggleSort}" rerender="results,debug">
+                        <apex:param name="sortField" value="X2nd_Discount_Buy__c" assignTo="{!sortField}"/>
+                    </apex:commandLink>
+                </apex:facet>
+                <apex:outputField value="{!support.Dis2_Buy__c}"/>
+            </apex:column>  
+            
+            
+            <apex:column >
+                <apex:facet name="header">
+                    <apex:commandLink value="RqRbtAmt" action="{!toggleSort}" rerender="results,debug">
+                        <apex:param name="sortField" value="Requested_Rebate_Amount__c" assignTo="{!sortField}"/>
+                    </apex:commandLink>
+                </apex:facet>
+                <apex:outputField value="{!support.Requested_Rebate_Amount__c}"/>
+            </apex:column>
+            
+            <apex:column >
+                <apex:facet name="header">
+                    <apex:commandLink value="EffDate" action="{!toggleSort}" rerender="results,debug">
+                        <apex:param name="sortField" value="Effective_Date__c" assignTo="{!sortField}"/>
+                    </apex:commandLink>
+                </apex:facet>
+                <apex:outputField value="{!support.Effective_Date__c}"/>
+            </apex:column>
+            
+            <apex:column >
+                <apex:facet name="header">
+                    <apex:commandLink value="ExpDate" action="{!toggleSort}" rerender="results,debug">
+                        <apex:param name="sortField" value="Expiration_Date__c" assignTo="{!sortField}"/>
+                    </apex:commandLink>
+                </apex:facet>
+                <apex:outputField value="{!support.Expiration_Date__c}"/>
+            </apex:column>
+ 
+            
+ 
+        </apex:pageBlockTable>
+        
+    </apex:pageBlock>
+ 
+
+ 
+  <apex:pageBlock title="Debug - SOQL" id="debug" rendered="false">
+      <apex:outputText value="{!debugSoql}" />           
+  </apex:pageBlock>    
+ 
+  
+ 
+  </apex:form>     
+    
+</apex:page>

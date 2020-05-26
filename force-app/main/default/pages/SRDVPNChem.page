@@ -1,0 +1,13 @@
+<apex:page >
+<apex:form >
+<apex:pagemessage severity="info" strength="3" Summary="You must be on the network or VPN to use this page"/>
+<apex:pageblock >
+<apex:pageblockbuttons >
+<apex:outputlink value="{!$Page.SRDVPNChem}" styleclass="btn">Chemicals</apex:outputlink>
+<apex:outputlink value="{!$Page.SRDVPNComp}" styleclass="btn">Composites</apex:outputlink>
+<apex:outputlink value="{!$Page.SRDVPNPlas}" styleclass="btn">Plastics</apex:outputlink>
+</apex:pageblockbuttons>
+<apex:iframe height="1000px" width="100%" src="http://dpapp51.asco.ashland.com/Data/ics/SupRef.nsf"/>
+</apex:pageblock>
+</apex:form>
+</apex:page>

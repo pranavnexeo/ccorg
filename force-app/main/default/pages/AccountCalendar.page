@@ -1,0 +1,6 @@
+<apex:page standardcontroller="Account" extensions="AccountCalendar" id="thePage"
+    showHeader="false">
+ <apex:form >
+    <c:Calendar Value="{!items}" /> 
+ </apex:form>
+</apex:page>

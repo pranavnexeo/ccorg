@@ -1,0 +1,6 @@
+<apex:page standardcontroller="Account">
+<apex:map width="300px" height="300px" mapType="roadmap" zoomLevel="17"
+    center="{!Account.BillingStreet},{!Account.BillingCity},{!Account.BillingState}">
+    <apex:mapMarker title="{! Account.Name }" position="{!Account.BillingStreet},{!Account.BillingCity},{!Account.BillingState}"/>
+    </apex:map>
+</apex:page>

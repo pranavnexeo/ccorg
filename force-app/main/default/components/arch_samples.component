@@ -1,0 +1,10 @@
+<apex:component controller="arch_Email_Samples" access="global">
+<apeX:attribute name="CallReportId" type="String" assignto="{!NoteId}" description="Call Report Id"/>
+<apex:outputpanel layout="none" rendered="{!(IF(materials.size>0,'true','false'))}" >
+<b><u>Sample Materials</u></b><br/>
+
+<apex:repeat value="{!materials}" var="m">
+<apex:outputtext value="{!m.name} ({!m.Opportunity__r.StageName})"/><br/>
+</apeX:repeat>
+</apex:outputpanel>
+</apex:component>

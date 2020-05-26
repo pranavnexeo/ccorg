@@ -1,0 +1,310 @@
+<apex:page controller="Sample_Request_Controller" tabStyle="Sample_Request__c" action="{!init}" id="thepage">
+<apex:stylesheet value="{!$Resource.SampleRequestStyles}"></apex:stylesheet>
+<script type="text/javascript"> 
+  function openLookup(baseURL, width, modified, searchParam){
+    var originalbaseURL = baseURL;
+    var originalwidth = width;
+    var originalmodified = modified;
+    var originalsearchParam = searchParam;
+ 
+    var lookupType = baseURL.substr(baseURL.length-3, 3);
+    if (modified == '1') baseURL = baseURL + searchParam;
+ 
+    var isCustomLookup = false;
+ 
+    if(lookupType == "006"){
+ 
+      var urlArr = baseURL.split("&");
+      var txtId = '';
+      if(urlArr.length > 2) {
+        urlArr = urlArr[1].split('=');
+        txtId = urlArr[1];
+      }
+     
+ 
+      // Following is the url of Custom Lookup page. You need to change that accordingly
+      baseURL = "/apex/customopplookup?txt=" + txtId;
+ 
+      // Following is the Id of the Account on the Page.
+        
+         baseURL = baseURL + "&aid={!Account.Id}";
+      // Following is the id of apex:form control "myForm". You need to change that accordingly
+      baseURL = baseURL + "&frm=" + escapeUTF("{!$Component.theForm}");
+      if (modified == '1') {
+        baseURL = baseURL + "&lksearch=" + searchParam;
+      }
+ 
+      // Following is the ID of inputField that is the lookup to be customized as custom lookup
+      if(txtId.indexOf('opp') > -1 ){
+        isCustomLookup = true;
+      }
+    }
+ 
+ 
+    if(isCustomLookup == true){
+      openPopup(baseURL, "lookup", width, 480, "width="+width+",height=480,toolbar=no,status=no,directories=no,menubar=no,resizable=yes,scrollable=no", true);
+    }
+    else {
+      if (modified == '1') originalbaseURL = originalbaseURL + originalsearchParam;
+      openPopup(originalbaseURL, "lookup", 350, 480, "width="+originalwidth+",height=480,toolbar=no,status=no,directories=no,menubar=no,resizable=yes,scrollable=no", true);
+    } 
+  }
+  
+
+  </script>
+        <apex:sectionHeader title="{!$Label.New_Sample_Request} {!Sample_Request_Link}" subtitle="{!$Label.Step_4}"/>
+        <apex:form id="theForm">
+            
+            
+                <apex:pageBlock title="{!$Label.Sample_Information}">
+                <apex:pagemessage strength="2" severity="warning" summary="Please note:  If you are requesting a sample for a Rhodia/Solvay material, as of September 1st, 2014, all Solvay samples require that the customer pays the freight for the sample request.  They will accept a  UPS / Fed Ex Number or  DHL account number.  Nexeo Solutions will not pay the freight. You must submit the sample request with an account number from the customer.   Thank you.">
+                </apex:pagemessage>                    
+                        <apex:facet name="footer">
+                                <apex:outputPanel ><center>
+                                        <apex:commandButton action="{!step3}" value="{!$Label.Previous}" styleClass="btn" immediate="true"/>
+                                        <apex:commandButton action="{!step5}" value="{!$Label.Next}" styleClass="btn"/></center>
+                                </apex:outputPanel>
+                        </apex:facet>
+
+                        <apex:pageBlockSection title="{!$Label.If_any_apply}" collapsible="false" columns="2" rendered="{!RenderGeneralMaterialQuestions}">
+                                <apex:inputField id="ProductDevelopment" value="{!sampleRequest.Product_Development__c}" rendered="{!RenderProductDevelopment}"/>
+                                <apex:inputField id="ASTSample" value="{!sampleRequest.AST_Sample__c}" rendered="{!AND(RenderASTSamples, NOT(isdistribution))}" onchange="javascript:astalert('{!$Component.ASTSample}')"/>
+                                <apex:inputField id="OakCreek" value="{!sampleRequest.Oak_Creek__c}" rendered="{!RenderOakCreek}"/>
+                                <!-- <apex:inputField value="{!sampleRequest.Aqualon_Hazardous_Material__c}" rendered="{!isAqualonAccount}"/> -->
+                                <apex:inputField value="{!sampleRequest.Aquarius_Sample__c}" rendered="{!isAqualonAccount}">
+                                    <apex:actionSupport event="onclick" action="{!initAquarius}" 
+                                                        rerender="aquariusStatus" status="aquariusStatus" />
+                                </apex:inputField>
+                                <apex:inputfield value="{!sampleRequest.Rush_Sample__c}" rendered="{!isdistribution}"/>
+                                <apex:pageblocksectionitem rendered="{!OR(isdistribution, isaqualonaccount)}">
+                                   <apex:outputtext value="Carrier"/>
+                                   <apex:selectlist value="{!carrier}" size="1">
+                                      <apex:selectoption itemlabel="--None--" itemvalue=""/>
+                                      <apex:selectoption itemlabel="UPS Overnight" itemvalue="UPS Overnight" rendered="{!isdistribution}"/>
+                                      <apex:selectoption itemlabel="UPS 2nd Day" itemvalue="UPS 2nd Day" rendered="{!isdistribution}"/>
+                                      <apex:selectoption itemlabel="UPS Ground" itemvalue="UPS Ground" rendered="{!isdistribution}"/>                                     
+                                      <apex:selectoption itemlabel="Fed Ex Overnight" itemvalue="Fed Ex Overnight" rendered="{!isdistribution}"/>
+                                      <apex:selectoption itemlabel="Fed Ex 2nd Day" itemvalue="Fed Ex 2nd Day" rendered="{!isdistribution}"/>
+                                      <apex:selectoption itemlabel="Fed Ex Ground" itemvalue="Fed Ex Ground" rendered="{!isdistribution}"/>
+                                      <apex:selectoption itemlabel="Fed Ex" itemvalue="Fed Ex" rendered="{!isaqualonaccount}"/>
+                                      <apex:selectoption itemlabel="UPS" itemvalue="UPS" rendered="{!isaqualonaccount}"/>
+                                   </apex:selectlist>
+                                </apex:pageblocksectionitem>
+                                <apex:pageblocksectionitem rendered="{!OR(isdistribution, isaqualonaccount)}"/>
+                                <apex:inputfield value="{!sampleRequest.UPS_Fed_Ex_Number__c}" rendered="{!OR(isdistribution, isaqualonaccount)}"/>
+          
+                        </apex:pageBlockSection>
+                        
+                        
+                        
+                        <apex:actionStatus id="aquariusStatus">
+                            <apex:facet name="start">
+                                <apex:outputText escape="false" style="font-weight: bold;" 
+                                                 value="&nbsp;{!$Label.Please_Wait}...">
+                                    <apex:image value="{!$Resource.spinner}"/>
+                                </apex:outputText>
+                            </apex:facet>
+                            <apex:facet name="stop">
+
+                                <apex:pageBlockSection title="{!$Label.Aquarious_Samples}" 
+                                                       columns="2"
+                                                       rendered="{!sampleRequest.Aquarius_Sample__c}">                             
+                                        <apex:inputfield value="{!aquarius.Aquarius_DOE_Material__c}">
+                                        <FONT COLOR="red" SIZE="4">*</FONT>
+                                        </apex:inputfield>
+                                        <apex:inputField value="{!aquarius.Market_End_Use__c}">
+                                            <FONT COLOR="red" SIZE="4">*</FONT>
+                                        </apex:inputField>
+                                        <apex:inputField value="{!aquarius.Countries_SoldTo__c}">
+                                            <FONT COLOR="red" SIZE="4">*</FONT>
+                                        </apex:inputField>
+                                        <apex:inputField value="{!aquarius.Color_Desired__c}">
+                                            <FONT COLOR="red" SIZE="4">*</FONT>
+                                        </apex:inputField>
+                                        <apex:inputField value="{!aquarius.Colorants_Preferred__c}"/>
+                                        <apex:inputField value="{!aquarius.Colorants_that_cannot_be_used__c}"/>
+                                        <apex:inputField value="{!aquarius.Reference_Tablet__c}">
+                                            <FONT COLOR="red" SIZE="4">*</FONT>
+                                        </apex:inputField>
+                                        <apex:inputField value="{!aquarius.Active_Ingredient__c}"/>
+                                        
+                                        <apex:inputField value="{!aquarius.Current_System__c}"/>
+                                        <apex:inputField value="{!aquarius.Current_System_Performance__c}"/>
+                                        <apex:inputField value="{!aquarius.Film_Improvements_Needed__c}"/>
+                                        <apex:inputField value="{!aquarius.Plasticizer_Preference__c}">
+                                            <FONT COLOR="red" SIZE="4">*</FONT>
+                                        </apex:inputField>
+                                </apex:pageBlockSection>
+                                
+                            </apex:facet>
+                        </apex:actionStatus>
+                        
+                        <apex:pageBlockSection title="Requested Supplier" collapsible="false" columns="1">
+                                <apex:inputField id="supplier" value="{!sampleRequest.Supplier__c}" required="true" rendered="{!OR(Not(hasOpportunity), ISNULL(Opportunity.Requested_Supplier__c))}"/>
+                                <apex:outputField id="supplierreadonly" value="{!sampleRequest.Supplier__c}" rendered="{!AND(hasOpportunity, NOT(ISNULL(Opportunity.Requested_Supplier__c)))}"/>
+                        </apex:pageBlockSection> 
+
+                        <apex:pageBlockSection title="{!$Label.Materials_in_Sample}:" columns="1" collapsible="false" id="matpanel">
+
+                               
+                                <apex:dataTable value="{!sampleMaterials}" var="lines" styleClass="list" id="MaterialGrid" width="1024px">
+<!--                                   <apex:column >
+                                     <apex:facet name="header"><CENTER><b>Actions</b></CENTER></apex:facet>
+                                     <apex:commandButton action="{!RemoveMaterial}" value="Delete" styleClass="btn" rerender="MaterialGrid" immediate="true"/>
+                                   
+                                   </apex:column> -->
+                                   
+                                   <apex:column >
+                     
+                                     <apex:facet name="header">{!$Label.SAP_Material}</apex:facet>
+                                     <apex:inputField value="{!lines.SAP_Material_MSD2__c}" id="sapmateriallookup"/>&nbsp;
+                                   
+                                   </apex:column>  
+                                     
+                                   
+                                   <apex:column >
+                                     <apex:facet name="header">Material Not in SAP?</apex:facet>
+                                     
+                                     &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+                                     <apex:inputField value="{!lines.Existing_Material_in_SAP__c}"/>&nbsp;
+                                    
+                                   </apex:column>
+                                   
+                                   <apex:column >
+                                     <apex:facet name="header">{!$Label.Material_Name}</apex:facet>
+                                     <apex:inputField value="{!lines.name}" id="material_name"/>
+                                     <apex:facet name="footer"><apex:outputText escape="false" value="Addtl. Costs" styleClass="subtitle" rendered="{!RenderperSampleCost}"/></apex:facet>
+                                   </apex:column>
+                                   <apex:column rendered="{!isAqualonAccount}" >
+                                     <apex:facet name="header">PAC Segment<FONT COLOR="red" SIZE="4">*</FONT></apex:facet>
+                                     <apex:inputField value="{!lines.PAC_Industry_Segment__c}" style="width: 150px"/>                                  
+                                   </apex:column> 
+                                   
+                                   <apex:column rendered="{!isaqualonaccount}" >
+                                     <apex:facet name="header">Material Plant</apex:facet>
+                                     <apex:inputField value="{!lines.Material_Plant__c}" style="width: 75px"/>                                  
+                                   </apex:column> 
+                                   <apex:column rendered="{!isaqualonaccount}" >
+                                     <apex:facet name="header">Material</apex:facet>
+                                     <apex:inputField value="{!lines.Material__c}" style="width: 250px"/>                                  
+                                   </apex:column> 
+                                                                   
+                                   <apex:column >
+                                     <apex:facet name="header">{!$Label.Quantity}<FONT COLOR="red" SIZE="4">*</FONT></apex:facet>
+                                     <apex:inputField value="{!lines.Sample_Quantity__c}" style="width: 50px" />
+                                     <apex:facet name="footer"><apex:outputText escape="false" value="&nbsp" rendered="{!RenderperSampleCost}"/></apex:facet>
+                                   </apex:column>
+                                   <apex:column >
+                                     <apex:facet name="header">{!$Label.UOM}<FONT COLOR="red" SIZE="4">*</FONT></apex:facet>
+                                     <apex:selectList value="{!lines.Sample_UOM__c}" size="1" >
+                                        <apex:selectOptions value="{!uomSelectOptions}" />
+                                     </apex:selectList>
+                                     <apex:facet name="footer"><apex:outputText escape="false" value="&nbsp" rendered="{!RenderperSampleCost}"/></apex:facet>
+                                   </apex:column>
+                                   <apex:column rendered="{!RenderProductLine}">
+                                     <apex:facet name="header">{!$Label.Product_Line}<FONT COLOR="red" SIZE="4">*</FONT></apex:facet>
+                                     <apex:inputField value="{!lines.Product_Line__c}"/>
+                                     <apex:facet name="footer"><apex:outputText escape="false" value="&nbsp" rendered="{!RenderperSampleCost}"/></apex:facet>
+                                   </apex:column>
+                                   <apex:column rendered="{!RenderAHWTProductLine}">
+                                     <apex:facet name="header">{!$Label.Product_Line}<FONT COLOR="red" SIZE="4">*</FONT></apex:facet>
+                                     <apex:inputField value="{!lines.AHWT_Product_Line__c}" />
+                                     <apex:facet name="footer"><apex:outputText escape="false" value="&nbsp" rendered="{!RenderperSampleCost}"/></apex:facet>
+                                   </apex:column>
+                                   <apex:column rendered="{!RenderPMCastingsProductLine}">
+                                     <apex:facet name="header">{!$Label.Product_Line}<FONT COLOR="red" SIZE="4">*</FONT></apex:facet>
+                                     <apex:inputField value="{!lines.PM_Castings_Product_Line__c}" />
+                                     <apex:facet name="footer"><apex:outputText escape="false" value="&nbsp" rendered="{!RenderperSampleCost}"/></apex:facet>
+                                   </apex:column>
+                                   <apex:column >
+                                     <apex:facet name="header">{!$Label.Date_Required}<FONT COLOR="red" SIZE="4">*</FONT></apex:facet>
+                                     <apex:inputField value="{!lines.Date_Required_By__c}" />
+                                     <apex:facet name="footer"><apex:outputText escape="false" value="&nbsp" rendered="{!RenderperSampleCost}"/></apex:facet>
+                                       
+                                   </apex:column>
+                                    
+                                   <!--
+                                   <apex:column >
+                                     <apex:facet name="header">{!$Label.Currency} <FONT COLOR="red" SIZE="4">*</FONT></apex:facet>
+                                     <apex:inputField value="{!lines.CurrencyIsoCode}" />
+                                     <apex:facet name="footer"><apex:outputText escape="false" value="&nbsp" rendered="{!RenderperSampleCost}"/></apex:facet>
+                                   </apex:column>
+                                   <apex:column >
+                                     <apex:facet name="header">{!$Label.Lot_Number}</apex:facet>
+                                     <apex:inputField value="{!lines.Lot_Numbers__c}" style="width: 65px"/>
+                                     <apex:facet name="footer"><apex:outputText escape="false" value="&nbsp" rendered="{!RenderperSampleCost}"/></apex:facet>
+                                   </apex:column>
+                                   <apex:column >
+                                     <apex:facet name="header">{!$Label.Sample_Value}<FONT COLOR="red" SIZE="4">*</FONT></apex:facet>
+                                     <apex:inputField value="{!lines.Estimated_Sample_Value__c}"  style="width: 75px"/>
+                                     <apex:facet name="footer"><apex:outputField value="{!sampleRequest.Additional_Admin_Cost__c}" rendered="{!RenderperSampleCost}"/></apex:facet>
+                                   </apex:column>
+                                   <apex:column rendered="{!RenderperLineItemCost}">
+                                     <apex:facet name="header">{!$Label.Line_Item}<BR/>{!$Label.Admin_Cost}</apex:facet>
+                                     <apex:outputField value="{!lines.Additional_Admin_Cost__c}" style="width: 50px"/>
+                                     <apex:facet name="footer"><apex:outputText escape="false" value="&nbsp" rendered="{!RenderperSampleCost}"/></apex:facet>
+                                   </apex:column>
+                                   <apex:column >
+                                     <apex:facet name="header">{!$Label.Potential_Annual_Value}<FONT COLOR="red" SIZE="4">*</FONT></apex:facet>
+                                     <apex:inputField value="{!lines.Potential_Annual_Value__c}" style="width:125px"/>
+                                     <apex:facet name="footer"><apex:outputText escape="false" value="&nbsp" rendered="{!RenderperSampleCost}"/></apex:facet>
+                                   </apex:column>
+                                   <apex:column >
+                                     <apex:facet name="header">{!$Label.Ship_From_Location}</apex:facet>
+                                     <apex:inputField value="{!lines.Ship_From_Location__c}" style="width: 75px"/>
+                                     <apex:facet name="footer"><apex:outputText escape="false" value="&nbsp" rendered="{!RenderperSampleCost}"/></apex:facet>
+                                   </apex:column>
+                                   <apex:column rendered="{!RenderTectyl}">
+                                     <apex:facet name="header">{!$Label.Tectyl_Product}?<FONT COLOR="red" SIZE="4">*</FONT></apex:facet>
+                                     <apex:inputField value="{!lines.Tectyl_Product__c}"/>
+                                     <apex:facet name="footer"><apex:outputText escape="false" value="&nbsp" rendered="{!RenderperSampleCost}"/></apex:facet>
+                                   </apex:column>
+                                   <apex:column rendered="{!RenderADCompound}">
+                                     <apex:facet name="header">{!$Label.AD_Compound}?<FONT COLOR="red" SIZE="4">*</FONT></apex:facet>
+                                     <apex:inputField value="{!lines.AD_Compound__c}" />
+                                     <apex:facet name="footer"><apex:outputText escape="false" value="&nbsp" rendered="{!RenderperSampleCost}"/></apex:facet>
+                                   </apex:column> 
+                                   -->
+                                </apex:dataTable>
+                               
+                        </apex:pageBlockSection>
+
+                        <apex:panelGrid columns="2"> 
+                                <apex:commandButton action="{!AddNewMaterial}" value="{!$Label.Add_Another_Material}" styleClass="btn" rerender="MaterialGrid" immediate="true"/>
+                                <apex:commandButton action="{!ClearMaterialGrid}" value="{!$Label.Clear_Materials}" styleClass="btn" rerender="MaterialGrid" immediate="true"/>
+                        </apex:panelGrid>
+                        <apex:pageBlockSection title="{!$Label.Validation_Error}" columns="1" collapsible="false" rendered="{!IF(ValidationErrorMessage!='','True','False')}">
+                             <apex:pageBlock title="{!$Label.Error_Messages}" rendered="{!IF(ValidationErrorMessage!='','True','False')}">
+                                   <apex:outputText escape="False" styleClass="Warning" value="{!ValidationErrorMessage}" rendered="{!IF(ValidationErrorMessage!='','True','False')}"/>
+                             </apex:pageBlock>
+                        </apex:pageBlockSection>
+
+<!--
+                        <apex:panelGrid columns="1"> 
+                                <apex:outputText value="{!Step3_Error}" styleClass="Warning" rendered="{!IF (Step3_Error != '','true','false')}"/>
+                        </apex:panelGrid>
+-->
+
+
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+
+                    </apex:pageBlock> 
+                </apex:form>
+                 <script>              
+                function astalert(field){
+                  
+                   var ex = document.getElementById(field).checked;
+                   if(ex){
+                   
+                   var r=confirm("You have marked the Dublin Analytical (AS&T) check box.\r\n\r\nIn doing so, this means that you will be sending a sample to the Dublin, Ohio Research Lab\r\nfor evaluation.  If this is accurate, please provide details in the comments box and click the OK button.\r\n\r\nIf this is an error and you wish to send a sample to a customer, \r\nplease click the CANCEL button and the system will remove the Dublin Analytical (AS&T) flag.");
+                   if (r==false)
+                   {
+                     document.getElementById(field).checked = false;
+                   }
+                   
+                   }              
+                }
+                
+                
+                </script>
+</apex:page>

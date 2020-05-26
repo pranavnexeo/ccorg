@@ -1,0 +1,71 @@
+<apex:component >
+	<script type="text/javascript">
+	  CCRZ.uiProperties.CCExceptionView.desktop.tmpl = 'Nexeo-FileNotFound-Desktop';
+	  CCRZ.uiProperties.CCExceptionView.phone.tmpl   = 'Nexeo-FileNotFound-Mobile';
+	</script>
+
+	<script id="Nexeo-FileNotFound-Desktop" type="text/template">
+		<div class="row">
+			<div class="span3"></div>
+			<div class="span3">
+				<h3>{{pageLabelMap 'cc_mn_FnfMsgTop'}}</h3>
+				<p style="font-size:34px;line-height:1.05;">{{pageLabelMap 'cc_mn_FnfSecond'}}</p>
+			</div>
+			<div class="span3"><img src="{!URLFOR($Resource.CC_Theme_Nexeo, '/images/404Image.png')}"></div>
+			<div class="span3"></div>
+		</div>
+		<div class="row">
+			<div class="span3"></div>
+			<div class="span6">
+				
+					<ul>{{pageLabelMap 'cc_mn_FnfOthrOptn'}}
+						<li style="margin-left:20px;">{{pageLabelMap 'cc_mn_fnfBackTo'}}&nbsp;<span class="homelink"><a href="#">HOME</a></span></li>
+						<!--<li style="margin-left:20px;">{{pageLabelMap 'cc_mn_FnfContact'}} <a href="mailto:{!$Site.AdminEmailAddress}">{!$Site.AdminEmailAddress}</a></li>-->
+						<li style="margin-left:20px;">{{pageLabelMap 'cc_mn_FnfContact'}} <a href="mailto:mynexeo@nexeosolutions.com">mynexeo@nexeosolutions.com</a></li>
+					</ul>
+				
+			</div>
+			<div class="span3"></div>
+							
+
+		</div>
+	</script>
+
+	<script id="Nexeo-FileNotFound-Mobile" type="text/template">
+		<div class="row">
+			<div class="span3"></div>
+			<div class="span3">
+				<h3>{{pageLabelMap 'cc_mn_FnfMsgTop'}}</h3>
+				<p style="font-size:34px;line-height:1.05;">{{pageLabelMap 'cc_mn_FnfSecond'}}</p>
+			</div>
+			<div class="span3"><img src="{!URLFOR($Resource.CC_Theme_Nexeo, '/images/404Image.png')}"></div>
+			<div class="span3"></div>
+		</div>
+		<div class="row">
+			<div class="span3"></div>
+			<div class="span6">
+				
+					<ul>{{pageLabelMap 'cc_mn_FnfOthrOptn'}}
+						<li>{{pageLabelMap 'cc_mn_fnfBackTo'}}&nbsp;<span class="homelink"><a href="#">HOME</a></span></li>
+						<!--<li>{{pageLabelMap 'cc_mn_FnfContact'}} <a href="mailto:{!$Site.AdminEmailAddress}">{!$Site.AdminEmailAddress}</a></li>-->
+						<li>{{pageLabelMap 'cc_mn_FnfContact'}} <a href="mailto:mynexeo@nexeosolutions.com">mynexeo@nexeosolutions.com</a></li>
+					</ul>
+				
+			</div>
+			<div class="span3"></div>
+							
+
+		</div>
+	</script>
+
+
+	<script type="text/javascript">
+		jQuery(function($) {
+			$(document).on('click','.homelink > a',function(){
+   				var page = "/mynexeo/ccrz__HomePage";
+    			window.location.href = page + '?cartId=' + CCRZ.pagevars.currentCartID + getCSRQueryString() ;
+			});
+
+		});
+	</script>
+</apex:component>

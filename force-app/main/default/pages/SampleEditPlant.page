@@ -1,0 +1,91 @@
+<apex:page standardController="Sample_Analysis_Request__c" extensions="SampleButtonHide" id="thepage">
+<apex:pageMessages />
+<script src="../../soap/ajax/24.0/connection.js" type="text/javascript"></script>
+<script>
+function fetchPlantDetails(){ 
+var plantId = document.getElementById('thepage:theform:pageblock:salesinfo:plantid_lkid').value;
+findplantdetails(plantId);
+}
+
+</script>
+<apex:form id="theform">
+<apex:actionFunction name="findplantdetails" action="{!getPlantDetails}" rerender="plantcodedesc,plantdesc" status="busyStatus" immediate="true">
+<apex:param name="plantId" value="" />
+</apex:actionFunction>
+
+<apex:ActionStatus id="busyStatus">
+<apex:facet name="start">
+<c:BusyStatusComp height="300px" width="300px" Message="Please Wait..." />
+</apex:facet>
+</apex:ActionStatus>
+
+<apex:pageBlock title="Sample Analysis Request Details" id="pageblock">
+<apex:pageblockButtons >
+<apex:commandButton action="{!cancel}" value="Cancel" />
+<apex:commandButton action="{!customsave}" value="Save" />
+<apex:commandButton action="{!doSaveAndNew}" value="Save And New" />
+</apex:pageblockButtons>
+
+<br></br>
+<font size="3" color="Brown"><b>SAMPLE REQUESTER</b></font>
+
+<apex:pageBlockSection title="Sales Information" columns="1" id="salesinfo">
+<apex:inputField value="{!Sample_Analysis_Request__c.Date__c}" required="true"/>
+<apex:inputField value="{!Sample_Analysis_Request__c.Requested_by__c}" required="true"/>
+<apex:pageBlocksectionItem >
+<apex:outputLabel value="Business Group"/>
+<apex:panelgroup >
+<div class="requiredInput">
+<div class="requiredBlock"></div>
+<apex:selectList size="1" value="{!Sample_Analysis_Request__c.Buisness_Group__c}" required="true">
+<apex:selectOption itemValue="" itemLabel="--Select--"/>
+<apex:selectOptions value="{!BusinessGroup}" />
+</apex:selectList>
+</div>
+</apex:panelgroup>
+</apex:pageBlocksectionItem>
+<apex:inputField value="{!Sample_Analysis_Request__c.Plant__c}" required="true" id="plantid" onchange="fetchPlantDetails();"/>
+<apex:outputField value="{!Sample_Analysis_Request__c.Plant_Code__c}" id="plantcodedesc"/>
+<apex:outputField value="{!Sample_Analysis_Request__c.Plant_Description__c}" id="plantdesc"/>
+</apex:pageBlockSection>
+
+<apex:pageBlockSection title="Sample Information" columns="1">
+<apex:inputField value="{!Sample_Analysis_Request__c.Sample_Name__c}" required="true"/>
+<apex:inputField value="{!Sample_Analysis_Request__c.Manufacturer1__c}"/>
+<apex:inputField value="{!Sample_Analysis_Request__c.Number_of_Samples__c}" required="true"/>
+<apex:inputField value="{!Sample_Analysis_Request__c.Batch__c}"/>
+<apex:pageBlocksectionItem >
+<apex:outputLabel value="Analysis Type"/>
+<apex:panelgroup >
+<div class="requiredInput">
+<div class="requiredBlock"></div>
+<apex:selectList size="1" value="{!Sample_Analysis_Request__c.Analysis_Type__c}" required="true">
+<apex:selectOption itemValue="" itemLabel="--Select--"/>
+<apex:selectOptions value="{!AnalysisType}" />
+</apex:selectList>
+</div>
+</apex:panelgroup>
+</apex:pageBlocksectionItem>
+</apex:pageBlockSection>
+
+<apex:pageBlockSection columns="1">
+<apex:pageBlockSectionitem >
+<apex:outputLabel value="Comments" />
+<apex:panelgroup >
+<div class="requiredInput">
+<div class="requiredBlock"></div>
+<apex:inputtextarea value="{!Sample_Analysis_Request__c.CommentsNew__c}" cols="100"/>
+</div>
+</apex:panelgroup>
+</apex:pageBlockSectionitem>
+
+</apex:pageBlockSection>
+<apex:pageBlockSection title="Charge Data" columns="2">
+<apex:inputField value="{!Sample_Analysis_Request__c.Customer_Service_Charge__c}" required="true"/>
+<apex:inputField value="{!Sample_Analysis_Request__c.Charge_Status__c}" required="true"/>
+<apex:inputField value="{!Sample_Analysis_Request__c.Retention_Date__c}" rendered="{!showButton}"/>
+</apex:pageBlockSection>
+
+</apex:pageBlock>
+</apex:form>
+</apex:page>

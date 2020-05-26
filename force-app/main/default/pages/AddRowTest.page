@@ -1,0 +1,33 @@
+<apex:page StandardController="Test_Case_del__c" extensions="MultiAdd" id="thePage">
+<apex:form >
+<apex:pageblock id="pb" >
+    <apex:pageBlockButtons >
+        <apex:commandbutton value="Add More Test" action="{!Add}" rerender="pb1"/>
+        <apex:commandbutton value="Save" action="{!Save}"/>
+    </apex:pageBlockButtons>
+    
+        
+        <apex:pageblock id="pb1">
+            
+        <apex:repeat value="{!lstInner}" var="e1" id="therepeat">
+                <apex:panelGrid columns="5">
+                
+                <apex:panelGrid headerClass="Name">
+                    <apex:facet name="header">Delete Test</apex:facet>
+                    <apex:commandButton value="Delete" action="{!Del}" rerender="pb1">
+                        <apex:param name="rowToBeDeleted" value="{!e1.recCount}" assignTo="{!selectedRowIndex}"></apex:param>
+                    </apex:commandButton>
+                </apex:panelGrid>   
+                
+                <apex:panelGrid title="SPD" >
+                    <apex:facet name="header">Select Test</apex:facet>
+                    <apex:inputfield value="{!e1.acct.Test_Case2_del__c}"/>
+                    
+                </apex:panelGrid>
+                            </apex:panelgrid>
+        </apex:repeat>
+    </apex:pageBlock>
+        
+</apex:pageblock>
+</apex:form>
+</apex:page>

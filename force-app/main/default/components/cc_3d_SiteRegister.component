@@ -1,0 +1,524 @@
+<apex:component >
+<script>
+     
+function validateZIP() {
+    
+    var zipcodeBilling=document.getElementsByName("billingAddress.postalCode")[0].value;
+    var zipcodeShipping=document.getElementsByName("shippingAddress.postalCode")[0].value;
+    var shippingCountry=document.getElementsByName("shippingAddress.countryCode")[0].value;
+    var billingCountry=document.getElementsByName("billingAddress.countryCode")[0].value;
+    
+     var errorDiv=document.getElementById('errors');
+     errorDiv.innerHTML='';
+    
+    var resultValShipping=validateShippingZIP(shippingCountry,zipcodeShipping);  
+    var resultValBilling=validateBillingZIP(billingCountry,zipcodeBilling);
+    if(resultValShipping && resultValBilling){
+    return true;
+    }
+    else{
+    return false;
+    }
+}
+    function validateShippingZIP(shippingCountry,shippingZIP){   
+     
+        if(shippingCountry=='AT' || shippingCountry=='BE' || shippingCountry=='DK' || shippingCountry=='NO' || shippingCountry=='CH'){//Postal code must be 4 digits. AT,BE,DK,NO,CH. //Shipping postal code must be 4 digits.
+            if(shippingZIP.length!=4){                      
+                var errorDiv=document.getElementById('errors');
+                var message = '<div class="dynamyc_page_message dynamic_page_message_error">'+CCRZ.processPageLabelMap('cc_3d_zipcode_error_4digits')+'</div>';
+                errorDiv.innerHTML=errorDiv.innerHTML+message;
+                errorDiv.style.display = 'block';
+                return false;
+            }            
+        }  
+       if(shippingCountry=='DE' || shippingCountry=='IT' || shippingCountry=='ES'){//Shipping Postal code must be 5 digits. DE,IT,ES
+            if(shippingZIP.length!=5){                      
+                var errorDiv=document.getElementById('errors');
+                var message = '<div class="dynamyc_page_message dynamic_page_message_error">'+CCRZ.processPageLabelMap('cc_3d_zipcode_error_5digits')+'</div>';
+                errorDiv.innerHTML=errorDiv.innerHTML+message;
+                errorDiv.style.display = 'block';
+                return false;
+            }            
+        } 
+       if(shippingCountry=='CZ' ){//Shipping Postal code must be 6 digits. CZ.
+            if(shippingZIP.length!=6){                      
+                var errorDiv=document.getElementById('errors');
+                var message = '<div class="dynamyc_page_message dynamic_page_message_error">'+CCRZ.processPageLabelMap('cc_3d_zipcode_error_6digits')+'</div>';
+                errorDiv.innerHTML=errorDiv.innerHTML+message;
+                errorDiv.style.display = 'block';
+                return false;
+            }            
+        } 
+       if(shippingCountry=='US' ){//Shipping Postal code must be 5 or 10 digits. US.
+            if(shippingZIP.length!=5 && shippingZIP.length!=10){                        
+                var errorDiv=document.getElementById('errors');
+                var message = '<div class="dynamyc_page_message dynamic_page_message_error">'+CCRZ.processPageLabelMap('cc_3d_zipcode_error_5or10digits')+'</div>';
+                errorDiv.innerHTML=errorDiv.innerHTML+message;
+                errorDiv.style.display = 'block';
+                return false;
+            }            
+        }
+        if(shippingCountry=='NL'){//Postal code must be 7 digits for NL. Example: 1011 AM
+            var re = /^[0-9]{4} [A-Za-z]{2}$/;
+            var match = re.exec(shippingZIP);
+            if(!match){                      
+                var errorDiv=document.getElementById('errors');
+                var message = '<div class="dynamyc_page_message dynamic_page_message_error">'+CCRZ.processPageLabelMap('cc_3d_zipcode_error_netherlands')+'</div>';
+                errorDiv.innerHTML=errorDiv.innerHTML+message;
+                errorDiv.style.display = 'block';
+                return false;
+            }            
+        }
+        if(shippingCountry=='PL'){//Postal code must be 6 digits for PL. Example: 34-434
+            var re = /^[0-9]{2}-[0-9]{3}$/;
+            var match = re.exec(shippingZIP);
+            if(!match){                      
+                var errorDiv=document.getElementById('errors');
+                var message = '<div class="dynamyc_page_message dynamic_page_message_error">'+CCRZ.processPageLabelMap('cc_3d_zipcode_error_poland')+'</div>';
+                errorDiv.innerHTML=errorDiv.innerHTML+message;
+                errorDiv.style.display = 'block';
+                return false;
+            }            
+        }
+        if(shippingCountry=='PT'){//Postal code must be 8 digits for PO. Example: 7800-800
+            var re = /^[0-9]{4}-[0-9]{3}$/;
+            var match = re.exec(shippingZIP);
+            if(!match){                      
+                var errorDiv=document.getElementById('errors');
+                var message = '<div class="dynamyc_page_message dynamic_page_message_error">'+CCRZ.processPageLabelMap('cc_3d_zipcode_error_portugal')+'</div>';
+                errorDiv.innerHTML=errorDiv.innerHTML+message;
+                errorDiv.style.display = 'block';
+                return false;
+            }            
+        }
+        if(shippingCountry=='SE'){//Postal code must be 6 digits for SE. Example: 168 67
+            var re = /^[0-9]{3} [0-9]{2}$/;
+            var match = re.exec(shippingZIP);
+            if(!match){                      
+                var errorDiv=document.getElementById('errors');
+                var message = '<div class="dynamyc_page_message dynamic_page_message_error">'+CCRZ.processPageLabelMap('cc_3d_zipcode_error_sweden')+'</div>';
+                errorDiv.innerHTML=errorDiv.innerHTML+message;
+                errorDiv.style.display = 'block';
+                return false;
+            }            
+        }
+        if(shippingCountry=='GB'){//Postal code must be 6,7,or 8 digits for GB. Example: SW1A 2LW
+            if(shippingZIP.length!=6 && shippingZIP.length!=7 && shippingZIP.length!=8){                      
+                var errorDiv=document.getElementById('errors');
+                var message = '<div class="dynamyc_page_message dynamic_page_message_error">'+CCRZ.processPageLabelMap('cc_3d_zipcode_error_united_kingdom')+'</div>';
+                errorDiv.innerHTML=errorDiv.innerHTML+message;
+                errorDiv.style.display = 'block';
+                return false;
+            }            
+        }                                    
+        return true;
+    }
+    
+    function validateBillingZIP(billingCountry,billingZIP){ 
+            
+        if(billingCountry=='AT' || billingCountry=='BE' || billingCountry=='DK' || billingCountry=='NO' || billingCountry=='CH'){//Postal code must be 4 digits. AT,BE,DK,NO,CH. //Shipping postal code must be 4 digits.
+            if(billingZIP.length!=4){                      
+                var errorDiv=document.getElementById('errors');
+                var message = '<div class="dynamyc_page_message dynamic_page_message_error">'+CCRZ.processPageLabelMap('cc_3d_zipcode_error_4digits')+'</div>';
+                errorDiv.innerHTML=errorDiv.innerHTML+message;
+                errorDiv.style.display = 'block';
+                return false;
+            }            
+        }  
+       if(billingCountry=='DE' || billingCountry=='IT' || billingCountry=='ES'){//Shipping Postal code must be 5 digits. DE,IT,ES
+            if(billingZIP.length!=5){                      
+                var errorDiv=document.getElementById('errors');
+                var message = '<div class="dynamyc_page_message dynamic_page_message_error">'+CCRZ.processPageLabelMap('cc_3d_zipcode_error_5digits')+'</div>';
+                errorDiv.innerHTML=errorDiv.innerHTML+message;
+                errorDiv.style.display = 'block';
+                return false;
+            }            
+        } 
+       if(billingCountry=='CZ' ){//Shipping Postal code must be 6 digits. CZ.
+            if(billingZIP.length!=6){                      
+                var errorDiv=document.getElementById('errors');
+                var message = '<div class="dynamyc_page_message dynamic_page_message_error">'+CCRZ.processPageLabelMap('cc_3d_zipcode_error_6digits')+'</div>';
+                errorDiv.innerHTML=errorDiv.innerHTML+message;
+                errorDiv.style.display = 'block';
+                return false;
+            }            
+        } 
+       if(billingCountry=='US' ){//Shipping Postal code must be 5 or 10 digits. US.
+            if(billingZIP.length!=5 && billingZIP.length!=10){                        
+                var errorDiv=document.getElementById('errors');
+                var message = '<div class="dynamyc_page_message dynamic_page_message_error">'+CCRZ.processPageLabelMap('cc_3d_zipcode_error_5or10digits')+'</div>';
+                errorDiv.innerHTML=errorDiv.innerHTML+message;
+                errorDiv.style.display = 'block';
+                return false;
+            }            
+        }
+        if(billingCountry=='NL'){//Postal code must be 7 digits for NL. Example: 1011 AM
+            var re = /^[0-9]{4} [A-Za-z]{2}$/;
+            var match = re.exec(billingZIP);
+            if(!match){                      
+                var errorDiv=document.getElementById('errors');
+                var message = '<div class="dynamyc_page_message dynamic_page_message_error">'+CCRZ.processPageLabelMap('cc_3d_zipcode_error_netherlands')+'</div>';
+                errorDiv.innerHTML=errorDiv.innerHTML+message;
+                errorDiv.style.display = 'block';
+                return false;
+            }            
+        }
+        if(billingCountry=='PL'){//Postal code must be 6 digits for PL. Example: 34-434
+            var re = /^[0-9]{2}-[0-9]{3}$/;
+            var match = re.exec(billingZIP);
+            if(!match){                      
+                var errorDiv=document.getElementById('errors');
+                var message = '<div class="dynamyc_page_message dynamic_page_message_error">'+CCRZ.processPageLabelMap('cc_3d_zipcode_error_poland')+'</div>';
+                errorDiv.innerHTML=errorDiv.innerHTML+message;
+                errorDiv.style.display = 'block';
+                return false;
+            }            
+        }
+        if(billingCountry=='PT'){//Postal code must be 8 digits for PO. Example: 7800-800
+            var re = /^[0-9]{4}-[0-9]{3}$/;
+            var match = re.exec(billingZIP);
+            if(!match){                      
+                var errorDiv=document.getElementById('errors');
+                var message = '<div class="dynamyc_page_message dynamic_page_message_error">'+CCRZ.processPageLabelMap('cc_3d_zipcode_error_portugal')+'</div>';
+                errorDiv.innerHTML=errorDiv.innerHTML+message;
+                errorDiv.style.display = 'block';
+                return false;
+            }            
+        }
+        if(billingCountry=='SE'){//Postal code must be 6 digits for SE. Example: 168 67
+            var re = /^[0-9]{3} [0-9]{2}$/;
+            var match = re.exec(billingZIP);
+            if(!match){                      
+                var errorDiv=document.getElementById('errors');
+                var message = '<div class="dynamyc_page_message dynamic_page_message_error">'+CCRZ.processPageLabelMap('cc_3d_zipcode_error_sweden')+'</div>';
+                errorDiv.innerHTML=errorDiv.innerHTML+message;
+                errorDiv.style.display = 'block';
+                return false;
+            }            
+        }
+        if(billingCountry=='GB'){//Postal code must be 6,7,or 8 digits for GB. Example: SW1A 2LW
+            if(billingZIP.length!=6 && billingZIP.length!=7 && billingZIP.length!=8){                      
+                var errorDiv=document.getElementById('errors');
+                var message = '<div class="dynamyc_page_message dynamic_page_message_error">'+CCRZ.processPageLabelMap('cc_3d_zipcode_error_united_kingdom')+'</div>';
+                errorDiv.innerHTML=errorDiv.innerHTML+message;
+                errorDiv.style.display = 'block';
+                return false;
+            }            
+        }                                    
+        return true;
+    }
+    
+</script>
+<script id="Nexeo3d-SiteRegister-NewCustomer-Desktop" type="text/template">
+ <div class="alert alert-error error_messages_section" id="errors" style="display:none;">
+     
+ </div>
+ <form id="newCustomerForm" action="" class="horizontal_form" forceSSL="true">
+  <fieldset>
+   <legend>{{pageLabelMap 'SiteRegistration_PersonalInfo'}}</legend>
+   <label>{{pageLabelMap 'Title'}}
+    <select name="salutation">
+     {{#each salutationOptions}}
+      <option value="{{this.value}}">{{this.label}}</option>
+     {{/each}}
+    </select>
+   </label>
+   <div class="clear"></div>
+   <label>{{pageLabelMap 'CheckOut_FirstName'}}
+    <input type="text" value="{{firstName}}" name="firstName" id="#" onfocus="myFocus(this);" onblur="myBlur(this);">
+   </label>
+   <label >{{pageLabelMap 'CheckOut_LastName'}}
+    <input type="text" value="{{lastName}}" name="lastName" id="#" onfocus="myFocus(this);" onblur="myBlur(this);">
+   </label>
+   <div class="clear"></div>
+   <label>{{pageLabelMap 'CheckOut_PrimaryPhone'}}
+    <input type="text" value="{{primaryPhone}}" name="primaryPhone" id="#" onfocus="myFocus(this);" onblur="myBlur(this);">
+   </label>
+   <div class="clear"></div>
+   <label>{{pageLabelMap 'SiteRegistration_Language'}}
+    <select name="language">
+     {{#each languageOptions}}
+      <option value="{{this.value}}">{{this.label}}</option>
+     {{/each}}
+    </select>
+   </label>
+   <label style="display: none;">{{pageLabelMap 'SiteRegistration_Currency'}}
+    <select name="currencyCode">
+     {{#each currencyOptions}}
+      <option value="{{this.value}}">{{this.label}}</option>
+     {{/each}}
+    </select>
+   </label>
+   {{#ifDisplay 'reg.tmZn'}}
+   <div class="clear"></div>
+   <label>{{pageLabelMap 'SiteRegistration_TimeZone'}}
+    <select name="timeZone" class="timeZoneSelect">
+     {{#each timeZoneOptions}}
+      {{#ifEquals this.value ../timeZone}}
+       <option value="{{this.value}}" selected>{{this.label}}</option>
+      {{else}}
+      <option value="{{this.value}}">{{this.label}}</option>
+      {{/ifEquals}}
+     {{/each}}
+    </select>
+   </label>
+   {{/ifDisplay}}
+  </fieldset>
+  {{#ifDisplay 'reg.addlInf'}}
+  <fieldset>
+    <legend>{{pageLabelMap 'SiteRegistration_AdditionalInfo'}}</legend>
+    <label>{{pageLabelMap 'CheckOut_CompanyName'}}
+     <input type="text" value="{{companyName}}" name="companyName" id="#" onfocus="myFocus(this);" onblur="myBlur(this);">
+    </label>
+    <label style="display: none;">{{pageLabelMap 'SiteRegistration_CompanyType'}}
+     <select name="companyType">
+      {{#each companyTypeOptions}}
+       <option value="{{this.value}}">{{this.label}}</option>
+      {{/each}}
+     </select>
+     <label>
+      <input type="checkbox" name="taxExemptFlag" class="checkbox" value="true" {{#if this.taxExemptFlag}} checked {{/if}}  />{{pageLabelMap 'SiteRegistration_TaxExempt'}}
+     </label>
+    </label>
+   <div class="clear"></div>
+   {{#ifDisplay 'UR.ShowCF1'}}
+   <label><span class='customFied1label'>{{pageLabelMap 'SiteRegistration_CustomField1'}}</span>
+    <input type="text" value="{{customField1}}" name="customField1" id="#" class="customField1" onfocus="myFocus(this);" onblur="myBlur(this);">
+   </label>
+   {{/ifDisplay}}
+   {{#ifDisplay 'UR.ShowCF2'}}
+   <label><span>&nbsp;</span>
+    <div><input type="checkbox" name="customField2" class="checkbox" value="true" {{#if this.customField2}} checked {{/if}}  /><span class='customFied2label'>{{pageLabelMap 'SiteRegistration_CustomField2'}}</span></div>
+   </label>
+   {{/ifDisplay}}
+  </fieldset>
+  {{/ifDisplay}}
+  <fieldset>
+   <legend>{{pageLabelMap 'SiteRegistration_LoginInfo'}}</legend>
+   <label>{{pageLabelMap 'SiteRegistration_UsernameEmail'}}
+    <input type="text" value="{{username}}" name="username" id="#" onfocus="myFocus(this);" onblur="myBlur(this);">
+   </label>
+   {{#ifDisplay 'UR.DirLogin'}}
+    <label>
+     <span class='newpasswordLabel'>{{pageLabelMap 'SiteRegistration_NewPassword'}}</span>
+     <input type="password" id="NewPassword" name="NewPassword" onfocus="myFocus(this);" onblur="myBlur(this);"/>
+    </label>   
+    <label><span class='confirmpasswordLabel'>{{pageLabelMap 'SiteRegistration_ConfirmPassword'}}</span>
+     <input type="password" id="ConfirmPassword" name="ConfirmPassword" onfocus="myFocus(this);" onblur="myBlur(this);"/>
+    </label>
+    <p class="left passwordInstr">{{pageLabelMap 'SiteRegistration_PasswordInstr'}}</p>
+   {{/ifDisplay}}
+  </fieldset>
+  <fieldset name="billingAddress">
+   <legend>{{pageLabelMap 'CheckOut_BillingAddress'}}</legend>
+   <label>{{pageLabelMap 'CheckOut_Address'}}
+    <input type="text" value="{{billingAddress.address1}}" name="billingAddress.address1" id="#" class="address" onfocus="myFocus(this);" onblur="myBlur(this);">
+   </label>
+   <label>{{pageLabelMap 'Profile_Address_2'}}
+    <input type="text" value="{{billingAddress.address2}}" name="billingAddress.address2" id="#" class="address" onfocus="myFocus(this);" onblur="myBlur(this);">
+   </label>
+   <div class="clear"></div>
+   <label>{{pageLabelMap 'CheckOut_City'}}
+    <input type="text" value="{{billingAddress.city}}" name="billingAddress.city" id="#" onfocus="myFocus(this);" onblur="myBlur(this);">
+   </label>
+   <!--<label>{{pageLabelMap 'CheckOut_State'}}
+    <div class="billingStateSection" />
+   </label>-->
+    <label>{{pageLabelMap 'CheckOut_Country'}}
+    {{{selectGeo 'country' this.countryList billingAddress.country 'billing wide countryListing' 'billingAddress.'}}}
+   </label>
+   <div class="clear"></div>
+   <label>{{pageLabelMap 'CheckOut_PostalCode'}}
+    <input type="text" value="{{billingAddress.postalCode}}" name="billingAddress.postalCode" id="#" onfocus="myFocus(this);" onblur="myBlur(this);">
+   </label>
+   <label>{{pageLabelMap 'CheckOut_State'}}
+    <div class="billingStateSection" />
+   </label>
+    
+  </fieldset>
+  <fieldset>
+   <legend>{{pageLabelMap 'CheckOut_ShippingAddress'}}</legend>
+   <label>
+    <a class="useBillingAddress">{{pageLabelMap 'Checkout_UseBillingAddress'}}</a>
+   </label>
+   <div class="clear"></div>
+   <label>{{pageLabelMap 'CheckOut_Address'}}
+    <input type="text" value="{{shippingAddress.address1}}" name="shippingAddress.address1" id="#" class="address" onfocus="myFocus(this);" onblur="myBlur(this);">
+   </label>
+   <label>{{pageLabelMap 'Profile_Address_2'}}
+    <input type="text" value="{{shippingAddress.address2}}" name="shippingAddress.address2" id="#" class="address" onfocus="myFocus(this);" onblur="myBlur(this);">
+   </label>
+   <div class="clear"></div>
+   <label>{{pageLabelMap 'CheckOut_City'}}
+    <input type="text" value="{{shippingAddress.city}}" name="shippingAddress.city" id="#" onfocus="myFocus(this);" onblur="myBlur(this);">
+   </label>
+       <label>{{pageLabelMap 'CheckOut_Country'}}
+    {{{selectGeo 'country' this.countryList shippingAddress.country 'shipping wide countryListing' 'shippingAddress.'}}}
+   </label>
+   <div class="clear"></div>
+   <label>{{pageLabelMap 'CheckOut_PostalCode'}}
+    <input type="text" value="{{shippingAddress.postalCode}}" name="shippingAddress.postalCode" id="#" onfocus="myFocus(this);" onblur="myBlur(this);">
+   </label>
+<label>{{pageLabelMap 'CheckOut_State'}}
+    <div class="shippingStateSection" />
+   </label>
+   
+  </fieldset>
+  <div id="termsDiv"></div>
+  <p class="right clear">{{pageLabelMap 'Required_Fields'}}</p>
+  <p class="link_button"><input name="" type="button" value="{{pageLabelMap 'Site_Submit'}}"  class="button submit"/></p>
+ </form>
+</script>
+
+<script id="Nexeo3d-SiteRegister-NewCustomer-Mobile" type="text/template">
+ <div class="alert alert-error error_messages_section" style="display:none;"></div>
+ <form id="newCustomerForm" action="" class="horizontal_form" forceSSL="true">
+  <fieldset>
+   <legend>{{pageLabelMap 'SiteRegistration_PersonalInfo'}}</legend>
+
+   <label>{{pageLabelMap 'Title'}}
+    <select name="salutation">
+     {{#each salutationOptions}}
+      <option value="{{this.value}}">{{this.label}}</option>
+     {{/each}}
+    </select>
+   </label>
+   <div class="clear"></div>
+   <label>{{pageLabelMap 'CheckOut_FirstName'}}
+    <input class="mobileInput" type="text" value="{{firstName}}" name="firstName" id="#" onfocus="myFocus(this);" onblur="myBlur(this);">
+   </label>
+   <label >{{pageLabelMap 'CheckOut_LastName'}}
+    <input class="mobileInput" type="text" value="{{lastName}}" name="lastName" id="#" onfocus="myFocus(this);" onblur="myBlur(this);">
+   </label>
+   <div class="clear"></div>
+   <label>{{pageLabelMap 'CheckOut_PrimaryPhone'}}
+    <input class="mobileInput" type="text" value="{{primaryPhone}}" name="primaryPhone" id="#" onfocus="myFocus(this);" onblur="myBlur(this);">
+   </label>
+   <div class="clear"></div>
+   <label>{{pageLabelMap 'SiteRegistration_Language'}}
+    <select name="language">
+     {{#each languageOptions}}
+      <option value="{{this.value}}">{{this.label}}</option>
+     {{/each}}
+    </select>
+   </label>
+   <label style="display: none;">{{pageLabelMap 'SiteRegistration_Currency'}}
+    <select name="currencyCode">
+     {{#each currencyOptions}}
+      <option value="{{this.value}}">{{this.label}}</option>
+     {{/each}}
+    </select>
+   </label>
+   {{#ifDisplay 'reg.tmZn'}}
+   <div class="clear"></div>
+   <label>{{pageLabelMap 'SiteRegistration_TimeZone'}}
+    <select name="timeZone" class="timeZoneSelect">
+     {{#each timeZoneOptions}}
+      {{#ifEquals this.value ../timeZone}}
+       <option value="{{this.value}}" selected>{{this.label}}</option>
+      {{else}}
+       <option value="{{this.value}}">{{this.label}}</option>
+      {{/ifEquals}}
+     {{/each}}
+    </select>
+   </label>
+   {{/ifDisplay}}
+  </fieldset>
+  {{#ifDisplay 'reg.addlInf'}}
+  <fieldset>
+   <legend>{{pageLabelMap 'SiteRegistration_AdditionalInfo'}}</legend>
+    <label>{{pageLabelMap 'CheckOut_CompanyName'}}
+     <input class="mobileInput" type="text" value="{{companyName}}" name="companyName" id="#" onfocus="myFocus(this);" onblur="myBlur(this);">
+    </label>
+    <label style="display: none;">{{pageLabelMap 'SiteRegistration_CompanyType'}}
+     <select name="companyType">
+      {{#each companyTypeOptions}}
+       <option value="{{this.value}}">{{this.label}}</option>
+      {{/each}}
+     </select>
+    <label>
+     <input type="checkbox" name="taxExemptFlag" class="checkbox" value="true" {{#if this.taxExemptFlag}} checked {{/if}}  />{{pageLabelMap 'SiteRegistration_TaxExempt'}}
+    </label>
+   </label>
+   <div class="clear"></div>
+   {{#ifDisplay 'UR.ShowCF1'}}
+   <label><span class='customFied1label'>{{pageLabelMap 'SiteRegistration_CustomField1'}}</span>
+    <input class="mobileInput" type="text" value="{{customField1}}" name="customField1" id="#" class="customField1" onfocus="myFocus(this);" onblur="myBlur(this);">
+   </label>
+   {{/ifDisplay}}
+   {{#ifDisplay 'UR.ShowCF2'}}
+   <label> <span class='customFied2label'>{{pageLabelMap 'SiteRegistration_CustomField2'}}</span>
+    <input class="mobileInput" type="text" value="{{customField2}}" name="customField2" id="#" class="customField2" onfocus="myFocus(this);" onblur="myBlur(this);">
+   </label>
+   {{/ifDisplay}}
+  </fieldset>
+  {{/ifDisplay}}
+  <fieldset>
+   <legend>{{pageLabelMap 'SiteRegistration_LoginInfo'}}</legend>
+   <label>{{pageLabelMap 'SiteRegistration_UsernameEmail'}}
+    <input class="mobileInput" type="text" value="{{username}}" name="username" id="#" onfocus="myFocus(this);" onblur="myBlur(this);">
+   </label>
+  </fieldset>
+  <fieldset name="billingAddress">
+   <legend>{{pageLabelMap 'CheckOut_BillingAddress'}}</legend>
+   <label>{{pageLabelMap 'CheckOut_Address'}}
+    <input type="text" value="{{billingAddress.address1}}" name="billingAddress.address1" id="#" class="address" onfocus="myFocus(this);" onblur="myBlur(this);">
+   </label>
+   <label>{{pageLabelMap 'Profile_Address_2'}}
+    <input type="text" value="{{billingAddress.address2}}" name="billingAddress.address2" id="#" class="address" onfocus="myFocus(this);" onblur="myBlur(this);">
+   </label>
+   <div class="clear"></div>
+   <label>{{pageLabelMap 'CheckOut_City'}}
+    <input class="mobileInput" type="text" value="{{billingAddress.city}}" name="billingAddress.city" id="#" onfocus="myFocus(this);" onblur="myBlur(this);">
+   </label>
+   <label>{{pageLabelMap 'CheckOut_State'}}
+    <div class="billingStateSection" />
+   </label>
+   <div class="clear"></div>
+   <label>{{pageLabelMap 'CheckOut_PostalCode'}}
+    <input class="mobileInput" type="text" value="{{billingAddress.postalCode}}" name="billingAddress.postalCode" id="#" onfocus="myFocus(this);" onblur="myBlur(this);">
+   </label>
+   <label>{{pageLabelMap 'CheckOut_Country'}}
+    {{{selectGeo 'country' this.countryList billingAddress.country 'billing countryListing' 'billingAddress.'}}}
+   </label>
+  </fieldset>
+  <fieldset>
+   <legend>{{pageLabelMap 'CheckOut_ShippingAddress'}}</legend>
+   <label>
+    <a class="useBillingAddress">Use Billing Address</a>
+   </label>
+   <div class="clear"></div>
+   <label>{{pageLabelMap 'CheckOut_Address'}}
+    <input type="text" value="{{shippingAddress.address1}}" name="shippingAddress.address1" id="#" class="address" onfocus="myFocus(this);" onblur="myBlur(this);">
+   </label>
+   <label>{{pageLabelMap 'Profile_Address_2'}}
+    <input type="text" value="{{shippingAddress.address2}}" name="shippingAddress.address2" id="#" class="address" onfocus="myFocus(this);" onblur="myBlur(this);">
+   </label>
+   <div class="clear"></div>
+   <label>{{pageLabelMap 'CheckOut_City'}}
+    <input class="mobileInput" type="text" value="{{shippingAddress.city}}" name="shippingAddress.city" id="#" onfocus="myFocus(this);" onblur="myBlur(this);">
+   </label>
+   <label>{{pageLabelMap 'CheckOut_State'}}
+    <div class="shippingStateSection" />
+   </label>
+   <div class="clear"></div>
+   <label>{{pageLabelMap 'CheckOut_PostalCode'}}
+    <input class="mobileInput" type="text" value="{{shippingAddress.postalCode}}" name="shippingAddress.postalCode" id="#" onfocus="myFocus(this);" onblur="myBlur(this);">
+   </label>
+   <label>{{pageLabelMap 'CheckOut_Country'}}
+    <
+    {{{selectGeo 'country' this.countryList shippingAddress.country 'shipping countryListing' 'shippingAddress.'}}}
+   </label>
+  </fieldset>
+  <div id="termsDiv"></div>
+  <p class="right clear">{{pageLabelMap 'Required_Fields'}}</p>
+  <p class="link_button"><input name="" type="button" value="{{pageLabelMap 'Site_Submit'}}" class="button submit"/></p>
+ </form>
+</script>
+
+<script type="text/javascript">
+    CCRZ.uiProperties.newCustomerView.desktop.tmpl = 'Nexeo3d-SiteRegister-NewCustomer-Desktop';
+    CCRZ.uiProperties.newCustomerView.phone.tmpl   = 'Nexeo3d-SiteRegister-NewCustomer-Mobile';
+</script>
+
+</apex:component>

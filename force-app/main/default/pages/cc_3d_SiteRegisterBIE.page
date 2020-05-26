@@ -1,0 +1,6 @@
+<apex:page showHeader="false" sidebar="false" docType="html-5.0" standardStylesheets="false" cache="false" applyHtmlTag="false" applyBodyTag="false">
+    <c:cc_3d_SiteRegister />
+    <c:cc_3d_SiteRegisterCountryFilter />
+    <c:cc_3d_SiteRegisterTerms />
+    <c:cc_3d_SiteRegisterNewUserSubmit />
+</apex:page>

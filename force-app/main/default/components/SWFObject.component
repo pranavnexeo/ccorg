@@ -1,0 +1,30 @@
+<apex:component id="flash">
+  <apex:attribute name="src" required="true" type="String" description="The path to the movie displayed, expressed as a URL."/>
+  <apex:attribute name="width" required="true" type="String" description="The width at which this movie is displayed."/>
+  <apex:attribute name="height" required="true" type="String" description="The height at which this movie is displayed."/>
+  <apex:attribute name="flashvars" type="String" description="The flashvars attribute can be used to import root level variables to the movie."/>
+  <apex:attribute name="codebase" type="String" description="The path to the download url for the flash player"/>
+<object classid="clsid:D27CDB6E-AE6D-11cf-96B8-444553540000"
+  id="{!$Component.flash}" width="{!width}" height="{!height}"
+  codebase="{!codebase}">
+  <param name="movie" value="{!src}" />
+  <param name="FlashVars" value="{!flashvars}" />
+  <param name="quality" value="high" />
+  <param name="bgcolor" value="#869ca7" />
+  <param name="allowScriptAccess" value="sameDomain" />
+  <embed src="{!src}" FlashVars="{!flashvars}" quality="high" bgcolor="#869ca7"
+    width="{!width}" height="{!height}" name="{!$Component.flash}" align="middle"
+    play="false"
+    loop="false"
+    quality="high"
+    allowScriptAccess="sameDomain"
+    type="application/x-shockwave-flash"
+    pluginspage="http://www.adobe.com/go/getflashplayer">
+  </embed>
+</object>
+<script>
+var flashObject = (navigator.appName.indexOf ("Microsoft") !=-1)  ? window["{!$Component.flash}"] : document["{!$Component.flash}"];
+var flashElement = document.getElementById("{!$Component.flash}");
+flashElement.parentNode.flash = flashObject;
+</script>
+</apex:component>

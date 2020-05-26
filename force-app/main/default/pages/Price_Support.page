@@ -1,0 +1,236 @@
+<apex:page standardController="Price_Request_Transaction__c" extensions="Price_Support_Controller" showheader="false" sidebar="false" renderas="PDF">
+<html>
+<head>
+<style type="text/css">
+         
+table#thetable, tr.thetr, td.thetd
+{
+border:1px solid green;
+border-collapse:collapse;
+}
+th.theth
+{
+background-color:green;
+color:white;
+}
+
+.labelFont {
+font-size:20px;
+}
+
+
+.title {
+    font-size:28px;
+    font-weight:bold;
+    display:block;
+}
+
+.subtitle {
+    font-weight:bold;
+    font-size:14px;
+}
+
+.subtitleWithGrayBackground {
+    font-weight:bold;
+    font-size:18px;
+    background-color: #DDDDDD;
+}
+
+.cellHeader {
+/*  background-color: #DDDDDD; */
+    text-align: right;
+    font-weight:bold;
+    font-size:14px;
+}
+
+.subtitle2 {
+    margin-left:2em;
+    font-weight:bold;
+    font-size:12px;
+}
+
+.dataTable {
+    margin-bottom: 2em;
+
+    border-color: #000000;
+    border-width: 0 0 1px 1px;
+    border-style: solid;
+
+     /* Stop Email Addresses from being underlined */
+     text-decoration:none;
+
+
+    /* Specify preference to not break a page at
+        any element with this style. */
+    page-break-before: auto;
+}
+.odd {background-color: White; font-size:80%}
+
+.even {background-color: LightSteelBlue; font-size:80%}
+
+.dataTableHeader {
+    font-weight:bold;
+    font-size:14px;
+
+    border-color: #000000;
+    border-width: 1px 1px 0 0;
+    border-style: solid;
+    margin: 0;
+    padding: 4px;
+    background-color: #DDDDDD;
+    text-wrap: unrestricted;
+    table-layout: fixed;
+    overflow: hidden;
+    word-break:break-all;
+    
+    
+
+}
+
+.dataTableHeader_fontsize10 {
+    font-weight:bold;
+    font-size:10px;
+
+    border-color: #000000;
+    border-width: 1px 1px 1px 1px;
+    border-style: solid;
+    margin: 0;
+    padding: 1px;
+    
+    text-wrap: unrestricted;
+    table-layout: fixed;
+    overflow: hidden;
+    word-break:break-all;
+}
+.lineitems {
+    border-color: #000000;
+    border-width: 1px 1px 0 0;
+    border-style: solid;
+    margin: 0px;
+    padding: 4px;
+    background-color: #FFFFFF;
+     /* Stop Email Addresses from being underlined */
+     text-decoration:none;
+    text-wrap: unrestricted;
+    table-layout: fixed;
+    overflow: hidden;
+    word-wrap: break-word;
+    vertical-align: top;
+
+}
+
+.item {
+     text-decoration:none;
+     text-wrap: unrestricted;
+     word-break:break-all;
+     
+}
+
+thead { display: table-header-group; }
+tfoot { 
+display: table-footer-group;
+font-size:65% 
+} 
+</style> 
+</head> 
+<body>
+ <table>
+    <thead>
+     <tr>
+      <th width="100%">
+       <table>
+        <tr><td style="width:75%;">
+         <p>
+          <apex:image url="{!$Resource.Nexeo_Logo}" /><span style="font-size: 15px;"><strong>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;{!HeaderDate} </strong></span></p>
+        </td></tr>
+       </table>
+      <hr/>
+     </th></tr>
+    </thead>
+    <tbody>
+    <tr><td>
+</td></tr></tbody>
+
+</table>
+<br/>
+
+<apex:panelGrid >
+   
+ <apex:dataTable value="{!prt}" var="t" styleClass="tableClass" width="100%" style="font-size: 13px">
+       <apex:column style="width:250px">
+         Material: <apex:outputfield value="{!t.Material__c}" style="font-size: 13px;"/>
+      </apex:column>
+       </apex:dataTable>
+         
+    <apex:dataTable value="{!prt}" var="t" styleClass="tableClass" width="100%" style="font-size: 13px">
+      <apex:column >
+          Ship-To Name: <apex:outputtext value="{!t.Ship_to_Name__c}" style="font-size: 13px;"/>
+      </apex:column>
+    </apex:dataTable>
+
+    <apex:dataTable value="{!prt}" var="t" styleClass="tableClass" width="100%" style="font-size: 13px">
+      <apex:column >
+          Seller Name (Local): <apex:outputtext value="{!t.Ship_To_Seller__c}" style="font-size: 13px;"/>
+      </apex:column>
+    </apex:dataTable>
+    
+    <apex:dataTable value="{!prt}" var="t" styleClass="tableClass"  width="100%" style="font-size: 13px">
+      <apex:column >
+          Corporate Account Manager: <apex:outputtext value="{!t.HQ_Seller_Name__c}" style="font-size: 13px;"/>
+      </apex:column>
+    </apex:dataTable>
+    <apex:dataTable value="{!prt}" var="t" styleClass="tableClass"  width="100%" style="font-size: 13px">
+      <apex:column >
+          Competitor: <apex:outputtext value="{!t.Competitor__r.name}" style="font-size: 13px;"/>
+      </apex:column>
+    </apex:dataTable>
+    <apex:dataTable value="{!prt}" var="t" styleClass="tableClass"  width="100%" style="font-size: 13px">
+      <apex:column >
+          Competitive Price : <apex:outputtext value="{!t.Competitive_Price__c}" style="font-size: 13px;"/>
+      </apex:column>
+    </apex:dataTable>
+    <apex:dataTable value="{!prt}" var="t" styleClass="tableClass" width="100%" style="font-size: 13px">
+      <apex:column >
+          Default Plant of Material : <apex:outputtext value="{!t.Plant__c}" style="font-size: 13px;"/>
+      </apex:column>
+    </apex:dataTable>
+    <apex:dataTable value="{!prt}" var="t" styleClass="tableClass" width="100%" style="font-size: 13px">
+      <apex:column >
+          Customer City/State : <apex:outputtext value="{!t.Region_of_Seller__c}" style="font-size: 13px;"/>
+      </apex:column>
+    </apex:dataTable>
+        
+</apex:panelGrid> 
+
+<br/><br/>
+<c:PRT_Level_2_Table recordid="{!recordId}"/> <br/>
+
+<br/><br/>
+<div style="display:{!if(checklist,"block","none")};">
+<table id="thetable" style="border:1px solid green;border-collapse:collapse;">
+<tr class="thetr" style="border:1px solid green;border-collapse:collapse;">
+<th class="theth" style="background-color:green;color:white;">Agreement Number</th>
+<th class="theth" style="background-color:green;color:white;">Effective Date</th>
+<th class="theth" style="background-color:green;color:white;">Expiration Date</th>
+<th class="theth" style="background-color:green;color:white;">Supplier Name</th>
+<th class="theth" style="background-color:green;color:white;">Supplier Supported Price</th>
+<th class="theth" style="background-color:green;color:white;">1st Discount (Sell)</th>
+
+</tr>
+<apeX:repeat value="{!PS}" var="i">
+<tr class="thetr" style="border:1px solid green;border-collapse:collapse;">
+<td class="thetd" style="border:1px solid green;border-collapse:collapse;"><apex:outputfield value="{!i.Agreement_Number__c}"/></td>
+<td class="thetd" style="border:1px solid green;border-collapse:collapse;"><apex:outputfield value="{!i.Effective_Date__c}"/></td>
+<td class="thetd" style="border:1px solid green;border-collapse:collapse;"><apex:outputfield value="{!i.Expiration_Date__c}"/></td>
+<td class="thetd" style="border:1px solid green;border-collapse:collapse;"><apex:outputfield value="{!i.Supplier_Name__c}"/></td>
+<td class="thetd" style="border:1px solid green;border-collapse:collapse;"><apex:outputfield value="{!i.Supplier_Supported_Price__c}"/></td>
+<td class="thetd" style="border:1px solid green;border-collapse:collapse;"><apex:outputfield value="{!i.X1st_Discount_Sell__c}"/></td>
+</tr>
+</apex:repeat>
+</table>
+</div>
+
+</body>
+</html>
+
+</apex:page>

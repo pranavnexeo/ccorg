@@ -1,0 +1,21 @@
+<apex:page controller="CrossReferencedPropertyController" action="{!init}" showHeader="false">
+
+<apex:form >
+    <apex:pageBlock title="Cross Referenced Fee/Lease Property">
+    
+    	<apex:outputLabel value="No cross referenced deed/lease is available" rendered="{!emptyFlag}"/>
+    
+        <apex:pageBlockTable value="{!propertyList}" var="propObj" rendered="{!NOT(emptyFlag)}">
+        
+            <apex:column headerValue="Property Id" ><apex:commandLink value="{!propObj.name}" action="/{!propObj.Id}"/></apex:column>
+            <apex:column headerValue="File Number" value="{!propObj.fileNumber}" />  
+               
+        </apex:pageBlocktable>
+        
+        
+    
+    </apex:pageBlock>
+    
+  </apex:form>  
+
+</apex:page>

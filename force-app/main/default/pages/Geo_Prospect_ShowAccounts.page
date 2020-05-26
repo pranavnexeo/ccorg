@@ -1,0 +1,244 @@
+<apex:page standardController="Account" extensions="Account_Geo_Prospect1" standardStylesheets="true" showHeader="false" sidebar="false" id="thepage">
+ <!-- Begin Default Content REMOVE THIS -->
+  <link href="{!URLFOR($Resource.bootstrap, '/bootstrap-3.1.1-dist/css/bootstrap.min.css')}" rel="stylesheet" />
+  <script src="https://maps.googleapis.com/maps/api/js?key={!GoogleAPIKey}&v=3.exp&sensor=true&libraries=places"></script>
+  <script src="{!URLFOR($Resource.bootstrap, '/bootstrap-3.1.1-dist/js/jquery.js')}"></script>
+  <script src="{!URLFOR($Resource.bootstrap, '/bootstrap-3.1.1-dist/js/bootstrap.min.js')}" />
+  <script type='text/javascript' src='/canvas/sdk/js/29.0/publisher.js'></script>
+  <script src="{!URLFOR($Resource.oms, '/omsJS/oms.min.js')}" />
+  
+
+  
+  <style>
+  @media (min-width: 90%) {
+      .container {
+        //max-width: 730px;
+      }
+    }
+    
+    #legend {
+        font-family: Arial, sans-serif;
+        font-size: 12px;
+        background: #fff;
+        padding: 10px;
+        margin: 10px;
+        border: 3px solid #000;
+        
+      }
+      #legend h4 {
+        margin-top: 0;
+      }
+      #legend img {
+        vertical-align: middle;
+      }
+      
+  </style>
+  <script>
+  
+        var map, infowindow, dirId, lat, lon, name, id, type, div, owner, oms, marker, iw, iconImg, bounds, loc; 
+        var gm = google.maps;
+        var acctid = '{!$CurrentPage.parameters.id}'; 
+        var acctname = '{!$CurrentPage.parameters.name}'; 
+        var thislat = {!lat}; 
+        var thislng = {!lng}; 
+                    
+        if(thislat != '' || thislat != null){
+            var json = '{!s}';
+            var AcctRec = JSON.parse(json);  
+            
+            var mainjson = '{!main}';
+            var mainAcctRec = JSON.parse(mainjson);
+        }
+        
+        var usualColor = 'eebb22';
+        var spiderfiedColor = 'ffee22';
+        var iconWithColor = function(color) {
+            return 'http://chart.googleapis.com/chart?chst=d_map_xpin_letter&chld=pin|+|' +
+              color + '|000000|ffff00';
+          }
+        
+        var shadow;
+        var bounds = new google.maps.LatLngBounds();
+        
+        $(document).ready(function(){
+        if(thislat == null || thislat =='')
+            alert('Address information on account is not proper.');
+        else
+            init();        
+        });
+        
+        function init() {
+                    
+                    var mapOpt = {
+                          center:new google.maps.LatLng(thislat,thislng),
+                          zoom:15,
+                          mapTypeId:google.maps.MapTypeId.ROADMAP,
+                          mapTypeControl: true
+                      };
+                      
+                      map=new google.maps.Map(document.getElementById("googleMap"),mapOpt);
+                      
+                      var iconBase = 'https://maps.google.com/mapfiles/kml/shapes/';
+                        var icons = {
+                          Chemicals: {
+                            name: '31-Nexeo Chemicals',
+                            icon: 'http://chart.apis.google.com/chart?chst=d_map_pin_letter|FF5733'
+                          },
+                          Plastics: {
+                            name: '32-Nexeo Plastics',
+                            icon: iconBase + 'library_maps.png'
+                          },
+                          EnvSvcs: {
+                            name: '34-Nexeo Env Svcs',
+                            icon: iconBase + 'info-i_maps.png'
+                          },
+                          SmallPack: {
+                            name: '36-Nexeo Small Package',
+                            icon: iconBase + 'info-i_maps.png'
+                          }
+                        };
+                      
+                      oms = new OverlappingMarkerSpiderfier(map,{markersWontMove: true, markersWontHide: true});
+                      iw = new gm.InfoWindow();
+                      shadow = new gm.MarkerImage(
+                        'http://www.google.com/intl/en_ALL/mapfiles/shadow50.png',
+                        new gm.Size(37, 34),  // size   - for sprite clipping
+                        new gm.Point(0, 0),   // origin - ditto
+                        new gm.Point(10, 34)  // anchor - where to meet map location
+                          );
+                         
+                      oms.addListener('click', function(marker) {
+                        //iw.setContent(marker.desc);
+                        //iw.open(map, marker);
+                        
+                         window.open('/' + marker.desc);
+                        //if(typeof sforce != 'undefined')
+                        //sforce.one.goToSObject(marker.desc);
+                          //else
+                          //window.open('/' + marker.desc);
+                        //window.location = '/' + recordid;
+                        
+                      });
+                      oms.addListener('spiderfy', function(markers) {
+                        /*for(var i = 0; i < markers.length; i ++) {
+                          markers[i].setIcon(iconWithColor(spiderfiedColor));
+                          markers[i].setShadow(null);
+                        } */
+                        iw.close();
+                      });
+                      oms.addListener('unspiderfy', function(markers) {
+                        /*for(var i = 0; i < markers.length; i ++) {
+                          markers[i].setIcon(iconWithColor(usualColor));
+                          markers[i].setShadow(shadow);
+                        }*/
+                      });  
+                      
+                      
+                    
+                    for(var i=0;i<AcctRec.length;i++){
+                         dirId = AcctRec[i].Id; 
+                         lat = AcctRec[i].Account_Location__Latitude__s;
+                         lng = AcctRec[i].Account_Location__Longitude__s;
+                         name = AcctRec[i].Name;
+                         type = AcctRec[i].Type__c;
+                         div = AcctRec[i].Division__c;
+                         owner = AcctRec[i].Owner_Name__c;
+                     
+                    
+                     if(!((AcctRec[i].Account_Id__c).indexOf(acctid) > -1) ){
+                         createMarker(dirId, name, lat, lng, div, owner,'');
+
+                        oms.addMarker(marker); }    
+                      }
+                  
+                         dirId = mainAcctRec.Id; 
+                         lat = mainAcctRec.Account_Location__Latitude__s;
+                         lng = mainAcctRec.Account_Location__Longitude__s;
+                         name = mainAcctRec.Name;
+                         type = mainAcctRec.Type__c;
+                         div = mainAcctRec.Division__c;
+                         owner = mainAcctRec.Owner_Name__c;
+                      
+                         createMarker(dirId, name, lat, lng, div, owner, 'main');
+                         oms.addMarker(marker);
+                         
+                         center = bounds.getCenter();
+                         map.fitBounds(bounds);
+
+                 var legend = document.getElementById('legend');
+                    for (var key in icons) {
+                      var type = icons[key];
+                      var name = type.name;
+                      var icon = type.icon;
+                      var div = document.createElement('div');
+                      div.innerHTML = name;
+                      legend.appendChild(div);
+                    }
+            
+                    map.controls[google.maps.ControlPosition.RIGHT_BOTTOM].push(legend);
+                      
+                  
+              } 
+            
+            
+            function createMarker(dirId, name, lat, lng, div, owner, main) {
+              
+              if(div == '' && div == undefined)
+                  iconImg = new google.maps.MarkerImage("http://chart.apis.google.com/chart?chst=d_map_pin_letter|FF5733");
+              else if(div != '' && div != undefined){
+              if(main=='main')
+                  iconImg = new google.maps.MarkerImage("http://chart.apis.google.com/chart?chst=d_map_xpin_letter&chld=pin_star||58FAF4|FF0000");
+              else{
+                  if(div.indexOf('Nexeo Chem') > -1)
+                      iconImg = new google.maps.MarkerImage("http://chart.apis.google.com/chart?chst=d_map_pin_letter&chld=31|FF4000"); 
+                  else if(div.indexOf('Nexeo Plastics') > -1)
+                      iconImg = new google.maps.MarkerImage("http://chart.apis.google.com/chart?chst=d_map_pin_letter&chld=32|F4FA58");   
+                  else if(div.indexOf('Nexeo Small Package') > -1)
+                      iconImg = new google.maps.MarkerImage("http://chart.apis.google.com/chart?chst=d_map_pin_letter&chld=36|F781D8");      
+                  else if(div.indexOf('Nexeo Env Svcs') > -1)
+                      iconImg = new google.maps.MarkerImage("http://chart.apis.google.com/chart?chst=d_map_pin_letter&chld=34|088A08");
+                  else if(div.indexOf('Nexeo Composites') > -1)
+                      iconImg = new google.maps.MarkerImage("http://chart.apis.google.com/chart?chst=d_map_pin_letter&chld=33|BDBDBD");       
+              
+              }}
+              
+              var pt = new google.maps.LatLng(lat, lng);
+              bounds.extend(pt);
+            
+                  
+              marker = new google.maps.Marker({
+                            position: new google.maps.LatLng(lat, lng),
+                            map: map,
+                            title: ''+name+'('+owner+')',
+                            icon: iconImg,
+                            shadow: shadow
+                            
+                            
+              });
+               marker.desc = dirId;
+              
+             /* google.maps.event.addListener(marker, 'click', function() {
+                 window.open('/' + dirId);
+                
+              });*/
+              
+            }      
+            
+
+            </script>
+            <div class="container">
+             <apex:form styleclass="form-horizontal" id="theform"> 
+            
+              <div id="page-wrapper" class="alert alert-info" role="alert">
+              <div class="container-fluid">
+            <div class="panel panel-heading">
+                      <h4 class="panel-title"><b>NEARBY ACCOUNT SEARCH FOR : {!AccountName} </b></h4>
+                      
+            </div>
+            <div id="googleMap" style="width:100%;height:580px;"></div>
+            <div id="legend"><h4>Legend</h4></div>
+            </div></div>
+           </apex:form> 
+            </div>
+ 
+</apex:page>

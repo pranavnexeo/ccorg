@@ -1,0 +1,500 @@
+<apex:page standardController="Account" extensions="AccntPlan" showHeader="false" renderAs="pdf" >
+    <head>
+    <style type="text/css" media="print">
+        @page {
+            @top-left {
+                content: element(header);
+            }
+        }
+        div.header {
+            display: bold; 
+            padding: 5px;   
+            position: running(header);
+        }              
+    </style>          
+    </head>      
+    <div class="header">        
+        <div>
+             <apex:outputText value="{!AccountDetailSection_Header}" styleClass="subtitle"/>
+        </div>  
+    </div>    
+    <apex:stylesheet value="{!$Resource.printcss}"/>
+
+    <apex:panelGrid columns="2" width="100%">
+        <apex:panelGroup >
+            <apex:outputText value="Account Plan Summary Report" styleClass="title"/>
+        </apex:panelGroup>
+        <apex:image value="{!$Resource.Nexeo_Logo}"/>
+    </apex:panelGrid>
+    <hr/><br/>
+
+       <apex:panelGrid border="1" cellpadding="0px" cellspacing="0px" frame="above,hsides" rules="none" columns="1" width="100%" >
+        <apex:panelGroup layout="block" styleClass="subtitleWithGrayBackground">
+            <apex:outputText value="General Account Information"/> 
+        </apex:panelGroup>
+      </apex:panelGrid>
+      
+                    <apex:dataTable value="{!Account}" var="lines" styleClass="datatable"  id="AccountDetailSection" width="100%">
+                        <apex:column width="50%">
+                            <apex:facet name="header"><b>Account Name</b></apex:facet>
+                            <apex:outputText value="{!lines.Name}" />
+                        </apex:column>
+                        <apex:column width="50%" rendered="{!isChemicals}"> 
+                            <apex:facet name="header"><b>Account Plan Owner</b></apex:facet>
+                            <apex:outputText value="{!lines.Account_Plan_Owner__c}" />
+                        </apex:column>
+                        <apex:column width="50%" rendered="{!isPlastics}"> 
+                            <apex:facet name="header"><b>Account Plan Owner</b></apex:facet>
+                            <apex:outputText value="{!lines.Owner.Name}" />
+                        </apex:column>                        
+                    </apex:dataTable>
+                    <BR/>
+                    <apex:dataTable value="{!Account}" var="lines" styleClass="datatable"  id="AccountDetailSection1" width="100%">
+                        <apex:column width="50%">
+                            <apex:facet name="header"><b>HQ Account</b></apex:facet>
+                            <apex:outputText value="{!lines.Parent.Name}"/>
+                        </apex:column>                    
+                        <apex:column width="50%" rendered="{!isChemicals}">
+                            <apex:facet name="header"><b>LOB Synergies</b></apex:facet>
+                            <apex:outputText escape="false" value="{!lines.LOB_Synergies__c}" />
+                        </apex:column>
+                     </apex:dataTable>
+                     <BR/>
+                    <apex:dataTable value="{!Account}" var="lines" styleClass="datatable"  id="AccountDetailSection2" width="100%">
+                        <apex:column width="50%" rendered="{!isChemicals}">
+                            <apex:facet name="header"><b>End market</b></apex:facet>
+                            <apex:outputText escape="false" value="{!lines.SAP_Customer_Group_Desc__c}" />
+                        </apex:column>                    
+                        <apex:column width="50%" rendered="{!isPlastics}">
+                            <apex:facet name="header"><b>Tarnell</b></apex:facet>
+                            <apex:outputText escape="false" value="{!lines.Tarnell__c}" />
+                        </apex:column>
+                        <apex:column width="50%" rendered="{!isChemicals}"> 
+                            <apex:facet name="header"><b>Author</b></apex:facet>
+                            <apex:outputText value="{!currentuser.Name}" />
+                        </apex:column>                        
+                     </apex:dataTable>
+                     <BR/>
+                    <apex:dataTable value="{!Account}" var="lines" styleClass="datatable"  id="AccountDetailSection3" width="100%">
+                        <apex:column width="100%">
+                            <apex:facet name="header"><b>Executive Overview</b></apex:facet>
+                            <apex:outputText value="{!lines.Executive_Overview__c}" />
+                        </apex:column> 
+                    </apex:dataTable>  
+                    <BR/>
+                    <apex:dataTable value="{!Account}" var="lines" styleClass="datatable"  id="AccountDetailSection4" width="100%" rendered="{!isChemicals}">
+                        <apex:column width="100%">
+                            <apex:facet name="header"><b>Commnents Gain/Loss</b></apex:facet>
+                            <apex:outputText value="{!lines.Comments_Gain_Loss__c}" />
+                        </apex:column> 
+                    </apex:dataTable>                                         
+            <BR/>
+       <!-- Commenting as the Accouns Summary is not using the Account Figure object        
+       <apex:panelGrid border="1" cellpadding="0px" cellspacing="0px" frame="above,hsides" rules="none" columns="1" width="100%" >
+        <apex:panelGroup layout="block"  styleClass="subtitleWithGrayBackground">
+            <apex:outputText value="Account Sales Summary"/> 
+        </apex:panelGroup>
+      </apex:panelGrid>            
+
+            <BR/>
+            <apex:panelGrid columns="6"
+                            id="AccountSummaryGrid" width="100%" 
+                            styleClass="TableStyleClass" captionClass="TableCaptionClass" 
+                            headerClass="TableHeaderClass" 
+                            rowClasses="TableHeaderClass,TableRowClasses_odd,TableRowClasses_even,AccountSummaryFooterLine" 
+                            columnClasses="LineHeading_ColumnFormat,Data_ColumnFormat,Data_ColumnFormat,Data_ColumnFormat,Data_ColumnFormat,Data_ColumnFormat">
+                
+                <apex:outputText value="" styleClass="PanelGridFakeHeaderClass" escape="false"/>
+                <apex:outputText value="Volume in LB" styleClass="PanelGridFakeHeaderClass"/>
+                <apex:outputText value="Volume in KG" styleClass="PanelGridFakeHeaderClass"/>
+                <apex:outputText value="Sales Amount" styleClass="PanelGridFakeHeaderClass"/>
+                <apex:outputText value="GM" styleClass="PanelGridFakeHeaderClass"/>
+                <apex:outputText value="GM%" styleClass="PanelGridFakeHeaderClass"/>
+                
+                <apex:outputText value="{!AccountSummaryInformation.FYTD_Label}" style=""/>
+                <apex:panelGroup >
+                    <apex:image value="{!$Resource.GreenUpArrow}" width="12" height="12" rendered="{!FYTDvsPFYTD_Volume_in_LB_Up}"/>
+                    <apex:image value="{!$Resource.RedDownArrow}" width="12" height="12" rendered="{!FYTDvsPFYTD_Volume_in_LB_Down}"/>
+                    <apex:outputText value="{!AccountSummaryInformation.FYTD_Volume_in_LB_formatted}" style="{!AccountSummaryInformation.FYTD_Volume_in_LB_style}"/>
+                </apex:panelGroup>
+                <apex:panelGroup >
+                    <apex:image value="{!$Resource.GreenUpArrow}" width="12" height="12" rendered="{!FYTDvsPFYTD_Volume_in_KG_Up}"/>
+                    <apex:image value="{!$Resource.RedDownArrow}" width="12" height="12" rendered="{!FYTDvsPFYTD_Volume_in_KG_Down}"/>
+                    <apex:outputText value="{!AccountSummaryInformation.FYTD_Volume_in_KG_formatted}" style="{!AccountSummaryInformation.FYTD_Volume_in_KG_style}"/>
+                </apex:panelGroup>
+                <apex:panelGroup >
+                    <apex:image value="{!$Resource.GreenUpArrow}" width="12" height="12" rendered="{!FYTDvsPFYTD_Amount_Up}"/>
+                    <apex:image value="{!$Resource.RedDownArrow}" width="12" height="12" rendered="{!FYTDvsPFYTD_Amount_Down}"/>
+                    <apex:outputText value="{!AccountSummaryInformation.FYTD_Amount_formatted}" style="{!AccountSummaryInformation.FYTD_Amount_style}"/>
+                </apex:panelGroup>
+                <apex:panelGroup >
+                    <apex:image value="{!$Resource.GreenUpArrow}" width="12" height="12" rendered="{!FYTDvsPFYTD_GM_Up}"/>
+                    <apex:image value="{!$Resource.RedDownArrow}" width="12" height="12" rendered="{!FYTDvsPFYTD_GM_Down}"/>
+                    <apex:outputText value="{!AccountSummaryInformation.FYTD_GM_formatted}" style="{!AccountSummaryInformation.FYTD_GM_style}"/>
+                </apex:panelGroup>
+                <apex:panelGroup >
+                    <apex:image value="{!$Resource.GreenUpArrow}" width="12" height="12" rendered="{!FYTDvsPFYTD_GMpct_Up}"/>
+                    <apex:image value="{!$Resource.RedDownArrow}" width="12" height="12" rendered="{!FYTDvsPFYTD_GMpct_Down}"/>
+                    <apex:outputText value="{!AccountSummaryInformation.FYTD_GMpct_formatted}" style="{!AccountSummaryInformation.FYTD_GMpct_style}"/>
+                </apex:panelGroup>                               
+                <apex:outputText value="{!AccountSummaryInformation.PFYTD_Label}" style=""/>
+                <apex:outputText value="{!AccountSummaryInformation.PFYTD_Volume_in_LB_formatted}" style="{!AccountSummaryInformation.PFYTD_Volume_in_LB_style}"/>
+                <apex:outputText value="{!AccountSummaryInformation.PFYTD_Volume_in_KG_formatted}" style="{!AccountSummaryInformation.PFYTD_Volume_in_KG_style}"/>
+                <apex:outputText value="{!AccountSummaryInformation.PFYTD_Amount_formatted}" style="{!AccountSummaryInformation.PFYTD_Amount_style}"/>
+                <apex:outputText value="{!AccountSummaryInformation.PFYTD_GM_formatted}" style="{!AccountSummaryInformation.PFYTD_GM_style}"/>
+                <apex:outputText value="{!AccountSummaryInformation.PFYTD_GMpct_formatted}" style="{!AccountSummaryInformation.PFYTD_GMpct_style}"/>
+                
+                <apex:outputText value="{!AccountSummaryInformation.FYTDvsPFYTD_Label}" style=""/>
+                <apex:outputText value="{!AccountSummaryInformation.FYTDvsPFYTD_Volume_in_LB_Variance_formatted}" style="{!AccountSummaryInformation.FYTDvsPFYTD_Volume_in_LB_Variance_style}"/>
+                <apex:outputText value="{!AccountSummaryInformation.FYTDvsPFYTD_Volume_in_KG_Variance_formatted}" style="{!AccountSummaryInformation.FYTDvsPFYTD_Volume_in_KG_Variance_style}"/>
+                <apex:outputText value="{!AccountSummaryInformation.FYTDvsPFYTD_Amount_Variance_formatted}" style="{!AccountSummaryInformation.FYTDvsPFYTD_Amount_Variance_style}"/>
+                <apex:outputText value="{!AccountSummaryInformation.FYTDvsPFYTD_GM_Variance_formatted}" style="{!AccountSummaryInformation.FYTDvsPFYTD_GM_Variance_style}"/>
+                <apex:outputText value="{!AccountSummaryInformation.FYTDvsPFYTD_GMpct_Variance_formatted}" style="{!AccountSummaryInformation.FYTDvsPFYTD_GMpct_Variance_style}"/>
+            </apex:panelGrid>
+            <BR/>
+            -->
+       <apex:panelGrid border="1" cellpadding="0px" cellspacing="0px" frame="above,hsides" rules="none" columns="1" width="100%" >
+        <apex:panelGroup layout="block"  styleClass="subtitleWithGrayBackground">
+            <apex:outputText value="Account Sales Summary"/> 
+        </apex:panelGroup>
+      </apex:panelGrid>
+<apex:outputPanel id="Account_Summary_Panel">
+            <BR/>
+            <apex:panelGrid columns="4"
+                            id="AccountSummaryGrid" width="100%" 
+                            styleClass="TableStyleClass" captionClass="TableCaptionClass" 
+                            headerClass="TableHeaderClass" 
+                            rowClasses="TableHeaderClass,TableRowClasses_odd,TableRowClasses_even,AccountSummaryFooterLine" 
+                            columnClasses="LineHeading_ColumnFormat,Data_ColumnFormat,Data_ColumnFormat,Data_ColumnFormat,Data_ColumnFormat,Data_ColumnFormat">
+                
+                <apex:outputText value="&nbsp;" styleClass="PanelGridFakeHeaderClass" escape="false"/>
+                <apex:outputText value="Volume in LB" styleClass="PanelGridFakeHeaderClass"/>
+                <apex:outputText value="Volume in KG" styleClass="PanelGridFakeHeaderClass"/>
+                <apex:outputText value="Sales Amount" styleClass="PanelGridFakeHeaderClass"/>
+                
+                
+                 
+                <apex:outputText value="{!CFYTD_Label}" style=""/>
+                <apex:panelGroup >
+                    <apex:image value="{!$Resource.GreenUpArrow}" width="12" height="12" rendered="{!FYTDvsPFYTD_Volume_in_LB_Up }"/>
+                    <apex:image value="{!$Resource.RedDownArrow}" width="12" height="12" rendered="{!FYTDvsPFYTD_Volume_in_LB_Down }"/>
+                    <apex:outputText value="{!FYTD_Volume_in_LB_formatted}" style="{!FYTD_Volume_in_LB_style}"/>
+                </apex:panelGroup>
+                <apex:panelGroup >
+                    <apex:image value="{!$Resource.GreenUpArrow}" width="12" height="12" rendered="{!CFYTDvsPFYTD_Volume_in_KG_Up}"/>
+                    <apex:image value="{!$Resource.RedDownArrow}" width="12" height="12" rendered="{!CFYTDvsPFYTD_Volume_in_KG_Down}"/>
+                    <apex:outputText value="{!FYTD_Volume_in_KG_formatted}" style="{!FYTD_Volume_in_KG_style}"/>
+                </apex:panelGroup>
+                <apex:panelGroup >
+                    <apex:image value="{!$Resource.GreenUpArrow}" width="12" height="12" rendered="{!FYTDvsPFYTD_Amount_Up}"/>
+                    <apex:image value="{!$Resource.RedDownArrow}" width="12" height="12" rendered="{!FYTDvsPFYTD_Amount_Down}"/>
+                    <apex:outputText value="{!CFYTD_Amount_formatted}" style="{!FYTD_Amount_style}"/>
+                </apex:panelGroup>
+                
+                <apex:outputText value="{!PFYTD_Label}" style=""/>
+                <apex:outputText value="{!PFYTD_Volume_in_LB_formatted}" style="{!PFYTD_Volume_in_LB_style}"/>
+                <apex:outputText value="{!PFYTD_Volume_in_KG_formatted}" style="{!PFYTD_Volume_in_KG_style}"/>
+                <apex:outputText value="{!PFYTD_Amount_formatted}" style="{!PFYTD_Amount_style}"/>
+                
+                
+                <apex:outputText value="{!CFYTDvsPFYTD_Label}" style=""/>
+                <apex:outputText value="{!FYTDvsPFYTD_Volume_in_LB_Variance_formatted}" style="{!FYTDvsPFYTD_Volume_in_LB_Variance_style}"/>
+                <apex:outputText value="{!FYTDvsPFYTD_Volume_in_KG_Variance_formatted}" style="{!FYTDvsPFYTD_Volume_in_KG_Variance_style}"/>
+                <apex:outputText value="{!FYTDvsPFYTD_Amount_Variance_formatted}" style="{!FYTDvsPFYTD_Amount_Variance_style}"/>
+                
+             
+            </apex:panelGrid>
+        </apex:outputPanel>
+<BR/>    
+      
+    
+      <apex:panelGrid border="1" cellpadding="0px" cellspacing="0px" frame="above,hsides" rules="none" columns="1" width="100%" >
+        <apex:panelGroup layout="block" styleClass="subtitleWithGrayBackground">
+            <apex:outputText value="Key Nexeo Suppliers"/> 
+        </apex:panelGroup>
+      </apex:panelGrid>
+  
+                    <apex:dataTable value="{!Supplier}" var="lines" styleClass="datatable" columnclasses="lineitems" rowclasses="odd,even"  headerClass="dataTableHeader_fontsize10" id="KeyNexeoSuppliers1" width="100%">
+                        <apex:column width="50%">
+                            <apex:facet name="header"><b>Nexeo Suppliers</b></apex:facet>
+                            <apex:outputField value="{!lines.Supplier__r.Name}" />
+                        </apex:column>
+                        <apex:column width="50%"> 
+                            <apex:facet name="header"><b>comments</b></apex:facet>
+                            <apex:outputField value="{!lines.Comments__c}" />
+                        </apex:column>
+                    </apex:dataTable>
+                    <BR/> 
+                    
+      <apex:panelGrid border="1" cellpadding="0px" cellspacing="0px" frame="above,hsides" rules="none" columns="1" width="100%" >
+        <apex:panelGroup layout="block" styleClass="subtitleWithGrayBackground">
+            <apex:outputText value="Key Nexeo Competitors"/> 
+        </apex:panelGroup>
+      </apex:panelGrid>
+
+                    <apex:dataTable value="{!Competitor}" var="lines" styleClass="datatable"  columnclasses="lineitems" rowclasses="odd,even"  headerClass="dataTableHeader_fontsize10" id="KeyNexeoCompetitors1" width="100%">
+                        <apex:column width="50%">
+                            <apex:facet name="header"><b>Nexeo Competitor</b></apex:facet>
+                            <apex:outputField value="{!lines.Nexeo_Competitor__r.Name}" />
+                        </apex:column>
+                        <apex:column width="50%"> 
+                            <apex:facet name="header"><b>comments</b></apex:facet>
+                            <apex:outputField value="{!lines.Comments__c}" />
+                        </apex:column>
+                    </apex:dataTable>
+                    <BR/><BR/>
+                    
+      <apex:panelGrid border="1" cellpadding="0px" cellspacing="0px" frame="above,hsides" rules="none" columns="1" width="100%" >
+        <apex:panelGroup layout="block" styleClass="subtitleWithGrayBackground">
+            <apex:outputText value="SWOT"/> 
+        </apex:panelGroup>
+      </apex:panelGrid>
+                
+                    <apex:dataTable value="{!Account}" var="lines" styleClass="dataTable" columnclasses="lineitems" rowclasses="odd,even" headerClass="dataTableHeader_fontsize10"  id="SWOT1" width="100%">
+                        <apex:column >
+                            <apex:facet name="header"><b>Strengths</b></apex:facet>
+                            <apex:outputText escape="false" value="{!lines.Strengths__c}" />
+                        </apex:column>
+                        <!--<apex:column rendered="{!isChemicals}">
+                            <apex:facet name="header"><b>Strengths</b></apex:facet>
+                            <apex:outputText escape="false" value="{!lines.Strengths_Chemicals__c}" />
+                        </apex:column>     -->                 
+                    </apex:dataTable>
+                 
+                    <apex:dataTable value="{!Account}" var="lines" styleClass="dataTable" columnclasses="lineitems" rowclasses="odd,even" headerClass="dataTableHeader_fontsize10" id="SWOT2" width="100%">
+                        <apex:column > 
+                            <apex:facet name="header"><b>Weaknesses</b></apex:facet>
+                            <apex:outputText escape="false" value="{!lines.Weaknesses__c}" />
+                        </apex:column>
+                       <!-- <apex:column rendered="{!isChemicals}"> 
+                            <apex:facet name="header"><b>Weaknesses</b></apex:facet>
+                            <apex:outputText escape="false" value="{!lines.Weaknesses_Chemicals__c}" />
+                        </apex:column>     -->                  
+                    </apex:dataTable> 
+                     
+                    <apex:dataTable value="{!Account}" var="lines" styleClass="dataTable" columnclasses="lineitems" rowclasses="odd,even" headerClass="dataTableHeader_fontsize10"  id="SWOT3" width="100%">
+                        <apex:column >
+                            <apex:facet name="header"><b>Opportunities</b></apex:facet>
+                            <apex:outputText escape="false" value="{!lines.Opportunities__c}" />
+                        </apex:column> 
+                        <!--<apex:column rendered="{!isChemicals}">
+                            <apex:facet name="header"><b>Opportunities</b></apex:facet>
+                            <apex:outputText escape="false" value="{!lines.Opportunities_Chemicals__c}" />
+                        </apex:column>   -->                     
+                    </apex:dataTable>   
+                                                     
+                    <apex:dataTable value="{!Account}" var="lines" styleClass="dataTable" columnclasses="lineitems" rowclasses="odd,even" headerClass="dataTableHeader_fontsize10"  id="SWOT4" width="100%">
+                        <apex:column >
+                            <apex:facet name="header"><b>Threats</b></apex:facet>
+                            <apex:outputText escape="false" value="{!lines.Threats__c}" />
+                        </apex:column>
+                       <!-- <apex:column rendered="{!isChemicals}">
+                            <apex:facet name="header"><b>Threats</b></apex:facet>
+                            <apex:outputText escape="false" value="{!lines.Threats_Chemicals__c}" />
+                        </apex:column>  -->                    
+                     </apex:dataTable>
+         
+            <BR/> <BR/>
+            
+      <apex:panelGrid border="1" cellpadding="0px" cellspacing="0px" frame="above,hsides" rules="none" columns="1" width="100%" >
+        <apex:panelGroup layout="block" styleClass="subtitleWithGrayBackground">
+            <apex:outputText value="Top Objectives"/> 
+        </apex:panelGroup>
+      </apex:panelGrid>
+                   
+                    <apex:dataTable value="{!Account}" var="lines" styleClass="datatable" id="TopObjective1" width="100%" rendered="{!isPlastics}">
+                        <apex:column width="50%">
+                            <apex:facet name="header"><b>Objective 1</b></apex:facet>
+                            <apex:outputtext escape="false" value="{!lines.Objective_1__c}" />
+                        </apex:column>
+                        <apex:column width="50%"> 
+                            <apex:facet name="header"><b>Action Plan Objective 1</b></apex:facet>
+                            <apex:outputText escape="false" value="{!lines.ActionPlan_Objective_1__c}" />
+                        </apex:column>
+                    </apex:dataTable>
+                    <apex:dataTable value="{!Account}" var="lines" styleClass="datatable" id="TopObjective1chemiclas" width="100%" rendered="{!isChemicals}">
+                        <apex:column width="50%">
+                            <apex:facet name="header"><b>Objective 1</b></apex:facet>
+                            <apex:outputtext escape="false" value="{!lines.Objective_1_Chemicals__c}" />
+                        </apex:column>
+                        <apex:column width="50%"> 
+                            <apex:facet name="header"><b>Action Plan Objective 1</b></apex:facet>
+                            <apex:outputText escape="false" value="{!lines.ActionPlan_Objective_1__c}" />
+                        </apex:column>
+                    </apex:dataTable>                    
+                    <BR/>
+                    <apex:dataTable value="{!Account}" var="lines" styleClass="datatable"  id="TopObjective2" width="100%" rendered="{!isPlastics}">
+                        <apex:column width="50%">
+                            <apex:facet name="header"><b>Objective 2</b></apex:facet>
+                            <apex:outputText escape="false" value="{!lines.Objective_2__c}" />
+                        </apex:column>                    
+                        <apex:column width="50%">
+                            <apex:facet name="header"><b>Action Plan Objective 2</b></apex:facet>
+                            <apex:outputText escape="false" value="{!lines.ActionPlan_Objective_2__c}" />
+                        </apex:column>
+                     </apex:dataTable>
+                    <apex:dataTable value="{!Account}" var="lines" styleClass="datatable"  id="TopObjective2chemicals" width="100%" rendered="{!isChemicals}">
+                        <apex:column width="50%">
+                            <apex:facet name="header"><b>Objective 2</b></apex:facet>
+                            <apex:outputText escape="false" value="{!lines.Objective_2_Chemicals__c}" />
+                        </apex:column>                    
+                        <apex:column width="50%">
+                            <apex:facet name="header"><b>Action Plan Objective 2</b></apex:facet>
+                            <apex:outputText escape="false" value="{!lines.ActionPlan_Objective_2__c}" />
+                        </apex:column>
+                     </apex:dataTable>                     
+                     <BR/>
+                    <apex:dataTable value="{!Account}" var="lines" styleClass="datatable" id="TopObjective3" width="100%" rendered="{!isPlastics}">
+                        <apex:column width="50%">
+                            <apex:facet name="header"><b>Objective 3</b></apex:facet>
+                            <apex:outputText escape="false" value="{!lines.Objective_3__c}" />
+                        </apex:column>                    
+                        <apex:column width="50%">
+                            <apex:facet name="header"><b>Action Plan Objective 3</b></apex:facet>
+                            <apex:outputText escape="false" value="{!lines.ActionPlan_Objective_3__c}" />
+                        </apex:column>
+                     </apex:dataTable>
+                    <apex:dataTable value="{!Account}" var="lines" styleClass="datatable" id="TopObjective3chemicals" width="100%" rendered="{!isChemicals}">
+                        <apex:column width="50%">
+                            <apex:facet name="header"><b>Objective 3</b></apex:facet>
+                            <apex:outputText escape="false" value="{!lines.Objective_3_Chemicals__c}" />
+                        </apex:column>                    
+                        <apex:column width="50%">
+                            <apex:facet name="header"><b>Action Plan Objective 3</b></apex:facet>
+                            <apex:outputText escape="false" value="{!lines.ActionPlan_Objective_3__c}" />
+                        </apex:column>
+                     </apex:dataTable>                     
+                     <BR/>
+                     <apex:dataTable value="{!Account}" var="lines" styleClass="datatable"  id="TopObjective4" width="100%" rendered="{!isPlastics}">
+                        <apex:column width="50%">
+                            <apex:facet name="header"><b>Objective 4</b></apex:facet>
+                            <apex:outputText escape="false" value="{!lines.Objective_4__c}" />
+                        </apex:column>                    
+                        <apex:column width="50%">
+                            <apex:facet name="header"><b>Action Plan Objective 4</b></apex:facet>
+                            <apex:outputText escape="false" value="{!lines.ActionPlan_Objective_4__c}" />
+                        </apex:column>
+                     </apex:dataTable>
+                     <apex:dataTable value="{!Account}" var="lines" styleClass="datatable"  id="TopObjective4chemicals" width="100%" rendered="{!isChemicals}">
+                        <apex:column width="50%">
+                            <apex:facet name="header"><b>Objective 4</b></apex:facet>
+                            <apex:outputText escape="false" value="{!lines.Objective_4_Chemicals__c}" />
+                        </apex:column>                    
+                        <apex:column width="50%">
+                            <apex:facet name="header"><b>Action Plan Objective 4</b></apex:facet>
+                            <apex:outputText escape="false" value="{!lines.ActionPlan_Objective_4__c}" />
+                        </apex:column>
+                     </apex:dataTable>                     
+                     <BR/>
+                     <apex:dataTable value="{!Account}" var="lines" styleClass="datatable"  id="TopObjective5" width="100%" rendered="{!isPlastics}">
+                        <apex:column width="50%">
+                            <apex:facet name="header"><b>Objective 5</b></apex:facet>
+                            <apex:outputText escape="false" value="{!lines.Objective_5__c}" />
+                        </apex:column>                    
+                        <apex:column width="50%">
+                            <apex:facet name="header"><b>Action Plan Objective 5</b></apex:facet>
+                            <apex:outputText escape="false" value="{!lines.ActionPlan_Objective_5__c}" />
+                        </apex:column>
+                     </apex:dataTable>
+          <apex:dataTable value="{!Account}" var="lines" styleClass="datatable"  id="TopObjective5chemicals" width="100%" rendered="{!isChemicals}">
+                        <apex:column width="50%">
+                            <apex:facet name="header"><b>Objective 5</b></apex:facet>
+                            <apex:outputText escape="false" value="{!lines.Objective_5_Chemicals__c}" />
+                        </apex:column>                    
+                        <apex:column width="50%">
+                            <apex:facet name="header"><b>Action Plan Objective 5</b></apex:facet>
+                            <apex:outputText escape="false" value="{!lines.ActionPlan_Objective_5__c}" />
+                        </apex:column>
+                     </apex:dataTable>                     
+                    <BR/>
+                    
+             <apex:panelGrid border="1" cellpadding="0px" cellspacing="0px" frame="above,hsides" rules="none" columns="1" width="100%" >
+                <apex:panelGroup layout="block" styleClass="subtitleWithGrayBackground">
+                    <apex:outputText value="Open Opportunities"/> 
+                </apex:panelGroup>
+             </apex:panelGrid>                    
+                    <apex:dataTable rendered="{!renderOPP}" value="{!Opportunities}" var="lines" styleClass="dataTable" columnclasses="lineitems" rowclasses="odd,even"  headerClass="dataTableHeader_fontsize10" id="OpportunitiesSection" width="100%">
+                        <apex:column >
+                            <apex:facet name="header"><b>Opportunity Name</b></apex:facet>
+                            <apex:outputField value="{!lines.Name}" />
+                        </apex:column>
+                        <apex:column >
+                            <apex:facet name="header"><b>End Market</b></apex:facet>
+                            <apex:outputField value="{!lines.Market__c}"/>
+                        </apex:column>
+                        
+                        <apex:column >
+                            <apex:facet name="header"><b>Opportunity Sales</b></apex:facet>
+                            <!--<apex:outputField value="{!lines.Opportunity_Revenue__c}"/>-->
+                             <apex:panelgroup > 
+                            <span style="color: #4a4a56;white-space: normal;margin-left: 15%;font-weight: bold;font-size: 11.3px;">Opportunity Revenue <img src="/img/s.gif" alt="" style="margin-right: 33%;" class="helpOrb" title=""/></span>
+
+                            <apex:outputtext value="{!lines.CurrencyISOCode}" />
+                             <apex:outputText value="{0, number, ###,###,###.00}"> 
+                             <apex:param value="{!lines.Opportunity_Revenue__c}" /> 
+                             </apex:outputText> 
+                             </apex:panelgroup>
+                        </apex:column>
+                        
+                        <apex:column >
+                            <apex:facet name="header"><b>Opportunity Comments</b></apex:facet>
+                            <apex:outputField value="{!lines.Description}"/>
+                        </apex:column>
+                  </apex:dataTable>
+                    <BR/>
+                    
+             <apex:panelGrid border="1" cellpadding="0px" cellspacing="0px" frame="above,hsides" rules="none" columns="1" width="100%" >
+                <apex:panelGroup layout="block" styleClass="subtitleWithGrayBackground">
+                    <apex:outputText value="Closed/Won Opportunities"/> 
+                </apex:panelGroup>
+             </apex:panelGrid>                    
+                    <apex:dataTable rendered="{!renderOPP1}" value="{!closedOpportunities}" var="lines" styleClass="dataTable" columnclasses="lineitems" rowclasses="odd,even"  headerClass="dataTableHeader_fontsize10" id="closedOpportunitiesSection" width="100%">
+                        <apex:column >
+                            <apex:facet name="header"><b>Opportunity Name</b></apex:facet>
+                            <apex:outputField value="{!lines.Name}" />
+                        </apex:column>
+                        <apex:column >
+                            <apex:facet name="header"><b>End Market</b></apex:facet>
+                            <apex:outputField value="{!lines.Market__c}"/>
+                        </apex:column>
+                        
+                        <apex:column >
+                            <apex:facet name="header"><b>Opportunity Sales</b></apex:facet>
+                            <!--<apex:outputField value="{!lines.Opportunity_Revenue__c}"/> -->
+                            <apex:panelgroup > 
+                            <span style="color: #4a4a56;white-space: normal;margin-left: 15%;font-weight: bold;font-size: 11.3px;">Opportunity Revenue <img src="/img/s.gif" alt="" style="margin-right: 33%;" class="helpOrb" title=""/></span>
+
+                            <apex:outputtext value="{!lines.CurrencyISOCode}" />
+                             <apex:outputText value="{0, number, ###,###,###.00}"> 
+                             <apex:param value="{!lines.Opportunity_Revenue__c}" /> 
+                             </apex:outputText> 
+                             </apex:panelgroup>
+                        </apex:column>
+                        
+                        <apex:column >
+                            <apex:facet name="header"><b>Opportunity Comments</b></apex:facet>
+                            <apex:outputField value="{!lines.Description}"/>
+                        </apex:column>
+                  </apex:dataTable>            
+                          <BR/>
+                          
+               <apex:panelGrid border="1" cellpadding="0px" cellspacing="0px" frame="above,hsides" rules="none" columns="1" width="100%" >
+                  <apex:panelGroup layout="block" styleClass="subtitleWithGrayBackground">
+                    <apex:outputText value="Key Contacts"/> 
+                  </apex:panelGroup>
+                </apex:panelGrid>   
+                    <apex:dataTable value="{!ContactstoDisplay}" var="lines" rendered="{!Rendercon}"  styleClass="dataTable" columnclasses="lineitems" rowclasses="odd,even"  headerClass="dataTableHeader_fontsize10" id="ContactsSection" width="100%">
+                        <apex:column >
+                            <apex:facet name="header"><b>Contact Name</b></apex:facet>
+                            <apex:outputfield value="{!lines.Name}"/>
+                        </apex:column>                                                
+                        <apex:column >
+                            <apex:facet name="header"><b>Role</b></apex:facet>
+                            <apex:outputField value="{!lines.Role__c}" />
+                        </apex:column>
+                      <apex:column >
+                            <apex:facet name="header"><b>Comments</b></apex:facet>
+                            <apex:outputField value="{!lines.Description}"/>
+                        </apex:column>
+                    </apex:dataTable>
+</apex:page>

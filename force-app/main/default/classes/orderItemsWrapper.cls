@@ -1,0 +1,33 @@
+public class orderItemsWrapper {
+        public String nexeoMaterialId {get; set;}
+        public String productNumber {get; set;}
+        public String batchNumber {get; set;}
+        public String batchNumber1 {get; set;}
+        public String batchNumber2 {get; set;}
+        public String batchNumber3 {get; set;}
+        public String batchNumber4 {get; set;}
+        public String batchNumber5 {get; set;}
+        public String batchNumber6 {get; set;}
+        public String batchNumber7 {get; set;}
+        public String batchNumber8 {get; set;}
+        public String batchNumber9 {get; set;}
+        public String batchNumber10 {get; set;}
+        public String batchNumber11 {get; set;}
+        public String batchNumber12 {get; set;}
+        public String batchNumber13 {get; set;}
+        public String batchNumber14 {get; set;}
+        public String batchNumber15 {get; set;}
+        public Integer sequenceNumber {get; set;}
+        public String orderId {get; set;}
+    	public String orderSFDCId {get; set;}
+    	public String orderItemId {get; set;}
+        public String customerMaterialNumber {get; set;}
+        public Decimal priceperunit {get; set;}
+        public String sku {get; set;}                
+    	public String po {get; set;}
+    	public String productdescription {get; set;}
+    	public String Qty {get; set;}
+        public String SUOM {get; set;}
+    	public String productId {get; set;}
+    	public Integer minQty {get; set;}
+}

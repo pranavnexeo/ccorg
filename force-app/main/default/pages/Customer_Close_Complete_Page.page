@@ -1,0 +1,108 @@
+<apex:page standardController="R_D_Requests__c" extensions="RDExtensionController" id="thepage" >
+<apex:pageMessages />
+<script src="../../soap/ajax/24.0/connection.js" type="text/javascript"></script>  
+<script>
+function MakeRequired(){
+var CheckMaterial = document.getElementById('thepage:theform:pageblock:pageblocksection:matrecomm').checked;
+MakeRequiredField(CheckMaterial);
+}
+</script>
+<style>
+.textarea{ height:200px; width: 600px; }
+</style>
+<apex:form id="theform">
+<apex:actionFunction name="MakeRequiredField" action="{!MakeRequired}" rerender="pb1" immediate="true" status="busyStatus">
+<apex:param name="makerequired" value=""/>
+</apex:actionFunction>
+
+<apex:pageBlock id="pageblock">
+<table align="center">
+<tr>
+<td>
+<apex:commandButton action="{!customsave}" value="Save"/>
+</td>
+<td>
+</td>
+<td>
+<apex:commandButton action="{!Cancel}" value="Cancel"/>
+</td>
+</tr>
+</table> 
+
+<apex:pageBlockSection title="Information" columns="2">
+<apex:inputField value="{!R_D_Requests__c.Name}" required="true"/>
+<apex:inputField value="{!R_D_Requests__c.Requestor__c}"/>
+<apex:inputField value="{!R_D_Requests__c.Stage__c}"/>
+<apex:inputField value="{!R_D_Requests__c.Geography__c}"/>
+<apex:inputField value="{!R_D_Requests__c.End_Market__c}"/>
+<apex:inputField value="{!R_D_Requests__c.Submarket__c}"/>
+<apex:inputField value="{!R_D_Requests__c.Opportunity__c}"/>
+</apex:pageBlockSection>
+
+<apex:pageBlockSection title="Idea Generation" columns="2">
+
+<apex:pageblockSectionItem helptext="What is the goal of this project? What are we trying to demonstrate or develop? What does the customer desire to see?">
+<apex:outputlabel value="Technical Objective"/>
+<apex:inputField styleclass="textarea" value="{!R_D_Requests__c.Technical_Objective__c}"/>
+</apex:pageblockSectionItem>
+
+<apex:pageblockSectionItem helptext="What technical information will convince the customer that our products or solution will add more value to their business than what they are currently experiencing?">
+<apex:outputlabel value="Value Proposition"/>
+<apex:inputField styleclass="textarea" value="{!R_D_Requests__c.Value_Proposition__c}"/>
+</apex:pageblockSectionItem>
+
+<apex:pageblockSectionItem helptext="The timeline of events that has led the customer to seek our services to solve their problem or demonstrate the performance of our raw materials.">
+<apex:outputlabel value="Background"/>
+<apex:inputField styleclass="textarea" value="{!R_D_Requests__c.Background__c}"/>
+</apex:pageblockSectionItem>
+
+<apex:pageblockSectionItem helptext="What are the specific performance and cost requirements that we are trying to achieve with this project?">
+<apex:outputlabel value="Product Performance Requirements"/>
+<apex:inputField styleclass="textarea" value="{!R_D_Requests__c.Product_Performance_Requirements__c}"/>
+</apex:pageblockSectionItem>
+
+<apex:inputField styleclass="textarea" value="{!R_D_Requests__c.Final_Comments__c}"/>
+
+</apex:pageBlockSection>
+
+<apex:pageBlockSection title="Responsible Parties" columns="2">
+<apex:inputField value="{!R_D_Requests__c.Chemist_pl__c}" required="true"/>
+</apex:pageBlockSection>
+
+<apex:pageBlockSection title="Required Documentation" columns="2">
+<apex:inputField value="{!R_D_Requests__c.Project_Plan__c}" required="true"/>
+<apex:inputField value="{!R_D_Requests__c.Project_Technical_Report__c}" required="true"/>
+</apex:pageBlockSection>
+
+<apex:pageBlockSection title="Delivery" columns="2">
+<apex:inputField value="{!R_D_Requests__c.Requested_Delivery_Date__c}"/>
+<apex:inputField value="{!R_D_Requests__c.Agreed_Delivery_Date__c}"/>
+<apex:inputField value="{!R_D_Requests__c.Actual_Delivery_Date__c}"/>
+</apex:pageBlockSection>
+
+<apex:pageBlockSection title="Material Information" columns="2" id="pageblocksection">
+<apex:inputfield value="{!R_D_Requests__c.No_Material_Recommendation__c}" onchange="MakeRequired();" id="matrecomm"/>
+<apex:inputField styleclass="textarea" value="{!R_D_Requests__c.Potential_Competitors_Products__c}"/>
+</apex:pageBlockSection>
+<apex:pageBlockSection id="pb">
+<apex:commandbutton value="Add R&D Material" action="{!Add}" rerender="pb1" immediate="true"/>
+</apex:pageBlockSection>
+
+<apex:actionRegion >
+<apex:pageBlockSection id="pb1" columns="2">
+<apex:repeat value="{!lstInner}" var="e1" id="therepeat">
+<apex:inputfield value="{!e1.acct.Base_Code__c}" required="{!RequiredMaterial}" id="basecodeid">
+<apex:actionSupport event="onchange" action="{!updateList}" rerender="basecodedesc">
+</apex:actionSupport>
+</apex:inputfield>
+<apex:commandButton value="Delete" action="{!Del}" rerender="pb1" immediate="true"/>
+<apex:outputfield value="{!e1.acct.Base_Code_Description__c}" id="basecodedesc"/>
+<apex:param name="rowToBeDeleted" value="{!e1.recCount}" assignTo="{!selectedRowIndex}"></apex:param>
+</apex:repeat>
+</apex:pageBlockSection>
+</apex:actionRegion>
+
+
+</apex:pageBlock>
+</apex:form>
+</apex:page>

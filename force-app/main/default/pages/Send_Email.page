@@ -1,0 +1,68 @@
+<apex:page standardcontroller="NCAR_Cases__c" extensions="EmailWithTemplate" >
+<apex:form >
+<apex:pageblock >
+<apex:pageblockButtons >
+<apex:commandButton value="Preview" action="{!updaterecord}" onclick="window.open('{!url}');" rendered="{!renderpreview}"/> 
+<apex:commandbutton value="Send" action="{!sendemail}"/>
+<apex:commandbutton value="Cancel" action="{!cancel}"/>
+<apex:outputLink target="_blank" value="{!pdfpage}"  rendered="{!renderpdfbutton}" styleclass="btn">Generate PDF
+<apex:image value="{!$Resource.PDF_Image}" height="5%" width="5%"/>
+<apex:actionsupport event="onclick" action="{!save}"/>
+</apex:outputLink>
+
+</apex:pageblockButtons>
+<apex:pageblocksection columns="1">
+<apex:pageblocksectionitem rendered="{!renderlist}">
+<apex:outputlabel value="Folder"/>
+<apex:outputtext value="{!FolderName}"/>
+</apex:pageblocksectionitem>
+<apex:pageblocksectionitem rendered="{!renderList}">
+<apex:outputlabel value="Template"/>
+<apex:selectlist value="{!tid}" size="1"  >
+<apex:selectoptions value="{!templates}"/>
+<apex:actionsupport event="onchange" action="{!templatechanged}"/>
+</apex:selectlist>
+</apex:pageblocksectionitem>
+<apex:outputfield value="{!Contact.email}"/>
+<apex:pageBlockSectionItem >
+<apex:outputlabel value="CC" />
+<apex:inputtextarea value="{!ccstring}" cols="100" rows="5"/>
+</apex:pageBlockSectionItem>
+<apex:pageBlockSectionItem >
+<apex:outputlabel value="BCC"/>
+<apex:inputtextarea value="{!bccstring}" cols="100" rows="5"/>
+</apex:pageBlockSectionItem>
+<apex:pageBlockSectionItem >
+<apex:outputlabel value="Free Text"/>
+<apex:inputtextarea value="{!newtext}" cols="100" rows="20"/>
+</apex:pageBlockSectionItem>
+</apex:pageblocksection>
+</apex:pageblock>
+<apex:outputPanel id="popup">
+            <apex:outputPanel styleClass="customPopup" layout="block" rendered="{!ShowPopUp}">
+                <center> <apex:outputlabel value="{!endmessage}" />
+                <br/><br/><br/>
+                <apex:commandButton value="OK" action="{!complete}"/></center>
+            </apex:outputPanel>
+</apex:outputPanel>
+
+</apex:form>
+    <style type="text/css">
+       .customPopup{
+            background-color: white;
+            border-style: solid;
+            border-width: 2px;
+            left: 25%;
+            padding:10px;
+            position: absolute;
+            z-index: 9999;
+            /* These are the 3 css properties you will need to tweak so the pop 
+            up displays in the center of the screen. First set the width. Then set 
+            margin-left to negative half of what the width is. You can also add 
+            the height property for a fixed size pop up.*/
+            width: 800x;
+            margin-left: -400x;
+            top:100px;
+        }
+    </style>
+</apex:page>

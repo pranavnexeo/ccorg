@@ -1,0 +1,179 @@
+<apex:page standardController="Sample_Analysis_Request__c" extensions="SampleButtonHide">
+
+
+<script src="../../soap/ajax/18.0/connection.js" type="text/javascript"></script>
+
+<script >
+
+ function Samplerecieved(){
+   
+var Stat="{!Sample_Analysis_Request__c.Status__c}";
+var srec="{!Sample_Analysis_Request__c.Sample_Recieved__c}";
+
+var newRecords = [];
+
+var c = new sforce.SObject("Sample_Analysis_Request__c");
+
+if(Stat=='Approved' && srec=='')
+{
+c.id ="{!Sample_Analysis_Request__c.Id}";
+
+c.Sample_Recieved__c= new Date();
+newRecords.push(c);
+
+result = sforce.connection.update(newRecords);
+
+window.location.reload();
+if (result[0].success=='false') {
+alert(result[0].errors.message);
+}
+else {
+location.reload(true);
+}
+}
+else if(srec!='')
+{
+alert("Sample is already received in LAB");
+}
+else{
+alert("Approved Sample will go to Dublin lab - '5200 Blazer Parkway - c/o TW-2 Nexeo Dublin Lab - Dublin - OH - 43017' -  they open the request And click ‘Received’ button");
+}
+    
+
+}
+function getSample(){
+    var stat="{!Sample_Analysis_Request__c.Status__c}";
+if(stat!="Pending For Approval")
+{
+alert("You do not have access required to use this button. Only 'Tech Service' people can use this feature for records pending for approval");
+}
+    
+   else{ 
+    window.open('/00OE0000001SPBE');
+    return false;
+ }
+}
+function SendEmail(){
+    
+   
+var conspecObj = new sforce.SObject("Sample_Analysis_Request__c");
+var stat="{!Sample_Analysis_Request__c.Status__c}";
+
+if(stat!="Pending For Approval")
+{
+alert("You do not have access required to use this button. Only 'Tech Service' people can use this feature for records pending for approval");
+}
+else{
+
+conspecObj.Status__c = 'Rejected';
+conspecObj.Id = '{!Sample_Analysis_Request__c.Id}';
+var result = sforce.connection.update([conspecObj]);
+location.replace('/email/author/emailauthor.jsp?retURL=%2F{!Sample_Analysis_Request__c.Id}&p3_lkid={!Sample_Analysis_Request__c.Id}&rtype=003&p24={!Sample_Analysis_Request__c.Requester_Email__c}&template_id=00Xc0000000HsCV&save=1');
+if (result[0].success=='false') {
+alert(result[0].errors.message);
+} else {
+location.reload(true);
+}
+}
+    
+    
+
+}
+function samplecompleted(){
+var Stat="{!Sample_Analysis_Request__c.Status__c}";
+
+var newRecords = [];
+
+var c = new sforce.SObject("Sample_Analysis_Request__c");
+var srep="{!Sample_Analysis_Request__c.Sample_Reported__c}";
+if(Stat=='Sample Recieved And Pending Sample Analysis' && srep=='')
+{
+c.id ="{!Sample_Analysis_Request__c.Id}";
+c.Sample_Reported__c= new Date();
+newRecords.push(c);
+
+result = sforce.connection.update(newRecords);
+
+window.location.reload();
+if (result[0].success=='false') {
+alert(result[0].errors.message);
+} else {
+location.reload(true);
+}
+}else if(srep!='')
+{
+alert("Sample Analysis is already Completed")
+}
+else
+{
+alert("This button should be clicked only after sample has been received at the lab.Please click on 'Sample received and Pending Sample Analysis' button if you are starting analysis ");
+}
+}
+
+</script>
+<apex:sectionHeader title="Sample Analysis Request" subtitle="{!Sample_Analysis_Request__c.name}" />
+<apex:pageBlock title="Sample Analysis Request Details">
+
+<apex:form >
+
+<apex:commandButton action="{!URLFOR($Action.Sample_Analysis_Request__c.Edit,Sample_Analysis_Request__c.Id)}" value="Edit" />
+<apex:commandButton action="{!URLFOR($Action.Sample_Analysis_Request__c.Delete,Sample_Analysis_Request__c.Id)}" value="Delete"/>
+<apex:commandButton value="Review Manufacturer and Sample Combination"  onclick=" return getSample();" reRender="pageDetails" rendered="{!showButton}" />
+<apex:commandButton value="Reject And Send Email"  onclick=" return SendEmail();" reRender="pageDetails" rendered="{!showButton}" />
+<apex:commandButton action="{!URLFOR($Action.Sample_Analysis_Request__c.Submit,Sample_Analysis_Request__c.Id)}" value="Submit For Approval"/>
+</apex:form>
+
+<br></br>
+<font size="3" color="Brown"><b>SAMPLE REQUESTER</b></font>
+
+<apex:pageBlockSection title="Sales Info" columns="1">
+<apex:outputField title="Date" value="{!Sample_Analysis_Request__c.Date__c}"/>
+<apex:outputField title="Requested by" value="{!Sample_Analysis_Request__c.Requested_by__c}"/>
+<apex:outputField title="Buisness Group" value="{!Sample_Analysis_Request__c.Buisness_Group__c}"/>
+<apex:outputField title="Business Manager" value="{!Sample_Analysis_Request__c.Business_Manager__c}"/>
+<apex:outputField title="Customer" value="{!Sample_Analysis_Request__c.Customer__c}"/>
+<apex:outputField title="Customer Type" value="{!Sample_Analysis_Request__c.Customer_Type__c}"/>
+<apex:outputField title="Customer Account#" value="{!Sample_Analysis_Request__c.Customer_Account__c}"/>
+<apex:outputField title="Sales Potential/Liability Potential" value="{!Sample_Analysis_Request__c.Sales_Potential_Liability_Potential__c}"/>
+</apex:pageBlockSection>
+
+<apex:pageBlockSection title="Sample Info" columns="1">
+<apex:outputField title="Sample Name" value="{!Sample_Analysis_Request__c.Sample_Name__c}"/>
+<apex:outputField title="Manufacturer" value="{!Sample_Analysis_Request__c.Manufacturer1__c}"/>
+<apex:outputField title="Number of Samples" value="{!Sample_Analysis_Request__c.Number_of_Samples__c}"/>
+<apex:outputField title="End Application" value="{!Sample_Analysis_Request__c.End_Application__c}"/>
+<apex:outputField title="Analysis Type" value="{!Sample_Analysis_Request__c.Analysis_Type__c}"/>
+<apex:outputField title="Status" value="{!Sample_Analysis_Request__c.Status__c}"/>
+</apex:pageBlockSection>
+
+<apex:pageBlockSection title="Customer Service Samples" columns="2">
+<apex:outputField title="CSR Name" value="{!Sample_Analysis_Request__c.CSR_Name__c}"/>
+</apex:pageBlockSection>
+
+
+
+
+<apex:pageBlockSection title="Comments" columns="2">
+<apex:outputField title="Comments" value="{!Sample_Analysis_Request__c.Comments__c}"/>
+<apex:relatedList subject="{!Sample_Analysis_Request__c}" list="NotesAndAttachments"  />
+</apex:pageBlockSection>
+<font size="3" color="Green"><b>TECHNICAL SERVICE</b></font>
+<apex:pageBlockSection title="Test Analysis" columns="1" >
+<apex:relatedList list="Test_Cases_del__r" />
+<apex:outputField title="Total Costs" value="{!Sample_Analysis_Request__c.Total_Cos__c}"/>
+<apex:outputField title="Total Charge" value="{!Sample_Analysis_Request__c.Total_Charge__c}"/>
+<apex:outputField title="Total Savings" value="{!Sample_Analysis_Request__c.Total_Savings__c}"/>
+</apex:pageBlockSection>
+<apex:pageBlockSection title="Charge Data" columns="1">
+<apex:outputField title="Customer Service Charges" value="{!Sample_Analysis_Request__c.Customer_Service_Charge__c}"/>
+<apex:outputField title="Charge Status" value="{!Sample_Analysis_Request__c.Charge_Status__c}"/>
+
+</apex:pageBlockSection>
+<apex:relatedList list="ProcessSteps"/>
+
+
+
+
+
+</apex:pageBlock>
+</apex:page>

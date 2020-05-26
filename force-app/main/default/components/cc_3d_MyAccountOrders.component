@@ -1,0 +1,313 @@
+<apex:component controller="cc_3d_ctrl_MyAccountOrders">
+	{!emptyVar}
+
+	<script type="text/javascript">
+	  CCRZ.uiProperties.myOrdersView.desktop.tmpl = 'MyAccountMyOrders3dDesktopImp';
+	  CCRZ.uiProperties.myOrdersView.phone.tmpl   = 'MyAccountMyOrders3dMobileImp';
+	</script>
+
+	<script id="MyAccountMyOrders3dDesktopImp" type="text/template">
+	  <h2 class="title">{{pageLabelMap 'MyAccount_MyOrders'}}</h2>
+	  <div class="alert alert-error messagingSection-orderhistory-Error" style="display: none"></div>
+	  <div class="alert alert-info messagingSection-orderhistory-Info" style="display: none"></div>
+	  <div class="main_content_large_solo_container">
+	   {{#ifDisplay 'srch.ord'}}
+	   <form id="searchOrderForm" class="searchOrderForm">
+	    <input type="text"  name="searchOrderInput" value="{{searchOrder}}" class="searchOrderInput input-text" placeholder="{{pageLabelMap 'MyOrdersInc_SearchOrders'}}"/>
+	    <select name="searchOrderStatus" value="{{searchOrderStatus}}">
+	     <option value="">{{pageLabelMap 'MyOrdersInc_AllOrderStatus'}}</option>     
+	     {{#each this.orderStatusOpts}}
+	      <option value="{{this.value}}" {{#ifEquals ../searchOrderStatus this.value}} selected {{/ifEquals}}>{{this.label}}</option>
+	     {{/each}}
+	    </select>
+	    {{pageLabelMap 'MyOrdersInc_SearchFrom'}}
+	    <input name="fromDateStr" value="{{this.fromDateStr}}" class="requestedDate fromDate">
+	    {{pageLabelMap 'MyOrdersInc_SearchTo'}}
+	    <input name="toDateStr" value="{{this.toDateStr}}" class="requestedDate toDate">
+	    
+	    <input type="button" class="searchOrder" value="{{pageLabelMap 'MyOrdersButton_SearchOrders'}}"/>
+	    <input type="button" class="resetOrder" value="{{pageLabelMap 'MyOrdersButton_ResetOrders'}}"/>
+	   </form>
+	   {{/ifDisplay}}
+	   <div class="orderPaginationSec" />
+	   <table id="orderTable" class="shopping_cart">
+	    <tr class="even">
+	     <td class="right_align">{{pageLabelMap 'MyOrdersInc_OrderNumber'}}</td>
+	     {{#ifDisplay 'MO.DsplExtOrderNumber'}} <td class="right_align">{{pageLabelMap 'ExternalOrderID'}}</td> {{/ifDisplay}}
+	     {{#ifDisplay 'MO.DsplPONumber'}} <td class="right_align">{{pageLabelMap 'PO Number'}}</td> {{/ifDisplay}}
+	     <td class="right_align">{{pageLabelMap 'cc_3d_MyInvoices_InvoiceNumber'}}</td>	     
+	     <td class="right_align">{{pageLabelMap 'cc_imp_MyAccount_MyOrders_Tracking_Number'}}</td>	     
+	     <td class="right_align">{{pageLabelMap 'MyOrdersInc_OrderDate'}}</td>
+	     <td class="right_align">{{pageLabelMap 'MyOrdersInc_OrderAmount'}}</td>
+	     <td class="right_align">{{pageLabelMap 'MyOrdersInc_Status'}}</td>
+	     {{#ifStoreSetting 'Filter_Orders_Based_on_Owner__c'}}&#160;{{else}}<td class="right_align ord_owner_hdr">{{pageLabelMap 'MyOrdersInc_Owner'}}</td>{{/ifStoreSetting}}
+	     {{#ifDisplay 'MO.ShActOnOrd'}}
+	     <td class="right_align">{{pageLabelMap 'MyCartsInc_Actions'}}</td>
+	     {{/ifDisplay}}
+	    </tr>
+	    {{#each this.orderList}}
+	     <tr class="odd myAccOrderRows nexeo3dOrders">
+	      <td class="right_align"><a href="#" data-id="{{encryptedId}}" class="gotoOrderDetails">{{name}}</a></td>
+	      {{#ifDisplay 'MO.DsplExtOrderNumber'}} <td class="right_align">{{externalOrderId}}</td> {{/ifDisplay}}
+	      {{#ifDisplay 'MO.DsplPONumber'}} <td class="right_align">{{poNumber}}</td> {{/ifDisplay}}
+	      <td class="right_align"  data-columnType="invoiceNumber"></td>
+	      <td class="right_align"  data-columnType="trackingNumber"></td>
+	      <td class="right_align">{{orderDateStr}}</td>
+	      <td class="right_align">{{price totalAmount currencyIsoCode}}</td>
+	      <td class="right_align">{{pageLabelMap status}}</td>
+	      {{#ifStoreSetting 'Filter_Orders_Based_on_Owner__c'}}&#160;{{else}}<td class="right_align ord_owner">{{ownerName}}</td>{{/ifStoreSetting}}
+	      {{#ifDisplay 'MO.ShActOnOrd'}}
+	      <td class="right_align">
+	       {{#ifDisplay 'MO.ShReOrdBt'}}
+	        {{#if this.canReOrder}}
+	         <input type="button" class="reorder" data-id="{{sfid}}" value="{{pageLabelMap 'MyOrdersInc_Reorder'}}"/>&#160;
+	        {{/if}}
+	       {{/ifDisplay}}
+	       {{#if this.canCancel}}
+	        {{#ifDisplay 'MO.ShAmdBt'}}
+	         {{#if this.canAmend}}
+	          <input type="button" class="promptCancel promptAmend" data-id="{{sfid}}" data-mode="Edit" value="{{pageLabelMap 'Amend'}}"/>&#160;
+	         {{/if}}
+	        {{/ifDisplay}}
+	        {{#ifDisplay 'MO.ShCanBt'}}
+	         <input type="button" class="promptCancel" data-id="{{sfid}}" data-mode="Cancel" value="{{pageLabelMap 'Cancel'}}"/>
+	        {{/ifDisplay}}
+	       {{/if}}
+	      </td>
+	      {{/ifDisplay}}
+	     </tr>
+	    {{/each}}
+	   </table>
+	   <div id="modalSec"></div>
+	  </div>
+	 </script>
+
+	<script id="MyAccountMyOrders3dMobileImp" type="text/template">
+	  <div class="checkout_container">
+	   <h2 class="title">{{pageLabelMap 'MyAccount_OrderHistory'}}</h2>
+	   <div class="checkout_detail">
+	    <div class="checkout_detail_item">
+	     {{#each this}}
+	      <div class="order_history_info nexeo3dOrders">
+	       <div class="arrow"><a href="#" data-id="{{encryptedId}}" class="gotoOrderDetails">></a></div>
+	       <div class="info"><strong>{{pageLabelMap 'MyOrdersInc_OrderNumber'}}:</strong> <a href="#" data-id="{{encryptedId}}" class="gotoOrderDetails">{{name}}</a></div>
+	       {{#ifDisplay 'MO.DsplExtOrderNumber'}} <div class="info"><strong>{{pageLabelMap 'ExternalOrderID'}}:</strong> {{externalOrderId}}</div> {{/ifDisplay}}
+	       {{#ifDisplay 'MO.DsplPONumber'}} <div class="info"><strong>{{pageLabelMap 'PO Number'}}:</strong> {{poNumber}}</div> {{/ifDisplay}}
+	       <div class="info"><strong>{{pageLabelMap 'cc_imp_MyAccount_MyOrders_Tracking_Number'}}:</strong> <span class="trackingNumber"></span></div>
+	       <div class="info"><strong>{{pageLabelMap 'MyOrdersInc_OrderDate'}}:</strong> {{orderDateStr}}</div>
+	       <div class="info"><strong>{{pageLabelMap 'MyOrdersInc_Status'}}:</strong> {{pageLabelMap status}}</div>
+	       <div class="info"><strong>{{pageLabelMap 'MyOrdersInc_OrderAmount'}}:</strong> {{price totalAmount}}</div>
+	       {{#ifStoreSetting 'Filter_Orders_Based_on_Owner__c'}}&#160;{{else}}<div class="info ord_owner_hdr"><strong>{{pageLabelMap 'MyOrdersInc_Owner'}}:</strong><span class="ord_owner">{{ownerName}}</span></div>{{/ifStoreSetting}}
+	       {{#ifDisplay 'MO.ShActOnOrd'}}
+	       <div class="info">
+	         {{#ifDisplay 'MO.ShReOrdBt'}}
+	          {{#if this.canReOrder}}
+	           <input type="button" class="remove reorder" data-id="{{sfid}}" value="{{pageLabelMap 'MyOrdersInc_Reorder'}}"/>&#160;
+	          {{/if}} 
+	         {{/ifDisplay}}
+	         {{#if this.canCancel}}
+	          {{#ifDisplay 'MO.ShAmdBt'}}
+	           {{#if this.canAmend}}
+	            <input type="button" class="promptCancel promptAmend" data-id="{{sfid}}" data-mode="Edit" value="{{pageLabelMap 'Amend'}}"/>&#160;
+	           {{/if}}
+	          {{/ifDisplay}}
+	          {{#ifDisplay 'MO.ShCanBt'}}
+	           <input type="button" class="remove promptCancel" data-id="{{sfid}}" data-mode="Cancel" value="{{pageLabelMap 'Cancel'}}"/>
+	          {{/ifDisplay}}
+	         {{/if}}
+	       </div>
+	       {{/ifDisplay}}
+	      </div>
+	     {{/each}}
+	    </div>
+	   </div>
+	   <div class="orderPaginationSecPhone" />
+	   <div id="modalSec"></div>
+	  </div>
+	 </script>
+
+	 <script type="text/javascript">
+		 jQuery(function($) 
+		 {
+		 	CCRZ.subsc = CCRZ.subsc || {};
+
+	        CCRZ.subsc.myNexeoRemoteActions = _.extend(CCRZ.RemoteInvocation, {
+	            className : 'cc_3d_ctrl_MyAccountOrders',
+	            getExtendedOrdersList : function(orderIds, callback) {
+                    /*
+	                this.invokeCtx('getExtendedOrdersList',
+	                    orderIds,
+	                    function(resp) 
+	                    {
+							console.log('*** In callback for invokeCtx');
+	                        callback(resp);
+	                    },
+	                    {
+	                        buffer : false, // this call will be executed by itself
+	                        nmsp   : false  // defines that this is a call to a subscriber class
+	                    }
+	                );
+				  */
+	                Visualforce.remoting.Manager.invokeAction('{!$RemoteAction.cc_3d_ctrl_MyAccountOrders.getExtendedOrdersList}',
+                        CCRZ.pagevars.remoteContext,
+	                    orderIds,
+	                    function(resp) 
+	                    {
+							console.log('*** In callback for invokeCtx');
+	                        callback(resp);
+	                    },
+	                    {
+	                        buffer : false, // this call will be executed by itself
+	                        nmsp   : false  // defines that this is a call to a subscriber class
+	                    }
+	                );
+	            }
+	        });
+   			
+			CCRZ.pubSub.once('view:myOrdersView:refresh', function(view) {
+				console.log('*** adding showInvoicePdf function');
+
+            	var viewPrototype = Object.getPrototypeOf(view);
+            	if (viewPrototype != null) {
+					console.log('*** viewPrototype is not null');
+                	viewPrototype.events = _.extend(viewPrototype.events, {
+						"click  .displayInvoicePdf" : "showInvoicePdf"
+					});
+
+            		viewPrototype.showInvoicePdf = function(event){
+						console.log('*** showInvoicePdf entry: %o', event);
+                		var objLink = $(event.target);
+
+                		var invoiceId = objLink.data("id");
+                		var sfid = objLink.data("sfid");
+						console.log('** ids: ' + invoiceId + ',' + sfid);
+
+						Visualforce.remoting.Manager.invokeAction(
+							'{!$RemoteAction.cc_3d_ctrl_MyAccountOrders.fetchMyInvoiceAttachment}',
+							CCRZ.pagevars.remoteContext,
+							invoiceId,
+							sfid,
+							function(response)
+							{
+								console.log("*** Printing response");
+								console.log("*** Response: %o", response);
+							if (response && response.data.success)
+							{
+								if (response.data.invoiceData)
+								{
+									console.log("Setting PDF data URL");
+								var pdfDataAsUri = "/nexeo3d/servlet/servlet.FileDownload?file=" + response.data.invoiceData;
+									console.log("Setting PDF data URL: " + pdfDataAsUri);
+
+								window.open(pdfDataAsUri);
+								}   
+								else
+								{
+								setTimeout(function()
+								{
+									CCRZ.pubSub.trigger('pageMessage',{
+										messages :      [{
+											type:          'CUSTOM',
+											severity:      'INFO',
+											classToAppend: 'messagingSection-invoicehistory-Info',
+											labelId:       'cc_imp_no_invoice_pdf'}]
+									});
+								});
+								}
+							}
+							else
+							{
+								setTimeout(function()
+								{
+									CCRZ.pubSub.trigger('pageMessage',{
+										messages :      [{
+											type:          'CUSTOM',
+											severity:      'ERROR',
+											classToAppend: 'messagingSection-invoicehistory-Error',
+											labelId:       'cc_imp_error_processing_invoice_request'}]
+									});
+								});
+							}      
+							}
+						);
+					} // showInvoicePdf
+
+
+
+
+					view.delegateEvents();
+				}
+				else {
+					console.log('*** viewPrototype is null');
+				}
+			});
+
+
+		 	CCRZ.pubSub.on('view:myOrdersView:refresh', function(myOrdersViewImp)
+		 	{
+			 	if (myOrdersViewImp.dataReady)
+			 		 { 
+			 			var orderIds = []; 			
+		 				
+		 				var myOrderListModels = myOrdersViewImp.dataModel.models;
+
+		 				for (var i = 0; i < myOrderListModels.length; i++) 
+	   					{
+	   						var attributes = myOrderListModels[i].attributes;
+
+	   						orderIds.push(attributes.encryptedId);
+	   					}
+		 			
+   					 CCRZ.subsc.myNexeoRemoteActions.getExtendedOrdersList(orderIds,  
+   					 	function(resp) 
+   					 	{
+ 							if (resp && resp.success && resp.data.extendedData)
+ 							{
+							 	console.log("**Response: %o", resp);
+ 								var responseData = resp.data.extendedData;
+
+ 								$('.nexeo3dOrders').each( function()
+	 								{
+	 								 var encryptedOrderId  =  $(this).find('a.gotoOrderDetails').attr('data-Id');
+
+	 								 var trackingNumberResponse = responseData[encryptedOrderId]["trackingNumber"];
+
+	 								 if (trackingNumberResponse)
+	 								 {
+		 								 if (CCRZ.display.isPhone())
+		 								 {
+		 								 	 $(this).find('.trackingNumber').text(trackingNumberResponse);
+		 								 }
+		 								 else
+		 								 {
+		 								 	$(this).find('[data-columnType="trackingNumber"]').html('<a href="http://www.fedex.com/Tracking?tracknumbers=' + trackingNumberResponse + '"  target="shippingcarrier">' + trackingNumberResponse + '</a>');
+		 								 }
+	 								 }
+
+	 								 var invoiceNumber = responseData[encryptedOrderId]["invoiceNumber"];
+	 								 var sfid = responseData[encryptedOrderId]["sfid"];
+	 								 if (invoiceNumber)
+	 								 {
+		 								 if (CCRZ.display.isPhone())
+		 								 {
+		 								 	 $(this).find('.invoiceNumber').text(invoiceNumber);
+		 								 }
+		 								 else
+		 								 {
+		 								 	 //$(this).find('.invoiceNumber').text(invoiceNumber);
+		 								 	$(this).find('[data-columnType="invoiceNumber"]').html("<a href='javascript:void(0);' data-id='" + invoiceNumber + "' data-sfid='" + sfid + "' class='displayInvoicePdf'>" + "Display Invoice" + "</a>");
+ 
+		 								 }
+	 								 }
+	 							 });
+ 							}
+   					   });
+		 		}
+		 		
+		 	});
+
+
+		 });
+	</script>
+
+</apex:component>

@@ -1,0 +1,1 @@
+<apex:page standardcontroller="Sample_Material__c" extensions="SampleRequestSplitter" recordsetvar="mats" action="{!split}"/>

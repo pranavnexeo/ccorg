@@ -1,0 +1,182 @@
+<apex:page controller="Sample_Request_Controller" tabStyle="Sample_Request__c" action="{!init}">
+<apex:stylesheet value="{!$Resource.SampleRequestStyles}"></apex:stylesheet>
+
+        <apex:sectionHeader title="{!$Label.New_Sample_Request} {!Sample_Request_Link}" subtitle="{!$Label.Step_5}"/>
+        <apex:form >
+                <apex:pageBlock title="{!$Label.Sample_Confirmation}">
+                        <apex:facet name="footer">
+                                <apex:outputPanel >
+                                        <CENTER>
+                                        <apex:commandButton action="{!step4}" value="{!$Label.Previous}" styleClass="btn"/>
+                                    <!--    <apex:commandButton action="{!saveAndSubmitForApproval}" value="Save and Submit for Approval" rendered="{!IF(sampleRequest.Approval_Process__c != null,'true','false')}" styleClass="btn"/> -->
+                                        <apex:commandButton action="{!saveAndSubmitForApproval}" value="{!$Label.Save_and_Submit}" styleClass="btn"/>
+                                        </CENTER>
+                                </apex:outputPanel>
+                        </apex:facet>
+
+                        <apex:pageBlockSection title="{!$Label.Enter_Additional_Comments}" columns="1" collapsible="false">
+                          <apex:pageBlock title="{!$Label.Additional_Comments}:">
+                                        <apex:inputTextArea value="{!NoteToSampleCoordinator}"/>
+                          </apex:pageBlock>
+                        </apex:pageBlockSection>
+
+
+                        <apex:outputPanel id="generalInformation">
+                                <apex:pageBlockSection title="{!$Label.Related_to_the_Following}:" columns="1" showHeader="true" collapsible="false">
+                                        <apex:panelGrid columns="2">
+                                                <apex:outputText value="{!$Label.Account}: " styleClass="HeaderLabel" rendered="{!GotAccount}"/>
+                                                <apex:outputLink value="/{!account.Id}" target="=_blank" rendered="{!GotAccount}">{!account.Name}</apex:outputLink>
+                                                <apex:outputText value="{!$Label.Contact}: " styleClass="HeaderLabel" rendered="{!GotContact}"/>
+                                                <apex:outputLink value="/{!contact.Id}" target="_blank" rendered="{!GotContact}">{!contact.Name}</apex:outputLink>
+                                                <apex:outputText value="{!$Label.Contact}: " styleClass="HeaderLabel" rendered="{!CreatingContact}"/>
+                                                <apex:outputText value="A new contact will be created" styleClass="HeaderData" rendered="{!CreatingContact}"/>
+                                                <apex:outputText value="{!$Label.Opportunity}: " styleClass="HeaderLabel" rendered="{!GotOpportunity}"/>
+                                                <apex:outputLink value="/{!opportunity.Id}" target="_blank" rendered="{!GotOpportunity}">{!opportunity.Name}</apex:outputLink>
+                                                <apex:outputText value="{!$Label.Cost_Center_Info}: " styleClass="HeaderLabel" rendered="{!if(sampleRequest.Cost_Center__c != '','true','false')}"/>
+                                                <apex:outputText value="{!sampleRequest.Cost_Center__c}" rendered="{!if(sampleRequest.Cost_Center__c != '','true','false')}"/>
+                                        </apex:panelGrid>
+                                </apex:pageBlockSection>
+                        </apex:outputPanel> 
+
+
+                        <apex:pageBlockSection title="{!$Label.Shipped_To}:" columns="1" collapsible="false">
+                          <apex:pageBlock title="{!$Label.address}">
+                                <apex:outputText escape="false" value="{!SampleRequestAddress}"/>
+                          </apex:pageBlock>
+                        </apex:pageBlockSection>
+
+                        <apex:pageBlockSection title="{!$Label.Reason_for_Request}:" columns="1" collapsible="false">
+                          <apex:pageBlock title="{!$Label.Reason}">
+                                        <apex:outputText value="{!sampleRequest.Reason_for_Sample__c}"/>
+                          </apex:pageBlock>
+                        </apex:pageBlockSection>
+
+                        <apex:pageBlockSection title="{!$Label.Approval_Process_Sample}" columns="1" rendered="{!IF(sampleRequest.Approval_Process__c != null,'true','false')}" collapsible="false">
+                          <apex:pageBlock title="{!$Label.Approval_Process}">
+                             <apex:panelGrid columns="2">
+                                <apex:outputText styleClass="HeaderLabel" escape="false" value="{!$Label.Approval_Process}:"/>
+                                <apex:outputText escape="false" value="{!sampleRequest.Approval_Process__c}"/>
+                                <apex:outputText styleClass="HeaderLabel" escape="false" value="{!$Label.Approver_List}:" rendered="{!IF(ApproverQueue != null,'true','false')}" />
+                                <apex:outputText escape="false" value="{!ApproverQueue}" rendered="{!IF(ApproverQueue != null,'true','false')}" />
+                                <apex:outputText styleClass="HeaderLabel" escape="false" value="{!$Label.Backup} {!$Label.Approver_List}:" rendered="{!IF(BackupApproverQueue != null,'true','false')}" />
+                                <apex:outputText escape="false" value="{!BackupApproverQueue}" rendered="{!IF(BackupApproverQueue != null,'true','false')}" />
+                                <apex:outputText styleClass="HeaderLabel" escape="false" value="{!$Label.Approver_List} (Level 2):" rendered="{!IF(ApproverQueue2 != null,'true','false')}" />
+                                <apex:outputText escape="false" value="{!ApproverQueue2}" rendered="{!IF(ApproverQueue2 != null,'true','false')}" />
+                                <apex:outputText styleClass="HeaderLabel" escape="false" value="{!$Label.Approver_List} (Level 3):" rendered="{!IF(ApproverQueue3 != null,'true','false')}" />
+                                <apex:outputText escape="false" value="{!ApproverQueue3}" rendered="{!IF(ApproverQueue3 != null,'true','false')}" />
+                                <apex:outputText styleClass="HeaderLabel" escape="false" value="{!$Label.Approver_Queue_Name}:" rendered="{!IF(ApproverQueueName!= null,'true','false')}" />
+                                <apex:outputText escape="false" value="{!ApproverQueueName}" rendered="{!IF(ApproverQueueName!= null,'true','false')}" />
+                                <apex:outputText styleClass="HeaderLabel" escape="false" value="{!$Label.Approval_Requirements}:" rendered="{!IF(ApprovalRequirements != null,'true','false')}" />
+                                <apex:outputText escape="false" value="{!ApprovalRequirements}" rendered="{!IF(ApprovalRequirements != null,'true','false')}" />
+                            </apex:panelGrid>
+                          </apex:pageBlock>
+                        </apex:pageBlockSection>
+
+                        <apex:pageBlockSection title="{!$Label.Validation_Error}" columns="1" collapsible="false" rendered="{!IF(ValidationErrorMessage!='','True','False')}">
+                             <apex:pageBlock title="{!$Label.Error_Messages}" rendered="{!IF(ValidationErrorMessage!='','True','False')}">
+                                   <apex:outputText escape="False" styleClass="Warning" value="{!ValidationErrorMessage}" rendered="{!IF(ValidationErrorMessage!='','True','False')}"/>
+                             </apex:pageBlock>
+                        </apex:pageBlockSection>
+
+                        <apex:pageBlockSection title="{!$Label.No_approval_process}" rendered="{!IF(sampleRequest.Approval_Process__c == null,'true','false')}" collapsible="false">
+                          <apex:pageBlock title="{!$Label.Error}">
+                                <apex:outputText styleClass="Warning" escape="false" value="{!NoApprovalProcessMessage}"/>
+                          </apex:pageBlock>
+                        </apex:pageBlockSection>
+
+                        <apex:pageBlockSection title="{!$Label.Materials_in_Sample}:" columns="1" collapsible="false">
+                          <apex:pageBlock title="{!$Label.Material_List}">
+                                <apex:dataTable value="{!sampleMaterials}" var="lines" styleClass="list">
+                                
+                                 <apex:column >
+                                     <apex:facet name="header">{!$Label.SAP_Material}</apex:facet>
+                                     <apex:outputField value="{!lines.SAP_Material_MSD2__c}"/>&nbsp;
+                                   </apex:column>  
+                                     
+                                   <apex:column >
+                                     <apex:facet name="header">Material Not in SAP?</apex:facet>
+                                     &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+                                     <apex:outputField value="{!lines.Existing_Material_in_SAP__c}" style="float:right" />&nbsp;
+                                   </apex:column>
+                                   
+                                   <apex:column >
+                                     <apex:facet name="header">{!$Label.Material_Name}</apex:facet>
+                                     <apex:outputField value="{!lines.name}"/>
+                                   </apex:column>
+                                   <apex:column >
+                                     <apex:facet name="header">{!$Label.Quantity}</apex:facet>
+                                     <apex:outputField value="{!lines.Sample_Quantity__c}"/>
+                                   </apex:column>
+                                   <apex:column >
+                                     <apex:facet name="header">{!$Label.UOM}</apex:facet>
+                                     <apex:outputField value="{!lines.Sample_UOM__c}"/>
+                                   </apex:column>
+                                   <apex:column rendered="{!RenderProductLine}">
+                                     <apex:facet name="header">{!$Label.Product_Line}</apex:facet>
+                                     <apex:outputField value="{!lines.Product_Line__c}"/>
+                                   </apex:column>
+                                   <apex:column rendered="{!RenderPMCastingsProductLine}">
+                                     <apex:facet name="header">{!$Label.Product_Line}</apex:facet>
+                                     <apex:outputField value="{!lines.PM_Castings_Product_Line__c}"/>
+                                   </apex:column>
+                                   <!--
+                                   <apex:column >
+                                     <apex:facet name="header">{!$Label.Sample_Value}</apex:facet>
+                                     <apex:outputField value="{!lines.Estimated_Sample_Value__c}"/>
+                                   </apex:column>
+                                   -->
+                                   <apex:column rendered="{!RenderperLineItemCost}">
+                                     <apex:facet name="header">{!$Label.Line_Item}<BR/>{!$Label.Admin_Cost}</apex:facet>
+                                     <apex:outputField value="{!lines.Additional_Admin_Cost__c}"/>
+                                   </apex:column>
+                                   <!--
+                                   <apex:column >
+                                     <apex:facet name="header">{!$Label.Potential_Annual_Value}</apex:facet>
+                                     <apex:outputField value="{!lines.Potential_Annual_Value__c}"/>
+                                   </apex:column>
+                                   -->
+                                   <apex:column >
+                                     <apex:facet name="header">{!$Label.Ship_From_Location}</apex:facet>
+                                     <apex:outputField value="{!lines.Ship_From_Location__c}"/>
+                                   </apex:column>
+                                   <apex:column rendered="{!RenderTectyl}">
+                                     <apex:facet name="header">{!$Label.Tectyl_Product}?</apex:facet>
+                                     <apex:outputField value="{!lines.Tectyl_Product__c}"/>
+                                   </apex:column>
+                                   <apex:column rendered="{!RenderADCompound}">
+                                     <apex:facet name="header">{!$Label.AD_Compound}?</apex:facet>
+                                     <apex:outputField value="{!lines.AD_Compound__c}"/>
+                                   </apex:column>
+                                </apex:dataTable>
+                          </apex:pageBlock>
+                        </apex:pageBlockSection>
+                        
+                     <!--
+                        <apex:outputPanel id="TotalCostofSampleRequest">
+                                <apex:pageBlockSection title="{!$Label.Total_Ashland_Cost}:" columns="1" showHeader="true" collapsible="false">
+                                        <apex:panelGrid columns="2" columnClasses="RowLabelRJ,DataLabelRJ">
+                                                <apex:outputText value="{!$Label.Estimated_Sample_Value} " />
+                                                <apex:outputField value="{!sampleRequest.hold_Total_Value_of_Sample__c}" />
+                                                
+                                                <apex:outputText value="{!$Label.additional_admin_cost}" rendered="{!if(sampleRequest.Additional_Admin_Cost__c>0,'true','false')}"/>
+                                                <apex:outputField value="{!sampleRequest.Additional_Admin_Cost__c}" rendered="{!if(sampleRequest.Additional_Admin_Cost__c>0,'true','false')}"/>
+                                                
+                                                <apex:outputText value="{!$Label.Additional_Line_Item_Cost} " rendered="{!if(sampleRequest.hold_Total_Line_Item_Costs__c>0,'true','false')}"/>
+                                                <apex:outputField value="{!sampleRequest.hold_Total_Line_Item_Costs__c}" rendered="{!if(sampleRequest.hold_Total_Line_Item_Costs__c>0,'true','false')}"/>
+                                                
+                                                <apex:panelGroup ><HR/></apex:panelGroup>
+                                                <apex:panelGroup ><HR/></apex:panelGroup>
+                                                
+                                                <apex:outputText value="{!$Label.Grand_Total} "/>
+                                                <apex:outputField value="{!sampleRequest.hold_Total_Sample_Cost__c}"/>
+                                        </apex:panelGrid>
+                                </apex:pageBlockSection>
+                        </apex:outputPanel> 
+                     -->
+                        
+&nbsp;
+&nbsp;
+&nbsp;
+                </apex:pageBlock>
+        </apex:form>
+</apex:page>

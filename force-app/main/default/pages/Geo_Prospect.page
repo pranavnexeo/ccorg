@@ -1,0 +1,310 @@
+<apex:page controller="Account_Geo_Prospect" standardStylesheets="true" showHeader="false" sidebar="false" id="thepage">
+ <!-- Begin Default Content REMOVE THIS -->
+  <link href="{!URLFOR($Resource.bootstrap, '/bootstrap-3.1.1-dist/css/bootstrap.min.css')}" rel="stylesheet" />
+  <script src="https://maps.googleapis.com/maps/api/js?key={!GoogleAPIKey}&v=3.exp&sensor=true&libraries=places"></script>
+  <script src="{!URLFOR($Resource.bootstrap, '/bootstrap-3.1.1-dist/js/jquery.js')}"></script>
+  <script src="{!URLFOR($Resource.bootstrap, '/bootstrap-3.1.1-dist/js/bootstrap.min.js')}" />
+  <script type='text/javascript' src='/canvas/sdk/js/29.0/publisher.js'></script>
+  
+  <style>
+  @media (min-width: 90%) {
+      .container {
+        max-width: 730px;
+      }
+    }
+  </style>
+  <script>
+  
+        var map, infowindow, ref, lat, lon;       
+        $(document).ready(function(){
+        init();        
+        });
+        function init() {
+            
+                
+             // Check to see if the device has geolocation 
+             // detection capabilities with JS
+             if (navigator.geolocation) {
+                 navigator.geolocation.getCurrentPosition(
+                     function(position){
+                     lat = position.coords.latitude;
+                     lon = position.coords.longitude;
+                     var request = {
+                        location:  new google.maps.LatLng(lat, lon),
+                        radius: '500',
+                        types: ['establishment']
+                      };
+                      infowindow = new google.maps.InfoWindow();
+                      var mapOpt = {
+                          center:new google.maps.LatLng(lat, lon),
+                          zoom:15,
+                          mapTypeId:google.maps.MapTypeId.ROADMAP
+                      };
+                      
+                      map=new google.maps.Map(document.getElementById("googleMap"),mapOpt);
+                      var service = new google.maps.places.PlacesService(map);
+                      service.nearbySearch(request, callback);
+                  });
+              } else {
+              //Set default values for map if the device 
+              //doesnt have geolocation capabilities
+                    /** San Francisco **/
+                    lat = 37.77493;
+                    lon = -122.419416;
+                    alert('default');
+              }
+         }
+         
+             function callback(results, status) {
+              if (status != google.maps.places.PlacesServiceStatus.OK && status != google.maps.places.PlacesServiceStatus.ZERO_RESULTS) {
+                alert(status);
+                return;
+              }
+             
+              Account_Geo_Prospect.getResults(results, lat, lon, '5', function(result, event){
+              if(event.type == 'exception') {
+                 alert(event.message);
+              }else{
+              
+              $('#container').empty();
+              var str = '<a href="#" onclick="setRef(\'\');" class="list-group-item" id="notfound">';
+              str += '<h4 class="list-group-item-heading">{!$Label.GEO_Prospect_Not_In_List}</h4>';
+              str += '<p class="list-group-item-text">{!$Label.GEO_Type_Address_Manual}</p></a>';
+              $('#container').append(str);
+              console.log(result.length);
+              for(var i=0; i<result.length; i++)
+              {    
+                   createMarker(result[i]);
+                   addPlace(result[i]);
+              }
+             }
+             });
+            }
+            
+            function formatSelects(){
+              setTimeout(function(){$('[id$="theform"]').find('select').addClass('form-control')}, 10);
+              
+            }
+            function getDetails(){
+               formatSelects();
+               if(ref != '')
+               {
+                   var detail_req = { reference: ref};
+                   var detailservice = new google.maps.places.PlacesService(map);
+                   detailservice.getDetails(detail_req, detail_callback);   
+               }
+            }
+            
+            function setRef(refrence){
+              ref = refrence;
+              showForm();
+              $("[id$='AccountName']").focus();
+            }
+            function detail_callback(place, status) {
+              
+              if (status == google.maps.places.PlacesServiceStatus.OK) {
+
+                var street_addr = '';
+                setAddress(place.address_components);     
+                }
+                 $("[id$='AccountName']").val(place.name);
+                 
+            }
+            function setAddress(components){
+            var street_number = ''
+            var route = '';
+            for(var h=0; h<components.length; h++){
+              var component = components[h];
+              for(var i=0; i<component.types.length; i++)
+              {
+                
+                if(component.types[i] == 'street_number')   
+                    street_number = component.short_name;
+                if(component.types[i] == 'route')
+                    route = component.short_name;
+                if(component.types[i] == 'locality')
+                  $("[id$='AccountCity']").val(component.short_name);
+                if(component.types[i] == 'administrative_area_level_1')  
+                  $("[id$='AccountState']").val(component.short_name);
+                if(component.types[i] == 'postal_code') 
+                  $("[id$='AccountZip']").val(component.short_name);
+                if(component.types[i] == 'country') 
+                  $("[id$='AccountCountry']").val(component.short_name);
+              }
+             }
+             $("[id$='AccountStreet']").val(street_number + ' ' + route);
+            }
+            
+            function addPlace(place){
+              
+              var type = '';
+              var owner = '';
+              if(place.type == 'ad')
+              {  type = ' (' + place.ad.Type__c + ') ';
+                 owner = '<br/>{!$Label.GEO_Owner}: ' + place.ad.Owner_Name__c;
+              }
+              
+              var onclick = 'href="#" onclick="setRef(\'' + place.reference + '\');"';
+              if(place.type == 'ad')
+                onclick = 'href="mailto:' + place.ad.Owner_Email__c + '"';
+                
+              var str = '<a ' + onclick + ' class="list-group-item" id="' + place.reference + '">';
+              str += '<h4 class="list-group-item-heading">' + place.name  + type + ' </h4>';
+              str += '<span class="badge">' + place.distance.toFixed(1) + ' </span>';
+              str += '<p class="list-group-item-text">' + place.vicinity + owner + '</p></a>';
+              $('#container').append(str);
+            }
+            function createMarker(place) {
+              console.log(place);
+              var marker = new google.maps.Marker({
+                map: map,
+                position:  new google.maps.LatLng(place.geometry.location.lat, place.geometry.location.lng)
+              });
+              
+              google.maps.event.addListener(marker, 'click', function() {
+                infowindow.setContent(place.name);
+                infowindow.open(map, this);
+              });
+            }
+            
+            function gotorecord(recordid){
+              if(typeof sforce != 'undefined')
+                sforce.one.goToSObject(recordid);
+              else
+                window.location = '/' + recordid;
+            } 
+            
+            
+            google.maps.event.addDomListener(window, 'load', init);
+            
+
+            </script>
+            <div class="container">
+            <apex:form styleclass="form-horizontal" id="theform">
+
+            <apex:outputpanel layout="block" id="placeslist" rendered="{!renderList}">
+            <div id="googleMap" style="width:100%;height:200px;"></div>
+            <div class="list-group" id="container"></div>
+            </apex:outputpanel>
+            <apeX:actionFunction name="showForm" action="{!showForm}" rerender="theform, placeslist" oncomplete="getDetails();"/>
+            <apeX:actionFunction name="save" action="{!save}" />
+            <apex:outputpanel rendered="{!NOT(renderList)}">  
+                     <div class="row">
+                     <div class="col-md-6">
+                        <div class="form-group">
+                          <label for="AccountName" class="col-sm-4 control-label">{!$Label.GEO_Name}</label>
+                              <div class="col-sm-8">
+                              <apex:inputfield styleClass="form-control" id="AccountName" value="{!Account.Name}"/>
+                              </div>
+                        </div>
+                        <div class="form-group">
+                          <label for="AccountStreet" class="col-sm-4 control-label">{!$Label.GEO_Street}</label>
+                              <div class="col-sm-8">
+                              <apex:inputfield styleClass="form-control" id="AccountStreet" value="{!Account.SAP_Street__c}"/>
+                              </div>
+                        </div>
+                        <div class="form-group">
+                          <label for="AccountCity" class="col-sm-4 control-label">{!$Label.GEO_City}</label>
+                              <div class="col-sm-8">
+                              <apex:inputfield styleClass="form-control" id="AccountCity" value="{!Account.SAP_City__c}" required="true"/>
+                              </div>
+                        </div>
+                        <div class="form-group">
+                          <label for="AccountState" class="col-sm-4 control-label">{!$Label.GEO_State}</label>
+                              <div class="col-sm-8">
+                              <apex:inputfield styleClass="form-control" id="AccountState" value="{!Account.SAP_State__c}"/>
+                              </div>
+                        </div>
+                        <div class="form-group">
+                          <label for="AccountZip" class="col-sm-4 control-label">{!$Label.GEO_Zip}</label>
+                              <div class="col-sm-8">
+                              <apex:inputfield styleClass="form-control" id="AccountZip" value="{!Account.SAP_Zip_Code__c}"/>
+                              </div>
+                        </div>
+                        <div class="form-group">
+                          <label for="AccountCountry" class="col-sm-4 control-label">{!$Label.GEO_Country}</label>
+                              <div class="col-sm-8">
+                              <apex:inputfield styleClass="form-control" id="AccountCountry" value="{!Account.SAP_Country__c}"/>
+                              </div>
+                        </div>
+                        <div class="form-group">
+                          <label for="NexpriceMarket" class="col-sm-4 control-label">{!$Label.GEO_Market}</label>
+                              <div class="col-sm-8">
+                              <apex:inputfield styleClass="form-control" id="NexpriceMarket" value="{!Account.Nexprice_Market__c}" required="true"/>
+                              </div>
+                        </div>
+                        <div class="form-group">
+                          <label for="NexpriceRegion" class="col-sm-4 control-label">{!$Label.GEO_Region}</label>
+                              <div class="col-sm-8">
+                              <apex:inputfield styleClass="form-control" id="NexpriceRegion" value="{!Account.Nexprice_Region__c}" required="true"/>
+                              </div>
+                        </div>
+                     </div>
+                     <div class="col-md-6">
+                        <div class="form-group">
+                          <label for="AccountOrg" class="col-sm-4 control-label">{!$Label.GEO_Org}</label>
+                              <div class="col-sm-8">
+                              <apex:inputfield styleClass="form-control" id="AccountOrg" value="{!Account.Prospect_Sales_Org__c}" onchange="formatSelects();" required="true"/>
+                              </div>
+                        </div>
+                        <div class="form-group">
+                          <label for="AccountDist" class="col-sm-4 control-label">{!$Label.GEO_Dist_Channel}</label>
+                              <div class="col-sm-8">
+                              <apex:inputfield styleClass="form-control" id="AccountDist" value="{!Account.Prospect_Dist_Channel__c}" onchange="formatSelects();" required="true"/>
+                              </div>
+                        </div>
+                        <div class="form-group">
+                          <label for="AccountDiv" class="col-sm-4 control-label">{!$Label.GEO_Division}</label>
+                              <div class="col-sm-8">
+                              <apex:inputfield styleClass="form-control" id="AccountDiv" value="{!Account.Prospect_Division__c}" onchange="formatSelects();" required="true"/>
+                              </div>
+                        </div>
+                        <div class="form-group">
+                          <label for="AccountDistrict" class="col-sm-4 control-label">{!$Label.GEO_District}</label>
+                              <div class="col-sm-8">
+                              <apex:inputfield styleClass="form-control" id="AccountDistrict" value="{!Account.Prospect_Sales_District__c}" onchange="formatSelects();" required="true"/>
+                              </div>
+                        </div>
+                        <div class="form-group">
+                          <label for="AccountOffice" class="col-sm-4 control-label">{!$Label.GEO_Office}</label>
+                              <div class="col-sm-8">
+                              <apex:inputfield styleClass="form-control" id="AccountOffice" value="{!Account.Prospect_Sales_Office__c}" onchange="formatSelects();" required="true"/>
+                              </div>
+                        </div>
+                        <div class="form-group">
+                          <label for="AccountGroup" class="col-sm-4 control-label">{!$Label.GEO_Group}</label>
+                              <div class="col-sm-8">
+                              <apex:inputfield styleClass="form-control" id="AccountGroup" value="{!Account.Prospect_Sales_Group__c}" onchange="formatSelects();" required="true"/>
+                              </div>
+                        </div>
+                        
+                        <div class="form-group">
+                          <label for="NexpriceSize" class="col-sm-4 control-label">{!$Label.GEO_Size}</label>
+                              <div class="col-sm-8">
+                              <apex:inputfield styleClass="form-control" id="NexpriceSize" value="{!Account.Nexprice_Size__c}" required="true"/>
+                              </div>
+                        </div>
+                        <div class="form-group">
+                        <div class="col-sm-4 control-label">
+
+                        <apex:commandLink value="Save" styleclass="btn btn-default btn-lg" action="{!Save}"></apex:commandlink>
+                        <apex:commandLink value="Cancel" styleclass="btn btn-default btn-lg" action="{!Cancel}" immediate="true"></apex:commandlink>
+                        
+                        
+                        </div>
+                        <div class="col-sm-8"/>
+                        </div>
+                    
+                     </div>
+                   </div>
+            </apeX:outputpanel>
+            </apex:form>
+            </div>
+ <script> 
+(function(){try{var a=navigator.userAgent; 
+if((a.indexOf('Salesforce')!=-1)&&(a.indexOf('iPhone')!=-1||a.indexOf('iPad')!=-1)&&(a.indexOf('OS/9')!=-1||a.indexOf('OS 9')!=-1)&&(a.indexOf('Safari')==-1)){ 
+var s=document.createElement('style'); 
+s.innerHTML="html,html body{overflow: auto;-webkit-overflow-scrolling:touch;}body{position:absolute;left:0;right:0;top:0;bottom:0;}"; 
+document.getElementsByTagName('head')[0].appendChild(s);}}catch(e){}})(); 
+</script> 
+</apex:page>

@@ -1,0 +1,23 @@
+<apex:page standardcontroller="CAPA__c" extensions="CAPAController" sidebar="false" showHeader="false">
+ <apex:form id="theform"> 
+   <apex:actionRegion >
+     <apex:outputPanel id="contactpanel">        
+       <apex:pageblock >
+       
+         <apex:pageblockbuttons >
+                <apex:commandButton value="Save" action="{!customSave}" Oncomplete="window.close();"/>
+                <apex:commandButton value="Close" onclick="window.close();" />
+         </apex:pageblockbuttons> 
+         
+         <apex:outputpanel >
+                <apex:outputlabel value="Select Queue Member: "/>
+                <apex:selectlist value="{!selecteduser}" size="1" id="contactlist">
+                <apex:selectoptions value="{!QueueList}" />
+                </apex:selectlist>                     
+         </apex:outputPanel>
+            
+         </apex:pageblock>
+        </apex:outputPanel>             
+      </apex:actionRegion> 
+   </apex:form> 
+</apex:page>

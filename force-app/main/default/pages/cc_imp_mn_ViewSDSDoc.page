@@ -1,0 +1,18 @@
+<apex:page controller="cc_imp_mn_ViewSDSDoc" sidebar="false" showHeader="false" action="{!ViewSDSDoc}">
+ <apex:iframe height="1200px" width="100%" src="/mynexeo/servlet/servlet.FileDownload?file={!docId}" ></apex:iframe> 
+  
+     <script>
+     
+        var doc = '{!doc}';
+       
+        if(doc == '')
+        {
+            alert('{!$Label.NoDocAvailable}');
+            window.close();
+        }
+        else if (doc=='negative'){
+            alert('{!$Label.DocumentDisplayIssue}');
+            window.close(); 
+        }
+      </script>
+</apex:page>

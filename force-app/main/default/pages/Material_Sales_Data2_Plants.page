@@ -1,0 +1,58 @@
+<apex:page standardController="Material_Sales_Data2__c"
+                           id="thePage" 
+                   extensions="Material_Sales_Data2_Controller"
+                        title="Material: {!Material_Sales_Data2__c.Material_Desc__c} - {!materialNumber}">
+
+    <apex:form id="theForm">
+ 
+        <apex:outputText value="{!Material_Sales_Data2__c.Material_Number__c}" rendered="false"/>
+        <apex:pageBlock >
+
+            <apex:pageBlockSection title="{!$Label.Plants}" id="block4" columns="1">
+                <apex:pageBlockTable value="{!plants}" var="plant">
+                    <apex:column value="{!plant.Plant_Name__c} - {!plant.Plant_Code__c}"
+                                 headerValue="{!$Label.Plant_Name_and_Code}"/>
+                    <apex:column value="{!plant.Plant_Address__c}"
+                                 headerValue="{!$Label.City_State_Zip}"/>
+                    <apex:column value="{!plant.COGS_String__c}"
+                                 styleClass="textAlignRight"
+                                 headerClass="textAlignRight"
+                                 headerValue="{!$Label.COGS}"/>
+                    <apex:column value="{!plant.Deletion_Flag__c}"
+                                 styleClass="textAlignCenter"
+                                 headerClass="textAlignCenter"
+                                 headerValue="{!$Label.Deleted}?"/>
+<!--                                  
+                    <apex:column value="{!plant.SalesOrg_Desc__c} - {!plant.SalesOrg_Code__c}"
+                                 headerValue="SalesOrg Name & Code"/>
+-->                                 
+                </apex:pageBlockTable>
+            </apex:pageBlockSection>
+            
+            <apex:pageBlockSection title="{!$Label.Alternative_UOMs}" id="block3" columns="1">
+                <apex:pageBlockTable value="{!altUOMs}" var="uom">
+                    <apex:column value="{!uom.Alternative_UOM_Desc__c}" headerValue="{!$Label.Alt_UoM}"/>
+                    <apex:column value="{!uom.Gross_Weight_in_LBs__c}" headerValue="{!$Label.Gross_Weight_in_LBs}"/>
+                    <apex:column value="{!uom.Net_Weight_in_LBs__c}" headerValue="{!$Label.Net_Weight_in_LBs}"/>
+                    <apex:column value="{!uom.Alt_Gross_Weight__c}" headerValue="{!$Label.Gross_Weight}"/>
+                    <apex:column value="{!uom.Alt_Net_Weight__c}" headerValue="{!$Label.Net_Weight}"/>
+                    <apex:column value="{!uom.Base_UOM_Desc__c}" headerValue="{!$Label.Base_UoM}"/>
+                </apex:pageBlockTable>
+            </apex:pageBlockSection>
+
+            <apex:includescript value="{!$Resource.PageBlockSupplementScript}" />
+            <script>
+                addLoadEvent(collapsePageBlockSection('{!$Component.block3}'));
+            </script>
+            <apex:inputhidden value="{!Material_Sales_Data2__c.Material_General_Data__c}"/>
+            <apex:inputhidden value="{!Material_Sales_Data2__c.Sales_Org_Code__c}"/>
+
+        </apex:pageBlock>
+    </apex:form>
+    
+    <style>
+        .textAlignCenter {text-align: center;}
+        .textAlignRight {text-align: right;}
+    </style>    
+
+</apex:page>

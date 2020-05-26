@@ -1,0 +1,3 @@
+<apex:page standardcontroller="Business_Contract__c" extensions="BusinessContractPDFRedirectController" tabStyle="Business_Contract__c" showheader="true" action="{!generatePdf}">
+    <apex:pageMessages id="msgs" escape="false" />
+</apex:page>

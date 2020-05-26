@@ -1,0 +1,87 @@
+<apex:page standardcontroller="Account" extensions="Account_Material_Search" standardStylesheets="false" showHeader="false" sidebar="false" id="thepage">
+
+  <link href="{!URLFOR($Resource.bootstrap, '/bootstrap-3.1.1-dist/css/bootstrap.min.css')}" rel="stylesheet" />
+  
+  <script src="{!URLFOR($Resource.bootstrap, '/bootstrap-3.1.1-dist/js/jquery.js')}"></script>
+  <script src="{!URLFOR($Resource.bootstrap, '/bootstrap-3.1.1-dist/js/bootstrap.min.js')}" />
+  
+  <script>
+    $(document).ready(function(){
+      if('{!$currentpage.parameters.q}' != '')
+        $('#searchbox').val('{!$currentpage.parameters.q}');
+        
+      $('#theform').submit(function( event ) {
+        search('{!Account.Id}');
+        event.preventDefault();
+        });
+    });
+    
+    
+    function search(id){
+      
+      if(typeof sforce != 'undefined')
+        sforce.one.navigateToURL('/apex/{!$CurrentPage.Name}?id=' + id + '&q=' + $('#searchbox').val());
+      else
+        window.location = '/apex/{!$CurrentPage.Name}?id=' + id + '&q=' + $('#searchbox').val();
+    }
+    function getPricing(id){
+        Account_Material_Search.getPricing(id, function(result, event){
+             if(event.type == 'exception') {
+                alert(event.message);
+                   
+             } else  
+                 gotorecord(id);
+             
+             
+         }, {buffer: true, escape: true, timeout:120000});
+
+    }
+    function gotorecord(id){
+      if(typeof sforce != 'undefined')
+        sforce.one.navigateToSObject(id);
+      else
+        window.location = '/' + id;
+    }
+  </script>
+  
+  <div class="well">
+  
+  <div class="panel panel-primary">
+  <div class="panel-body">
+  <div class="row">
+      <div class="col-md-12">
+      <form id="theform">
+          <div class="input-group">
+           <input type="text" class="form-control" id="searchbox" placeholder="Search Nexprice CPI..."/>
+           <span class="input-group-btn">
+             <button class="btn btn-default" type="submit">Search</button>
+           </span>
+         </div><!--end input-group -->
+      </form>
+      </div><!--end column -->
+    </div><!-- end row -->
+  </div><!-- end panel-body-->
+  </div>
+  
+  <div id="results">
+  <apex:variable var="c" value="{!1}"/>
+  <apex:repeat value="{!amlist}" var="am"> 
+  <apex:outputtext value="{!row}" escape="false" rendered="{!IF(c==1, true, false)}"/>
+     <div class="col-md-4">
+     <div class="panel panel-default">
+       <div class="panel-body" onclick="getPricing('{!am.id}');">
+       <apex:repeat value="{!$ObjectType.Account_Material__c.FieldSets.Account_Material_Search}" var="f">
+          <b><apex:outputtext value="{!f.label}: "/></b><br/><apex:outputtext value="{!IF(f.type == 'boolean', if(am[f.fieldPath], 'Yes', 'No'), am[f.fieldPath])}"/><br/>
+       </apex:repeat>
+       </div>
+      </div>
+     </div>
+  <apex:outputtext value="{!rowclose}" escape="false" rendered="{!IF(c==3, true, false)}"/>
+  <apex:variable var="c" value="{!IF(c == 3, 1, c+1)}"/>
+  </apeX:repeat>
+  </div>
+  </div>
+      
+
+
+</apex:page>

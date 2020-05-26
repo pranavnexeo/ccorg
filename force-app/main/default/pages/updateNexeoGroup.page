@@ -1,0 +1,40 @@
+<apex:page controller="PriceSupportSearchController" showHeader="false" sideBar="false">
+
+	
+   <script>
+   
+   	function close_window() {   
+		if (confirm("Close Window?")) {
+	     	window.top.close();   
+	     } 
+	}
+   
+   </script>	
+  <apex:pageMessages id="errors" />
+  
+  
+  <apex:form >
+  
+  
+  			<apex:pageBlock >
+  			
+  			<apex:pageBlockButtons location="top">
+               <apex:commandButton value="Update NG" action="{!updateNexeoGroup}"  rerender="errors"/>
+               
+               <apex:commandButton value="Cancel"  onclick="close_window();return false;" />
+              </apex:pageBlockButtons>
+  
+                <apex:pageBlockSection >
+                	
+                    <apex:selectList id="nexeoGroupName"  value="{!newNexeoGroup}"  label="New Nexeo Group"   required="true"  size="1">
+            			<apex:selectOptions value="{!nexeoGroupList}" />
+          			</apex:selectList>
+               </apex:pageBlockSection>
+            	
+               
+             </apex:pageBlock>
+               
+ 
+ </apex:form> 	
+
+</apex:page>

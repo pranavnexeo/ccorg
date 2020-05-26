@@ -1,0 +1,716 @@
+<apex:component controller="cc_imp_ctrl_UserAdmin">
+
+<script>
+Handlebars.registerHelper("debug", function(optionalValue) {
+  console.log("Current Context");
+  console.log("====================");
+  console.log(this);
+ 
+  if (optionalValue) {
+    console.log("Value");
+    console.log("====================");
+    console.log(optionalValue);
+  }
+});
+</script>
+
+
+<!-- ************** Start Main Manage User Template ****************************** -->
+<script id="MyAccount-User-Admin" type="text/template">
+<div class="acctmainSection" style="display: block;">
+  <h2 class="title">{{pageLabelMap 'cc_imp_MyAccount_UserAdminTitle'}}</h2>
+  <div class="main_content_large_solo_container">
+
+   <p>
+     {{pageLabelMap 'cc_imp_MyAccount_UserAdminMessage'}}<p />
+
+     <!-- Add buttons for each function -->
+     <!--
+     <input type="button" class="addUser" data-id="" value="{{pageLabelMap 'cc_imp_MyAccount_AddUser'}}"><br> 
+     -->
+
+   </p>
+   <p>
+
+     <!-- other functions should be displayed with the user list:
+      edit user
+      activate/deactivate user
+      promote to admin
+      demote from admin
+      assign ship-to
+      reset password
+     -->
+   </p>
+   <div id="modalSec"></div>
+   <div id="userList"></div>
+  </div>
+ </div>
+</script>
+<!-- ************** End Main Manage User Template ****************************** -->
+
+<!-- ************** Start User Listing Sub-template ****************************** -->
+<script id="MyAccount-ManageUsers-Listing" type="text/template">
+<form>
+<table id="userTable" class="shopping_cart">
+    <tbody><tr class="even">
+     <td class="right_align">{{pageLabelMap 'cc_imp_MyAccount_NameLabel'}}</td>
+     <td class="right_align">{{pageLabelMap 'cc_imp_MyAccount_AccountLabel'}}</td>
+     <td class="right_align">{{pageLabelMap 'cc_imp_MyAccount_IsAdminLabel'}}</td>
+     <td class="right_align">{{pageLabelMap 'cc_imp_MyAccount_IsActiveLabel'}}</td>
+     <td class="right_align">{{pageLabelMap 'cc_imp_MyAccount_ResetPasswordLabel'}}</td>
+    </tr>
+    {{#each accountData}}
+      {{#each contactList}}
+      <tr class="odd myAccCartRows">
+      <td class="right_align"><a href="#" data-id="" class="editUser" id="edit_{{contactId}}">{{firstName}} {{lastName}}</a></td>
+      <td class="right_align">{{../name}}</td>
+      {{#if isAdmin}}
+      <td class="right_align">Yes <a href="" id="demote_{{contactId}}" class="demote">{{pageLabelMap 'cc_imp_MyAccount_DemoteLabel'}}</a></td>
+      {{else}}
+      <td class="right_align">No <a href="" id="promote_{{contactId}}" class="promote">{{pageLabelMap 'cc_imp_MyAccount_PromoteLabel'}}</a></td>
+      {{/if}}
+      {{#if isActive}}
+      <td class="right_align">Yes <a href="" id="deactivate_{{userId}}" class="deactivate">{{pageLabelMap 'cc_imp_MyAccount_DeactivateLabel'}}</a></td>
+      <td class="right_align"><a href="" id="resetPassword_{{userId}}" class="resetPassword">{{pageLabelMap 'cc_imp_MyAccount_ResetPasswordLabel'}}</a></td>
+      {{else}}
+      <td class="right_align">No <a href="" id="activate_{{userId}}" class="activate">{{pageLabelMap 'cc_imp_MyAccount_ActivateLabel'}}</a></td>
+      <td class="right_align"></td>
+      {{/if}}
+
+     </tr>
+      {{/each}}
+    {{/each}}
+    <!--
+     <tr class="odd myAccCartRows">
+      <td class="right_align"><a href="#" data-id="" class="editUser">Jane Doe</a></td>
+      <td class="right_align">ABC Corp</td>
+      <td class="right_align"><input type="radio" /></td>
+     </tr>
+     <tr class="even myAccCartRows">
+      <td class="right_align"><a href="#" data-id="" class="editUser">Jon Doe</a></td>
+      <td class="right_align">ABC Corp</td>
+      <td class="right_align"><input type="radio" /></td>
+     </tr>
+     -->
+   </tbody></table>
+   <div class="row-fluid">
+   <div class="span5">
+   <input type="button" class="addUser" data-id="" value="{{pageLabelMap 'cc_imp_MyAccount_AddUser'}}">
+   </div>
+</form>
+
+</script>
+<!-- ************** End User Listing Sub-template ****************************** -->
+
+
+<!-- ************** Start Add User Template ****************************** -->
+<script id="MyAccount-UserAdmin-AddUserDialog" type="text/template">
+<a class="modalLauncher" style="display:none" href="#addUserMod" data-toggle="modal">&#160;</a>&#160;
+<div id="addUserMod" class="modal hide fade in" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
+
+<pre>
+{{debug}}
+</pre>
+
+   <div class="modal-header">
+    <button type="button" class="close" data-dismiss="modal" aria-hidden="true">×</button>
+    {{#if isAdd}}
+     <h3 id="myModalLabel">{{pageLabelMap 'cc_imp_MyAccount_AddUserModalTitle'}}</h3>
+    {{else}} 
+     <h3 id="myModalLabel">{{pageLabelMap 'cc_imp_MyAccount_EditUserModalTitle'}}</h3>
+    {{/if}} 
+    
+   </div>
+   <div id="addUserDiv" class="modal-body">
+    <form id="addUserForm">
+
+      <div class="row-fluid">
+        <div class="span12">
+          {{pageLabelMap 'cc_imp_MyAccount_AddUserModalMessage'}}
+        </div>
+      </div>
+
+     <div class="row-fluid">
+      <div class="span5">
+        <label>
+         <strong>{{pageLabelMap 'cc_imp_MyAccount_FirstNameLabel'}}</strong><br /> 
+         <input type="text" name="firstName" id="firstName" {{#if isEdit}}value="{{selectedContact.FirstName}}"{{/if}} />
+        </label>
+      </div>
+      <div class="span1">
+      &nbsp;
+      </div>
+
+      <div class="span5">
+        <label>
+         <strong>{{pageLabelMap 'cc_imp_MyAccount_LastNameLabel'}}</strong><br /> 
+         <input type="text" name="lastName" id="lastName" {{#if isEdit}}value="{{selectedContact.LastName}}"{{/if}}  />
+        </label>
+      </div>
+    </div>
+
+     <div class="row-fluid">
+      <div class="span5">
+        <label>
+         <strong>{{pageLabelMap 'cc_imp_MyAccount_PhoneLabel'}}</strong><br /> 
+         <input type="text" name="phoneNumber" id="phoneNumber" {{#if isEdit}}value="{{selectedContact.Phone}}"{{/if}}  />
+        </label>
+      </div>
+      <div class="span1">
+      &nbsp;
+      </div>
+
+      <div class="span5">
+        <label>
+         <strong>{{pageLabelMap 'cc_imp_MyAccount_EmailLabel'}}</strong><br /> 
+         <input type="text" name="email" id="email" {{#if isEdit}}value="{{selectedContact.Email}}"{{/if}}  />
+        </label>
+      </div>
+    </div>
+
+     <div class="row-fluid">
+      <div class="span12">
+        <label>
+         <strong>{{pageLabelMap 'cc_imp_MyAccount_MakeAdminMessage'}}</strong>
+        </label>
+        &nbsp;&nbsp;
+        <input type="checkbox" name="isAdmin" id="isAdmin" onclick="updateShipToSelection()" {{#if isEdit}}{{#if selectedContact.cc_imp_Is_MyNexeo_Admin__c}} checked="true"{{/if}}{{/if}}  />
+      </div>
+    </div>
+
+     <div class="row-fluid shipToSelection">
+      <div class="span12">
+        <label>
+         <strong>{{pageLabelMap 'cc_imp_MyAccount_SelectShipTo'}}</strong>
+        </label>
+          <select name="shipToSelection" id="shipToSelection">
+          {{#each accountData}}
+            <option value="{{accountId}}">{{name}}</option>
+          {{/each}}
+          </select>
+      </div>
+    </div>
+    <div class="accountAddressDisplay">
+      {{#each accountData}}
+        <div id="address-{{accountId}}" class="addressDisplayItem">
+        {{#address}}
+            <p>{{addr1}}</p>
+            <p>{{city}}, {{state}} {{zip}}</p>
+        {{/address}}
+        </div>
+      {{/each}}
+      </div>
+
+    </form>
+   </div>
+   <div class="modal-footer">
+   {{#if isAdd}}
+    <input type="button" class="saveAddUser btn-warning" data-id="" value="{{pageLabelMap 'cc_imp_MyAccount_AddUserSaveButton'}}" id="addUserSaveButton" />
+    {{else}}
+    <input type="button" class="saveAddUser btn-warning" data-id="" value="{{pageLabelMap 'cc_imp_MyAccount_EditUserSaveButton'}}" id="addUserSaveButton" />
+    {{/if}}
+    <input type="button" class="cancelAddUser btn-warning" data-id="" value="{{pageLabelMap 'cc_imp_MyAccount_AddUserCancelButton'}}" id="addUserCancelButton" />
+
+   </div>
+  </div>
+</script>
+<!-- ************** End Add User Template ****************************** -->
+
+<!-- ************** Start Generic Modal ****************************** -->
+<script id="MyAccount-UserAdmin-GenericModal" type="text/template">
+<div id="genericMod" class="modal hide fade in" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
+
+<pre>
+{{debug}}
+</pre>
+
+  <div class="modal-header">
+    <button type="button" class="close" data-dismiss="modal" aria-hidden="true">×</button>
+     <h3 id="myModalLabel">{{title}}</h3>
+   </div>
+   <div id="fileFormDiv">
+   <form id="genericModalForm" class="modal-body">
+   <input type="hidden" name="recordAction" id="recordAction" value="{{recordAction}}" />
+   <input type="hidden" name="recordId" id="recordId" value="{{recordId}}" />
+   {{message}}
+   </form>
+   </div><!-- fileFormDiv -->
+
+
+
+   <div class="modal-footer">
+    <input type="button" class="confirmGeneric btn-warning" data-id="" value="{{pageLabelMap 'cc_imp_MyAccount_ConfirmButton'}}" id="confirmGeneric" />
+    <input type="button" class="cancelGeneric btn-warning" data-id="" value="{{pageLabelMap 'cc_imp_MyAccount_AddUserCancelButton'}}" id="cancelGeneric" />
+
+   </div>
+  </div>
+</script>
+<!-- ************** End Add User Template ****************************** -->
+
+<!-- ************** Start Add User Confirmation Template ****************************** -->
+<script id="AddUser-Confirmation" type="text/template">
+  <div class="modal-header">
+    <button type="button" class="close" data-dismiss="modal" aria-hidden="true">×</button>
+     <h3 id="myModalLabel">{{pageLabelMap 'cc_imp_MyAccount_AddUserModalTitle'}}</h3>
+   </div>
+   <div id="fileFormDiv">
+   <form id="confirmAddUserForm" class="modal-body">
+   {{#if this.hasError}}
+   {{pageLabelMap 'cc_imp_MyAccount_AddUserModalError'}}: {{this.errorMessage}}
+   {{else}}
+   {{pageLabelMap 'cc_imp_MyAccount_AddUserModalConfirm'}}
+   {{/if}}
+   </form>
+   </div><!-- fileFormDiv -->
+   <div class="modal-footer">
+    <input type="button" class="finishAddUser" data-id="" value="{{pageLabelMap 'cc_imp_MyAccount_AddUserFinishButton'}}" id="addUserFinishButton" />,
+   </div>
+</script>
+<!-- ************** End Add User Confirmation Template ****************************** -->
+
+<div id="testDiv"></div>
+
+<script>
+
+// Helper function - disables/enables the ship-to selection if the isAdmin checkbox is checked/unchecked
+function updateShipToSelection(){
+  var isChecked = $("#isAdmin").prop("checked");
+  if(isChecked){
+    $("#shipToSelection").prop("disabled", true);
+  }
+  else {
+    $("#shipToSelection").prop("disabled", false);
+  }
+}
+
+// Get the new Upload Files View added to the My Account page
+CCRZ.MyAccount = _.extend(CCRZ.MyAccount||{},{
+    SubscUserAdmin :{
+        register : function(registrar){
+            registrar.registerNewView('userAdmin', CCRZ.processPageLabelMap('cc_imp_MyAccount_UserAdminMenu'), new CCRZ.views.userAdminView());
+        }
+    }
+});
+
+CCRZ.HDRMyAccount = _.extend(CCRZ.HDRMyAccount||{},{
+    SubscUserAdmin :{
+        register : function(registrar){
+            registrar.registerNewView('userAdmin', CCRZ.processPageLabelMap('cc_imp_MyAccount_UserAdminMenu'), new CCRZ.views.userAdminView());
+        }
+    }
+});
+
+// ******************** jQuery Start ************************************************
+jQuery(function($) {
+
+  // ******************** Add User View ************************************************
+    CCRZ.views.addUserView = CCRZ.CloudCrazeView.extend({
+      templateBoth : CCRZ.util.template("MyAccount-UserAdmin-AddUserDialog"),
+      viewName : "addUserView",
+      el : $("modalSec"),
+      events : {
+        "change #shipToSelection" : "showAccountAddress"
+      },
+      initialize: function(){
+
+      },
+      showAccountAddress : function(){
+          $(".addressDisplayItem").hide();
+          //Get the default select value of the account dropdown.
+          var accountIdSelected = $('#shipToSelection').val();
+          //show that one
+          $("#address-" + accountIdSelected).show();
+      },
+      displayAddUserModal : function(){
+        console.log('In displayAddUserModal');
+        //var objLink = $(event.target);
+        //var id = objLink.data("id");
+        // console.log("Display modal currentAccountData: %o", currentAccountData);
+        console.log("Display modal this.model: %o", this.model.attributes);
+        var result = Handlebars.compile($("#MyAccount-UserAdmin-AddUserDialog").html())(this.model.attributes);
+
+        console.log('Showing addUser modal');
+        $("#modalSec").html(result);
+        console.log('Showing addUser modal - done');
+      },
+
+      render : function(callback){
+        console.log('in addUserModal render');
+        // this.dataSet = modelData;
+        this.setElement($("#modalSec")); // where to insert the modal
+        var v = this;
+        v.$el.html(v.templateBoth());
+//        this.model.fetch(function(){
+          v.displayAddUserModal();
+          $("#addUserMod").modal("show");
+          $(".addressDisplayItem").hide();
+          //Get the default select value of the account dropdown.
+          var accountIdSelected = $('#shipToSelection').val();
+          //show that one
+          $("#address-" + accountIdSelected).show();
+
+
+          CCRZ.handleModalDisplay();
+          callback();
+          CCRZ.pubSub.trigger("view:"+this.viewName+":refresh", this);
+//        });
+
+      },
+      addUser : function(callback){
+        var v = this;
+        $("#addUserSaveButton").prop("disabled",true);
+        $("#addUserCancelButton").prop("disabled",true);
+
+
+        var hasError = false;
+        var errorMessage = null;
+
+        this.model.addUser(function(response){
+          console.log('addUserView.addUser callback');
+          // Display errors if there are errors (e.g. duplicate username)
+          console.log('addUserView.addUser showing confirmation');
+          if (response) {
+            if (!response.data.success) {
+              hasError = true;
+              if (response.data.error) {
+                errorMessage = response.data.error;
+              }
+              if (response.data.message) {
+                errorMessage = response.data.message;
+              }
+              console.log('addUser error: ' + errorMessage);
+            }
+          }
+          var data = {hasError : hasError, errorMessage : errorMessage};
+          $("#addUserMod").html(Handlebars.compile($("#AddUser-Confirmation").html())(data));
+          console.log('addUserView.addUser calling callback');
+          callback();
+        });
+
+      },
+
+      openAddUserModal : function() {
+          CCRZ.addUserView.render(null, function(){
+            console.log('modalView.render model: %o', this.model);
+            // $("#addUserMod").modal("show");
+          });
+      },
+
+      closeModal: function(idVal){
+      },
+
+      init : function(){
+        this.model.addUser(callback);
+      }
+    });
+  // ******************** End Add User View ************************************************
+
+
+
+  // ******************** User Admin Model ************************************************
+    CCRZ.models.userAdminModel = CCRZ.CloudCrazeModel.extend({
+      className: "cc_imp_ctrl_UserAdmin",
+      accountData: {},
+      fetch: function(callback){
+        console.log('userAdminModel.fetch(): entry');
+        var model = this;
+
+        Visualforce.remoting.Manager.invokeAction(
+          '{!$RemoteAction.cc_imp_ctrl_UserAdmin.retrieveAccountAndUserData}',
+          CCRZ.pagevars.remoteContext,
+          function(response ){
+              console.log('userAdminModel.fetch(): calling callback()');
+              model.set(model.parse(response.data));
+              callback();        
+          });
+
+      },
+
+      getContact: function(contactId){
+        console.log("Contact id: " + contactId);
+        contactId = contactId.replace("edit_","");
+        console.log("Model: %o", CCRZ.userAdminModel.attributes.users);
+        var theContact = _.findWhere(CCRZ.userAdminModel.attributes.users, {ContactId : contactId});
+        theContact = theContact.Contact;
+        console.log("theContact: %o", theContact);
+
+        CCRZ.userAdminModel.attributes.selectedContact = theContact;
+        return theContact;
+      },
+
+      addUser: function(callback){
+        var model = this;
+        console.log('In model.addUser');
+        var firstName = $("#firstName").val(); 
+        var lastName = $("#lastName").val(); 
+        var email = $("#email").val(); 
+        var phoneNumber = $("#phoneNumber").val(); 
+        var isAdmin = $("#isAdmin").prop("checked"); 
+        var shipToSelection = $("#shipToSelection").val();
+        var isUpdate = CCRZ.userAdminModel.attributes.isEdit;
+        console.log('isUpdate: ' + isUpdate);
+        if(isUpdate){
+          console.log('isUpdate inside if: ' + isUpdate);
+        }
+        else {
+          console.log('isUpdate inside else: ' + isUpdate);
+        }
+        var contactId = null;
+        if(isUpdate){
+          contactId = CCRZ.userAdminModel.attributes.selectedContact.Id;
+        }
+
+        console.log('Form data: ' + firstName + ',' + lastName + ',' + email + ',' + phoneNumber + ',' + isAdmin + ',' + shipToSelection);
+
+        // Uncomment this to get the add user working again -- HERE
+        Visualforce.remoting.Manager.invokeAction(
+          '{!$RemoteAction.cc_imp_ctrl_UserAdmin.addOrUpdateUser}',
+          CCRZ.pagevars.remoteContext,
+          isUpdate,
+          contactId,
+          firstName,
+          lastName,
+          phoneNumber,
+          email,
+          shipToSelection,
+          isAdmin,
+          function(response ){
+            console.log('addUser response: %o', response);
+
+            // Get the updated list after the add
+//            // CCRZ.userAdminModel.fetch(function(){
+              console.log('userAdminModel: in addUser calling callback()');
+              callback(response);
+            // });
+
+          }
+        );
+      },
+
+      toggleUserActivation : function(userId, callback){
+        var model = this;
+        Visualforce.remoting.Manager.invokeAction(
+          {!$RemoteAction.cc_imp_ctrl_UserAdmin.toggleUserActivation},
+          CCRZ.pagevars.remoteContext,
+          userId,
+          function(response){
+            console.log('toggleUserActivation response: %o', response); 
+            callback();
+          }
+        );
+      }      
+
+    });
+  // ******************** End User Admin Model ************************************************
+
+    CCRZ.userAdminModel = new CCRZ.models.userAdminModel();
+    CCRZ.addUserView = new CCRZ.views.addUserView({
+      model : CCRZ.userAdminModel
+    });
+
+  // ******************** User Admin View ************************************************
+    CCRZ.views.userAdminView = CCRZ.CloudCrazeView.extend({
+        templatePhone : CCRZ.util.template('MyAccount-User-Admin'),
+        templateDesktop : CCRZ.util.template('MyAccount-User-Admin'),
+        managedSubView : true,
+        viewName : "subscUserAdminView",
+        accountData : {},
+        events: {
+          "click .addUser" : "displayAddUserModal",
+          "click .saveAddUser" : "saveAddUser",
+          "click .cancelAddUser" : "cancelAddUser",
+          "click .finishAddUser" : "finishAddUser",
+          "click .demote" : "displayGenericConfirmation",
+          "click .promote" : "displayGenericConfirmation",
+          "click .activate" : "displayGenericConfirmation",
+          "click .deactivate" : "displayGenericConfirmation",
+          "click .resetPassword" : "displayGenericConfirmation",
+          "click .confirmGeneric" : "confirmGenericAction",
+          "click .cancelGeneric" : "cancelGenericAction",
+          "click .editUser" : "displayEditUserDialog"
+        },
+
+        displayEditUserDialog : function(){
+          var objLink = $(event.target);
+          console.log('objLink: %o', objLink);
+          var id = objLink.context.id;
+          console.log('id: %o', id);
+
+          var theContact = CCRZ.userAdminModel.getContact(id);
+          CCRZ.userAdminModel.attributes.isAdd = false;
+          CCRZ.userAdminModel.attributes.isEdit = true; 
+          CCRZ.addUserView.render(function(){
+            console.log('Callback from addUserView.render');
+          });
+          return false;
+        },
+
+        displayGenericModal : function(recordId, action){
+          console.log('displayGenericModal entry');
+
+          // Get the title and message from page labels
+          var title = CCRZ.pagevars.pageLabels[action];
+          console.log("***** page label ***** " + title);
+
+          CCRZ.processPageLabelMap("cc_imp_ManageUserAction_" + action);
+
+          var thedata = {
+            "title"         : CCRZ.processPageLabelMap("cc_imp_ManageUserTitle_" + action),
+            "recordId"      : recordId, 
+            "recordAction"  : action, 
+            "message"       : CCRZ.processPageLabelMap("cc_imp_ManageUserMessage_" + action)
+          };
+          console.log("displayGenericModal data: %o", thedata);
+
+          // Compile the template
+          var theResult = Handlebars.compile($("#MyAccount-UserAdmin-GenericModal").html())(thedata);
+
+          // Set the template in the modal
+          $("#modalSec").html(theResult);
+
+          // Show the modal
+          console.log("displayGenericModal data - showing modal");
+          $("#genericMod").modal("show");
+        },
+
+        displayGenericConfirmation : function(event){
+          console.log('display genericConfirmation entry');
+          var objLink = $(event.target);
+          console.log('objLink: %o', objLink);
+          var id = objLink.context.id;
+          console.log('record id: ' + id);
+          var parts = id.split("_"); 
+          recordAction = parts[0];
+          id = parts[1];
+
+          console.log('trimmed id: ' + id);
+          console.log('action: ' + recordAction);
+
+          // Display the confirmation modal
+          this.displayGenericModal(id, recordAction);
+          return false;
+        },
+
+        confirmGenericAction : function(){
+          console.log('confirmGenericAction - entry');
+          // Get the confirmation form from the modal
+          var action = $("#recordAction").val();
+          var recordId = $("#recordId").val();
+          var v = this;
+          var model = CCRZ.userAdminModel;
+
+          // Determine the action (activate/deactivate/promote/demote/reset password)
+          cc_imp_ctrl_UserAdmin.affectUser(
+          CCRZ.pagevars.remoteContext,
+          action,
+          recordId, 
+          function(response){
+            if (response) {
+              console.log("affectUser response: %o", response);
+              console.log("#### affectUser response controller action: " + response.data.debugMessage);
+            }
+            // update the model
+            model.fetch(function(result){
+              console.log("affectUser result: %o", result);
+              v.cancelGenericAction();
+              v.render();
+            });
+          }
+          );
+
+        },
+        cancelGenericAction : function(){
+          $("#genericMod").modal("hide");
+
+        },
+        cancelAddUser: function(event){
+          var objLink = $(event.target);
+          var id = objLink.data("id");
+          this.closeAddUserModal(id); 
+        },
+        finishAddUser: function(event){
+          var objLink = $(event.target);
+          var id = objLink.data("id");
+          var v = this;
+          this.closeAddUserModal(id); 
+          console.log("Calling fetch");
+          CCRZ.userAdminModel.fetch(function(){
+            console.log("Calling render");
+            v.render();
+          });
+        },       
+        displayAddUserModal : function(){
+          //var objLink = $(event.target);
+          //var id = objLink.data("id");
+          //console.log('Display modal: %o', currentAccountData);
+          //var result = Handlebars.compile($("#MyAccount-UserAdmin-AddUserDialog").html())(currentAccountData);
+          // var result = Handlebars.compile($("#MyAccount-UserAdmin-AddUserDialog").html())(this.model.accountData);
+
+          // this.openAddUserModal();
+          // $("#modalSec").html(result);
+          CCRZ.userAdminModel.attributes.isAdd = true;
+          CCRZ.userAdminModel.attributes.isEdit = false;
+          CCRZ.addUserView.render(function(){
+            console.log('Callback from addUserView.render');
+          });
+        },
+
+        saveAddUser: function(event){
+          console.log('in saveAddUser');
+          var v = this;
+          var model = this.model;
+          CCRZ.addUserView.addUser(function(){
+            console.log('saveAddUser - done');
+            // v.render(); // re-render the user list
+            // $("#addUserMod").hide();
+
+            // renderUserList();
+            // var v = this;
+
+            // CCRZ.userAdminModel.fetch(function(){
+              // no callback action needed
+            // });
+          });
+
+        },
+        closeAddUserModal: function(idVal){
+          $("#addUserMod").modal("hide");
+        },
+
+        init : function(){
+            $("#addUserMod").hide();
+
+            // renderUserList();
+            var v = this;
+
+            CCRZ.userAdminModel.fetch(function(){
+              // no callback action needed
+            });
+
+        },
+
+        render: function(){
+          console.log('render');
+          this.$el.html(this.templateDesktop());
+          console.log('Model: %o', CCRZ.userAdminModel.attributes);
+          var theResult = Handlebars.compile($("#MyAccount-ManageUsers-Listing").html())(CCRZ.userAdminModel.attributes);
+          $("#userList").html(theResult);
+        },
+
+        renderPhone : function() {
+          console.log('renderPhone');
+            this.$el.html(this.templatePhone(this));
+        },
+        renderDesktop : function() {
+          console.log('renderDesktop');
+            this.$el.html(this.templateDesktop(this));
+        }
+
+    });
+  // ******************** End User Admin View ************************************************
+
+});
+// ******************** jQuery End ************************************************
+</script>
+
+</apex:component>

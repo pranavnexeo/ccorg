@@ -1,0 +1,41 @@
+<apex:page controller="MassTouchBatchProcessController">
+
+<script language="javascript">
+    function getConfirm(q) {
+        answer = confirm(q);
+        return (answer != 0);
+    }
+</script>
+
+    <apex:pageBlock >
+        <apex:pageBlockSection title="Batch Updates" id="block1" collapsible="false" columns="1">
+            <apex:form >
+                <p>
+                <apex:outputLabel value="Select Object to touch all (upto 1,000,000) records" 
+                                  for="objectList"/>
+                <br/>
+                <apex:selectList id="objectList" value="{!objectName}">
+                    <apex:selectOption itemValue="Customer_Product_Info__c" itemLabel="Customer Product Info"/>
+                    <apex:selectOption itemValue="Material_General_Data__c" itemLabel="Material General Data"/>
+                    <apex:selectOption itemValue="Material_Plant__c" itemLabel="Material Plant"/>
+                    <apex:selectOption itemValue="Material_UOM__c" itemLabel="Material UOM"/>
+                    <apex:selectOption itemValue="Material_Sales_Data__c" itemLabel="Material Sales Data"/>
+                    <apex:selectOption itemValue="Open_Orders__c" itemLabel="Open Orders"/>
+                </apex:selectList>
+                </p>
+
+                <p>             
+                <apex:outputLabel value="Last Modified DateTime (YYYY-MM-DD HH:MM:SS) (All the records modified before this time will be selected to touch)" 
+                                  for="dateTimeString"/>
+                <br/>
+                <apex:inputText id="dateTimeString" size="20" value="{!dateTimeString}"/>
+                </p>
+                
+                <p>             
+                <apex:commandButton value="Submit Batch Job" action="{!submitBatchJob}"
+                                  onclick="return getConfirm('Submit Batch Job?');"/>
+                </p>
+            </apex:form>
+        </apex:pageBlockSection>
+    </apex:pageBlock>
+</apex:page>

@@ -1,0 +1,3 @@
+<apex:page standardcontroller="Price_Request_Transaction__c">
+<c:PRT_Generic recordid="{!Price_Request_Transaction__c.id}"/>
+</apex:page>

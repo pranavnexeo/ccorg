@@ -1,0 +1,3 @@
+<apex:page controller="SupplierContent" sidebar="false" action="{!RedirectManageContent}">
+  
+</apex:page>

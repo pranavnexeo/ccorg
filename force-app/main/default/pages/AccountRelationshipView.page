@@ -1,0 +1,116 @@
+<apex:page standardController="Account" tabStyle="Account" sidebar="false" title="Create New Price Book Wizard">
+
+  <div id='flexAppDiv' style="width : 100%; height : 400px;">
+
+<!--
+    <apex:flash src="{!$Resource.AccountRelationshipView}"   
+            flashvars="userId={!$User.Id}&session_id={!$Api.Session_Id}&server_url={!$Api.Partner_Server_URL_160}}&accountId={!id}" 
+            height="100%" width="100%" />
+-->
+    <object classid="clsid:D27CDB6E-AE6D-11cf-96B8-444553540000"
+            id="AccountRelationshipView" width="100%" height="100%"
+            codebase="https://fpdownload.macromedia.com/get/flashplayer/current/swflash.cab">
+            <param name="movie" value="{!$Resource.AccountRelationshipView}" />
+            <param name="quality" value="high" />
+            <param name="bgcolor" value="#F3F3EC" />
+            <param name="allowScriptAccess" value="sameDomain" />
+            <param name="flashvars" value="session_id={!$Api.Session_Id}&server_url={!$Api.Partner_Server_URL_160}&accountId={!id}" />
+            
+            <embed src="{!$Resource.AccountRelationshipView}" quality="high" bgcolor="#F3F3EC"
+                width="100%" height="100%" name="AccountRelationshipView" align="middle"
+                play="true"
+                loop="false"
+                quality="high"
+                flashvars="userId={!$User.Id}&session_id={!$Api.Session_Id}&server_url={!$Api.Partner_Server_URL_160}}&accountId={!id}"   
+                allowScriptAccess="sameDomain"
+                type="application/x-shockwave-flash"
+                pluginspage="http://www.adobe.com/go/getflashplayer">
+            </embed>
+    </object>
+  </div>
+
+<script language="javascript">
+
+    function resizeFlexAppDiv(minHeight) {
+        var salesforceHeaderSize = 130;
+        var browserWindowHeight;
+
+        if( typeof( window.innerWidth ) == 'number' ) 
+            {
+            //Non-IE
+            browserWindowHeight = window.innerHeight;
+            } 
+            else if( document.documentElement && ( document.documentElement.clientWidth || document.documentElement.clientHeight ) ) 
+                     {
+                     //IE 6+ in 'standards compliant mode'
+                     browserWindowHeight = document.documentElement.clientHeight;
+                     }
+                 else if( document.body && ( document.body.clientWidth || document.body.clientHeight ) ) 
+                     {
+                     //IE 4 compatible
+                     browserWindowHeight = document.body.clientHeight;
+                     }
+        
+        var windowHeight=(browserWindowHeight - salesforceHeaderSize);
+        //alert("windowHeight = " + windowHeight);
+        if (windowHeight < minHeight) {windowHeight = minHeight};
+        document.getElementById("flexAppDiv").style.height = windowHeight + "px";
+    }
+
+   // a JavaScript function in the container HTML page   
+   function redirectToURL( url  )   
+       {
+       window.location = url;   
+       }
+
+
+
+ function hookEvent(element, eventName, callback)
+    {
+        if (typeof(element) == "string")
+            element = document.getElementById(element);
+        if (element == null)
+            return;
+        if (element.addEventListener)
+        {
+            if (eventName == 'mousewheel')
+                element.addEventListener('DOMMouseScroll', callback, false);
+            element.addEventListener(eventName, callback, false);
+        }
+        else if (element.attachEvent())
+            element.attachEvent("on" + eventName, callback);
+    }
+
+    function unhookEvent(element, eventName, callback)
+    {
+        if (typeof(element) == "string")
+            element = document.getElementById(element);
+        if (element == null)
+            return;
+        if (element.removeEventListener)
+        {
+            if (eventName == 'mousewheel')
+                element.removeEventListener('DOMMouseScroll', callback, false);
+            element.removeEventListener(eventName, callback, false);
+        }
+        else if (element.detachEvent)
+            element.detachEvent("on" + eventName, callback);
+    }
+
+    function cancelEvent(e)
+    {
+        e = e ? e : window.event;
+        if (e.stopPropagation)
+            e.stopPropagation();
+        if (e.preventDefault)
+            e.preventDefault();
+        e.cancelBubble = true;
+        e.cancel = true;
+        e.returnValue = false;
+        return false;
+    }
+    hookEvent('flexAppDiv', 'mousewheel', cancelEvent);
+
+</script>
+
+</apex:page>

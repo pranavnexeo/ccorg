@@ -1,0 +1,2 @@
+<apex:page standardController="R_D_Requests__c" extensions="RDEditController" action="{!redirectToEditPage}">
+</apex:page>

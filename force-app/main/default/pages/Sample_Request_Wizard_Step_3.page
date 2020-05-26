@@ -1,0 +1,122 @@
+<apex:page controller="Sample_Request_Controller" tabStyle="Sample_Request__c" action="{!init}">
+<apex:stylesheet value="{!$Resource.SampleRequestStyles}"></apex:stylesheet>
+
+        <apex:sectionHeader title="{!$Label.New_Sample_Request} {!Sample_Request_Link}" subtitle="{!$Label.Step_3}"/>
+        <apex:form >
+        
+                <apex:pageBlock title="{!$Label.Sample_Information}">
+                        <apex:facet name="footer">
+                                <apex:outputPanel >
+                                        <center>
+                                        <apex:commandButton action="{!step2A}" value="{!$Label.Previous}" styleClass="btn"/>
+                                        <apex:commandButton action="{!step4}" value="{!$Label.Next}" styleClass="btn"/>
+                                        </center>
+                                </apex:outputPanel>
+                                </apex:facet>
+
+                        <apex:outputPanel id="generalInformation" >
+                                <apex:pageBlockSection title="{!$Label.Related_to_the_Following}:" columns="1" showHeader="true" collapsible="false">
+                                        <apex:panelGrid columns="2">
+                                                <apex:outputText value="{!$Label.Account}: " styleClass="HeaderLabel" rendered="{!GotAccount}"/>
+                                                <apex:outputLink value="/{!account.Id}" target="=_blank" rendered="{!GotAccount}">{!account.Name}</apex:outputLink>
+                                                <apex:outputText value="{!$Label.Contact}: " styleClass="HeaderLabel" rendered="{!GotContact}"/>
+                                                <apex:outputLink value="/{!contact.Id}" target="_blank" rendered="{!GotContact}">{!contact.Name}</apex:outputLink>
+                                                <apex:outputText value="{!$Label.Contact}: " styleClass="HeaderLabel" rendered="{!CreatingContact}"/>
+                                                <apex:outputText value="{!$Label.New_Contact}" styleClass="HeaderData" rendered="{!CreatingContact}"/>
+                                       </apex:panelgrid> 
+                                       <apex:panelGrid columns="4" rendered="{!$CurrentPage.Parameters.oppId != 'No Opportunity'}">          
+                                                <apex:outputText value="{!$Label.Opportunity}: " styleClass="HeaderLabel" />
+                                                <apex:inputField value="{!sampleRequest.Opportunity__r.Name}" required="true" />
+                                                <apex:outputText value="Close Date" styleClass="HeaderLabel" />
+                                                <apex:inputField value="{!sampleRequest.Opportunity__r.CloseDate}" required="true" />
+                                                <apex:outputText value="Potential CM: " styleClass="HeaderLabel" />
+                                                <apex:inputField value="{!sampleRequest.Opportunity__r.Potential_CM__c}" required="true" />
+                                                <apex:outputText value="{!$ObjectType.Opportunity.Fields.Annual_Usage__c.Label}" styleClass="HeaderLabel" />
+                                                <apex:inputField value="{!sampleRequest.Opportunity__r.Annual_Usage__c}" required="true" />
+                                                <!--<apex:outputLink value="/{!opportunity.Id}" target="_blank" rendered="{!GotOpportunity}">{!opportunity.Name}</apex:outputLink> -->
+                                                
+                                        </apex:panelGrid>
+                                </apex:pageBlockSection>
+                        </apex:outputPanel> 
+
+                        <apex:outputPanel id="SampleContactInfo">
+                                <apex:pageBlockSection title="{!$Label.Who_Requested}" collapsible="false" columns="1">
+                                        <apex:inputField id="ContactFirstName" value="{!sampleRequest.Contact_First_Name__c}" required="true"/>
+                                        <apex:inputField id="ContactLastName" value="{!sampleRequest.Contact_Last_Name__c}" required="true"/>
+                                        <apex:inputField id="ContactPhoneNumber" value="{!sampleRequest.Contact_Phone_Number__c}" required="true"/>
+                                        <apex:inputField id="ContactEmail" value="{!sampleRequest.Contact_Email__c}" />
+                                </apex:pageBlockSection>
+                        </apex:outputPanel>
+
+                        <apex:outputPanel id="addressButtons">
+                                <apex:pageBlockSection title="{!$Label.Where_Sample}" columns="3" collapsible="false">
+                                                <apex:outputText escape="false" styleClass="{!IF(sampleRequest.Ship_To_Address_Type__c='Address from Account','AddressAboveButtons_selected','AddressAboveButtons')}" value="{!AccountAddress}"/>
+                                                <apex:outputText escape="false" styleClass="{!IF(sampleRequest.Ship_To_Address_Type__c='Address from Contact','AddressAboveButtons_selected','AddressAboveButtons')}" value="{!ContactAddress}"/>
+                                                <apex:outputText value=""/>
+                                                <apex:outputText escape="false" value="{!IF(sampleRequest.Ship_To_Address_Type__c='Address from Account','Selected','')}" styleClass="selectedtext"/>
+                                                <apex:outputText escape="false" value="{!IF(sampleRequest.Ship_To_Address_Type__c='Address from Contact','Selected','')}" styleClass="selectedtext"/>
+                                                <apex:outputText escape="false" value="{!IF(sampleRequest.Ship_To_Address_Type__c='Manually Entered Address','Selected','')}" styleClass="selectedtext"/>
+                                                <apex:commandButton action="{!populateShipToAddress_from_Account}" value="{!$Label.Use_Account_Address}" styleClass="{!Style_AccountAddressButton}" rerender="addressManualEntry_Account,addressManualEntry_Contact,addressManualEntry,addressSection,addressButtons,ValidationError" immediate="true" disabled="{!EnableDisable_AccountAddressButton}" status="ShipToAddress_from_Account"/>
+                                                <apex:commandButton action="{!populateShipToAddress_from_Contact}" value="{!$Label.Use_Contact_Address}" styleClass="{!Style_ContactAddressButton}" rerender="addressManualEntry_Account,addressManualEntry_Contact,addressManualEntry,addressSection,addressButtons,ValidationError" immediate="true" disabled="{!EnableDisable_ContactAddressButton}" status="ShipToAddress_from_Contact"/>
+                                                <apex:commandButton action="{!populateShipToAddress_Manually}" value="{!$Label.Manually_Enter_Address}" styleClass="btn" immediate="true"  rerender="addressManualEntry_Account,addressManualEntry_Contact,addressManualEntry,addressSection,addressButtons,ValidationError"/>
+                                                <apex:actionStatus startText="({!$Label.Retrieving_Address}...)" stopText="" id="ShipToAddress_from_Account"/>
+                                                <apex:actionStatus startText="({!$Label.Retrieving_Address}...)" stopText="" id="ShipToAddress_from_Contact"/>
+                                </apex:pageBlockSection> 
+
+                            <apex:pageBlockSection id="ValidationError" title="{!$Label.Validation_Error}" columns="1" collapsible="false" rendered="{!IF(ValidationErrorMessage!='','True','False')}">
+                                    <apex:pageBlock title="{!$Label.Error_Messages}" rendered="{!IF(ValidationErrorMessage!='','True','False')}">
+                                        <apex:outputText escape="False" styleClass="Warning" value="{!ValidationErrorMessage}" rendered="{!IF(ValidationErrorMessage!='','True','False')}"/>
+                                    </apex:pageBlock>
+                            </apex:pageBlockSection>
+                        </apex:outputPanel>
+
+                        <apex:outputPanel id="addressManualEntry_Account">
+                                <apex:pageBlockSection title="{!$Label.Ship_To_Address}" collapsible="false" showHeader="false" columns="1" rendered="{!hideshow_AddressManualEntry_Account}">
+                                        <apex:inputField id="addressLine1_account" value="{!AccountAddressEntry.Address_Line_1__c}" required="true"/>
+                                        <apex:inputField id="addressLine2_account" value="{!AccountAddressEntry.Address_Line_2__c}"/>
+                                        <apex:inputField id="addressLine3_account" value="{!AccountAddressEntry.Address_Line_3__c}"/>
+                                        <apex:inputField id="addressLine4_account" value="{!AccountAddressEntry.Address_Line_4__c}"/>
+                                        <apex:inputField id="city_account" value="{!AccountAddressEntry.City__c}" required="true"/>
+                                        <apex:inputField id="state_account" value="{!AccountAddressEntry.State__c}"/>
+                                        <apex:inputField id="postalZipCode_account" value="{!AccountAddressEntry.Postal_Zip_Code__c}" required="true"/>
+                                        <apex:inputField id="country_account" value="{!AccountAddressEntry.Country__c}" required="true"/>
+                                </apex:pageBlockSection>
+                        </apex:outputPanel>
+
+                        <apex:outputPanel id="addressManualEntry_Contact">
+                                <apex:pageBlockSection title="{!$Label.Ship_To_Address}" collapsible="false" showHeader="false" columns="1" rendered="{!hideshow_AddressManualEntry_Contact}">
+                                        <apex:inputField id="addressLine1_contact" value="{!ContactAddressEntry.Address_Line_1__c}" required="true"/>
+                                        <apex:inputField id="addressLine2_contact" value="{!ContactAddressEntry.Address_Line_2__c}"/>
+                                        <apex:inputField id="addressLine3_contact" value="{!ContactAddressEntry.Address_Line_3__c}"/>
+                                        <apex:inputField id="addressLine4_contact" value="{!ContactAddressEntry.Address_Line_4__c}"/>
+                                        <apex:inputField id="city_contact" value="{!ContactAddressEntry.City__c}" required="true"/>
+                                        <apex:inputField id="state_contact" value="{!ContactAddressEntry.State__c}"/>
+                                        <apex:inputField id="postalZipCode_contact" value="{!ContactAddressEntry.Postal_Zip_Code__c}" required="true"/>
+                                        <apex:inputField id="country_contact" value="{!ContactAddressEntry.Country__c}" required="true"/>
+                                </apex:pageBlockSection>
+                        </apex:outputPanel>
+
+                        <apex:outputPanel id="addressManualEntry">
+                                <apex:pageBlockSection title="{!$Label.Ship_To_Address}" collapsible="false" showHeader="false" columns="1" rendered="{!hideshow_AddressManualEntry}">
+                                        <apex:inputField id="addressLine1" value="{!ManualAddressEntry.Address_Line_1__c}" required="true"/>
+                                        <apex:inputField id="addressLine2" value="{!ManualAddressEntry.Address_Line_2__c}"/>
+                                        <apex:inputField id="addressLine3" value="{!ManualAddressEntry.Address_Line_3__c}"/>
+                                        <apex:inputField id="addressLine4" value="{!ManualAddressEntry.Address_Line_4__c}"/>
+                                        <apex:inputField id="city" value="{!ManualAddressEntry.City__c}" required="true"/>
+                                        <apex:inputField id="state" value="{!ManualAddressEntry.State__c}"/>
+                                        <apex:inputField id="postalZipCode" value="{!ManualAddressEntry.Postal_Zip_Code__c}" required="true"/>
+                                        <apex:inputField id="country" value="{!ManualAddressEntry.Country__c}" required="true"/>
+                                </apex:pageBlockSection>
+                        </apex:outputPanel>
+
+                        <apex:pageBlockSection title="{!$Label.Reason_for_Request}" collapsible="false" columns="1">
+                        <apex:pageMessage summary="Please provide details as to what your customer is going to do or make with this sample.<br/><b>Applications are acceptable:</b> Shampoo, Low VOC Coating, Tire Shine, etc<br/><b>Markets are acceptable:</b>  Coatings, Adhesives, Personal Care, Energy, HI&I, etc<br/><b>Not acceptable:</b> Offset to XYZ Product, Testing, New Formulation, Experiments" severity="Info" strength = "3" escape="false" rendered="{!isdistribution}" />
+                                        <apex:pageblocksectionitem helptext="{!IF(isdistribution = true, 'Enter Market, End Use / Application, and Annual Volume here.', '')}">
+                                        <apex:outputtext value="{!IF(isdistribution = true, 'End Use / Application', $Label.Reason)}" />                                    
+                                        <apex:inputField id="reasonForSample" value="{!sampleRequest.Reason_for_Sample__c}" required="true"/> 
+                                        </apex:pageblocksectionitem>
+                        </apex:pageBlockSection> 
+
+                    </apex:pageBlock> 
+                </apex:form>
+</apex:page>

@@ -1,0 +1,10 @@
+<apex:page StandardController="Business_Contract__c">
+    <apex:pageMessage id="pageMessageId" summary="Please remember to select “Generate PDF” button to print HRIA or save as a PDF.  
+Next, please remember to select “Attach File” button to upload the Signed or Unsigned HRIA before selecting “Submit for Approval” button.
+" severity="info" strength="3" rendered="{!Business_Contract__c.Contract_Type__c = 'High Risk Inventory Agreement'}"/>
+<apex:pageMessage id="pageMessageId1" summary="Please remember to attach any file whenever necessary by clicking the button Attach File.
+" severity="info" strength="3" rendered="{!Business_Contract__c.Contract_Type__c != 'High Risk Inventory Agreement'}"/>
+    <!--
+    <apex:detail subject="{!Business_Contract__c.Id}"/>
+    -->
+</apex:page>
